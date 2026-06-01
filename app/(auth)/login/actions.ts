@@ -6,18 +6,42 @@ import { createClient } from "@/lib/supabase/server";
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const redirectTo = String(formData.get("redirect") ?? "/dashboard");
 
   if (!email || !password) {
     return { error: "Email and password are required." };
   }
 
   const supabase = createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: error.message };
   }
 
-  redirect(redirectTo);
+  if (!data.user) {
+    return { error: "Login failed." };
+  }
+
+  // Check if user is a business owner or customer
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("id")
+    .eq("owner_id", data.user.id)
+    .maybeSingle();
+
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  // Redirect based on user type
+  if (business) {
+    redirect("/dashboard");
+  } else if (customer) {
+    redirect("/customer/dashboard");
+  } else {
+    // User exists but has no business or customer profile
+    return { error: "Account not properly set up. Please contact support." };
+  }
 }
