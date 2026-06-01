@@ -1,6 +1,10 @@
 -- RLS policies for customers table
 alter table public.customers enable row level security;
 
+-- Grant permissions to authenticated users (required for RLS to work)
+grant select, insert, update on public.customers to authenticated;
+grant select on public.customers to anon;
+
 -- customers: users can read and update their own profile only
 drop policy if exists "customers_own_select" on public.customers;
 create policy "customers_own_select"
