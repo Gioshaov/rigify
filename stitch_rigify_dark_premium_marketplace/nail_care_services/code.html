@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nail Care - Mitte Beauty Salon</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c5cf",
+                        "on-surface": "#e4e1e9",
+                        "surface-container-low": "#1b1b20",
+                        "surface-container-highest": "#35343a",
+                        "on-secondary-fixed-variant": "#47464e",
+                        "on-primary-container": "#503d00",
+                        "tertiary-fixed-dim": "#c7c5d3",
+                        "primary-fixed-dim": "#e6c364",
+                        "outline": "#99907e",
+                        "error-container": "#93000a",
+                        "background": "#131318",
+                        "on-surface-variant": "#d0c5b2",
+                        "tertiary-container": "#acaab8",
+                        "primary-container": "#c9a84c",
+                        "secondary-container": "#494850",
+                        "on-primary-fixed": "#241a00",
+                        "surface": "#131318",
+                        "on-tertiary-container": "#3f3f4a",
+                        "on-primary-fixed-variant": "#584400",
+                        "surface-variant": "#35343a",
+                        "surface-tint": "#e6c364",
+                        "inverse-surface": "#e4e1e9",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e13",
+                        "tertiary-fixed": "#e3e1f0",
+                        "secondary-fixed": "#e4e1eb",
+                        "on-error": "#690005",
+                        "inverse-primary": "#755b00",
+                        "inverse-on-surface": "#303036",
+                        "surface-dim": "#131318",
+                        "secondary-fixed-dim": "#c8c5cf",
+                        "on-tertiary-fixed-variant": "#464651",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#e6c364",
+                        "on-background": "#e4e1e9",
+                        "surface-bright": "#39383e",
+                        "primary-fixed": "#ffe08f",
+                        "tertiary": "#c7c5d4",
+                        "surface-container-high": "#2a292f",
+                        "on-secondary-container": "#b9b7c1",
+                        "on-secondary-fixed": "#1b1b22",
+                        "on-secondary": "#303037",
+                        "outline-variant": "#4d4637",
+                        "on-tertiary": "#2f2f3b",
+                        "on-primary": "#3d2e00",
+                        "on-tertiary-fixed": "#1a1b25",
+                        "surface-container": "#1f1f25"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "stack-md": "16px",
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "16px",
+                        "section-gap": "80px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "data-label": ["JetBrains Mono"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "data-numeric": ["JetBrains Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "data-label": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-numeric": ["16px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+        }
+        .luxury-card {
+            background-color: #16161d;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid #2a2a35;
+        }
+        .btn-primary {
+            background-color: #c9a84c;
+            color: #0a0a0f;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 0 1px #c9a84c;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col font-body-md text-body-md">
+<!-- Top Navigation (Task-Focused, suppresses main nav) -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-surface dark:bg-surface border-b border-outline-variant">
+<button class="text-on-surface hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<div class="font-headline-md text-headline-md text-on-surface">Nail Care</div>
+<div class="w-6"></div> <!-- Spacer for centering -->
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-16 pb-section-gap">
+<!-- Hero Section -->
+<section class="relative w-full h-[353px] min-h-[300px] mb-section-gap">
+<div class="absolute inset-0 bg-surface-container-low">
+<img alt="Luxury Manicure" class="w-full h-full object-cover opacity-70" data-alt="Close up of a luxury manicure process in a high-end salon. The aesthetic is deep and moody, featuring a stark black background that highlights the pristine hands and glossy polished nails. Subtle warm gold rim lighting catches the edge of the tools and fingertips. The composition is precise, conveying a sense of exclusive, nocturnal opulence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjuGYBR0V_gK5Qt9UAv1Si_Vh8M0A-41ktxFdl0wGwx4d8Ps9hdeib_90F41QggJsc3mfx_pqrREOOcHeVtRxtls5Y5S-pyzL-FYgYMohuaX0ECcSy1HIfdkfDamU0ILeqNxuJAJhfu3cLOuWYnBwktbhDI72fgzoOPA96k1GrImTnb5fHayUO444s755zobVgbIkkHqZ4hgAPpgVo_uA2U7T7XI0GeReFX-RcrdYFhGNKEDmP2NNSzmBvm3j_FRk6-VwAUBGBZA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] to-transparent"></div>
+</div>
+<div class="absolute bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-stack-lg">
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-primary mb-stack-sm">Nail Care</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Precision grooming and artistry. Experience our signature meticulous approach to nail wellness.</p>
+</div>
+</section>
+<!-- Services Grid -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Service Card 1 -->
+<div class="luxury-card p-gutter flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Luxury Manicure</h3>
+<p class="font-data-label text-data-label text-on-surface-variant mt-1">ლუქს მანიკიური</p>
+</div>
+<span class="font-data-numeric text-data-numeric text-primary">₾85</span>
+</div>
+<p class="text-on-surface-variant mb-stack-lg">Comprehensive cuticle care, precise shaping, relaxing hand massage, and flawless polish application using premium non-toxic lacquers.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-on-surface-variant gap-2">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="font-data-numeric text-data-numeric">60 min</span>
+</div>
+<button class="btn-primary px-6 py-3 font-data-label text-data-label font-bold transition-all hover:scale-95 duration-100">Book</button>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="luxury-card p-gutter flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Gel Overlay</h3>
+<p class="font-data-label text-data-label text-on-surface-variant mt-1">გელის დაფარვა</p>
+</div>
+<span class="font-data-numeric text-data-numeric text-primary">₾110</span>
+</div>
+<p class="text-on-surface-variant mb-stack-lg">Strengthening builder gel applied over natural nails for long-lasting durability and a perfect, high-gloss finish. Includes full prep.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-on-surface-variant gap-2">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="font-data-numeric text-data-numeric">90 min</span>
+</div>
+<button class="btn-primary px-6 py-3 font-data-label text-data-label font-bold transition-all hover:scale-95 duration-100">Book</button>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="luxury-card p-gutter flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Nail Art (Per Nail)</h3>
+<p class="font-data-label text-data-label text-on-surface-variant mt-1">ფრჩხილის დიზაინი</p>
+</div>
+<span class="font-data-numeric text-data-numeric text-primary">₾15+</span>
+</div>
+<p class="text-on-surface-variant mb-stack-lg">Bespoke, minimalist designs crafted by our resident artists. Pricing varies by complexity. Add this to any base service.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-on-surface-variant gap-2">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="font-data-numeric text-data-numeric">15 min</span>
+</div>
+<button class="btn-primary px-6 py-3 font-data-label text-data-label font-bold transition-all hover:scale-95 duration-100">Book</button>
+</div>
+</div>
+<!-- Service Card 4 -->
+<div class="luxury-card p-gutter flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Signature Pedicure</h3>
+<p class="font-data-label text-data-label text-on-surface-variant mt-1">საფირმო პედიკიური</p>
+</div>
+<span class="font-data-numeric text-data-numeric text-primary">₾120</span>
+</div>
+<p class="text-on-surface-variant mb-stack-lg">An indulgent restorative treatment for feet. Includes deep exfoliation, callus refinement, extended massage, and flawless polish.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center text-on-surface-variant gap-2">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="font-data-numeric text-data-numeric">75 min</span>
+</div>
+<button class="btn-primary px-6 py-3 font-data-label text-data-label font-bold transition-all hover:scale-95 duration-100">Book</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant">
+<div class="font-display-lg text-display-lg text-primary mb-stack-md md:mb-0">RIGIFY</div>
+<div class="flex flex-col md:flex-row gap-stack-md items-center">
+<div class="flex gap-stack-md">
+<a class="font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy</a>
+<a class="font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms</a>
+<a class="font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors" href="#">Partner Login</a>
+<a class="font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors" href="#">Support</a>
+</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-stack-md md:mt-0 ml-0 md:ml-stack-lg">
+                © 2024 RIGIFY GEORGIA. ALL RIGHTS RESERVED.
+            </div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rigify Navigation Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#47464e",
+                        "tertiary-container": "#acaab8",
+                        "surface": "#131318",
+                        "surface-container-high": "#2a292f",
+                        "primary": "#e6c364",
+                        "tertiary-fixed-dim": "#c7c5d3",
+                        "surface-variant": "#35343a",
+                        "secondary-fixed-dim": "#c8c5cf",
+                        "on-surface": "#e4e1e9",
+                        "on-primary": "#3d2e00",
+                        "inverse-primary": "#755b00",
+                        "secondary-fixed": "#e4e1eb",
+                        "surface-dim": "#131318",
+                        "inverse-on-surface": "#303036",
+                        "on-secondary": "#303037",
+                        "surface-tint": "#e6c364",
+                        "on-error": "#690005",
+                        "secondary": "#c8c5cf",
+                        "surface-container-low": "#1b1b20",
+                        "on-tertiary-fixed-variant": "#464651",
+                        "on-primary-fixed": "#241a00",
+                        "on-surface-variant": "#d0c5b2",
+                        "secondary-container": "#494850",
+                        "on-tertiary-container": "#3f3f4a",
+                        "surface-container-lowest": "#0e0e13",
+                        "surface-container": "#1f1f25",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e3e1f0",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#b9b7c1",
+                        "background": "#131318",
+                        "outline": "#99907e",
+                        "tertiary": "#c7c5d4",
+                        "surface-bright": "#39383e",
+                        "primary-container": "#c9a84c",
+                        "inverse-surface": "#e4e1e9",
+                        "surface-container-highest": "#35343a",
+                        "primary-fixed": "#ffe08f",
+                        "on-tertiary-fixed": "#1a1b25",
+                        "on-secondary-fixed": "#1b1b22",
+                        "on-tertiary": "#2f2f3b",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#4d4637",
+                        "on-primary-container": "#503d00",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-background": "#e4e1e9",
+                        "primary-fixed-dim": "#e6c364"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "container-max": "1280px",
+                        "section-gap": "80px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "data-numeric": ["JetBrains Mono"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "data-label": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "data-numeric": ["16px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "data-label": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0a0a0f; /* Deep, ink-like background */
+            color: #e4e1e9; /* on-background */
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-body-md text-body-md">
+<!-- Full Screen Navigation Overlay -->
+<div class="fixed inset-0 z-[100] flex flex-col bg-[#0a0a0f] md:hidden">
+<!-- Top Bar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 border-b border-white/5">
+<div class="flex items-center">
+<img alt="Rigify Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLuqU7IsKhnYumu0-5VtfeOTZp7T3Ho5cOnwY_050KZ8R5LzBYdP2U2MOAhx_LLLcFgm8HomD89voPoiC0COVaOnU0Vvt4iUMUbGmXqbo7LEigEYcsCzQtv1hAxgkquGUIFQkJj__ASGjRlg4BaX-VRb-HOCIPDu0gMRZMV6-snuRjwuxKJGD3DV-cOlvH27MWYnLcov50TCR8f2r9XOR-Z6f6oL_ryGvkVK4HclhsMw8NSNQ99z7LCp"/>
+</div>
+<button aria-label="Close Menu" class="p-2 text-on-surface hover:text-primary transition-colors flex items-center justify-center rounded-full focus:outline-none focus:ring-1 focus:ring-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</header>
+<!-- Main Navigation Links -->
+<nav class="flex-1 overflow-y-auto px-margin-mobile py-stack-lg">
+<ul class="flex flex-col space-y-stack-md">
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-primary transition-colors duration-200">Home</span>
+<span class="material-symbols-outlined text-primary opacity-100 transition-opacity duration-200" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-primary transition-colors duration-200">Explore Salons</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-[-10px] group-hover:translate-x-0" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-primary transition-colors duration-200">Categories</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-[-10px] group-hover:translate-x-0" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-primary transition-colors duration-200">For Business</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-[-10px] group-hover:translate-x-0" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-primary transition-colors duration-200">About Us</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-[-10px] group-hover:translate-x-0" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group py-2 border-b border-white/5" href="#">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-primary transition-colors duration-200">Contact</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-[-10px] group-hover:translate-x-0" style="font-variation-settings: 'FILL' 0;">arrow_forward_ios</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Bottom Actions Section -->
+<div class="px-margin-mobile pb-stack-lg pt-stack-md flex flex-col space-y-stack-lg border-t border-white/5 mt-auto">
+<!-- Primary CTA -->
+<button class="w-full bg-primary-container text-[#0a0a0f] font-data-label text-data-label uppercase py-4 rounded-none hover:bg-primary-fixed-dim transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a0a0f] tracking-widest font-bold">
+                Sign In / Register
+            </button>
+<!-- Language Switcher -->
+<div class="flex justify-center items-center space-x-unit">
+<button class="font-data-label text-data-label text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:text-primary">GE</button>
+<div class="w-[1px] h-[14px] bg-[#c9a84c] opacity-30"></div>
+<button class="font-data-label text-data-label text-primary font-bold transition-colors focus:outline-none focus:text-primary">EN</button>
+<div class="w-[1px] h-[14px] bg-[#c9a84c] opacity-30"></div>
+<button class="font-data-label text-data-label text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:text-primary">RU</button>
+</div>
+</div>
+</div>
+<!-- Background Content placeholder (to show it's an overlay) -->
+<main class="flex-1 hidden md:flex items-center justify-center flex-col p-gutter">
+<p class="font-body-lg text-body-lg text-on-surface-variant">Please view on a mobile device to see the navigation menu.</p>
+</main>
+</body></html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mitte Beauty Salon - Booking Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-dim": "#131318",
+                "on-error": "#690005",
+                "on-secondary-container": "#b9b7c1",
+                "inverse-on-surface": "#303036",
+                "on-secondary": "#303037",
+                "tertiary-container": "#acaab8",
+                "inverse-surface": "#e4e1e9",
+                "background": "#131318",
+                "primary": "#e6c364",
+                "surface-container-high": "#2a292f",
+                "on-primary-fixed": "#241a00",
+                "surface-container-highest": "#35343a",
+                "primary-container": "#c9a84c",
+                "inverse-primary": "#755b00",
+                "on-background": "#e4e1e9",
+                "surface-tint": "#e6c364",
+                "outline": "#99907e",
+                "on-tertiary-fixed": "#1a1b25",
+                "on-error-container": "#ffdad6",
+                "on-primary-container": "#503d00",
+                "surface-container": "#1f1f25",
+                "surface-variant": "#35343a",
+                "secondary": "#c8c5cf",
+                "on-tertiary-container": "#3f3f4a",
+                "surface-bright": "#39383e",
+                "primary-fixed": "#ffe08f",
+                "on-surface": "#e4e1e9",
+                "surface": "#131318",
+                "secondary-fixed": "#e4e1eb",
+                "tertiary-fixed-dim": "#c7c5d3",
+                "outline-variant": "#4d4637",
+                "on-tertiary": "#2f2f3b",
+                "tertiary": "#c7c5d4",
+                "on-secondary-fixed-variant": "#47464e",
+                "secondary-container": "#494850",
+                "on-primary": "#3d2e00",
+                "on-surface-variant": "#d0c5b2",
+                "primary-fixed-dim": "#e6c364",
+                "tertiary-fixed": "#e3e1f0",
+                "on-tertiary-fixed-variant": "#464651",
+                "surface-container-low": "#1b1b20",
+                "secondary-fixed-dim": "#c8c5cf",
+                "surface-container-lowest": "#0e0e13",
+                "on-primary-fixed-variant": "#584400",
+                "on-secondary-fixed": "#1b1b22",
+                "error": "#ffb4ab",
+                "error-container": "#93000a"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "margin-desktop": "64px",
+                "stack-md": "16px",
+                "container-max": "1280px",
+                "unit": "4px",
+                "section-gap": "80px",
+                "margin-mobile": "16px",
+                "stack-sm": "8px",
+                "stack-lg": "32px"
+        },
+        "fontFamily": {
+                "display-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "data-numeric": [
+                        "JetBrains Mono"
+                ],
+                "body-lg": [
+                        "Hanken Grotesk"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "display-lg": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Hanken Grotesk"
+                ],
+                "data-label": [
+                        "JetBrains Mono"
+                ]
+        },
+        "fontSize": {
+                "display-lg-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "data-numeric": [
+                        "16px",
+                        {
+                                "lineHeight": "16px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "data-label": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: #131318;
+    color: #e4e1e9;
+  }
+  .input-field {
+    background-color: #16161d;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .input-field:focus {
+    border-color: #c9a84c;
+    outline: none;
+    box-shadow: inset 0 0 0 1px #c9a84c;
+  }
+</style>
+</head>
+<body class="font-body-md text-body-md antialiased pt-16">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface dark:bg-surface border-b border-outline-variant flat no shadows">
+<div class="flex items-center gap-4 cursor-pointer hover:text-primary transition-colors duration-200 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary dark:text-primary">menu</span>
+</div>
+<div class="font-display-lg text-display-lg tracking-tighter text-primary dark:text-primary uppercase text-center absolute left-1/2 -translate-x-1/2">
+      RIGIFY
+    </div>
+<div class="flex items-center cursor-pointer hover:text-primary transition-colors duration-200">
+<span class="font-data-label text-data-label text-primary dark:text-primary">GE | EN | RU</span>
+</div>
+</header>
+<main class="max-w-container-max mx-auto pb-section-gap">
+<!-- Hero Section -->
+<section class="relative">
+<div class="w-full h-64 md:h-96 bg-surface-container-high bg-cover bg-center" data-alt="A cinematic, wide-angle photograph of a luxurious high-end beauty salon interior. The space is defined by a nocturnal opulence aesthetic with deep charcoal textured walls and precise linear warm-white LED strip lighting illuminating the ceiling. Large, brilliantly lit circular gold-rimmed mirrors are mounted over minimalist white marble vanity stations. The room features dark emerald green velvet styling chairs that add a subdued pop of rich color against the stark, dark background. The lighting creates high contrast, emphasizing sharp architectural details and premium materials in a pristine, unhurried atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDdg2XBZ5VVFCcGxRJWHDdNAfdLqP4aOQvsVbPFJpU5snfNS15BlA5DKQB27fpWUFgg3rlkbE51rNqmfp6HXopSJ7EYO9r71Y-0rrgNatAghr2dkXW8n2l4sfzW_S6KO6QIZUmMuly4ngtrVEIWwFYzXufCzrmSjlGnbgYdaHKfEF9krKwu_3_oirCp3Q6vPm62mrGKB0GFGP54lbS4dtiR8qDpcErb9EM1pKn1Xkyz44a71w1yjqHGsH54eB3yrTinF8HN6-KDVg');"></div>
+<!-- Logo Overlap -->
+<div class="absolute -bottom-16 left-margin-mobile md:left-margin-desktop w-32 h-32 rounded-full border-4 border-surface-dim overflow-hidden bg-surface-container shadow-[0_0_0_1px_rgba(201,168,76,0.3)]">
+<img alt="Mitte Logo" class="w-full h-full object-cover" data-alt="A sleek, minimalist business logo icon for a premium beauty salon. The logo features an elegant, sharp geometric monogram in metallic gold against a pure, deep matte black background. The design is tightly cropped, emphasizing the sharp edges and sophisticated high-contrast color palette consistent with a nocturnal opulence luxury brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiKaduLybTlYuRoDB-0ICCjazr5hFiJKAJ7QCQwIoQEdoHeuet8Hm3xm7zr8YcmDqNUXcWHwENjN86Dg2Yw-hxDVreTS4BZ32K9I8Z7F3LjrnrXmIcRB6VOlPqHGAGS3OQMGSrXFUYDVRJzPh9tnY5wQ_oCQZbbEBPv9xEoF2zUdf-2Yu36kjh21fXNiYsPd4rf4EDAkX-m6vPyVoydlDHIBxzV9QynjlEvofDcoGiFXlAqb6JyjKEMJHB_mX0yWM3wZ1L1NEKsQ"/>
+</div>
+</section>
+<!-- Business Info Header -->
+<section class="mt-20 px-margin-mobile md:px-margin-desktop mb-stack-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface font-data-label text-data-label rounded-sm uppercase tracking-widest border border-[rgba(255,255,255,0.05)]">Premium Salon</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-weight="fill">star</span>
+<span class="font-data-numeric text-data-numeric">4.8</span>
+<span class="text-on-surface-variant font-body-md text-sm ml-1">(124 Reviews)</span>
+</div>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Mitte Beauty Salon</h1>
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+<span>14 Chavchavadze Ave, Tbilisi</span>
+</div>
+<div class="hidden sm:block text-outline-variant">|</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="font-data-label text-data-label">Open today 10:00–20:00</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter px-margin-mobile md:px-margin-desktop">
+<!-- Left Column: Content -->
+<div class="lg:col-span-8 flex flex-col gap-section-gap">
+<!-- Gallery Bento Grid -->
+<section>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-unit h-64 md:h-80">
+<div class="col-span-2 md:col-span-2 row-span-2 bg-surface-container overflow-hidden rounded-sm relative group cursor-pointer border border-[rgba(255,255,255,0.05)]">
+<img alt="Salon interior" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300" data-alt="A close-up, high-definition photograph of a styling station in a luxury hair salon. A sleek, matte black blow dryer rests on a pristine white marble countertop alongside premium styling products in dark amber glass bottles. The background features a softly out-of-focus dark emerald velvet chair and a glowing gold circular mirror. The lighting is focused and warm, highlighting the sharp edges of the equipment and the elegant textures of the surfaces." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATTtWdGVvp_Zhix4yNAHs1Y8gxqLBwCRp0BRtA8n0plG1CHz2MEzshWXOFplFN0P3Z4GJz4bIK3oKNBLmGgZVrX7spUxXqweHhBF6FfpAyN8CCr8yJTDyD9GpWbwdOnfv1fEOi1P5iJWoYCVw0Y_3tch0lKgvCb9YX6CqIKaJmaWcHgIFPYP6j5cKbi4JFqyVi4lnALc4S5KLB7bNdxH0rDLnY-TBzWJQN7O25pW-jpyx7Ld_5jbTJ-6Z66KENF4ik5rd-Ablcww"/>
+</div>
+<div class="bg-surface-container overflow-hidden rounded-sm relative group cursor-pointer border border-[rgba(255,255,255,0.05)]">
+<img alt="Nail service" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300" data-alt="A detailed, macro photograph of a professional manicure setup on a sleek dark surface. A set of perfectly aligned, high-end metallic nail polish bottles sit next to precisely arranged, sharp surgical-steel manicure tools. The lighting is dramatic and directional, creating a sharp rim light on the tools against the deep black background. The mood is meticulous, clinical, and uncompromisingly luxurious." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaeNPE9pqWqdha3871Ok9jJ9UTK-XF_CvOhXlUSHYmxRQlcmz2okKb-l-CzudK_12VDnkvCXsv2YVynDuyRXqAXrt9JdeSENYSHaGlYEnLRdlfrDgSer6VUsieRW2jZ6FAoE830Q7KOnxhb92q3nrap_UdXF8zxvH_CvqC3hQFN3iW9-mvvurn0_rVQHgp2P8_NQNKESw9pJstBubPyU0mulHwg7n11ERZLRghDqnVgWTGIgNXSZdHu8nszBn9dEtvlGN0bs3LJQ"/>
+</div>
+<div class="bg-surface-container overflow-hidden rounded-sm relative group cursor-pointer border border-[rgba(255,255,255,0.05)] flex items-center justify-center">
+<img alt="Hair styling" class="w-full h-full object-cover opacity-40 mix-blend-overlay" data-alt="A stylized, atmospheric photograph showing the silhouette of a hair stylist working on a client's hair in a dimly lit, high-end salon. The scene is illuminated primarily by the sharp, golden ring light of the vanity mirror, casting intense highlights on the stylist's hands and the client's hair profile. The surrounding environment falls away into deep, inky black shadows, creating a cinematic, highly focused, and intimate portrait of beauty artistry." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVSm6Ob-MWED6FaUO03Fndi-8t9tMr56FpgBCG2dWepvRHAKVXuXhr2Km9H8cRt-UxxFNqN6MzzVYlDNgC-eIn47OJ_zoYnQQKqoWmThDTO4aGNQhQFN3fHDp0nI6Yso11JcSZnqp0U8gbnTaDyPh1ANdq2_4rw9FDIvKQE6aiIUrtYuc8ihF4s6fQr02w6XVp64s6M749s3quUK3tIRI3pj0EFtlOVpRegt7Ryv5K-yGaLeED7egFfOzAzubYbdXJcKmnGV7w5g"/>
+<div class="absolute inset-0 flex items-center justify-center bg-background/50 hover:bg-background/30 transition-colors duration-300">
+<span class="font-data-label text-data-label text-primary border border-primary px-4 py-2 rounded-sm">+12 Photos</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-stack-lg">Services Menu</h2>
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant mb-stack-md overflow-x-auto no-scrollbar">
+<button class="px-6 py-4 font-data-label text-data-label text-primary border-b-2 border-primary uppercase tracking-wider whitespace-nowrap">Hair Styling</button>
+<button class="px-6 py-4 font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent uppercase tracking-wider whitespace-nowrap">Nail Care</button>
+<button class="px-6 py-4 font-data-label text-data-label text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent uppercase tracking-wider whitespace-nowrap">Aesthetics</button>
+</div>
+<!-- Service List -->
+<div class="flex flex-col">
+<!-- Row 1 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b border-[rgba(255,255,255,0.05)] hover:bg-surface-container-high transition-colors px-2 rounded-sm">
+<div class="mb-4 sm:mb-0">
+<h3 class="font-headline-md text-lg text-on-surface mb-1">Signature Balayage</h3>
+<p class="font-data-label text-data-label text-on-surface-variant">ბალაიაჟი / რთული შეღებვა</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<div class="font-data-numeric text-data-numeric text-primary">₾ 250.00</div>
+<div class="font-data-label text-data-label text-on-surface-variant mt-1">180 Min</div>
+</div>
+<button class="px-6 py-2 border border-primary text-primary font-data-label text-data-label uppercase rounded-sm hover:bg-primary/10 transition-colors">Book</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b border-[rgba(255,255,255,0.05)] hover:bg-surface-container-high transition-colors px-2 rounded-sm">
+<div class="mb-4 sm:mb-0">
+<h3 class="font-headline-md text-lg text-on-surface mb-1">Premium Women's Haircut</h3>
+<p class="font-data-label text-data-label text-on-surface-variant">ქალის თმის შეჭრა</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<div class="font-data-numeric text-data-numeric text-primary">₾ 80.00</div>
+<div class="font-data-label text-data-label text-on-surface-variant mt-1">60 Min</div>
+</div>
+<button class="px-6 py-2 border border-primary text-primary font-data-label text-data-label uppercase rounded-sm hover:bg-primary/10 transition-colors">Book</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b border-[rgba(255,255,255,0.05)] hover:bg-surface-container-high transition-colors px-2 rounded-sm">
+<div class="mb-4 sm:mb-0">
+<h3 class="font-headline-md text-lg text-on-surface mb-1">Evening Styling</h3>
+<p class="font-data-label text-data-label text-on-surface-variant">სადღესასწაულო ვარცხნილობა</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<div class="font-data-numeric text-data-numeric text-primary">₾ 120.00</div>
+<div class="font-data-label text-data-label text-on-surface-variant mt-1">90 Min</div>
+</div>
+<button class="px-6 py-2 border border-primary text-primary font-data-label text-data-label uppercase rounded-sm hover:bg-primary/10 transition-colors">Book</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Staff Section -->
+<section>
+<div class="flex justify-between items-end mb-stack-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface">Our Artisans</h2>
+<button class="text-primary font-data-label text-data-label hover:underline uppercase">View All</button>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+<!-- Card 1 -->
+<div class="flex-shrink-0 w-48 bg-surface border border-[rgba(255,255,255,0.05)] rounded-sm p-6 flex flex-col items-center text-center border-t border-t-[#2a2a35] hover:border-primary/50 transition-colors">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-4 border border-outline-variant">
+<img alt="Mariam" class="w-full h-full object-cover" data-alt="A professional headshot portrait of a female hair stylist named Mariam. She has an authoritative, welcoming expression and is dressed in sleek, minimalist black attire. The portrait is set against a completely dark, shadowy grey background. A soft, precise rim light traces the outline of her silhouette, highlighting her refined features and emphasizing a high-end, premium aesthetic suitable for a luxury salon profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH2P7-wlPANU28EA_CO9kjaoH_5b3Q7VwCDPQ53GExYFx4o9lBjNeVItvsup6UD-TdQqlnaIHBj1zefh52AuI2bRK0XV9Y7dcYXoHQqZ0oVEKtLkqnHQHTtOzP8Q9MhBD1V08qtwTZLDmpfz99-xVYVjQsmCrMQmL2aF6ggn0QhwxdRH4ZPdSIoK6t3RZamS7riSIlGGWa3Z845G9V87j_jDjG84T7VWctb3RFDkf7UKbn_2r7ygpivA9gTxW0bLVTScvEBR4dPg"/>
+</div>
+<h4 class="font-headline-md text-base text-on-surface">Mariam G.</h4>
+<p class="font-data-label text-data-label text-primary mt-1">Colorist</p>
+</div>
+<!-- Card 2 -->
+<div class="flex-shrink-0 w-48 bg-surface border border-[rgba(255,255,255,0.05)] rounded-sm p-6 flex flex-col items-center text-center border-t border-t-[#2a2a35] hover:border-primary/50 transition-colors">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-4 border border-outline-variant">
+<img alt="Levan" class="w-full h-full object-cover" data-alt="A professional headshot portrait of a male master stylist named Levan. He conveys a sharp, precise, and highly professional demeanor, wearing a tailored dark charcoal apron over a black shirt. The background is a solid, deep ink-black space. Dramatic, high-contrast lighting is used to sculpt his facial features, reflecting the nocturnal opulence and professional rigor of a private concierge-level beauty service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe81o8SmSs861774tqt2k_RetuD53vXH-WQozS_iKqICsT5ftQjQQKqwYXsrxsl9RZxajEazAdv1mAk4QYgNvDryL0m1AZLYoLdQxXZo0VlD-b3xVuqkBBqMDALJJl8RWtDWvyQU5_yrbi77gIf_iQLBj2rWUUNv1mrFWSyaw2nTyxtRPIlv-5peMPhqIhJHDvK1JSlglKT5tKFryAYfO2PRUcFGDZNZk1GGem2UNMHr8UfbrsRaPPWBNDn8o8Vu42KqUEpWn7tQ"/>
+</div>
+<h4 class="font-headline-md text-base text-on-surface">Levan T.</h4>
+<p class="font-data-label text-data-label text-primary mt-1">Master Stylist</p>
+</div>
+<!-- Card 3 -->
+<div class="flex-shrink-0 w-48 bg-surface border border-[rgba(255,255,255,0.05)] rounded-sm p-6 flex flex-col items-center text-center border-t border-t-[#2a2a35] hover:border-primary/50 transition-colors">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-4 border border-outline-variant flex items-center justify-center bg-surface-container">
+<span class="material-symbols-outlined text-outline-variant text-3xl">person</span>
+</div>
+<h4 class="font-headline-md text-base text-on-surface">Nino K.</h4>
+<p class="font-data-label text-data-label text-primary mt-1">Nail Artist</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sticky Booking -->
+<div class="lg:col-span-4 mt-section-gap lg:mt-0 relative">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Booking Widget Card -->
+<div class="bg-surface border border-[rgba(255,255,255,0.05)] rounded-sm p-gutter border-t border-t-[#2a2a35] shadow-lg shadow-black/50">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6">Book an Appointment</h2>
+<form class="flex flex-col gap-4">
+<!-- Service Dropdown -->
+<div class="relative">
+<label class="font-data-label text-data-label text-on-surface-variant absolute -top-2 left-3 bg-surface px-1 text-xs">Select Service</label>
+<select class="input-field w-full px-4 py-3 rounded-sm font-body-md text-on-surface appearance-none focus:ring-0">
+<option>Signature Balayage (180 Min)</option>
+<option>Premium Haircut (60 Min)</option>
+<option>Evening Styling (90 Min)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-outline-variant pointer-events-none">expand_more</span>
+</div>
+<!-- Staff Dropdown -->
+<div class="relative mt-2">
+<label class="font-data-label text-data-label text-on-surface-variant absolute -top-2 left-3 bg-surface px-1 text-xs">Select Professional</label>
+<select class="input-field w-full px-4 py-3 rounded-sm font-body-md text-on-surface appearance-none focus:ring-0">
+<option>Any Available</option>
+<option>Mariam G.</option>
+<option>Levan T.</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-outline-variant pointer-events-none">expand_more</span>
+</div>
+<!-- Date Picker Placeholder -->
+<div class="relative mt-2">
+<div class="input-field w-full px-4 py-3 rounded-sm flex justify-between items-center cursor-pointer">
+<span class="font-body-md text-on-surface">Wed, October 25</span>
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+</div>
+</div>
+<!-- Time Slots Grid -->
+<div class="mt-4">
+<p class="font-data-label text-data-label text-on-surface-variant mb-3">Available Slots</p>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 border border-[rgba(201,168,76,0.4)] rounded-sm font-data-numeric text-data-numeric text-on-surface hover:border-primary transition-colors" type="button">10:00</button>
+<button class="py-2 border border-transparent bg-primary-container rounded-sm font-data-numeric text-data-numeric text-[#0a0a0f]" type="button">11:30</button>
+<button class="py-2 border border-[rgba(201,168,76,0.4)] rounded-sm font-data-numeric text-data-numeric text-on-surface hover:border-primary transition-colors" type="button">13:00</button>
+<button class="py-2 border border-[rgba(255,255,255,0.05)] rounded-sm font-data-numeric text-data-numeric line-through opacity-30 cursor-not-allowed text-on-surface" type="button">14:30</button>
+<button class="py-2 border border-[rgba(201,168,76,0.4)] rounded-sm font-data-numeric text-data-numeric text-on-surface hover:border-primary transition-colors" type="button">16:00</button>
+<button class="py-2 border border-[rgba(201,168,76,0.4)] rounded-sm font-data-numeric text-data-numeric text-on-surface hover:border-primary transition-colors" type="button">17:30</button>
+</div>
+</div>
+<!-- CTA -->
+<button class="mt-6 w-full py-4 bg-primary-container text-[#0a0a0f] font-data-label text-data-label uppercase tracking-widest rounded-sm hover:bg-primary-fixed transition-colors" type="submit">Confirm Booking</button>
+</form>
+</div>
+<!-- Salome AI Badge -->
+<div class="bg-surface border border-primary/50 rounded-sm p-4 flex flex-col gap-4 shadow-[0_0_15px_rgba(201,168,76,0.1)]">
+<div class="flex items-center gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container rounded-full flex items-center justify-center p-2">
+<img alt="Salome AI Logo" class="w-full h-full object-contain" src="data:image/png;base64,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"/>
+</div>
+<div>
+<h4 class="font-headline-md text-sm text-primary mb-1">Salome AI Assistant</h4>
+<p class="font-body-md text-sm text-on-surface-variant leading-tight">This business uses Salome AI — available 24/7 for bookings by phone.</p>
+</div>
+</div>
+<a class="flex items-center justify-center gap-2 w-full py-2 border border-primary text-primary font-data-label text-data-label uppercase rounded-sm hover:bg-primary/5 transition-colors" href="tel:+995555123456">
+<span class="material-symbols-outlined text-base">phone_in_talk</span>
+              Call to Book
+            </a>
+</div>
+<!-- Map Placeholder (Moved to right column for balance on desktop) -->
+<div class="h-48 bg-surface-container border border-[rgba(255,255,255,0.05)] rounded-sm overflow-hidden mt-4 relative group cursor-pointer" data-location="Tbilisi, Georgia" style="">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+<div class="absolute inset-0 flex items-center justify-center flex-col gap-2 bg-background/50 group-hover:bg-background/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl drop-shadow-md">location_on</span>
+<span class="font-data-label text-data-label text-on-surface bg-surface px-3 py-1 rounded-sm border border-[rgba(255,255,255,0.1)]">View on Map</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant flat no shadows">
+<div class="font-display-lg text-display-lg text-primary mb-6 md:mb-0">
+      RIGIFY
+    </div>
+<div class="flex flex-col md:flex-row items-center gap-6">
+<div class="flex gap-6 font-data-label text-data-label text-on-surface-variant">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy</a>
+<a class="hover:text-on-surface transition-colors" href="#">Terms</a>
+<a class="hover:text-on-surface transition-colors" href="#">Partner Login</a>
+<a class="hover:text-on-surface transition-colors" href="#">Support</a>
+</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-6 md:mt-0 text-center md:text-left">
+        © 2024 RIGIFY GEORGIA. ALL RIGHTS RESERVED.
+      </div>
+</div>
+</footer>
+</body></html>
