@@ -1,6 +1,7 @@
 # Rigify Development Session Summary
 **Date**: June 1, 2026  
-**Repository**: https://github.com/Gioshaov/rigify
+**Repository**: https://github.com/Gioshaov/rigify  
+**Last Updated**: June 1, 2026
 
 ---
 
@@ -112,35 +113,184 @@ grant all privileges on public.businesses to service_role;
 
 ---
 
+### 4. Multi-Category Support, Staff Accounts & Enhanced Workflows
+**Problem**: 
+- Businesses could only select one category (limiting for multi-service salons)
+- No way for business owners to create staff accounts with login access
+- Phone wasn't required during registration
+- Customer bookings showed only city instead of full address
+- Guest bookings had no validation for contact info
+
+**Solution**: Ultraplan implementation added multi-category support, complete staff authentication system, and improved data quality.
+
+#### Database Changes (3 new migrations)
+
+**Migration 12**: `20260601000012_businesses_multi_category.sql`
+- Created `business_categories` junction table for many-to-many relationship
+- Added RLS policies for public read and owner write
+- Documented phone requirement (enforced in application layer)
+- Indexes on `business_id` and `category_id` for performance
+
+**Migration 13**: `20260601000013_staff_users.sql`
+- Added `user_id` column to `staff` table (links to auth.users)
+- Added `role` column ('staff' or 'manager')
+- Created `staff_permissions` table with granular permission flags:
+  - `can_view_appointments`, `can_edit_appointments`
+  - `can_view_customers`, `can_view_services`, `can_edit_services`
+  - `can_view_staff`, `can_edit_staff`
+  - `can_view_settings`, `can_edit_settings`
+  - `can_view_salome`, `can_edit_salome`
+- Created trigger to auto-create default permissions for new staff
+- Added RLS policies for staff to view their business bookings
+- Updated staff RLS to allow self-selection
+
+**Migration 14**: `20260601000014_guest_booking_validation.sql`
+- Added check constraint: guest bookings must have email OR phone (prevents incomplete contact info)
+
+#### Frontend Implementation
+
+**Business Registration**:
+- `app/(auth)/register/RegisterForm.tsx`:
+  - Changed category selector from single dropdown to multi-select checkboxes
+  - Made phone field required
+  - Added client-side validation for at least one category
+- `app/(auth)/register/actions.ts`:
+  - Validates phone is provided
+  - Validates at least one category selected
+  - Inserts all selected categories into `business_categories` junction table
+  - Maintains backward compatibility (first category saved to `category` field)
+
+**Staff Invitation System**:
+- `app/dashboard/staff/invite/page.tsx` - Invitation page
+- `app/dashboard/staff/invite/InviteStaffForm.tsx` - Client form
+- `app/dashboard/staff/invite/actions.ts` - Server action
+  - Business owners can create staff accounts with email/password
+  - Select role: 'staff' (basic permissions) or 'manager' (elevated permissions)
+  - Auto-creates auth user + staff record + default permissions via trigger
+  - Rollback handling: deletes auth user if staff creation fails
+- `app/dashboard/staff/page.tsx` - Added "Invite Staff" button
+
+**Staff Dashboard**:
+- `app/dashboard/staff-view/layout.tsx` - Staff dashboard layout
+- `app/dashboard/staff-view/page.tsx` - Staff overview (today's appointments for their business)
+- `components/dashboard/StaffSidebar.tsx` - Navigation with permission-based filtering
+  - Shows business name + staff role
+  - Only displays navigation items they have permission to access
+  - Same logout flow as business owners
+
+**Login & Routing**:
+- `app/(auth)/login/actions.ts`:
+  - Added staff user detection
+  - Routes staff to `/dashboard/staff-view`
+  - Precedence: business owner > staff > customer
+- `lib/supabase/middleware.ts`:
+  - Added staff dashboard protection (`/dashboard/staff-view/*`)
+  - Prevents cross-dashboard access:
+    - Business owners redirected away from staff/customer dashboards
+    - Staff redirected away from business owner/customer dashboards
+    - Customers redirected away from business owner/staff dashboards
+
+**Customer Dashboard Enhancement**:
+- `app/customer/dashboard/page.tsx`:
+  - Updated queries to fetch `businesses(name, address)` instead of just city
+  - Displays full address for both upcoming and past bookings
+
+**TypeScript Types**:
+- `lib/types/business.ts` (new file):
+  - `CategoryId` type for valid category IDs
+  - `BusinessCategory` interface for junction table
+  - `Business` interface with categories array
+  - `StaffPermissions` interface for permission flags
+  - `Staff` interface with user_id and role
+
+#### Files Changed
+
+**New Files (11)**:
+- `supabase/migrations/20260601000012_businesses_multi_category.sql`
+- `supabase/migrations/20260601000013_staff_users.sql`
+- `supabase/migrations/20260601000014_guest_booking_validation.sql`
+- `app/dashboard/staff/invite/page.tsx`
+- `app/dashboard/staff/invite/InviteStaffForm.tsx`
+- `app/dashboard/staff/invite/actions.ts`
+- `app/dashboard/staff-view/layout.tsx`
+- `app/dashboard/staff-view/page.tsx`
+- `components/dashboard/StaffSidebar.tsx`
+- `lib/types/business.ts`
+- `IMPLEMENTATION_SUMMARY.md`
+
+**Modified Files (6)**:
+- `app/(auth)/register/RegisterForm.tsx` - Multi-select categories, required phone
+- `app/(auth)/register/actions.ts` - Junction table inserts
+- `app/(auth)/login/actions.ts` - Staff detection & routing
+- `app/dashboard/staff/page.tsx` - "Invite Staff" button
+- `app/customer/dashboard/page.tsx` - Show address instead of city
+- `lib/supabase/middleware.ts` - Staff dashboard protection
+
+#### User Flows
+
+**Business Owner → Staff Invitation**:
+1. Navigate to `/dashboard/staff`
+2. Click "Invite Staff" button → `/dashboard/staff/invite`
+3. Enter staff details (name, email, password, role, specialty)
+4. Submit → Creates auth user + staff record + permissions
+5. Staff receives credentials (email/password) from business owner
+
+**Staff → Login & Access**:
+1. Login at `/login` with credentials from business owner
+2. Auto-routes to `/dashboard/staff-view`
+3. See today's appointments for their business
+4. Navigation filtered by permissions (only show what they can access)
+5. Can view/edit based on role (staff vs manager)
+
+**Multi-Category Registration**:
+1. Business owner registers at `/register`
+2. Select multiple categories via checkboxes (required: at least one)
+3. Phone field is required
+4. Submit → Business created with primary category + all categories in junction table
+
+---
+
 ## Current System Architecture
 
 ### User Types
 
 1. **Business Owners** (merchants)
-   - Register: `/register`
+   - Register: `/register` (multi-category selection + required phone)
    - Login: `/login` → redirects to `/dashboard`
    - Manage: business settings, services, staff, appointments, Salome AI
+   - Can invite staff members with different permission levels
    - Database: `auth.users` + `businesses` table (linked via `owner_id`)
 
-2. **Customers** (end-users with accounts)
+2. **Staff Members** (employees with system access) ✨ NEW
+   - Created by: business owner via `/dashboard/staff/invite`
+   - Login: `/login` → redirects to `/dashboard/staff-view`
+   - Features: view/edit appointments, customers, services (based on permissions)
+   - Roles: 'staff' (basic) or 'manager' (elevated)
+   - Permission-based navigation (only see what they can access)
+   - Database: `auth.users` + `staff` table (linked via `user_id`) + `staff_permissions` table
+
+3. **Customers** (end-users with accounts)
    - Register: `/customer-register`
    - Login: `/login` → redirects to `/customer/dashboard`
-   - Features: view bookings, manage profile
+   - Features: view bookings (with full business address), manage profile
    - Database: `auth.users` + `customers` table (linked via `id`)
 
-3. **Guest Customers** (bookings without accounts)
+4. **Guest Customers** (bookings without accounts)
    - No registration required
    - Book via: voice (Salome AI), Instagram, Facebook, or future web booking form
+   - Must provide email OR phone (validated at database level)
    - Database: `bookings` with `customer_id = null`, stores name/phone/email directly
 
 ### Database Schema
 
 **Core Tables**:
 - `businesses` - business profiles (salons, clinics, etc.)
-- `customers` - customer profiles ✨ NEW
+- `business_categories` - many-to-many junction for business categories ✨ NEW
+- `customers` - customer profiles
 - `services` - services offered by businesses
-- `staff` - staff members at businesses
-- `bookings` - appointments (now supports both authenticated & guest bookings) ✨ UPDATED
+- `staff` - staff members at businesses (now with `user_id` and `role`) ✨ UPDATED
+- `staff_permissions` - granular permissions per staff member ✨ NEW
+- `bookings` - appointments (supports authenticated & guest bookings)
 - `reviews` - customer reviews
 - `subscriptions` - business subscription plans
 
@@ -148,7 +298,12 @@ grant all privileges on public.businesses to service_role;
 ```
 auth.users (Supabase Auth)
     ├─→ businesses (owner_id FK) [Business Owners]
+    ├─→ staff (user_id FK) [Staff Members] ✨ NEW
     └─→ customers (id FK) [Customers]
+
+businesses ←→ business_categories ←→ categories (many-to-many) ✨ NEW
+
+staff → staff_permissions (1:1, auto-created via trigger) ✨ NEW
 
 bookings
     ├─→ customer_id (FK to customers) [Authenticated Booking]
@@ -222,6 +377,16 @@ Currently, there is NO way for the public to:
    - Add to calendar link
 
 ### Other Missing Features
+- **Staff Management** (partially implemented):
+  - ✅ Staff account creation
+  - ✅ Staff login & dashboard
+  - ✅ Permission-based access
+  - ❌ Staff management page (list all staff, view details)
+  - ❌ Deactivate/reactivate staff accounts
+  - ❌ Edit staff permissions UI (permissions exist, need UI)
+  - ❌ Staff can't view/edit their own availability
+  - ❌ Staff-specific appointment views (filter by assigned staff)
+
 - **Customer Booking Management**:
   - Cancel booking (from `/customer/dashboard`)
   - Reschedule booking
@@ -337,9 +502,12 @@ All migrations in `supabase/migrations/`:
 6. `20260601000006_subscriptions.sql` ✅
 7. `20260601000007_rls.sql` ✅
 8. `20260601000008_indexes.sql` ✅
-9. `20260601000009_customers.sql` ✅ NEW
-10. `20260601000010_bookings_customer_id.sql` ✅ NEW
-11. `20260601000011_customer_rls.sql` ✅ NEW
+9. `20260601000009_customers.sql` ✅
+10. `20260601000010_bookings_customer_id.sql` ✅
+11. `20260601000011_customer_rls.sql` ✅
+12. `20260601000012_businesses_multi_category.sql` ✅ NEW - Multi-category support
+13. `20260601000013_staff_users.sql` ✅ NEW - Staff authentication & permissions
+14. `20260601000014_guest_booking_validation.sql` ✅ NEW - Guest contact validation
 
 ---
 
@@ -407,14 +575,26 @@ git push origin main
 ## Session End State
 
 ✅ **Working**:
-- Business owner registration & login
+- Business owner registration & login (multi-category + required phone)
+- Staff account creation by business owners
+- Staff authentication & permission-based access
+- Staff dashboard with filtered navigation
 - Customer registration & login
-- Login routing based on user type
-- Middleware protection for dashboards
-- Customer can view bookings (if any exist)
+- Login routing based on user type (business owner / staff / customer)
+- Middleware protection for all dashboard types
+- Customer can view bookings with full business address
 - Customer can edit profile
 - Database migrations idempotent
 - GitHub repository set up
+- All 14 migrations applied successfully
+
+✨ **New This Session**:
+- Multi-category support for businesses
+- Complete staff authentication system
+- Permission-based staff dashboard
+- Phone required for business registration
+- Guest booking validation (email OR phone required)
+- Customer bookings show full address
 
 ❌ **Not Working / Missing**:
 - Public booking flow (no way for customers to book via web)
@@ -422,6 +602,8 @@ git push origin main
 - Calendar view for business owners
 - Notifications
 - Salome AI integration
+- Staff permission editor UI (permissions exist, but no UI to edit them yet)
+- Staff management page (list all staff, deactivate accounts)
 
 ---
 
