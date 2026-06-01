@@ -22,25 +22,16 @@ export async function loginAction(formData: FormData) {
     return { error: "Login failed." };
   }
 
-  // Check if user is a business owner, staff, or customer
-  const { data: business } = await supabase
-    .from("businesses")
-    .select("id")
-    .eq("owner_id", data.user.id)
-    .maybeSingle();
-
-  const { data: customer } = await supabase
-    .from("customers")
-    .select("id")
-    .eq("id", data.user.id)
-    .maybeSingle();
-
-  const { data: staff } = await supabase
-    .from("staff")
-    .select("id, business_id")
-    .eq("user_id", data.user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  // Check if user is a business owner, staff, or customer (parallel queries)
+  const [
+    { data: business },
+    { data: customer },
+    { data: staff }
+  ] = await Promise.all([
+    supabase.from("businesses").select("id").eq("owner_id", data.user.id).maybeSingle(),
+    supabase.from("customers").select("id").eq("id", data.user.id).maybeSingle(),
+    supabase.from("staff").select("id, business_id").eq("user_id", data.user.id).eq("is_active", true).maybeSingle()
+  ]);
 
   // Redirect based on user type
   if (business) {

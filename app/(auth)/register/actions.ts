@@ -62,18 +62,10 @@ export async function registerAction(formData: FormData) {
 
   // Use admin client to create the business row regardless of email-confirm state.
   const admin = createAdminClient();
-  let slug = slugify(businessName) || `biz-${signUpData.user.id.slice(0, 8)}`;
 
-  // Avoid slug collision
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const { data: existing } = await admin
-      .from("businesses")
-      .select("id")
-      .eq("slug", slug)
-      .maybeSingle();
-    if (!existing) break;
-    slug = `${slugify(businessName)}-${Math.random().toString(36).slice(2, 6)}`;
-  }
+  // Generate unique slug using user ID (guarantees no collisions)
+  const baseSlug = slugify(businessName) || "business";
+  const slug = `${baseSlug}-${signUpData.user.id.slice(0, 8)}`;
 
   // Insert business record (keeping category as first selected for backward compatibility)
   const { data: newBusiness, error: insertError } = await admin

@@ -42,43 +42,27 @@ export async function updateSession(request: NextRequest) {
 
   // If user is authenticated and accessing a dashboard, verify they have the right type
   if (user && (isBusinessDashboard || isStaffDashboard || isCustomerDashboard)) {
-    const { data: business } = await supabase
-      .from("businesses")
-      .select("id")
-      .eq("owner_id", user.id)
-      .maybeSingle();
+    // Parallel queries for user type detection
+    const [
+      { data: business },
+      { data: customer },
+      { data: staff }
+    ] = await Promise.all([
+      supabase.from("businesses").select("id").eq("owner_id", user.id).maybeSingle(),
+      supabase.from("customers").select("id").eq("id", user.id).maybeSingle(),
+      supabase.from("staff").select("id").eq("user_id", user.id).eq("is_active", true).maybeSingle()
+    ]);
 
-    const { data: customer } = await supabase
-      .from("customers")
-      .select("id")
-      .eq("id", user.id)
-      .maybeSingle();
+    // Determine correct dashboard for user type
+    const correctPath = business ? "/dashboard"
+      : staff ? "/dashboard/staff-view"
+      : customer ? "/customer/dashboard"
+      : null;
 
-    const { data: staff } = await supabase
-      .from("staff")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    // Business owner on staff or customer dashboard → redirect to business dashboard
-    if ((isStaffDashboard || isCustomerDashboard) && business && !staff && !customer) {
+    // Redirect if user is on wrong dashboard
+    if (correctPath && pathname !== correctPath && !pathname.startsWith(correctPath + "/")) {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
-    }
-
-    // Staff on business or customer dashboard → redirect to staff dashboard
-    if ((isBusinessDashboard || isCustomerDashboard) && staff && !business && !customer) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/dashboard/staff-view";
-      return NextResponse.redirect(url);
-    }
-
-    // Customer on business or staff dashboard → redirect to customer dashboard
-    if ((isBusinessDashboard || isStaffDashboard) && customer && !business && !staff) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/customer/dashboard";
+      url.pathname = correctPath;
       return NextResponse.redirect(url);
     }
   }

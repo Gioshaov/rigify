@@ -17,22 +17,25 @@ export default async function CustomerBookingsPage() {
 
   const now = new Date();
 
-  // Get upcoming bookings (future appointments)
-  const { data: upcoming } = await supabase
-    .from("bookings")
-    .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-    .eq("customer_id", user.id)
-    .gte("appointment_datetime", now.toISOString())
-    .order("appointment_datetime", { ascending: true });
-
-  // Get past bookings (completed or past appointments)
-  const { data: past } = await supabase
-    .from("bookings")
-    .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-    .eq("customer_id", user.id)
-    .lt("appointment_datetime", now.toISOString())
-    .order("appointment_datetime", { ascending: false})
-    .limit(10);
+  // Get upcoming and past bookings in parallel
+  const [
+    { data: upcoming },
+    { data: past }
+  ] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
+      .eq("customer_id", user.id)
+      .gte("appointment_datetime", now.toISOString())
+      .order("appointment_datetime", { ascending: true }),
+    supabase
+      .from("bookings")
+      .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
+      .eq("customer_id", user.id)
+      .lt("appointment_datetime", now.toISOString())
+      .order("appointment_datetime", { ascending: false })
+      .limit(10)
+  ]);
 
   return (
     <section className="space-y-stack-lg">
