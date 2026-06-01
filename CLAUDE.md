@@ -35,6 +35,15 @@ git push origin main     # Push to GitHub
 
 ---
 
+## Git Workflow
+
+- Always create a feature branch before making changes
+- Branch naming: `feature/short-description`
+- Never commit directly to main
+- Only merge to main after `/codex:review` passes
+
+---
+
 ## Current Implementation Status
 
 ### ✅ What's Built

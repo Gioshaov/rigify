@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[code-reviewer] Changes detected — invoke @code-reviewer for a full review.'"
+          }
+        ]
+      }
+    ]
+  }
+}
