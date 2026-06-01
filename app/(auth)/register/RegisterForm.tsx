@@ -16,7 +16,15 @@ export function RegisterForm({ action }: { action: Action }) {
       onSubmit={(e) => {
         e.preventDefault();
         setError(null);
+
         const formData = new FormData(e.currentTarget);
+        const selectedCategories = formData.getAll("categories");
+
+        if (selectedCategories.length === 0) {
+          setError("Please select at least one category");
+          return;
+        }
+
         startTransition(async () => {
           const result = await action(formData);
           if (result && "error" in result) setError(result.error);
@@ -28,26 +36,32 @@ export function RegisterForm({ action }: { action: Action }) {
         <input name="business_name" required className="input-field mt-stack-sm" placeholder="Mitte Beauty" />
       </label>
 
-      <div className="grid grid-cols-2 gap-stack-md">
-        <label className="block">
-          <span className="label-mono">CATEGORY</span>
-          <select name="category" required defaultValue="" className="input-field mt-stack-sm">
-            <option value="" disabled>Pick one</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id}>{c.en}</option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="label-mono">CITY</span>
-          <select name="city" required defaultValue="" className="input-field mt-stack-sm">
-            <option value="" disabled>Pick one</option>
-            {CITIES.map((c) => (
-              <option key={c.id} value={c.id}>{c.en}</option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <fieldset className="block">
+        <legend className="label-mono mb-stack-sm">CATEGORIES (SELECT ALL THAT APPLY)</legend>
+        <div className="grid grid-cols-2 gap-stack-sm">
+          {CATEGORIES.map((c) => (
+            <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="categories"
+                value={c.id}
+                className="w-4 h-4 rounded border-outline-variant"
+              />
+              <span className="text-sm">{c.en}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <label className="block">
+        <span className="label-mono">CITY</span>
+        <select name="city" required defaultValue="" className="input-field mt-stack-sm">
+          <option value="" disabled>Pick one</option>
+          {CITIES.map((c) => (
+            <option key={c.id} value={c.id}>{c.en}</option>
+          ))}
+        </select>
+      </label>
 
       <label className="block">
         <span className="label-mono">ADDRESS</span>
@@ -56,7 +70,7 @@ export function RegisterForm({ action }: { action: Action }) {
 
       <label className="block">
         <span className="label-mono">PHONE</span>
-        <input name="phone" type="tel" className="input-field mt-stack-sm" placeholder="+995 …" />
+        <input name="phone" type="tel" required className="input-field mt-stack-sm" placeholder="+995 …" />
       </label>
 
       <label className="block">

@@ -22,7 +22,7 @@ export async function loginAction(formData: FormData) {
     return { error: "Login failed." };
   }
 
-  // Check if user is a business owner or customer
+  // Check if user is a business owner, staff, or customer
   const { data: business } = await supabase
     .from("businesses")
     .select("id")
@@ -35,13 +35,22 @@ export async function loginAction(formData: FormData) {
     .eq("id", data.user.id)
     .maybeSingle();
 
+  const { data: staff } = await supabase
+    .from("staff")
+    .select("id, business_id")
+    .eq("user_id", data.user.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
   // Redirect based on user type
   if (business) {
     redirect("/dashboard");
+  } else if (staff) {
+    redirect("/dashboard/staff-view");
   } else if (customer) {
     redirect("/customer/dashboard");
   } else {
-    // User exists but has no business or customer profile
+    // User exists but has no business, staff, or customer profile
     return { error: "Account not properly set up. Please contact support." };
   }
 }

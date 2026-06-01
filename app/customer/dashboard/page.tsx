@@ -20,7 +20,7 @@ export default async function CustomerBookingsPage() {
   // Get upcoming bookings (future appointments)
   const { data: upcoming } = await supabase
     .from("bookings")
-    .select("id, appointment_datetime, status, business_id, businesses(name, city), services(name), staff(name)")
+    .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
     .eq("customer_id", user.id)
     .gte("appointment_datetime", now.toISOString())
     .order("appointment_datetime", { ascending: true });
@@ -28,10 +28,10 @@ export default async function CustomerBookingsPage() {
   // Get past bookings (completed or past appointments)
   const { data: past } = await supabase
     .from("bookings")
-    .select("id, appointment_datetime, status, business_id, businesses(name, city), services(name), staff(name)")
+    .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
     .eq("customer_id", user.id)
     .lt("appointment_datetime", now.toISOString())
-    .order("appointment_datetime", { ascending: false })
+    .order("appointment_datetime", { ascending: false})
     .limit(10);
 
   return (
@@ -52,6 +52,9 @@ export default async function CustomerBookingsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="font-medium">{b.businesses?.name || "—"}</p>
+                    <p className="text-sm text-on-surface-variant mt-1">
+                      {b.businesses?.address || "Address not provided"}
+                    </p>
                     <p className="text-sm text-on-surface-variant mt-1">
                       {b.services?.name || "Service"} · {b.staff?.name || "Staff"}
                     </p>
@@ -80,6 +83,9 @@ export default async function CustomerBookingsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="font-medium">{b.businesses?.name || "—"}</p>
+                    <p className="text-sm text-on-surface-variant mt-1">
+                      {b.businesses?.address || "Address not provided"}
+                    </p>
                     <p className="text-sm text-on-surface-variant mt-1">
                       {b.services?.name || "Service"} · {b.staff?.name || "Staff"}
                     </p>

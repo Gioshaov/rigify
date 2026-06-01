@@ -18,15 +18,27 @@ export async function registerAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const businessName = String(formData.get("business_name") ?? "").trim();
-  const category = String(formData.get("category") ?? "").trim();
+  const selectedCategories = formData.getAll("categories");
   const city = String(formData.get("city") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const address = String(formData.get("address") ?? "").trim();
 
-  if (!email || !password || !businessName || !category || !city || !address) {
+  if (!email || !password || !businessName || !city || !address || !phone) {
     return { error: "All required fields must be filled." };
   }
-  if (!CATEGORY_IDS.includes(category)) return { error: "Invalid category." };
+
+  if (selectedCategories.length === 0) {
+    return { error: "Please select at least one category." };
+  }
+
+  // Validate each category ID
+  const invalidCategories = selectedCategories.filter(
+    cat => !CATEGORY_IDS.includes(String(cat))
+  );
+  if (invalidCategories.length > 0) {
+    return { error: "Invalid category selection." };
+  }
+
   if (!CITY_IDS.includes(city)) return { error: "Invalid city." };
   if (password.length < 8) return { error: "Password must be at least 8 characters." };
 
@@ -63,28 +75,49 @@ export async function registerAction(formData: FormData) {
     slug = `${slugify(businessName)}-${Math.random().toString(36).slice(2, 6)}`;
   }
 
-  const { error: insertError } = await admin.from("businesses").insert({
-    owner_id: signUpData.user.id,
-    slug,
-    name: businessName,
-    category,
-    city,
-    address,
-    phone: phone || null,
-    email,
-    is_active: false, // owner activates from /dashboard/settings later
-    hours: {
-      mon: { open: "10:00", close: "20:00" },
-      tue: { open: "10:00", close: "20:00" },
-      wed: { open: "10:00", close: "20:00" },
-      thu: { open: "10:00", close: "20:00" },
-      fri: { open: "10:00", close: "20:00" },
-      sat: { open: "11:00", close: "19:00" },
-      sun: null,
-    },
-  });
+  // Insert business record (keeping category as first selected for backward compatibility)
+  const { data: newBusiness, error: insertError } = await admin
+    .from("businesses")
+    .insert({
+      owner_id: signUpData.user.id,
+      slug,
+      name: businessName,
+      category: String(selectedCategories[0]), // Keep first category for backward compatibility
+      city,
+      address,
+      phone,
+      email,
+      is_active: false, // owner activates from /dashboard/settings later
+      hours: {
+        mon: { open: "10:00", close: "20:00" },
+        tue: { open: "10:00", close: "20:00" },
+        wed: { open: "10:00", close: "20:00" },
+        thu: { open: "10:00", close: "20:00" },
+        fri: { open: "10:00", close: "20:00" },
+        sat: { open: "11:00", close: "19:00" },
+        sun: null,
+      },
+    })
+    .select()
+    .single();
 
-  if (insertError) return { error: `Could not create business: ${insertError.message}` };
+  if (insertError || !newBusiness) {
+    return { error: `Could not create business: ${insertError?.message}` };
+  }
+
+  // Insert categories into junction table
+  const categoryInserts = selectedCategories.map(catId => ({
+    business_id: newBusiness.id,
+    category_id: String(catId),
+  }));
+
+  const { error: catError } = await admin
+    .from("business_categories")
+    .insert(categoryInserts);
+
+  if (catError) {
+    return { error: `Could not save categories: ${catError.message}` };
+  }
 
   // Session is already set by signUp (we checked signUpData.session above).
   // Redirect to dashboard — middleware will ensure cookies propagate correctly.

@@ -28,11 +28,12 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isBusinessDashboard = pathname.startsWith("/dashboard");
+  const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/dashboard/staff-view");
+  const isStaffDashboard = pathname.startsWith("/dashboard/staff-view");
   const isCustomerDashboard = pathname.startsWith("/customer/dashboard");
 
   // Redirect to login if accessing protected routes without auth
-  if ((isBusinessDashboard || isCustomerDashboard) && !user) {
+  if ((isBusinessDashboard || isStaffDashboard || isCustomerDashboard) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
@@ -40,7 +41,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // If user is authenticated and accessing a dashboard, verify they have the right type
-  if (user && (isBusinessDashboard || isCustomerDashboard)) {
+  if (user && (isBusinessDashboard || isStaffDashboard || isCustomerDashboard)) {
     const { data: business } = await supabase
       .from("businesses")
       .select("id")
@@ -53,15 +54,29 @@ export async function updateSession(request: NextRequest) {
       .eq("id", user.id)
       .maybeSingle();
 
-    // Business owner trying to access customer dashboard -> redirect to business dashboard
-    if (isCustomerDashboard && business && !customer) {
+    const { data: staff } = await supabase
+      .from("staff")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    // Business owner on staff or customer dashboard → redirect to business dashboard
+    if ((isStaffDashboard || isCustomerDashboard) && business && !staff && !customer) {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
 
-    // Customer trying to access business dashboard -> redirect to customer dashboard
-    if (isBusinessDashboard && customer && !business) {
+    // Staff on business or customer dashboard → redirect to staff dashboard
+    if ((isBusinessDashboard || isCustomerDashboard) && staff && !business && !customer) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard/staff-view";
+      return NextResponse.redirect(url);
+    }
+
+    // Customer on business or staff dashboard → redirect to customer dashboard
+    if ((isBusinessDashboard || isStaffDashboard) && customer && !business && !staff) {
       const url = request.nextUrl.clone();
       url.pathname = "/customer/dashboard";
       return NextResponse.redirect(url);
