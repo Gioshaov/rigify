@@ -47,9 +47,15 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'This subdomain is reserved. Please choose another.' }
   }
 
-  // Validate email format
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail)) {
-    return { success: false, message: 'Invalid email format' }
+  // Validate email format (requires proper TLD)
+  if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(ownerEmail)) {
+    return { success: false, message: 'Invalid email format. Must include a valid domain extension (e.g., .com, .ge)' }
+  }
+
+  // Validate phone format (must start with + and have at least 10 digits)
+  const phoneDigits = phone.replace(/\D/g, '')
+  if (!phone.startsWith('+') || phoneDigits.length < 10) {
+    return { success: false, message: 'Invalid phone format. Must start with + and contain at least 10 digits (e.g., +995555123456)' }
   }
 
   // Validate password length

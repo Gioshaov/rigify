@@ -59,6 +59,27 @@ export async function updateSession(request: NextRequest) {
     url.pathname = '/for-businesses';
     return NextResponse.redirect(url);
   }
+
+  // ── Protect /admin routes ──────────────────────────────────────────
+  const isAdminRoute = pathname.startsWith('/admin');
+  if (isAdminRoute) {
+    // Require authentication
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('redirect', request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+
+    // Require super admin flag in app_metadata
+    const isSuperAdmin = user.app_metadata?.is_super_admin === true;
+    if (!isSuperAdmin) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+  }
+
   const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/dashboard/staff-view");
   const isStaffDashboard = pathname.startsWith("/dashboard/staff-view");
   const isCustomerDashboard = pathname.startsWith("/customer/dashboard");

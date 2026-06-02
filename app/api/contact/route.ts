@@ -48,6 +48,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Input too long' }, { status: 400 })
   }
 
+  // Validate phone format (must start with + and have at least 10 digits)
+  const phoneDigits = phone.replace(/\D/g, '')
+  if (!phone.startsWith('+') || phoneDigits.length < 10) {
+    return NextResponse.json(
+      { error: 'Invalid phone format. Must start with + and contain at least 10 digits (e.g., +995555123456)' },
+      { status: 400 }
+    )
+  }
+
   // Store lead in Supabase
   const admin = createAdminClient()
   const { error } = await admin.from('leads').insert({

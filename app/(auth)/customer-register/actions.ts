@@ -16,6 +16,12 @@ export async function customerRegisterAction(formData: FormData) {
     return { error: "Password must be at least 8 characters." };
   }
 
+  // Validate phone format (must start with + and have at least 10 digits)
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (!phone.startsWith('+') || phoneDigits.length < 10) {
+    return { error: "Invalid phone format. Must start with + and contain at least 10 digits (e.g., +995555123456)" };
+  }
+
   const supabase = createClient();
 
   // Create auth user

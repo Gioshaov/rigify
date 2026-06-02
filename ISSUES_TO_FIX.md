@@ -144,11 +144,11 @@ Line 172:17 - Unknown → needs &apos;
 ### Phase 1: Unblock Development (5 min)
 1. ✅ Fix build errors (Issue #18) - **DO THIS FIRST**
 
-### Phase 2: Critical Security (30 min)
-2. Fix admin auth bypass (Issues #4, #8)
-3. Fix email validation (Issue #10)
-4. Fix phone validation (Issues #9, #14, #16)
-5. Fix staff creation (Issue #11)
+### Phase 2: Critical Security (30 min) ✅ COMPLETE
+2. ✅ Fix admin auth bypass (Issues #4, #8) - Added middleware protection for `/admin` routes
+3. ✅ Fix email validation (Issue #10) - Updated regex to require valid TLD
+4. ✅ Fix phone validation (Issues #9, #14, #16) - Added validation to all three forms
+5. ✅ Fix staff creation (Issue #11) - Created migration `20260602000002_staff_grants.sql` to add missing grants
 
 ### Phase 3: Functionality (45 min)
 6. Fix session/routing issues (Issues #5, #7, #15, #17)
