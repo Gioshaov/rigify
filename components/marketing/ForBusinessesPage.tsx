@@ -96,14 +96,14 @@ export default function ForBusinessesPage() {
               <div className="text-3xl mb-stack-md">📔</div>
               <h3 className="text-title-md mb-stack-sm">Notebook scheduling chaos</h3>
               <p className="text-body-sm text-on-surface-variant">
-                Double bookings. No-shows. Confusion about who's coming when. Your notebook isn't enough anymore.
+                Double bookings. No-shows. Confusion about who&apos;s coming when. Your notebook isn&apos;t enough anymore.
               </p>
             </div>
             <div className="bg-background border border-outline-variant rounded-lg p-gutter">
               <div className="text-3xl mb-stack-md">🔍</div>
               <h3 className="text-title-md mb-stack-sm">No online presence</h3>
               <p className="text-body-sm text-on-surface-variant">
-                Customers can't find you online. No website. No booking link. Just an Instagram bio with a phone number.
+                Customers can&apos;t find you online. No website. No booking link. Just an Instagram bio with a phone number.
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function ForBusinessesPage() {
             <div>
               <h3 className="text-headline-sm mb-stack-sm">Dashboard for your appointments</h3>
               <p className="text-body-md text-on-surface-variant">
-                See all your bookings in one place. No more notebook. Know exactly who's coming and when.
+                See all your bookings in one place. No more notebook. Know exactly who&apos;s coming and when.
               </p>
             </div>
             <div>
@@ -167,9 +167,9 @@ export default function ForBusinessesPage() {
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <div className="max-w-xl mx-auto">
             <p className="label-mono text-primary mb-stack-md text-center">REQUEST ACCESS</p>
-            <h2 className="text-headline-lg mb-stack-sm text-center">Let's get you started</h2>
+            <h2 className="text-headline-lg mb-stack-sm text-center">Let&apos;s get you started</h2>
             <p className="text-body-md text-on-surface-variant mb-stack-lg text-center">
-              We'll reach out within 24 hours to set up your account.
+              We&apos;ll reach out within 24 hours to set up your account.
             </p>
 
             {showSuccess ? (
@@ -177,7 +177,7 @@ export default function ForBusinessesPage() {
                 <div className="text-4xl mb-stack-sm">✓</div>
                 <h3 className="text-title-lg mb-stack-sm">გმადლობთ! Thank you!</h3>
                 <p className="text-body-md text-on-surface-variant">
-                  We'll be in touch within 24 hours.
+                  We&apos;ll be in touch within 24 hours.
                 </p>
                 <button
                   onClick={() => setShowSuccess(false)}
