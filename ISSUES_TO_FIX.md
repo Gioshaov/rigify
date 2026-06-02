@@ -163,9 +163,9 @@ Line 172:17 - Unknown → needs &apos;
 8. ✅ Add sign out button (Issue #3) - Added to admin navbar
 9. ✅ Fix business editing (Issue #2) - Created full edit flow at `/admin/businesses/[id]/edit`
 
-### Phase 4: UI Polish (30 min) ✅ MOSTLY COMPLETE
+### Phase 4: UI Polish (30 min) ✅ COMPLETE
 10. ✅ Fix dropdown visibility (Issue #6) - Added bg-gray-900 to option elements
-11. ⚠️ Fix for-businesses page text (Issues #12, #13) - DEFERRED (minor UX polish, needs design review)
+11. ✅ Fix for-businesses page text (Issues #12, #13) - Made language consistent (Georgian primary, English subtle subtitle)
 
 ---
 

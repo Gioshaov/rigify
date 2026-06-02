@@ -66,7 +66,7 @@ export default function ForBusinessesPage() {
           <h1 className="text-display-lg-mobile md:text-display-lg max-w-3xl">
             შეავსე განრიგი. უპასუხე ყველა ზარს. განავითარე ბიზნესი.
           </h1>
-          <p className="mt-stack-md text-body-lg text-on-surface-variant max-w-2xl">
+          <p className="mt-stack-sm text-body-md text-on-surface-variant/70 max-w-2xl italic">
             Fill your calendar. Answer every call. Grow your business.
           </p>
           <p className="mt-stack-lg text-body-md text-on-surface-variant max-w-2xl">
@@ -74,7 +74,7 @@ export default function ForBusinessesPage() {
           </p>
           <div className="mt-stack-lg">
             <button onClick={scrollToContact} className="btn-primary">
-              Request Access
+              წვდომის მოთხოვნა
             </button>
           </div>
         </div>
@@ -175,21 +175,22 @@ export default function ForBusinessesPage() {
             {showSuccess ? (
               <div className="bg-primary/10 border border-primary rounded-xl p-gutter text-center">
                 <div className="text-4xl mb-stack-sm">✓</div>
-                <h3 className="text-title-lg mb-stack-sm">გმადლობთ! Thank you!</h3>
+                <h3 className="text-title-lg mb-stack-sm">გმადლობთ!</h3>
+                <p className="text-body-sm text-on-surface-variant/70 italic mb-2">Thank you!</p>
                 <p className="text-body-md text-on-surface-variant">
-                  We&apos;ll be in touch within 24 hours.
+                  დაგიკავშირდებით 24 საათში.
                 </p>
                 <button
                   onClick={() => setShowSuccess(false)}
                   className="mt-stack-md text-primary hover:underline text-sm"
                 >
-                  Send another request
+                  სხვა მოთხოვნის გაგზავნა
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-stack-md">
                 <div>
-                  <label className="block text-label-md mb-2">Full Name *</label>
+                  <label className="block text-label-md mb-2">სრული სახელი *</label>
                   <input
                     type="text"
                     required
@@ -201,7 +202,7 @@ export default function ForBusinessesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">Business Name *</label>
+                  <label className="block text-label-md mb-2">ბიზნესის დასახელება *</label>
                   <input
                     type="text"
                     required
@@ -213,7 +214,7 @@ export default function ForBusinessesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">Phone Number *</label>
+                  <label className="block text-label-md mb-2">ტელეფონის ნომერი *</label>
                   <input
                     type="tel"
                     required
@@ -225,28 +226,28 @@ export default function ForBusinessesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">City</label>
+                  <label className="block text-label-md mb-2">ქალაქი</label>
                   <select
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
                   >
-                    <option value="">Select city</option>
-                    <option value="tbilisi">Tbilisi</option>
-                    <option value="batumi">Batumi</option>
-                    <option value="kutaisi">Kutaisi</option>
-                    <option value="other">Other</option>
+                    <option value="">აირჩიეთ ქალაქი</option>
+                    <option value="tbilisi">თბილისი</option>
+                    <option value="batumi">ბათუმი</option>
+                    <option value="kutaisi">ქუთაისი</option>
+                    <option value="other">სხვა</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">Message (optional)</label>
+                  <label className="block text-label-md mb-2">შეტყობინება (არასავალდებულო)</label>
                   <textarea
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={4}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    placeholder="Tell us about your business..."
+                    placeholder="მოგვიყევით თქვენს ბიზნესზე..."
                   />
                 </div>
 
@@ -259,7 +260,7 @@ export default function ForBusinessesPage() {
                   disabled={loading}
                   className="w-full btn-primary disabled:opacity-50"
                 >
-                  {loading ? 'Sending...' : 'Send Request / გამოგვიგზავნე მოთხოვნა'}
+                  {loading ? 'იგზავნება...' : 'მოთხოვნის გაგზავნა'}
                 </button>
               </form>
             )}
