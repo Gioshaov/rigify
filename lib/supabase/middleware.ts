@@ -18,15 +18,15 @@ export async function updateSession(request: NextRequest) {
     subdomain !== rootDomain &&
     hostname !== rootDomain;
 
-  if (isSubdomain) {
-    // Inject subdomain into request headers for server components to read
-    const requestHeaders = new Headers(request.headers);
+  // Inject subdomain header if present (but continue with auth checks)
+  const requestHeaders = isSubdomain ? new Headers(request.headers) : request.headers;
+  if (isSubdomain && requestHeaders instanceof Headers) {
     requestHeaders.set('x-subdomain', subdomain);
-    const response = NextResponse.next({ request: { headers: requestHeaders } });
-    return response;
   }
 
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({
+    request: isSubdomain ? { headers: requestHeaders } : request
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -40,7 +40,46 @@ git push origin main     # Push to GitHub
 - Always create a feature branch before making changes
 - Branch naming: `feature/short-description`
 - Never commit directly to main
-- Only merge to main after `/codex:review` passes
+- **Code Review Before Push**: After committing, run BOTH reviews in parallel before pushing
+
+### Code Review Protocol
+
+After every commit (except trivial changes like typo fixes), run BOTH reviews in parallel:
+
+```bash
+# In Claude Code, run these commands in parallel:
+/codex:review --background
+@code-reviewer
+```
+
+**What qualifies as "trivial" (can skip reviews):**
+- Documentation updates (README, comments only)
+- Typo fixes in strings/text
+- Formatting changes (spacing, indentation)
+- Version bumps in package.json
+
+**What requires reviews (never skip):**
+- Any code logic changes
+- New features or functionality
+- Security-related changes
+- Database migrations
+- API routes or server actions
+- Authentication or authorization code
+
+**Workflow:**
+1. Make changes and commit locally
+2. Run `/codex:review --background` (fast, runs in background)
+3. Run `@code-reviewer` (thorough, runs in foreground)
+4. Wait for both to complete
+5. Fix any CRITICAL or MAJOR issues found
+6. Re-commit fixes if needed
+7. Push to GitHub only after reviews pass
+
+**Review Expectations:**
+- `/codex:review`: Catches design issues, spec compliance, architectural problems
+- `@code-reviewer`: Catches bugs, security vulnerabilities, performance issues, missing tests
+- Both must PASS or CONDITIONAL PASS before pushing
+- FAIL verdict = DO NOT push, fix issues first
 
 ---
 

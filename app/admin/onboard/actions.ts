@@ -1,12 +1,13 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 
 const RESERVED_SUBDOMAINS = [
   'admin', 'api', 'www', 'app',
   'dashboard', 'login', 'register', 'customer-register',
-  'for-businesses', 'customer'
+  'for-businesses', 'customer',
+  'mail', 'smtp', 'ftp', 'status', 'blog', 'help', 'support',
+  'cdn', 'static', 'assets', 'media', 'localhost'
 ]
 
 export async function onboardBusiness(formData: FormData) {
@@ -14,7 +15,7 @@ export async function onboardBusiness(formData: FormData) {
   // but double-check here too
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.user_metadata?.is_super_admin !== true) {
+  if (!user || user.app_metadata?.is_super_admin !== true) {
     return { success: false, message: 'Unauthorized' }
   }
 
@@ -31,9 +32,29 @@ export async function onboardBusiness(formData: FormData) {
   const staffEmail = formData.get('staff_email') as string
   const staffPassword = formData.get('staff_password') as string
 
+  // Validate required fields
+  if (!name || !subdomain || !slug || !category || !city || !phone || !address || !ownerEmail || !ownerPassword) {
+    return { success: false, message: 'Missing required fields' }
+  }
+
+  // Validate subdomain format
+  if (!/^[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]$/.test(subdomain)) {
+    return { success: false, message: 'Invalid subdomain format. Use lowercase letters, numbers, and hyphens only.' }
+  }
+
   // Validate reserved subdomain
   if (RESERVED_SUBDOMAINS.includes(subdomain.toLowerCase())) {
     return { success: false, message: 'This subdomain is reserved. Please choose another.' }
+  }
+
+  // Validate email format
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail)) {
+    return { success: false, message: 'Invalid email format' }
+  }
+
+  // Validate password length
+  if (ownerPassword.length < 8) {
+    return { success: false, message: 'Password must be at least 8 characters' }
   }
 
   // Use service role client — bypasses RLS
@@ -101,15 +122,21 @@ export async function onboardBusiness(formData: FormData) {
     })
 
     if (!staffAuthError && staffAuthData.user) {
-      await admin.from('staff').insert({
+      const { error: staffInsertError } = await admin.from('staff').insert({
         business_id: business.id,
         name: staffName,
         user_id: staffAuthData.user.id,
         role: 'staff',
         is_active: true,
       })
+
+      if (staffInsertError) {
+        // Rollback: delete the staff auth user we just created
+        await admin.auth.admin.deleteUser(staffAuthData.user.id)
+        console.error('Staff insert failed, rolled back auth user:', staffInsertError)
+      }
     }
-    // Staff creation failure is non-fatal — log it but don't roll back
+    // Staff creation failure is non-fatal — business is still created
   }
 
   return {

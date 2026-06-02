@@ -109,7 +109,7 @@ export default function OnboardForm() {
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">Temporary Password *</label>
-            <input name="owner_password" type="text" required minLength={8} className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500" placeholder="Min 8 characters" />
+            <input name="owner_password" type="password" required minLength={8} className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500" placeholder="Min 8 characters" />
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function OnboardForm() {
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">Staff Password</label>
-            <input name="staff_password" type="text" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500" placeholder="Min 8 characters" />
+            <input name="staff_password" type="password" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500" placeholder="Min 8 characters" />
           </div>
         </div>
       </div>

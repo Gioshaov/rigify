@@ -8,8 +8,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect('/login')
 
   // Super admin check — set this flag manually in Supabase Auth dashboard
-  // on your own user: user_metadata.is_super_admin = true
-  const isSuperAdmin = user.user_metadata?.is_super_admin === true
+  // on your own user: app_metadata.is_super_admin = true
+  const isSuperAdmin = user.app_metadata?.is_super_admin === true
   if (!isSuperAdmin) redirect('/')
 
   return (
