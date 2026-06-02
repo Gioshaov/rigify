@@ -28,16 +28,24 @@ export async function loginAction(formData: FormData) {
     { data: customer },
     { data: staff }
   ] = await Promise.all([
-    supabase.from("businesses").select("id").eq("owner_id", data.user.id).maybeSingle(),
+    supabase.from("businesses").select("id, is_active").eq("owner_id", data.user.id).maybeSingle(),
     supabase.from("customers").select("id").eq("id", data.user.id).maybeSingle(),
-    supabase.from("staff").select("id, business_id").eq("user_id", data.user.id).eq("is_active", true).maybeSingle()
+    supabase.from("staff").select("id, business_id, is_active").eq("user_id", data.user.id).maybeSingle()
   ]);
 
-  // Redirect based on user type
+  // Check if accounts are active
   if (business) {
+    if (business.is_active === false) {
+      await supabase.auth.signOut();
+      return { error: "Your business account has been disabled. Please contact support." };
+    }
     redirect("/dashboard");
   } else if (staff) {
-    redirect("/dashboard/staff-view");
+    if (staff.is_active === false) {
+      await supabase.auth.signOut();
+      return { error: "Your staff account has been disabled. Please contact your business owner." };
+    }
+    redirect("/staff-dashboard");
   } else if (customer) {
     redirect("/customer/dashboard");
   } else {

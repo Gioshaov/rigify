@@ -21,24 +21,24 @@ interface StaffSidebarProps {
 
 export function StaffSidebar({ staff, permissions }: StaffSidebarProps) {
   const navItems = [
-    { href: "/dashboard/staff-view", label: "OVERVIEW", show: true },
+    { href: "/staff-dashboard", label: "OVERVIEW", show: true },
     {
-      href: "/dashboard/staff-view/appointments",
+      href: "/staff-dashboard/appointments",
       label: "APPOINTMENTS",
       show: permissions.can_view_appointments,
     },
     {
-      href: "/dashboard/staff-view/customers",
+      href: "/staff-dashboard/customers",
       label: "CUSTOMERS",
       show: permissions.can_view_customers,
     },
     {
-      href: "/dashboard/staff-view/services",
+      href: "/staff-dashboard/services",
       label: "SERVICES",
       show: permissions.can_view_services,
     },
     {
-      href: "/dashboard/staff-view/staff",
+      href: "/staff-dashboard/staff",
       label: "STAFF",
       show: permissions.can_view_staff,
     },

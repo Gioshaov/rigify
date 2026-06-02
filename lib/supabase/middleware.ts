@@ -95,8 +95,8 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/dashboard/staff-view");
-  const isStaffDashboard = pathname.startsWith("/dashboard/staff-view");
+  const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/staff-dashboard");
+  const isStaffDashboard = pathname.startsWith("/staff-dashboard");
   const isCustomerDashboard = pathname.startsWith("/customer/dashboard");
 
   // Redirect to login if accessing protected routes without auth
@@ -127,7 +127,7 @@ export async function updateSession(request: NextRequest) {
 
     // Determine correct dashboard for user type
     const correctPath = business ? "/dashboard"
-      : staff ? "/dashboard/staff-view"
+      : staff ? "/staff-dashboard"
       : customer ? "/customer/dashboard"
       : null;
 

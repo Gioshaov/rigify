@@ -21,7 +21,7 @@ export default async function StaffDashboardOverviewPage() {
   // Get staff record
   const { data: staff } = await supabase
     .from("staff")
-    .select("id, name, business_id, businesses(name)")
+    .select("id, name, role, business_id, businesses(name)")
     .eq("user_id", user.id)
     .eq("is_active", true)
     .single();
@@ -60,7 +60,7 @@ export default async function StaffDashboardOverviewPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-outline-variant">
         <Metric label="APPOINTMENTS TODAY" value={String(todays?.length ?? 0)} />
-        <Metric label="YOUR ROLE" value={staff.name} />
+        <Metric label="YOUR ROLE" value={(staff.role || 'staff').toUpperCase()} />
       </div>
 
       <div>
