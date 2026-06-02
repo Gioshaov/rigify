@@ -58,24 +58,24 @@ export default function OnboardForm() {
           <div>
             <label className="block text-xs text-gray-400 mb-1">Category *</label>
             <select name="category" required className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
-              <option value="">Select...</option>
-              <option value="hair">Hair</option>
-              <option value="nails">Nails</option>
-              <option value="skin">Skin</option>
-              <option value="massage">Massage</option>
-              <option value="brows">Brows</option>
-              <option value="makeup">Makeup</option>
-              <option value="barber">Barbershop</option>
+              <option value="" className="bg-gray-900 text-white">Select...</option>
+              <option value="hair" className="bg-gray-900 text-white">Hair</option>
+              <option value="nails" className="bg-gray-900 text-white">Nails</option>
+              <option value="skin" className="bg-gray-900 text-white">Skin</option>
+              <option value="massage" className="bg-gray-900 text-white">Massage</option>
+              <option value="brows" className="bg-gray-900 text-white">Brows</option>
+              <option value="makeup" className="bg-gray-900 text-white">Makeup</option>
+              <option value="barber" className="bg-gray-900 text-white">Barbershop</option>
             </select>
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">City *</label>
             <select name="city" required className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
-              <option value="">Select...</option>
-              <option value="tbilisi">Tbilisi</option>
-              <option value="batumi">Batumi</option>
-              <option value="kutaisi">Kutaisi</option>
-              <option value="rustavi">Rustavi</option>
+              <option value="" className="bg-gray-900 text-white">Select...</option>
+              <option value="tbilisi" className="bg-gray-900 text-white">Tbilisi</option>
+              <option value="batumi" className="bg-gray-900 text-white">Batumi</option>
+              <option value="kutaisi" className="bg-gray-900 text-white">Kutaisi</option>
+              <option value="rustavi" className="bg-gray-900 text-white">Rustavi</option>
             </select>
           </div>
         </div>

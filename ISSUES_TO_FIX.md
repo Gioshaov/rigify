@@ -156,9 +156,9 @@ Line 172:17 - Unknown → needs &apos;
 8. Add sign out button (Issue #3)
 9. Add business editing (Issue #2)
 
-### Phase 4: UI Polish (30 min)
-10. Fix dropdown visibility (Issue #6)
-11. Fix for-businesses page text (Issues #12, #13)
+### Phase 4: UI Polish (30 min) ✅ IN PROGRESS
+10. ✅ Fix dropdown visibility (Issue #6) - Added bg-gray-900 to option elements
+11. 🔄 Fix for-businesses page text (Issues #12, #13) - Making language consistent
 
 ---
 
