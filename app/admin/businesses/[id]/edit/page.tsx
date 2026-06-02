@@ -1,6 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { EditBusinessForm } from './EditBusinessForm'
+import { StaffEditRow } from './StaffEditRow'
 
 export default async function EditBusinessPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -38,6 +39,7 @@ export default async function EditBusinessPage({ params }: { params: { id: strin
       {/* Staff Section */}
       <div className="mt-12 pt-8 border-t border-white/10">
         <h2 className="text-xl font-bold mb-4">Staff Members</h2>
+        <p className="text-sm text-gray-400 mb-4">Click Edit to modify staff name, role, or status</p>
         {!staff || staff.length === 0 ? (
           <p className="text-gray-400 text-sm">No staff members for this business</p>
         ) : (
@@ -48,27 +50,12 @@ export default async function EditBusinessPage({ params }: { params: { id: strin
                   <th className="text-left px-4 py-3 text-gray-400">Name</th>
                   <th className="text-left px-4 py-3 text-gray-400">Role</th>
                   <th className="text-left px-4 py-3 text-gray-400">Status</th>
-                  <th className="text-left px-4 py-3 text-gray-400">Added</th>
+                  <th className="text-left px-4 py-3 text-gray-400">Added / Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {staff.map((member) => (
-                  <tr key={member.id} className="border-b border-white/5 last:border-0">
-                    <td className="px-4 py-3">{member.name}</td>
-                    <td className="px-4 py-3 capitalize">{member.role}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs ${
-                        member.is_active
-                          ? 'bg-green-900 text-green-300'
-                          : 'bg-gray-800 text-gray-400'
-                      }`}>
-                        {member.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400">
-                      {new Date(member.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
+                  <StaffEditRow key={member.id} staff={member} />
                 ))}
               </tbody>
             </table>
