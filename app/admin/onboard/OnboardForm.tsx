@@ -20,7 +20,7 @@ export default function OnboardForm() {
     return (
       <div className="bg-green-900/30 border border-green-500/30 rounded-xl p-6">
         <h2 className="text-green-400 font-bold text-lg mb-2">✓ Business Created</h2>
-        <p className="text-gray-300 text-sm">{result.message}</p>
+        <p className="text-gray-300 text-sm whitespace-pre-wrap">{result.message}</p>
         {result.subdomain && (
           <p className="text-white font-mono mt-3 text-sm">
             Dashboard: <span className="text-violet-400">{result.subdomain}.rigify.ge/dashboard</span>

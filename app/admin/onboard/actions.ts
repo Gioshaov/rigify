@@ -63,6 +63,24 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'Password must be at least 8 characters' }
   }
 
+  // Validate staff fields if provided (before creating anything)
+  if (staffName || staffEmail || staffPassword) {
+    // If any staff field is filled, all must be filled
+    if (!staffName || !staffEmail || !staffPassword) {
+      return { success: false, message: 'If providing staff details, all three fields (name, email, password) are required' }
+    }
+
+    // Validate staff email format
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(staffEmail)) {
+      return { success: false, message: `Invalid staff email format: "${staffEmail}". Must include a valid domain extension (e.g., .com, .ge)` }
+    }
+
+    // Validate staff password length
+    if (staffPassword.length < 8) {
+      return { success: false, message: 'Staff password must be at least 8 characters' }
+    }
+  }
+
   // Use service role client — bypasses RLS
   const admin = createAdminClient()
 
@@ -127,29 +145,9 @@ export async function onboardBusiness(formData: FormData) {
     // Non-fatal: business is created, admin can add category manually
   }
 
-  // 4. Optionally create staff account
+  // 4. Optionally create staff account (validation already done above)
   if (staffName && staffEmail && staffPassword) {
-    // Validate staff email format
-    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(staffEmail)) {
-      console.error('Invalid staff email format:', staffEmail)
-      // Non-fatal: business is created, admin can add staff manually
-      return {
-        success: true,
-        message: `Business "${name}" created, but staff account skipped (invalid email format). Owner login: ${ownerEmail}`,
-        subdomain,
-      }
-    }
-
-    // Validate staff password length
-    if (staffPassword.length < 8) {
-      console.error('Staff password too short')
-      // Non-fatal: business is created, admin can add staff manually
-      return {
-        success: true,
-        message: `Business "${name}" created, but staff account skipped (password too short). Owner login: ${ownerEmail}`,
-        subdomain,
-      }
-    }
+    console.log('[ONBOARD] Creating staff account:', { staffName, businessId: business.id })
 
     const { data: staffAuthData, error: staffAuthError } = await admin.auth.admin.createUser({
       email: staffEmail,
@@ -159,7 +157,7 @@ export async function onboardBusiness(formData: FormData) {
     })
 
     if (staffAuthError) {
-      console.error('Staff auth creation failed:', staffAuthError)
+      console.error('[ONBOARD] Staff auth creation failed:', staffAuthError.message)
       return {
         success: true,
         message: `Business "${name}" created, but staff account creation failed: ${staffAuthError.message}. Owner login: ${ownerEmail}`,
@@ -168,29 +166,40 @@ export async function onboardBusiness(formData: FormData) {
     }
 
     if (staffAuthData.user) {
-      const { error: staffInsertError } = await admin.from('staff').insert({
+      console.log('[ONBOARD] Staff auth user created:', staffAuthData.user.id)
+
+      const { data: staffRecord, error: staffInsertError } = await admin.from('staff').insert({
         business_id: business.id,
         name: staffName,
         user_id: staffAuthData.user.id,
         role: 'staff',
         is_active: true,
-      })
+      }).select().single()
 
       if (staffInsertError) {
         // Rollback: delete the staff auth user we just created
         await admin.auth.admin.deleteUser(staffAuthData.user.id)
-        console.error('Staff insert failed, rolled back auth user:', staffInsertError)
+        console.error('[ONBOARD] Staff insert failed, rolled back auth user:', staffInsertError)
         return {
           success: true,
-          message: `Business "${name}" created, but staff database insert failed: ${staffInsertError.message}. Owner login: ${ownerEmail}`,
+          message: `⚠️ Business "${name}" created, but staff database insert failed: ${staffInsertError.message}. Owner login: ${ownerEmail}`,
           subdomain,
         }
       }
 
+      console.log('[ONBOARD] Staff record created:', staffRecord)
+
       // Staff created successfully!
       return {
         success: true,
-        message: `Business "${name}" created with staff member "${staffName}". Owner login: ${ownerEmail}, Staff login: ${staffEmail}`,
+        message: `✅ Business "${name}" created successfully!\n\n👤 Owner: ${ownerEmail}\n👥 Staff: ${staffName} (${staffEmail})\n\nBoth accounts are ready to use.`,
+        subdomain,
+      }
+    } else {
+      console.error('[ONBOARD] staffAuthData.user is null despite no error')
+      return {
+        success: true,
+        message: `⚠️ Business "${name}" created, but staff account creation returned no user. Owner login: ${ownerEmail}`,
         subdomain,
       }
     }
