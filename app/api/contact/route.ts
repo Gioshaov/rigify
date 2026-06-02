@@ -44,7 +44,13 @@ export async function POST(request: NextRequest) {
   }
 
   // Basic input validation
-  if (name.length > 100 || business_name.length > 100 || phone.length > 50) {
+  if (
+    name.length > 100 ||
+    business_name.length > 100 ||
+    phone.length > 50 ||
+    (city?.length ?? 0) > 100 ||
+    (message?.length ?? 0) > 2000
+  ) {
     return NextResponse.json({ error: 'Input too long' }, { status: 400 })
   }
 

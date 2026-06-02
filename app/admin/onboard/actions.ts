@@ -37,9 +37,9 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'Missing required fields' }
   }
 
-  // Validate subdomain format
-  if (!/^[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]$/.test(subdomain)) {
-    return { success: false, message: 'Invalid subdomain format. Use lowercase letters, numbers, and hyphens only.' }
+  // Validate subdomain format (minimum 3 characters)
+  if (!/^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$/.test(subdomain)) {
+    return { success: false, message: 'Invalid subdomain format. Must be 3-63 characters using lowercase letters, numbers, and hyphens only.' }
   }
 
   // Validate reserved subdomain
@@ -120,6 +120,28 @@ export async function onboardBusiness(formData: FormData) {
 
   // 4. Optionally create staff account
   if (staffName && staffEmail && staffPassword) {
+    // Validate staff email format
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(staffEmail)) {
+      console.error('Invalid staff email format:', staffEmail)
+      // Non-fatal: business is created, admin can add staff manually
+      return {
+        success: true,
+        message: `Business "${name}" created, but staff account skipped (invalid email format). Owner login: ${ownerEmail}`,
+        subdomain,
+      }
+    }
+
+    // Validate staff password length
+    if (staffPassword.length < 8) {
+      console.error('Staff password too short')
+      // Non-fatal: business is created, admin can add staff manually
+      return {
+        success: true,
+        message: `Business "${name}" created, but staff account skipped (password too short). Owner login: ${ownerEmail}`,
+        subdomain,
+      }
+    }
+
     const { data: staffAuthData, error: staffAuthError } = await admin.auth.admin.createUser({
       email: staffEmail,
       password: staffPassword,

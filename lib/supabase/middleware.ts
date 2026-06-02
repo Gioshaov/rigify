@@ -61,7 +61,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // ── Protect /admin routes ──────────────────────────────────────────
-  const isAdminRoute = pathname.startsWith('/admin');
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
   if (isAdminRoute) {
     // Require authentication
     if (!user) {

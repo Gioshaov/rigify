@@ -12,6 +12,12 @@ export async function customerRegisterAction(formData: FormData) {
   if (!email || !password || !name || !phone) {
     return { error: "All fields are required." };
   }
+
+  // Validate email format (requires proper TLD)
+  if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+    return { error: "Invalid email format. Must include a valid domain extension (e.g., .com, .ge)" };
+  }
+
   if (password.length < 8) {
     return { error: "Password must be at least 8 characters." };
   }
