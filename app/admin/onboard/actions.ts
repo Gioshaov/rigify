@@ -102,6 +102,15 @@ export async function onboardBusiness(formData: FormData) {
   if (bizError || !business) {
     // Rollback: delete the auth user we just created
     await admin.auth.admin.deleteUser(ownerId)
+
+    // User-friendly error messages
+    if (bizError?.message?.includes('businesses_slug_key')) {
+      return { success: false, message: `This business slug "${slug}" is already taken. Please choose a different one.` }
+    }
+    if (bizError?.message?.includes('businesses_subdomain_key')) {
+      return { success: false, message: `This subdomain "${subdomain}" is already taken. Please choose a different one.` }
+    }
+
     return { success: false, message: `Failed to create business: ${bizError?.message}` }
   }
 
@@ -149,7 +158,16 @@ export async function onboardBusiness(formData: FormData) {
       user_metadata: { role: 'staff' },
     })
 
-    if (!staffAuthError && staffAuthData.user) {
+    if (staffAuthError) {
+      console.error('Staff auth creation failed:', staffAuthError)
+      return {
+        success: true,
+        message: `Business "${name}" created, but staff account creation failed: ${staffAuthError.message}. Owner login: ${ownerEmail}`,
+        subdomain,
+      }
+    }
+
+    if (staffAuthData.user) {
       const { error: staffInsertError } = await admin.from('staff').insert({
         business_id: business.id,
         name: staffName,
@@ -162,9 +180,20 @@ export async function onboardBusiness(formData: FormData) {
         // Rollback: delete the staff auth user we just created
         await admin.auth.admin.deleteUser(staffAuthData.user.id)
         console.error('Staff insert failed, rolled back auth user:', staffInsertError)
+        return {
+          success: true,
+          message: `Business "${name}" created, but staff database insert failed: ${staffInsertError.message}. Owner login: ${ownerEmail}`,
+          subdomain,
+        }
+      }
+
+      // Staff created successfully!
+      return {
+        success: true,
+        message: `Business "${name}" created with staff member "${staffName}". Owner login: ${ownerEmail}, Staff login: ${staffEmail}`,
+        subdomain,
       }
     }
-    // Staff creation failure is non-fatal — business is still created
   }
 
   return {

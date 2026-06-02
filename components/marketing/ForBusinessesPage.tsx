@@ -28,7 +28,10 @@ export default function ForBusinessesPage() {
       })
 
       if (!res.ok) {
-        throw new Error('Failed to submit')
+        const data = await res.json()
+        setError(data.error || 'Failed to submit request')
+        setLoading(false)
+        return
       }
 
       setShowSuccess(true)

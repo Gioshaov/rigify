@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { AdminSignOutButton } from './AdminSignOutButton'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -19,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <a href="/admin" className="text-sm text-gray-400 hover:text-white">Businesses</a>
         <a href="/admin/onboard" className="text-sm text-gray-400 hover:text-white">Onboard New</a>
         <div className="flex-1" />
-        <a href="/logout" className="text-sm text-gray-400 hover:text-white">Sign Out</a>
+        <AdminSignOutButton />
       </nav>
       <main className="p-6">{children}</main>
     </div>
