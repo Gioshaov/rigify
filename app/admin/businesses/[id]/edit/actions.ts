@@ -62,7 +62,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
     return { success: false, message: 'This subdomain is already taken by another business' }
   }
 
-  // Update the business
+  // Update the business (map status to is_active boolean)
   const { error } = await admin
     .from('businesses')
     .update({
@@ -73,6 +73,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
       address,
       city,
       status,
+      is_active: status === 'active', // Sync is_active with status
     })
     .eq('id', businessId)
 
