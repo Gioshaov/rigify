@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { updateBusiness } from './actions'
+import { useUnsavedChanges } from '@/lib/hooks/useUnsavedChanges'
 
 type Business = {
   id: string
@@ -17,6 +18,20 @@ type Business = {
 export function EditBusinessForm({ business }: { business: Business }) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+
+  // Warn about unsaved changes
+  useUnsavedChanges(isDirty && !isSubmitting)
+
+  // Track any input change
+  useEffect(() => {
+    const handleInput = () => setIsDirty(true)
+    const form = document.querySelector('form')
+    if (form) {
+      form.addEventListener('input', handleInput)
+      return () => form.removeEventListener('input', handleInput)
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -30,6 +45,7 @@ export function EditBusinessForm({ business }: { business: Business }) {
 
     if (result.success) {
       setMessage({ type: 'success', text: result.message })
+      setIsDirty(false) // Reset dirty state after successful save
     } else {
       setMessage({ type: 'error', text: result.message })
     }

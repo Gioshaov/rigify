@@ -1,11 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { onboardBusiness } from './actions'
+import { useUnsavedChanges } from '@/lib/hooks/useUnsavedChanges'
 
 export default function OnboardForm() {
   const [result, setResult] = useState<{ success: boolean; message: string; subdomain?: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+
+  // Warn about unsaved changes
+  useUnsavedChanges(isDirty && !loading && !result)
+
+  // Track any input change
+  useEffect(() => {
+    const handleInput = () => setIsDirty(true)
+    const form = document.querySelector('form')
+    if (form) {
+      form.addEventListener('input', handleInput)
+      return () => form.removeEventListener('input', handleInput)
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -14,6 +29,9 @@ export default function OnboardForm() {
     const res = await onboardBusiness(formData)
     setResult(res)
     setLoading(false)
+    if (res.success) {
+      setIsDirty(false) // Reset after success
+    }
   }
 
   if (result?.success) {
