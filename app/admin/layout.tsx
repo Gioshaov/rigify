@@ -18,6 +18,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <span className="font-bold text-lg">Rigify Admin</span>
         <a href="/admin" className="text-sm text-gray-400 hover:text-white">Businesses</a>
         <a href="/admin/onboard" className="text-sm text-gray-400 hover:text-white">Onboard New</a>
+        <div className="flex-1" />
+        <a href="/logout" className="text-sm text-gray-400 hover:text-white">Sign Out</a>
       </nav>
       <main className="p-6">{children}</main>
     </div>

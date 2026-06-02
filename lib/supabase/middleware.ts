@@ -57,7 +57,12 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith('/register')) {
     const url = request.nextUrl.clone();
     url.pathname = '/for-businesses';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    // Copy session cookies to redirect response
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
   }
 
   // ── Protect /admin routes ──────────────────────────────────────────
@@ -68,7 +73,12 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       url.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
+      // Copy session cookies to redirect response
+      response.cookies.getAll().forEach(cookie => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      return redirectResponse;
     }
 
     // Require super admin flag in app_metadata
@@ -76,7 +86,12 @@ export async function updateSession(request: NextRequest) {
     if (!isSuperAdmin) {
       const url = request.nextUrl.clone();
       url.pathname = '/';
-      return NextResponse.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
+      // Copy session cookies to redirect response
+      response.cookies.getAll().forEach(cookie => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      return redirectResponse;
     }
   }
 
@@ -89,7 +104,12 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    // Copy session cookies to redirect response
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
   }
 
   // If user is authenticated and accessing a dashboard, verify they have the right type
@@ -115,7 +135,12 @@ export async function updateSession(request: NextRequest) {
     if (correctPath && pathname !== correctPath && !pathname.startsWith(correctPath + "/")) {
       const url = request.nextUrl.clone();
       url.pathname = correctPath;
-      return NextResponse.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
+      // Copy session cookies to redirect response
+      response.cookies.getAll().forEach(cookie => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      return redirectResponse;
     }
   }
 

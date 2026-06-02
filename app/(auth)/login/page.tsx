@@ -27,13 +27,9 @@ export default function LoginPage({
           <p className="label-mono text-primary mb-stack-md">SIGN IN</p>
           <h1 className="text-display-lg-mobile md:text-headline-md">Welcome back.</h1>
           <p className="mt-stack-md text-on-surface-variant">
-            New here? Register as a{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              Business
-            </Link>
-            {" "}or{" "}
+            New here?{" "}
             <Link href="/customer-register" className="text-primary hover:underline">
-              Customer
+              Register as a Customer
             </Link>
             .
           </p>
