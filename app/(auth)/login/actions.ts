@@ -22,6 +22,12 @@ export async function loginAction(formData: FormData) {
     return { error: "Login failed." };
   }
 
+  // Super admins bypass all checks and go straight to admin panel
+  const isSuperAdmin = data.user.app_metadata?.is_super_admin === true;
+  if (isSuperAdmin) {
+    redirect("/admin");
+  }
+
   // Check if user is a business owner, staff, or customer (parallel queries)
   const [
     { data: business },
