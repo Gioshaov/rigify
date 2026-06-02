@@ -29,6 +29,7 @@ export default async function AdminDashboard() {
               <th className="pb-3 pr-4">City</th>
               <th className="pb-3 pr-4">Status</th>
               <th className="pb-3 pr-4">Created</th>
+              <th className="pb-3 pr-4">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -46,6 +47,14 @@ export default async function AdminDashboard() {
                 </td>
                 <td className="py-3 pr-4 text-gray-400">
                   {new Date(b.created_at).toLocaleDateString()}
+                </td>
+                <td className="py-3 pr-4">
+                  <a
+                    href={`/admin/businesses/${b.id}/edit`}
+                    className="text-violet-400 hover:text-violet-300 text-sm"
+                  >
+                    Edit
+                  </a>
                 </td>
               </tr>
             ))}
