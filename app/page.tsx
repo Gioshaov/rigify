@@ -13,7 +13,7 @@ export default function HomePage() {
           <nav className="hidden md:flex items-center gap-stack-lg">
             <Link href="/" className="label-mono hover:text-primary">Home</Link>
             <Link href="/tbilisi/hair" className="label-mono hover:text-primary">Categories</Link>
-            <Link href="/register" className="label-mono hover:text-primary">For Business</Link>
+            <Link href="/for-businesses" className="label-mono hover:text-primary">For Business</Link>
             <Link href="/login" className="btn-secondary !py-2">Sign in</Link>
           </nav>
         </div>
@@ -30,7 +30,7 @@ export default function HomePage() {
           </p>
           <div className="mt-stack-lg flex flex-wrap gap-stack-md">
             <Link href="/tbilisi/hair" className="btn-primary">Browse studios</Link>
-            <Link href="/register" className="btn-secondary">List your business</Link>
+            <Link href="/for-businesses" className="btn-secondary">For Businesses</Link>
           </div>
         </div>
       </section>

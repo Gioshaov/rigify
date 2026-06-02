@@ -2,6 +2,30 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
+  // ── Subdomain resolution ──────────────────────────────────────────
+  const hostname = request.headers.get('host') || '';
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'rigify.ge';
+
+  // Extract subdomain — e.g. "mitte" from "mitte.rigify.ge"
+  // In dev: "mitte.localhost:3000" → "mitte"
+  const subdomain = hostname
+    .replace(`.${rootDomain}`, '')
+    .replace(/:\d+$/, ''); // strip port in dev
+
+  const isSubdomain =
+    subdomain &&
+    subdomain !== 'www' &&
+    subdomain !== rootDomain &&
+    hostname !== rootDomain;
+
+  if (isSubdomain) {
+    // Inject subdomain into request headers for server components to read
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-subdomain', subdomain);
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    return response;
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -28,6 +52,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+
+  // ── Block /register route ──────────────────────────────────────────
+  if (pathname.startsWith('/register')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/for-businesses';
+    return NextResponse.redirect(url);
+  }
   const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/dashboard/staff-view");
   const isStaffDashboard = pathname.startsWith("/dashboard/staff-view");
   const isCustomerDashboard = pathname.startsWith("/customer/dashboard");

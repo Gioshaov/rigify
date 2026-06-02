@@ -27,7 +27,7 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
         startTransition(async () => {
           const result = await action(formData);
           if (result && "error" in result) {
-            setError(result.error);
+            setError(result.error || null);
           } else if (result && "success" in result && result.success) {
             setSuccess(true);
           }

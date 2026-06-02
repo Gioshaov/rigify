@@ -36,8 +36,8 @@ export default function CustomerRegisterPage() {
           </p>
           <p className="mt-stack-sm text-on-surface-variant text-sm">
             Are you a business owner?{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              Register your business
+            <Link href="/for-businesses" className="text-primary hover:underline">
+              For Businesses
             </Link>
             .
           </p>

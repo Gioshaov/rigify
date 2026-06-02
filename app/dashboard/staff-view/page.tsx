@@ -21,10 +21,10 @@ export default async function StaffDashboardOverviewPage() {
   // Get staff record
   const { data: staff } = await supabase
     .from("staff")
-    .select("id, name, business_id, businesses!inner(name)")
+    .select("id, name, business_id, businesses(name)")
     .eq("user_id", user.id)
     .eq("is_active", true)
-    .maybeSingle();
+    .single();
 
   if (!staff) {
     return (
@@ -54,7 +54,7 @@ export default async function StaffDashboardOverviewPage() {
     <section className="space-y-stack-lg">
       <div>
         <p className="label-mono text-primary">TODAY</p>
-        <h1 className="mt-stack-sm text-headline-md">{staff.businesses.name}</h1>
+        <h1 className="mt-stack-sm text-headline-md">{(staff.businesses as any)?.name || 'Business'}</h1>
         <p className="mt-stack-sm text-on-surface-variant">Welcome, {staff.name}</p>
       </div>
 
