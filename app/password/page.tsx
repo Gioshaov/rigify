@@ -25,12 +25,12 @@ export default function PasswordPage() {
 
       if (data.success) {
         router.push('/');
-        router.refresh();
       } else {
-        setError('Incorrect password');
+        setError(data.error || 'Incorrect password');
         setPassword('');
       }
     } catch (err) {
+      console.error('Password verification failed:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -49,9 +49,13 @@ export default function PasswordPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-stack-md">
+        <form onSubmit={handleSubmit} className="space-y-stack-md" aria-label="Site password verification">
           <div>
+            <label htmlFor="site-password" className="sr-only">
+              Site Password
+            </label>
             <input
+              id="site-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

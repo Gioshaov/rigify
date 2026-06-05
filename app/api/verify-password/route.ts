@@ -1,25 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
+
+// Simple in-memory rate limiting (5 attempts per IP per 15 minutes)
+const rateLimitMap = new Map<string, { attempts: number; resetAt: number }>();
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetAt) {
+    rateLimitMap.set(ip, { attempts: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+
+  if (record.attempts >= MAX_ATTEMPTS) {
+    return false;
+  }
+
+  record.attempts++;
+  return true;
+}
+
+function createCookieValue(secret: string): string {
+  return crypto.createHmac('sha256', secret).update('rigify_access').digest('hex');
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { password } = await request.json();
-    const correctPassword = process.env.SITE_PASSWORD;
-
-    if (!correctPassword) {
+    // Rate limiting
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    if (!checkRateLimit(ip)) {
+      console.warn(`Rate limit exceeded for IP: ${ip}`);
       return NextResponse.json(
-        { success: false, error: 'Site password not configured' },
-        { status: 500 }
+        { success: false, error: 'Too many attempts. Please try again later.' },
+        { status: 429 }
       );
     }
 
-    if (password === correctPassword) {
+    const body = await request.json();
+    const { password } = body;
+
+    // Validate input
+    if (typeof password !== 'string' || password.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
+    const correctPassword = process.env.SITE_PASSWORD;
+
+    if (!correctPassword) {
+      console.error('SITE_PASSWORD environment variable not set');
+      return NextResponse.json(
+        { success: false, error: 'Service temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
+    // Timing-safe password comparison
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(password.padEnd(correctPassword.length)),
+      Buffer.from(correctPassword)
+    ) && password.length === correctPassword.length;
+
+    if (isValid) {
       const cookieStore = await cookies();
-      cookieStore.set('rigify_access', 'granted', {
+      const cookieValue = createCookieValue(correctPassword);
+
+      cookieStore.set('rigify_access', cookieValue, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 30, // 30 days
+        maxAge: 60 * 60 * 24 * 30, // 30 days - intentional for staging environment
         path: '/',
       });
 
@@ -31,6 +87,7 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     );
   } catch (error) {
+    console.error('Password verification error:', error);
     return NextResponse.json(
       { success: false, error: 'An error occurred' },
       { status: 500 }

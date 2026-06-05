@@ -6,7 +6,8 @@
       "Bash(node *)",
       "PowerShell(npm run *)",
       "Bash(git commit *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "PowerShell(New-Item *)"
     ]
   }
 }

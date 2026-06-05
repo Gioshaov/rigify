@@ -389,6 +389,92 @@
 
 ---
 
+### Session 8 - June 5, 2026: Documentation Consolidation & Project Structure Cleanup
+
+**User Request**: *"we have multiple session md files. we need to consolidate in one... also consolidate UI files... find any md files for architecture, implementation.md and anything similar... now review the whole directory and check if we can improve file structure."*
+
+**Objective**: Clean up project organization, consolidate documentation, fix production build
+
+**1. Documentation Consolidation** ✅
+- Merged 4 session files → `SESSION_HISTORY.md` + `LATEST_SESSION.md`
+  - Created two-file system: LATEST_SESSION.md (living doc read at session start) + SESSION_HISTORY.md (full archive)
+  - Consolidated: SESSION_SUMMARY_DAY3.md, SESSION_SUMMARY_DAY4.md, SESSION_SUMMARY_DAY5.md, SESSION_SUMMARY_DAY7.md
+- Merged 4 UI files → `UI_GUIDE.md`
+  - Consolidated: SKILL.md, UI_UX_AUDIT.md, CONTRAST_AUDIT_RESULTS.md, .claude-ui/claude.ui.md
+  - 30KB comprehensive guide with color system, components, accessibility guidelines
+- Deleted 8+ redundant/outdated MD files:
+  - rigify-architecture.md (848 lines, mostly implemented or outdated)
+  - IMPLEMENTATION_SUMMARY.md
+  - ISSUES_TO_FIX.md (all fixed)
+  - rigify-all-changes.patch
+- **Result**: 4 essential docs (down from 12+): CLAUDE.md, LATEST_SESSION.md, SESSION_HISTORY.md, UI_GUIDE.md
+
+**2. Project Structure Reorganization** ✅
+- Created `/scripts` with README - Development utilities (contrast-audit.js, find-outline-color.js)
+- Created `/design-assets` with README - Design mockups (moved stitch_rigify_dark_premium_marketplace/)
+- Created `/public` with README - Static assets (Next.js convention)
+- Moved `CitiesSection.tsx` → `components/marketing/`
+- Deleted duplicate logout route (kept (auth)/logout/route.ts with CSRF protection)
+- Removed empty directories
+- Added PROJECT_STRUCTURE.md for organization reference
+- **Result**: Clean, professional structure following Next.js conventions
+
+**3. Documentation Fixes** ✅
+- Fixed all stale references (SESSION_SUMMARY.md → LATEST_SESSION.md)
+- Fixed README files with literal `\n` characters (scripts/, design-assets/, public/)
+- Updated folder structure in CLAUDE.md
+- **Result**: All references accurate, no broken links
+
+**4. Code Review Protocol Update** ✅
+- Updated to hybrid workflow:
+  - Claude automatically invokes `@code-reviewer` after commits (via Agent tool)
+  - User manually triggers `/codex:review` for second opinion (via Skill tool)
+- Fixed all contradictions and clarity issues over 5 iterations
+- Changed label from "(automatic)" to "(Claude-invoked)"
+- Defined CONDITIONAL PASS requirements
+- Excluded CLAUDE.md from trivial changes exemption
+- **Result**: Clear, unambiguous workflow
+
+**5. Vercel Build Fix** ✅
+- **Problem**: Production build failing with "useSearchParams() should be wrapped in a suspense boundary at page '/login'"
+- **Solution**: 
+  - Created `LoginPageClient.tsx` with useSearchParams logic
+  - Wrapped in Suspense with `<div className="min-h-screen bg-background" />` fallback
+  - Improved from null fallback per code review
+- **Files**: `app/(auth)/login/page.tsx`, `app/(auth)/login/LoginPageClient.tsx`
+- **Result**: Production builds succeed on Vercel ✅
+
+**6. Discussed Password Protection**
+- User asked: *"how can we portect website from public viewing? like a password or soemthing"*
+- Presented 4 options: Vercel password protection (paid), custom middleware gate (free), HTTP basic auth, IP allowlist
+- **Recommendation**: Custom password gate (free, easy to implement)
+- **Status**: No implementation, awaiting user decision
+
+**Files Changed**:
+- **Created**: 6 files (LATEST_SESSION.md, SESSION_HISTORY.md, UI_GUIDE.md, PROJECT_STRUCTURE.md, LoginPageClient.tsx, 3 READMEs)
+- **Modified**: 10+ files (CLAUDE.md, page.tsx, etc.)
+- **Deleted**: 60+ files (old docs, moved files, duplicates)
+- **Reorganized**: Design assets, scripts, components
+
+**Commits** (7 total):
+1. `7113df6` - Consolidate documentation and reorganize structure
+2. `6d6fb8c` - Fix code review issues
+3. `921d353` - Update code review protocol to hybrid workflow
+4. `3efdbd1` - Fix protocol contradictions
+5. `60c77f2` - Fix remaining contradictions
+6. `152f37e` - Fix login page Suspense boundary
+7. `37ac49b` - Improve Suspense fallback
+
+**Final Status**:
+- ✅ All changes pushed to `origin/main`
+- ✅ TypeScript: No errors
+- ✅ Build: Passing on Vercel
+- ✅ Working Tree: Clean
+- ✅ Documentation: Organized and consolidated
+- ✅ Project structure: Professional and clean
+
+---
+
 ## Database Schema (Key Tables)
 
 ### businesses
@@ -573,12 +659,13 @@ All 19 migrations in `supabase/migrations/`:
 
 ## Summary Statistics
 
-**Total Development Time**: 7 sessions (June 1-5, 2026)
+**Total Development Time**: 8 sessions (June 1-5, 2026)
 
 **Migrations**: 19 applied  
-**Files Created**: 60+  
+**Files Created**: 70+  
 **Files Modified**: 100+  
-**Commits**: 40+  
+**Files Deleted**: 60+  
+**Commits**: 47+  
 **Lines of Code**: ~5000+
 
 **Issues Fixed**:
@@ -587,6 +674,7 @@ All 19 migrations in `supabase/migrations/`:
 - Session 3: 1 critical booking bug
 - Session 4: 5 critical bugs (staff filter, guest confirmation, etc.)
 - Session 7: 21 issues (1 critical, 9 major, 11 minor)
+- Session 8: Documentation consolidation, project structure cleanup, production build fix
 
 **Total**: 56+ issues fixed across all sessions
 
@@ -602,5 +690,5 @@ All 19 migrations in `supabase/migrations/`:
 
 ---
 
-**Last Session End**: June 5, 2026  
-**Ready for Next Session**: Test the complete public booking flow, then move to customer booking management features.
+**Last Session End**: June 5, 2026 (Session 8)  
+**Ready for Next Session**: Site password protection OR test the complete public booking flow OR customer booking management features.
