@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { combineLocalDateTime } from '@/lib/utils/datetime'
+import { combineLocalDateTime, TBILISI_TZ } from '@/lib/utils/datetime'
+import { formatInTimeZone } from 'date-fns-tz'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -80,9 +81,9 @@ export async function GET(request: NextRequest) {
     const slotStart = combineLocalDateTime(date, slot)
     const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60000)
 
-    // Check if the service would end after business hours
-    const slotEndHour = slotEnd.getHours()
-    const slotEndMinute = slotEnd.getMinutes()
+    // Check if the service would end after business hours (use Tbilisi timezone)
+    const slotEndHour = parseInt(formatInTimeZone(slotEnd, TBILISI_TZ, 'HH'))
+    const slotEndMinute = parseInt(formatInTimeZone(slotEnd, TBILISI_TZ, 'mm'))
     const endsAfterHours = slotEndHour > endHour || (slotEndHour === endHour && slotEndMinute > 0)
 
     if (endsAfterHours) return false
