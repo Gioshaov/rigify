@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { createClient } from "@/lib/supabase/client";
-import { CitiesSection } from "./CitiesSection";
+import { CitiesSection } from "@/components/marketing/CitiesSection";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { useTranslations } from "@/lib/hooks/useTranslations";
 

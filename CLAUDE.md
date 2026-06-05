@@ -6,9 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## UI Design System
 
-**Always read `.claude-ui/claude.ui.md` before any UI work in this project.**
+**Always read `UI_GUIDE.md` before any UI work in this project.**
 
-**Always read `.claude/skills/ui-ux-pro-max/SKILL.md` for design principles.**
+This single consolidated guide contains:
+- Design philosophy and color system (WCAG AA compliant)
+- Component patterns and page layouts
+- Accessibility guidelines and requirements
+- Known issues and improvement roadmap
+- Component checklist for new work
 
 ---
 
@@ -501,8 +506,64 @@ export function hasOverlap(
 
 ---
 
+## Session Management
+
+**Two-File System**:
+1. **LATEST_SESSION.md** - Living document (READ at session start)
+   - Current implementation status
+   - Latest session work
+   - What's next
+   - Stays concise, always current
+
+2. **SESSION_HISTORY.md** - Full archive (reference only, not read each session)
+   - All sessions chronologically
+   - Complete audit trail
+   - Only read when needed to trace back
+
+**At Session Start**:
+- Read `LATEST_SESSION.md` to understand current state
+- Do NOT read `SESSION_HISTORY.md` (saves context)
+
+**When user says "session end"**:
+1. **Update LATEST_SESSION.md**:
+   - Update "Current Implementation Status" if features added
+   - Replace "Latest Session Work" section with this session's work
+   - Update "What's Next" section
+   - Update dates at top and bottom
+
+2. **Append to SESSION_HISTORY.md**:
+   - Add new session entry to "Session History" section
+   - Include: date, objectives, accomplishments, files changed, commits, next steps
+   - Keep chronological order
+
+**Never**:
+- Create separate session files (SESSION_SUMMARY_DAY3.md, etc.)
+- Skip updating both files
+- Read SESSION_HISTORY.md at session start (only when needed for reference)
+
+**Session Entry Format** (for SESSION_HISTORY.md):
+```markdown
+### Session N - Date: Title
+
+**Objective**: What we set out to do
+
+**Accomplished**:
+- Feature 1 built
+- Bug fixed
+- etc.
+
+**Files Changed**: X created, Y modified
+
+**Commits**: <hash> - description
+
+**Next Steps**: What's ready for next session
+```
+
+---
+
 ## Reference Documents
 
-- **SESSION_SUMMARY.md** — Full session log, what's implemented, next steps
-- **rigify-architecture.md** — Original spec (some parts not yet implemented)
+- **LATEST_SESSION.md** — Current status + latest work (read at session start)
+- **SESSION_HISTORY.md** — Full chronological archive (reference only)
+- **UI_GUIDE.md** — Complete UI/UX design system and component patterns
 - **supabase/migrations/** — Database schema source of truth

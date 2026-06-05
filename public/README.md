@@ -1,0 +1,1 @@
+# Public Assets\n\nStatic files served directly by Next.js.\n\n## Structure\n\nPlace static assets here:\n- Favicon and app icons\n- robots.txt\n- sitemap.xml\n- Static images (logos, etc.)\n\n**Note**: Assets in this folder are served from the root URL (`/filename`).
