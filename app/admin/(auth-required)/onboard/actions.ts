@@ -151,12 +151,6 @@ export async function onboardBusiness(formData: FormData) {
 
   // 4. Optionally create staff account (validation already done above)
   if (staffName && staffEmail && staffPassword) {
-    console.log('[ONBOARD] ========== STAFF CREATION START ==========')
-    console.log('[ONBOARD] Staff name:', staffName)
-    console.log('[ONBOARD] Business ID:', business.id)
-    console.log('[ONBOARD] Business name:', name)
-
-    console.log('[ONBOARD] Step 1: Creating auth user...')
     const { data: staffAuthData, error: staffAuthError } = await admin.auth.admin.createUser({
       email: staffEmail,
       password: staffPassword,
@@ -183,9 +177,6 @@ export async function onboardBusiness(formData: FormData) {
       }
     }
 
-    console.log('[ONBOARD] ✅ Step 1 SUCCESS - Auth user created:', staffAuthData.user.id)
-    console.log('[ONBOARD] Step 2: Inserting staff record into database...')
-
     const staffInsertData = {
       business_id: business.id,
       name: staffName,
@@ -193,7 +184,6 @@ export async function onboardBusiness(formData: FormData) {
       role: 'staff',
       is_active: true,
     }
-    console.log('[ONBOARD] Insert data:', staffInsertData)
 
     const { data: staffRecord, error: staffInsertError } = await admin
       .from('staff')
@@ -204,13 +194,10 @@ export async function onboardBusiness(formData: FormData) {
     if (staffInsertError) {
       console.error('[ONBOARD] ❌ Step 2 FAILED - Database insert error:', staffInsertError.message)
       console.error('[ONBOARD] Full error:', JSON.stringify(staffInsertError, null, 2))
-      console.log('[ONBOARD] Rolling back auth user...')
 
       const { error: deleteError } = await admin.auth.admin.deleteUser(staffAuthData.user.id)
       if (deleteError) {
         console.error('[ONBOARD] Rollback also failed:', deleteError.message)
-      } else {
-        console.log('[ONBOARD] Rollback successful')
       }
 
       return {
@@ -219,10 +206,6 @@ export async function onboardBusiness(formData: FormData) {
         subdomain,
       }
     }
-
-    console.log('[ONBOARD] ✅ Step 2 SUCCESS - Staff record created')
-    console.log('[ONBOARD] Staff record:', JSON.stringify(staffRecord, null, 2))
-    console.log('[ONBOARD] ========== STAFF CREATION COMPLETE ==========')
 
     // Verify staff was actually created by querying it back
     const { data: verifyStaff, error: verifyError } = await admin
@@ -233,8 +216,6 @@ export async function onboardBusiness(formData: FormData) {
 
     if (verifyError || !verifyStaff) {
       console.error('[ONBOARD] ⚠️ WARNING - Staff was inserted but cannot be queried back:', verifyError?.message)
-    } else {
-      console.log('[ONBOARD] ✅ VERIFIED - Staff exists in database:', verifyStaff)
     }
 
     // Staff created successfully!

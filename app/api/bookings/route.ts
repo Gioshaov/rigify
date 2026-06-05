@@ -49,23 +49,10 @@ export async function POST(request: NextRequest) {
     const endDatetime = new Date(appointmentDatetime.getTime() + service.duration_minutes * 60000)
 
     // Double-check availability (prevent race conditions)
-
-    const { data: existingBookings } = await admin
-      .from('bookings')
-      .select('appointment_datetime, end_datetime')
-      .eq('business_id', businessId)
-      .eq('status', 'confirmed')
-
-    // Filter bookings for the same day
     const dayStart = combineLocalDateTime(date, '00:00')
     const dayEnd = combineLocalDateTime(date, '23:59')
 
-    const bookingsOnDay = existingBookings?.filter(booking => {
-      const bookingDate = new Date(booking.appointment_datetime)
-      return bookingDate >= dayStart && bookingDate <= dayEnd
-    })
-
-    // Re-check availability to prevent race conditions
+    // Check all confirmed bookings on this day
     // Check ALL bookings regardless of staffId to prevent double-booking
     const { data: confirmedBookings, error: overlapError } = await admin
       .from('bookings')
@@ -84,8 +71,9 @@ export async function POST(request: NextRequest) {
     }
 
     // If specific staff requested, check overlaps for that staff
-    // If no staff requested ("Any Staff"), check if ANY staff is available (no overlaps with any booking)
+    // If no staff requested ("Any Staff"), find an available staff member and assign them
     let hasOverlap = false
+    let assignedStaffId = staffId
 
     if (staffId) {
       // Specific staff: check only their bookings
@@ -96,13 +84,38 @@ export async function POST(request: NextRequest) {
         return bookingStart < endDatetime && bookingEnd > appointmentDatetime
       })
     } else {
-      // "Any Staff": ensure no overlap with any existing booking
-      // (we'll assign to available staff, so must check all bookings)
-      hasOverlap = confirmedBookings?.some((booking) => {
-        const bookingStart = new Date(booking.appointment_datetime)
-        const bookingEnd = new Date(booking.end_datetime)
-        return bookingStart < endDatetime && bookingEnd > appointmentDatetime
-      }) || false
+      // "Any Staff": find an available staff member and assign them to the booking
+      // Get all active staff for this business
+      const { data: allStaff, error: staffError } = await admin
+        .from('staff')
+        .select('id')
+        .eq('business_id', businessId)
+        .eq('is_active', true)
+
+      if (staffError || !allStaff || allStaff.length === 0) {
+        return NextResponse.json(
+          { error: 'No staff available for this service.' },
+          { status: 400 }
+        )
+      }
+
+      // Check if at least one staff member has no conflict
+      const availableStaff = allStaff.filter(staff => {
+        const staffBookings = confirmedBookings?.filter(b => b.staff_id === staff.id) || []
+        const hasConflict = staffBookings.some((booking) => {
+          const bookingStart = new Date(booking.appointment_datetime)
+          const bookingEnd = new Date(booking.end_datetime)
+          return bookingStart < endDatetime && bookingEnd > appointmentDatetime
+        })
+        return !hasConflict
+      })
+
+      if (availableStaff.length === 0) {
+        hasOverlap = true
+      } else {
+        // Assign the first available staff member
+        assignedStaffId = availableStaff[0].id
+      }
     }
 
     if (hasOverlap) {
@@ -130,7 +143,7 @@ export async function POST(request: NextRequest) {
       .insert({
         business_id: businessId,
         service_id: serviceId,
-        staff_id: staffId || null,
+        staff_id: assignedStaffId,
         customer_id: customerId,
         customer_name: customerName,
         customer_phone: customerPhone,

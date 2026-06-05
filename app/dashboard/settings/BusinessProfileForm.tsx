@@ -33,7 +33,7 @@ export function BusinessProfileForm({
   business: Business;
   categoryIds: string[];
 }) {
-  const { t } = useTranslations();
+  const { tr, lang } = useTranslations();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [isDirty, setIsDirty] = useState(false);
@@ -72,7 +72,7 @@ export function BusinessProfileForm({
       {/* Result Messages */}
       {result?.success && (
         <div className="mb-stack-lg p-gutter border border-primary bg-surface">
-          <p className="label-mono text-primary">{t("dashboard.settings.profileUpdated")}</p>
+          <p className="label-mono text-primary">{tr.dashboard.settings.profileUpdated[lang]}</p>
         </div>
       )}
 
@@ -85,13 +85,13 @@ export function BusinessProfileForm({
       {/* Basic Info */}
       <div className="mb-section-gap">
         <h2 className="text-headline-lg mb-stack-lg border-b border-outline-variant pb-stack-md">
-          {t("dashboard.settings.basicInfo")}
+          {tr.dashboard.settings.basicInfo[lang]}
         </h2>
 
         <div className="space-y-stack-md">
           <div>
             <label htmlFor="name" className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.businessName")}
+              {tr.dashboard.settings.businessName[lang]}
             </label>
             <input
               id="name"
@@ -105,7 +105,7 @@ export function BusinessProfileForm({
 
           <div>
             <label htmlFor="description" className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.description")}
+              {tr.dashboard.settings.description[lang]}
             </label>
             <textarea
               id="description"
@@ -113,13 +113,13 @@ export function BusinessProfileForm({
               rows={4}
               defaultValue={business.description || ""}
               className="input-field resize-none"
-              placeholder={t("dashboard.settings.descriptionPlaceholder")}
+              placeholder={tr.dashboard.settings.descriptionPlaceholder[lang]}
             />
           </div>
 
           <div>
             <label className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.categories")}
+              {tr.dashboard.settings.categories[lang]}
             </label>
             <CategoryDropdown defaultSelected={categoryIds} />
           </div>
@@ -129,14 +129,14 @@ export function BusinessProfileForm({
       {/* Location */}
       <div className="mb-section-gap">
         <h2 className="text-headline-lg mb-stack-lg border-b border-outline-variant pb-stack-md">
-          {t("dashboard.settings.location")}
+          {tr.dashboard.settings.location[lang]}
         </h2>
 
         <div className="space-y-stack-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
             <div>
               <label htmlFor="city" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.city")}
+                {tr.dashboard.settings.city[lang]}
               </label>
               <select
                 id="city"
@@ -156,7 +156,7 @@ export function BusinessProfileForm({
 
             <div>
               <label htmlFor="district" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.district")}
+                {tr.dashboard.settings.district[lang]}
               </label>
               <DistrictDropdown
                 defaultValue={business.district}
@@ -167,7 +167,7 @@ export function BusinessProfileForm({
 
           <div>
             <label htmlFor="address" className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.streetAddress")}
+              {tr.dashboard.settings.streetAddress[lang]}
             </label>
             <input
               id="address"
@@ -176,7 +176,7 @@ export function BusinessProfileForm({
               required
               defaultValue={business.address}
               className="input-field"
-              placeholder={t("dashboard.settings.streetAddressPlaceholder")}
+              placeholder={tr.dashboard.settings.streetAddressPlaceholder[lang]}
             />
           </div>
         </div>
@@ -185,14 +185,14 @@ export function BusinessProfileForm({
       {/* Contact */}
       <div className="mb-section-gap">
         <h2 className="text-headline-lg mb-stack-lg border-b border-outline-variant pb-stack-md">
-          {t("dashboard.settings.contactInfo")}
+          {tr.dashboard.settings.contactInfo[lang]}
         </h2>
 
         <div className="space-y-stack-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
             <div>
               <label htmlFor="phone" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.phone")}
+                {tr.dashboard.settings.phone[lang]}
               </label>
               <input
                 id="phone"
@@ -207,7 +207,7 @@ export function BusinessProfileForm({
 
             <div>
               <label htmlFor="email" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.email")}
+                {tr.dashboard.settings.email[lang]}
               </label>
               <input
                 id="email"
@@ -223,7 +223,7 @@ export function BusinessProfileForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
             <div>
               <label htmlFor="website" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.website")}
+                {tr.dashboard.settings.website[lang]}
               </label>
               <input
                 id="website"
@@ -237,7 +237,7 @@ export function BusinessProfileForm({
 
             <div>
               <label htmlFor="instagram" className="label-mono block mb-stack-sm">
-                {t("dashboard.settings.instagram")}
+                {tr.dashboard.settings.instagram[lang]}
               </label>
               <input
                 id="instagram"
@@ -245,7 +245,7 @@ export function BusinessProfileForm({
                 type="text"
                 defaultValue={business.instagram || ""}
                 className="input-field"
-                placeholder={t("dashboard.settings.instagramPlaceholder")}
+                placeholder={tr.dashboard.settings.instagramPlaceholder[lang]}
               />
             </div>
           </div>
@@ -255,14 +255,14 @@ export function BusinessProfileForm({
       {/* Images */}
       <div className="mb-section-gap">
         <h2 className="text-headline-lg mb-stack-lg border-b border-outline-variant pb-stack-md">
-          {t("dashboard.settings.images")}
+          {tr.dashboard.settings.images[lang]}
         </h2>
 
         <div className="space-y-stack-lg">
           {/* Cover Image */}
           <div>
             <label className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.coverImage")}
+              {tr.dashboard.settings.coverImage[lang]}
             </label>
             <input type="hidden" name="cover_image_url" value={coverImageUrl || ''} />
             <ImageUpload
@@ -280,7 +280,7 @@ export function BusinessProfileForm({
           {/* Logo */}
           <div>
             <label className="label-mono block mb-stack-sm">
-              {t("dashboard.settings.logo")}
+              {tr.dashboard.settings.logo[lang]}
             </label>
             <input type="hidden" name="logo_url" value={logoUrl || ''} />
             <ImageUpload
@@ -304,7 +304,7 @@ export function BusinessProfileForm({
           disabled={loading || !isDirty}
           className="btn-primary"
         >
-          {loading ? t("dashboard.settings.updating") : t("dashboard.settings.updateProfile")}
+          {loading ? tr.dashboard.settings.updating[lang] : tr.dashboard.settings.updateProfile[lang]}
         </button>
 
         {isDirty && (

@@ -47,6 +47,7 @@ export function EditBusinessForm({
 }) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
 
   // Live preview state
   const [liveBusinessName, setLiveBusinessName] = useState(business.name)

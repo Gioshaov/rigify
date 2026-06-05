@@ -21,7 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="flex min-h-screen bg-background text-on-surface">
       <Sidebar businessName={business?.name} city={business?.city} />
       <div className="flex-1 min-w-0">
-        <DashboardHeader userEmail={user.email} />
+        <DashboardHeader userEmail={user.email ?? ''} />
         <main className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
       </div>
     </div>

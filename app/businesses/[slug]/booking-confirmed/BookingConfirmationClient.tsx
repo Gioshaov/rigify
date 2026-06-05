@@ -136,14 +136,16 @@ export function BookingConfirmationClient({
 
             <div>
               <p className="label-mono text-on-surface-variant mb-stack-xs">{tr.bookingConfirmed.customer[lang]}</p>
-              <p className="text-headline-sm">{booking.customer_name}</p>
-              {canViewPII && (
+              {canViewPII ? (
                 <>
+                  <p className="text-headline-sm">{booking.customer_name}</p>
                   <p className="text-body-md text-on-surface-variant">{booking.customer_phone}</p>
                   {booking.customer_email && (
                     <p className="text-body-md text-on-surface-variant">{booking.customer_email}</p>
                   )}
                 </>
+              ) : (
+                <p className="text-body-md text-on-surface-variant">Private booking</p>
               )}
             </div>
 

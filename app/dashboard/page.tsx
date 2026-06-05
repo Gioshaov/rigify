@@ -8,8 +8,6 @@ export default async function DashboardOverviewPage() {
     error: userError,
   } = await supabase.auth.getUser();
 
-  console.log("Dashboard getUser:", { user: user?.id, error: userError });
-
   if (!user) {
     return (
       <section>
@@ -27,8 +25,6 @@ export default async function DashboardOverviewPage() {
     .eq("owner_id", user.id)
     .maybeSingle();
 
-  console.log("Dashboard business query:", { userId: user.id, business, bizError });
-
   if (!business) {
     const admin = createAdminClient();
     const { data: adminCheck } = await admin
@@ -36,7 +32,6 @@ export default async function DashboardOverviewPage() {
       .select("id, name, owner_id, is_active")
       .eq("owner_id", user.id)
       .maybeSingle();
-    console.log("Admin bypass RLS check:", adminCheck);
   }
 
   if (!business) {
@@ -58,11 +53,31 @@ export default async function DashboardOverviewPage() {
 
   const { data: todays } = await supabase
     .from("bookings")
-    .select("id, customer_name, appointment_datetime, status, booking_source, price, services(name), staff(name)")
+    .select(`
+      id,
+      customer_name,
+      appointment_datetime,
+      status,
+      booking_source,
+      price,
+      services!inner (
+        name
+      ),
+      staff!left (
+        name
+      )
+    `)
     .eq("business_id", business.id)
     .gte("appointment_datetime", startOfDay.toISOString())
     .lt("appointment_datetime", endOfDay.toISOString())
     .order("appointment_datetime", { ascending: true });
 
-  return <DashboardOverviewContent business={business} todays={todays || []} />;
+  // Transform array joins to single objects for component
+  const transformedTodays = todays?.map(booking => ({
+    ...booking,
+    services: Array.isArray(booking.services) ? booking.services[0] : booking.services,
+    staff: Array.isArray(booking.staff) ? booking.staff[0] : booking.staff
+  })) || [];
+
+  return <DashboardOverviewContent business={business} todays={transformedTodays} />;
 }
