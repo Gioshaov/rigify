@@ -49,10 +49,13 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
   const { data: { user } } = await supabase.auth.getUser();
 
   let canViewPII = false;
+  let isAuthorizedViewer = false;
+
   if (user) {
     // Check if viewer is the customer
     if (booking.customer_id === user.id) {
       canViewPII = true;
+      isAuthorizedViewer = true;
     }
 
     // Check if viewer is the business owner
@@ -64,6 +67,17 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
 
     if (business?.owner_id === user.id) {
       canViewPII = true;
+      isAuthorizedViewer = true;
+    }
+  }
+
+  // Guest bookings expire after 24 hours for unauthenticated/unauthorized viewers
+  if (!isAuthorizedViewer) {
+    const bookingAge = Date.now() - new Date(booking.created_at).getTime();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    if (bookingAge > twentyFourHours) {
+      notFound();
     }
   }
 
