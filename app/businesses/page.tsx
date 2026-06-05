@@ -50,7 +50,7 @@ export default async function BusinessesPage({
   return (
     <main className="min-h-screen bg-background text-on-surface">
       {/* Header */}
-      <header className="border-b border-outline-variant">
+      <header>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
             RIGIFY
@@ -84,7 +84,7 @@ export default async function BusinessesPage({
       </header>
 
       {/* Hero */}
-      <section className="border-b border-outline-variant">
+      <section>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <p className="label-mono text-primary mb-stack-md">
             {cityName ? `${cityName.toUpperCase()} · ` : `${tr.browsePage.browse[lang]} · `}{businesses?.length || 0} {tr.browsePage.studios[lang]}
@@ -119,7 +119,7 @@ export default async function BusinessesPage({
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-outline-variant mt-section-gap">
+      <footer className="mt-section-gap">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between gap-stack-md text-on-surface-variant">
           <p className="label-mono">© {new Date().getFullYear()} RIGIFY</p>
           <p className="label-mono">RIGIFY.GE</p>

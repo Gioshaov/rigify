@@ -177,12 +177,12 @@ export function BusinessGrid({ businesses }: { businesses: Business[] }) {
       </div>
 
       {/* Business Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-outline-variant">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBusinesses.map((business) => (
           <Link
             key={business.id}
             href={`/businesses/${business.slug}`}
-            className="bg-background hover:bg-surface transition-colors group"
+            className="hover:bg-surface transition-colors group"
           >
             {/* Cover Image */}
             <div className="aspect-video bg-surface-container relative overflow-hidden">

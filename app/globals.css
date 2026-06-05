@@ -9,6 +9,7 @@
   }
   body {
     @apply bg-background text-on-surface font-hanken text-body-md antialiased min-h-screen;
+    letter-spacing: 0.01em;
   }
   ::selection {
     background-color: #c9a84c;

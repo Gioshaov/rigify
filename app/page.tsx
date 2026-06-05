@@ -38,7 +38,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-background text-on-surface">
-        <header className="border-b border-outline-variant">
+        <header>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
           <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
             RIGIFY
@@ -67,7 +67,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section className="border-b border-outline-variant">
+      <section>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <p className="label-mono text-primary mb-stack-md">{tr.homepage.hero.subtitle[lang]}</p>
           <h1 className="text-display-lg-mobile md:text-display-lg max-w-3xl">
@@ -83,15 +83,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-b border-outline-variant">
+      <section>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <p className="label-mono mb-stack-lg">{tr.homepage.categories[lang]}</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-outline-variant">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.id}
                 href={`/tbilisi/${c.id}`}
-                className="bg-background p-gutter hover:bg-surface transition-colors group"
+                className="p-gutter hover:bg-surface transition-colors group"
               >
                 <p className="text-headline-md">{c[lang]}</p>
               </Link>
@@ -102,7 +102,7 @@ export default function HomePage() {
 
       <CitiesSection />
 
-      <footer className="border-t border-outline-variant">
+      <footer>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between gap-stack-md text-on-surface-variant">
           <p className="label-mono">© {new Date().getFullYear()} RIGIFY</p>
           <p className="label-mono">RIGIFY.GE</p>
