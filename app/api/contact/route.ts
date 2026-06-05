@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 
-// Simple in-memory rate limiter (5 requests per IP per 15 minutes)
+// TODO: In-memory rate limiter is NOT EFFECTIVE in serverless (Vercel)
+// Each cold start gets a fresh Map. Replace with Upstash Redis or Vercel KV
+// for production. Current implementation provides minimal protection.
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT = 5
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes

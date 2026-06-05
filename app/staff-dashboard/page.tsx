@@ -75,7 +75,7 @@ export default async function StaffDashboardOverviewPage() {
                 <span className="col-span-4">{b.customer_name}</span>
                 <span className="col-span-3 text-on-surface-variant">{b.services?.name ?? "—"}</span>
                 <span className="col-span-2 text-on-surface-variant">{b.staff?.name ?? "—"}</span>
-                <span className="col-span-1 label-mono text-primary">{b.booking_source.toUpperCase()}</span>
+                <span className="col-span-1 label-mono text-primary">{(b.booking_source ?? '—').toUpperCase()}</span>
               </li>
             ))}
           </ul>

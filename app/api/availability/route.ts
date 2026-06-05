@@ -19,11 +19,13 @@ export async function GET(request: NextRequest) {
 
   const admin = createAdminClient()
 
-  // Get service to know duration
+  // Get service to know duration (must belong to the claimed business)
   const { data: service, error: serviceError } = await admin
     .from('services')
     .select('duration_minutes')
     .eq('id', serviceId)
+    .eq('business_id', businessId)
+    .eq('is_active', true)
     .single()
 
   if (serviceError || !service) {
