@@ -3,7 +3,7 @@ import { LoginPageClient } from "./LoginPageClient";
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <LoginPageClient />
     </Suspense>
   );
