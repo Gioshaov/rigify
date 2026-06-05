@@ -34,14 +34,24 @@ export default async function CustomerBookingsPage() {
       .limit(10)
   ]);
 
-  const upcoming = (upcomingData || []).map(b => ({
+  type BookingRow = {
+    id: string;
+    appointment_datetime: string;
+    status: string;
+    business_id: string;
+    businesses: { name: string; address: string } | { name: string; address: string }[];
+    services: { name: string } | { name: string }[];
+    staff: { name: string } | { name: string }[] | null;
+  };
+
+  const upcoming = (upcomingData || []).map((b: BookingRow) => ({
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,
     staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
   }));
 
-  const past = (pastData || []).map(b => ({
+  const past = (pastData || []).map((b: BookingRow) => ({
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,

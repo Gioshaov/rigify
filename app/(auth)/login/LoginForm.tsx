@@ -23,7 +23,7 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
         });
       }}
     >
-      <input type="hidden" name="redirect" value={redirectTo ?? "/dashboard"} />
+      {redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
 
       <label className="block">
         <span className="label-mono">{tr.auth.login.email[lang]}</span>

@@ -165,7 +165,7 @@ export default async function BusinessProfilePage({
               {/* Rating */}
               {business.review_count > 0 ? (
                 <p className="label-mono text-on-surface-variant mb-stack-md">
-                  ★ {business.rating.toFixed(1)} · {business.review_count} {tr.businessProfile.reviews[lang]}
+                  ★ {business.rating?.toFixed(1) ?? '0.0'} · {business.review_count} {tr.businessProfile.reviews[lang]}
                 </p>
               ) : (
                 <p className="label-mono text-on-surface-variant mb-stack-md">
