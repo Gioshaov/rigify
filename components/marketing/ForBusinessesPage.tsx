@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { useState, FormEvent } from 'react'
+import { LanguageToggle } from '@/components/ui/LanguageToggle'
+import { useTranslations } from '@/lib/hooks/useTranslations'
 
 export default function ForBusinessesPage() {
+  const { tr, lang } = useTranslations()
   const [formData, setFormData] = useState({
     name: '',
     business_name: '',
@@ -56,8 +59,9 @@ export default function ForBusinessesPage() {
             RIGIFY
           </Link>
           <nav className="hidden md:flex items-center gap-stack-lg">
-            <Link href="/" className="label-mono hover:text-primary">Home</Link>
-            <Link href="/login" className="btn-secondary !py-2">Sign in</Link>
+            <Link href="/" className="label-mono hover:text-primary">{tr.common.home[lang]}</Link>
+            <Link href="/login" className="btn-secondary !py-2">{tr.common.signIn[lang]}</Link>
+            <LanguageToggle />
           </nav>
         </div>
       </header>
@@ -65,19 +69,16 @@ export default function ForBusinessesPage() {
       {/* Hero Section */}
       <section className="border-b border-outline-variant">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-md">FOR SALONS · CLINICS · BEAUTY PROFESSIONALS</p>
+          <p className="label-mono text-primary mb-stack-md">{tr.forBusinesses.hero.subtitle[lang]}</p>
           <h1 className="text-display-lg-mobile md:text-display-lg max-w-3xl">
-            შეავსე განრიგი. უპასუხე ყველა ზარს. განავითარე ბიზნესი.
+            {tr.forBusinesses.hero.title[lang]}
           </h1>
-          <p className="mt-stack-sm text-body-md text-on-surface-variant/70 max-w-2xl italic">
-            Fill your calendar. Answer every call. Grow your business.
-          </p>
           <p className="mt-stack-lg text-body-md text-on-surface-variant max-w-2xl">
-            Rigify gives Georgian salons and clinics a professional booking system with an AI receptionist that works 24/7.
+            {tr.forBusinesses.hero.description[lang]}
           </p>
           <div className="mt-stack-lg">
             <button onClick={scrollToContact} className="btn-primary">
-              წვდომის მოთხოვნა
+              {tr.forBusinesses.hero.requestAccess[lang]}
             </button>
           </div>
         </div>
@@ -86,27 +87,27 @@ export default function ForBusinessesPage() {
       {/* Problem Section */}
       <section className="border-b border-outline-variant bg-surface">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-lg">THE PROBLEM</p>
+          <p className="label-mono text-primary mb-stack-lg">{tr.forBusinesses.problem.title[lang]}</p>
           <div className="grid md:grid-cols-3 gap-stack-lg">
             <div className="bg-background border border-outline-variant rounded-lg p-gutter">
               <div className="text-3xl mb-stack-md">📞</div>
-              <h3 className="text-title-md mb-stack-sm">Missed calls = missed revenue</h3>
+              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.missedCalls[lang]}</h3>
               <p className="text-body-sm text-on-surface-variant">
-                Your phone goes unanswered during appointments. Customers call once, then book with your competitor.
+                {tr.forBusinesses.problem.missedCallsDesc[lang]}
               </p>
             </div>
             <div className="bg-background border border-outline-variant rounded-lg p-gutter">
               <div className="text-3xl mb-stack-md">📔</div>
-              <h3 className="text-title-md mb-stack-sm">Notebook scheduling chaos</h3>
+              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.notebook[lang]}</h3>
               <p className="text-body-sm text-on-surface-variant">
-                Double bookings. No-shows. Confusion about who&apos;s coming when. Your notebook isn&apos;t enough anymore.
+                {tr.forBusinesses.problem.notebookDesc[lang]}
               </p>
             </div>
             <div className="bg-background border border-outline-variant rounded-lg p-gutter">
               <div className="text-3xl mb-stack-md">🔍</div>
-              <h3 className="text-title-md mb-stack-sm">No online presence</h3>
+              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.noPresence[lang]}</h3>
               <p className="text-body-sm text-on-surface-variant">
-                Customers can&apos;t find you online. No website. No booking link. Just an Instagram bio with a phone number.
+                {tr.forBusinesses.problem.noPresenceDesc[lang]}
               </p>
             </div>
           </div>
@@ -116,30 +117,30 @@ export default function ForBusinessesPage() {
       {/* What You Get Section */}
       <section className="border-b border-outline-variant">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-lg">WHAT YOU GET</p>
+          <p className="label-mono text-primary mb-stack-lg">{tr.forBusinesses.whatYouGet.title[lang]}</p>
           <div className="grid md:grid-cols-2 gap-stack-xl">
             <div>
-              <h3 className="text-headline-sm mb-stack-sm">Your own booking page</h3>
+              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.bookingPage[lang]}</h3>
               <p className="text-body-md text-on-surface-variant">
-                Customers can find you, see your services, and book appointments online. Share your link everywhere — Instagram, Facebook, WhatsApp.
+                {tr.forBusinesses.whatYouGet.bookingPageDesc[lang]}
               </p>
             </div>
             <div>
-              <h3 className="text-headline-sm mb-stack-sm">AI voice receptionist (Salome)</h3>
+              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.aiReceptionist[lang]}</h3>
               <p className="text-body-md text-on-surface-variant">
-                Answers calls in Georgian 24/7. Books appointments while you work. Never miss a customer again.
+                {tr.forBusinesses.whatYouGet.aiReceptionistDesc[lang]}
               </p>
             </div>
             <div>
-              <h3 className="text-headline-sm mb-stack-sm">Dashboard for your appointments</h3>
+              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.dashboard[lang]}</h3>
               <p className="text-body-md text-on-surface-variant">
-                See all your bookings in one place. No more notebook. Know exactly who&apos;s coming and when.
+                {tr.forBusinesses.whatYouGet.dashboardDesc[lang]}
               </p>
             </div>
             <div>
-              <h3 className="text-headline-sm mb-stack-sm">Your own link for Instagram</h3>
+              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.instagramLink[lang]}</h3>
               <p className="text-body-md text-on-surface-variant">
-                Put rigify.ge/your-salon in your bio. Customers can book directly without calling.
+                {tr.forBusinesses.whatYouGet.instagramLinkDesc[lang]}
               </p>
             </div>
           </div>
@@ -150,16 +151,16 @@ export default function ForBusinessesPage() {
       <section className="border-b border-outline-variant bg-surface">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <div className="max-w-2xl mx-auto text-center">
-            <p className="label-mono text-primary mb-stack-md">SALOME AI</p>
-            <h2 className="text-headline-lg mb-stack-lg">Your 24/7 Georgian receptionist</h2>
+            <p className="label-mono text-primary mb-stack-md">{tr.forBusinesses.salome.title[lang]}</p>
+            <h2 className="text-headline-lg mb-stack-lg">{tr.forBusinesses.salome.subtitle[lang]}</h2>
             <div className="bg-background border border-outline-variant rounded-xl p-gutter mb-stack-lg">
               <div className="text-6xl mb-stack-md">🎙️</div>
               <p className="text-body-lg text-on-surface-variant">
-                Customers call your number. Salome answers in Georgian. Books the appointment. You see it in your dashboard.
+                {tr.forBusinesses.salome.description[lang]}
               </p>
             </div>
             <p className="text-body-sm text-on-surface-variant">
-              No training needed. No complicated setup. Just works from day one.
+              {tr.forBusinesses.salome.noTraining[lang]}
             </p>
           </div>
         </div>
@@ -169,55 +170,52 @@ export default function ForBusinessesPage() {
       <section id="contact" className="border-b border-outline-variant">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <div className="max-w-xl mx-auto">
-            <p className="label-mono text-primary mb-stack-md text-center">REQUEST ACCESS</p>
-            <h2 className="text-headline-lg mb-stack-sm text-center">Let&apos;s get you started</h2>
+            <p className="label-mono text-primary mb-stack-md text-center">{tr.forBusinesses.contact.title[lang]}</p>
+            <h2 className="text-headline-lg mb-stack-sm text-center">{tr.forBusinesses.contact.subtitle[lang]}</h2>
             <p className="text-body-md text-on-surface-variant mb-stack-lg text-center">
-              We&apos;ll reach out within 24 hours to set up your account.
+              {tr.forBusinesses.contact.description[lang]}
             </p>
 
             {showSuccess ? (
               <div className="bg-primary/10 border border-primary rounded-xl p-gutter text-center">
                 <div className="text-4xl mb-stack-sm">✓</div>
-                <h3 className="text-title-lg mb-stack-sm">გმადლობთ!</h3>
-                <p className="text-body-sm text-on-surface-variant/70 italic mb-2">Thank you!</p>
+                <h3 className="text-title-lg mb-stack-sm">{tr.forBusinesses.contact.thankYou[lang]}</h3>
                 <p className="text-body-md text-on-surface-variant">
-                  დაგიკავშირდებით 24 საათში.
+                  {tr.forBusinesses.contact.willContact[lang]}
                 </p>
                 <button
                   onClick={() => setShowSuccess(false)}
                   className="mt-stack-md text-primary hover:underline text-sm"
                 >
-                  სხვა მოთხოვნის გაგზავნა
+                  {tr.forBusinesses.contact.sendAnother[lang]}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-stack-md">
                 <div>
-                  <label className="block text-label-md mb-2">სრული სახელი *</label>
+                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.fullName[lang]}</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    placeholder="თქვენი სახელი / Your name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">ბიზნესის დასახელება *</label>
+                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.businessName[lang]}</label>
                   <input
                     type="text"
                     required
                     value={formData.business_name}
                     onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    placeholder="სალონის დასახელება / Salon name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">ტელეფონის ნომერი *</label>
+                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.phoneNumber[lang]}</label>
                   <input
                     type="tel"
                     required
@@ -229,28 +227,27 @@ export default function ForBusinessesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">ქალაქი</label>
+                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.city[lang]}</label>
                   <select
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
                   >
-                    <option value="">აირჩიეთ ქალაქი</option>
-                    <option value="tbilisi">თბილისი</option>
-                    <option value="batumi">ბათუმი</option>
-                    <option value="kutaisi">ქუთაისი</option>
-                    <option value="other">სხვა</option>
+                    <option value="">{tr.forBusinesses.contact.selectCity[lang]}</option>
+                    <option value="tbilisi">{tr.forBusinesses.contact.tbilisi[lang]}</option>
+                    <option value="batumi">{tr.forBusinesses.contact.batumi[lang]}</option>
+                    <option value="kutaisi">{tr.forBusinesses.contact.kutaisi[lang]}</option>
+                    <option value="other">{tr.forBusinesses.contact.other[lang]}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-label-md mb-2">შეტყობინება (არასავალდებულო)</label>
+                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.message[lang]}</label>
                   <textarea
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     rows={4}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    placeholder="მოგვიყევით თქვენს ბიზნესზე..."
                   />
                 </div>
 
@@ -263,7 +260,7 @@ export default function ForBusinessesPage() {
                   disabled={loading}
                   className="w-full btn-primary disabled:opacity-50"
                 >
-                  {loading ? 'იგზავნება...' : 'მოთხოვნის გაგზავნა'}
+                  {loading ? tr.forBusinesses.contact.sendingMessage[lang] : tr.forBusinesses.contact.sendRequest[lang]}
                 </button>
               </form>
             )}
