@@ -15,12 +15,19 @@ export function combineLocalDateTime(date: string, time: string): Date {
  * Calculate end time given a start time and duration
  * @param startTime - Time in HH:MM format (e.g., "14:30")
  * @param durationMinutes - Duration in minutes (e.g., 60)
- * @returns End time in HH:MM format (e.g., "15:30")
+ * @returns Object with end time in HH:MM format and whether it crosses midnight
  */
-export function calculateEndTime(startTime: string, durationMinutes: number): string {
+export function calculateEndTime(startTime: string, durationMinutes: number): {
+  time: string;
+  crossesMidnight: boolean;
+} {
   const [hours, minutes] = startTime.split(':').map(Number)
   const totalMinutes = hours * 60 + minutes + durationMinutes
+  const crossesMidnight = totalMinutes >= 24 * 60
   const endHours = Math.floor(totalMinutes / 60) % 24
   const endMins = totalMinutes % 60
-  return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`
+  return {
+    time: `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`,
+    crossesMidnight
+  }
 }

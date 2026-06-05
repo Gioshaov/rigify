@@ -1,103 +1,72 @@
-'use client'
-
-import { createClient } from "@/lib/supabase/client";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { useTranslations } from "@/lib/hooks/useTranslations";
+import { getServerTranslations } from "@/lib/utils/server-translations";
 
-export default function BusinessProfilePage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const { tr, lang } = useTranslations();
+export default async function BusinessProfilePage({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params;
+  const { tr, lang } = getServerTranslations();
+  const supabase = createClient();
 
-  const [business, setBusiness] = useState<any>(null);
-  const [services, setServices] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      const supabase = createClient();
-
-      // Fetch business with related data
-      const { data: businessData, error } = await supabase
-        .from("businesses")
-        .select(`
-          *,
-          business_categories (
-            category_id
-          )
-        `)
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
-
-      if (error || !businessData) {
-        setLoading(false);
-        return;
-      }
-
-      setBusiness(businessData);
-
-      // Fetch services
-      const { data: servicesData } = await supabase
-        .from("services")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .eq("is_active", true)
-        .order("name");
-
-      setServices(servicesData || []);
-
-      // Fetch staff
-      const { data: staffData } = await supabase
-        .from("staff")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .eq("is_active", true)
-        .order("name");
-
-      setStaff(staffData || []);
-
-      // Fetch reviews
-      const { data: reviewsData } = await supabase
-        .from("reviews")
-        .select(`
-          *,
-          customers (
-            name
-          )
-        `)
-        .eq("business_id", businessData.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      setReviews(reviewsData || []);
-      setLoading(false);
-    }
-
-    loadData();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-background text-on-surface flex items-center justify-center">
-        <p className="label-mono">{tr.common.loading[lang]}</p>
-      </main>
-    );
-  }
+  const { data: business } = await supabase
+    .from("businesses")
+    .select(`
+      *,
+      business_categories (
+        category_id
+      )
+    `)
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
 
   if (!business) {
-    return (
-      <main className="min-h-screen bg-background text-on-surface flex items-center justify-center">
-        <p className="label-mono">Business not found</p>
-      </main>
-    );
+    notFound();
   }
+
+  const [
+    { data: services },
+    { data: staff },
+    { data: reviews }
+  ] = await Promise.all([
+    supabase
+      .from("services")
+      .select("id, name, description, price, duration_minutes, is_active")
+      .eq("business_id", business.id)
+      .eq("is_active", true)
+      .order("name"),
+    supabase
+      .from("staff")
+      .select("id, name, specialty, is_active")
+      .eq("business_id", business.id)
+      .eq("is_active", true)
+      .order("name"),
+    supabase
+      .from("reviews")
+      .select(`
+        id,
+        rating,
+        comment,
+        created_at,
+        customers!inner (
+          name
+        )
+      `)
+      .eq("business_id", business.id)
+      .order("created_at", { ascending: false })
+      .limit(10)
+  ]);
+
+  const normalizedReviews = reviews?.map(r => ({
+    ...r,
+    customers: Array.isArray(r.customers) ? r.customers[0] : r.customers
+  }));
 
   const categoryLabels = business.business_categories
     .map((bc: { category_id: string }) => {
@@ -213,7 +182,7 @@ export default function BusinessProfilePage() {
 
               {services && services.length > 0 ? (
                 <div>
-                  {services.map((service: any, index: number) => (
+                  {services.map((service, index) => (
                     <div
                       key={service.id}
                       className={`px-gutter py-stack-md flex items-start justify-between ${
@@ -255,7 +224,7 @@ export default function BusinessProfilePage() {
                   <h2 className="text-headline-lg">{tr.businessProfile.ourTeam[lang]}</h2>
                 </div>
                 <div className="px-gutter py-stack-lg grid grid-cols-1 md:grid-cols-2 gap-stack-md">
-                  {staff.map((member: any) => (
+                  {staff.map((member) => (
                     <div key={member.id} className="flex items-start gap-stack-sm">
                       <div className="w-12 h-12 bg-surface-container flex items-center justify-center flex-shrink-0 font-mono text-headline-sm">
                         {member.name.charAt(0).toUpperCase()}
@@ -275,17 +244,17 @@ export default function BusinessProfilePage() {
             )}
 
             {/* Reviews */}
-            {reviews && reviews.length > 0 && (
+            {normalizedReviews && normalizedReviews.length > 0 && (
               <section className="border border-outline-variant bg-surface">
                 <div className="px-gutter py-stack-lg border-b border-outline-variant">
                   <h2 className="text-headline-lg">{tr.businessProfile.reviews[lang]}</h2>
                 </div>
                 <div>
-                  {reviews.map((review: any, index: number) => (
+                  {normalizedReviews.map((review, index) => (
                     <div
                       key={review.id}
                       className={`px-gutter py-stack-lg ${
-                        index < reviews.length - 1 ? "border-b border-outline-variant" : ""
+                        index < normalizedReviews.length - 1 ? "border-b border-outline-variant" : ""
                       }`}
                     >
                       <div className="flex items-center gap-stack-sm mb-stack-sm">

@@ -17,6 +17,31 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // UUID validation
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+  if (!UUID_REGEX.test(businessId) || !UUID_REGEX.test(serviceId)) {
+    return NextResponse.json(
+      { error: 'Invalid ID format' },
+      { status: 400 }
+    )
+  }
+
+  if (staffId && !UUID_REGEX.test(staffId)) {
+    return NextResponse.json(
+      { error: 'Invalid staff ID format' },
+      { status: 400 }
+    )
+  }
+
+  // Date format validation (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return NextResponse.json(
+      { error: 'Invalid date format. Expected YYYY-MM-DD' },
+      { status: 400 }
+    )
+  }
+
   const admin = createAdminClient()
 
   // Get service to know duration (must belong to the claimed business)

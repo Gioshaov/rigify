@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { updateBusinessProfile } from "./actions";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { CITIES } from "@/lib/constants/cities";
@@ -34,6 +34,7 @@ export function BusinessProfileForm({
   categoryIds: string[];
 }) {
   const { tr, lang } = useTranslations();
+  const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [isDirty, setIsDirty] = useState(false);
@@ -43,7 +44,7 @@ export function BusinessProfileForm({
 
   useEffect(() => {
     const handleInput = () => setIsDirty(true);
-    const form = document.querySelector("form");
+    const form = formRef.current;
     if (form) {
       form.addEventListener("input", handleInput);
       return () => form.removeEventListener("input", handleInput);
@@ -66,7 +67,7 @@ export function BusinessProfileForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl">
+    <form ref={formRef} onSubmit={handleSubmit} className="max-w-4xl">
       <input type="hidden" name="business_id" value={business.id} />
 
       {/* Result Messages */}

@@ -72,10 +72,27 @@ export async function uploadImage(
 /**
  * Delete an image from Supabase Storage
  * @param path - The storage path to delete
+ * @returns Result object indicating success or error
  */
-export async function deleteImage(path: string): Promise<void> {
-  const supabase = createClient()
-  await supabase.storage.from('business-images').remove([path])
+export async function deleteImage(path: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = createClient()
+    const { error } = await supabase.storage.from('business-images').remove([path])
+
+    if (error) {
+      return {
+        success: false,
+        error: `Delete failed: ${error.message}`
+      }
+    }
+
+    return { success: true }
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Delete failed'
+    }
+  }
 }
 
 /**

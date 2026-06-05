@@ -1,4 +1,4 @@
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { DashboardOverviewContent } from "@/components/dashboard/DashboardOverviewContent";
 
 export default async function DashboardOverviewPage() {

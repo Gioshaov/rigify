@@ -1,72 +1,49 @@
-'use client'
-
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { BusinessGrid } from "./BusinessGrid";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { useTranslations } from "@/lib/hooks/useTranslations";
+import { getServerTranslations } from "@/lib/utils/server-translations";
 import { CITIES } from "@/lib/constants/cities";
 
-export default function BusinessesPage() {
-  const { tr, lang } = useTranslations();
-  const searchParams = useSearchParams();
-  const cityFilter = searchParams.get('city');
+export default async function BusinessesPage({
+  searchParams
+}: {
+  searchParams: Promise<{ city?: string }>
+}) {
+  const { tr, lang } = getServerTranslations();
+  const supabase = createClient();
+  const params = await searchParams;
+  const cityFilter = params.city;
 
-  const [user, setUser] = useState<any>(null);
-  const [businesses, setBusinesses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: { user } } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    async function loadData() {
-      const supabase = createClient();
+  let query = supabase
+    .from("businesses")
+    .select(`
+      id,
+      slug,
+      name,
+      description,
+      city,
+      district,
+      address,
+      cover_image_url,
+      logo_url,
+      rating,
+      review_count,
+      business_categories (
+        category_id
+      )
+    `)
+    .eq("is_active", true);
 
-      // Check if user is logged in
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      setUser(currentUser);
+  const validCities = CITIES.map(c => c.id);
+  if (cityFilter && validCities.includes(cityFilter)) {
+    query = query.eq("city", cityFilter);
+  }
 
-      // Fetch active businesses, optionally filtered by city
-      let query = supabase
-        .from("businesses")
-        .select(`
-          id,
-          slug,
-          name,
-          description,
-          city,
-          district,
-          address,
-          cover_image_url,
-          logo_url,
-          rating,
-          review_count,
-          business_categories (
-            category_id
-          )
-        `)
-        .eq("is_active", true);
+  const { data: businesses } = await query.order("created_at", { ascending: false });
 
-      // Apply city filter if provided and valid
-      const validCities = CITIES.map(c => c.id);
-      if (cityFilter && validCities.includes(cityFilter)) {
-        query = query.eq("city", cityFilter);
-      }
-
-      const { data, error } = await query.order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching businesses:", error);
-      }
-
-      setBusinesses(data || []);
-      setLoading(false);
-    }
-
-    loadData();
-  }, [cityFilter]);
-
-  // Get city object for translation
   const cityObj = cityFilter ? CITIES.find(c => c.id === cityFilter) : null;
   const cityName = cityObj ? cityObj[lang] : null;
 
@@ -110,7 +87,7 @@ export default function BusinessesPage() {
       <section className="border-b border-outline-variant">
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
           <p className="label-mono text-primary mb-stack-md">
-            {cityName ? `${cityName.toUpperCase()} · ` : `${tr.browsePage.browse[lang]} · `}{businesses.length} {tr.browsePage.studios[lang]}
+            {cityName ? `${cityName.toUpperCase()} · ` : `${tr.browsePage.browse[lang]} · `}{businesses?.length || 0} {tr.browsePage.studios[lang]}
           </p>
           <h1 className="text-display-lg-mobile md:text-display-lg max-w-3xl">
             {cityName
@@ -126,25 +103,17 @@ export default function BusinessesPage() {
       {/* Businesses */}
       <section>
         <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          {loading ? (
-            <div className="text-center py-section-gap">
-              <p className="label-mono text-on-surface-variant">{tr.common.loading[lang]}</p>
-            </div>
-          ) : (
-            <>
-              <BusinessGrid businesses={businesses} />
+          <BusinessGrid businesses={businesses || []} />
 
-              {businesses.length === 0 && (
-                <div className="text-center py-section-gap border border-outline-variant bg-surface">
-                  <p className="label-mono text-on-surface-variant mb-stack-md">
-                    {tr.browsePage.noBusinesses[lang]}
-                  </p>
-                  <p className="text-body-lg text-on-surface-variant">
-                    {tr.browsePage.checkBackSoon[lang]}
-                  </p>
-                </div>
-              )}
-            </>
+          {(!businesses || businesses.length === 0) && (
+            <div className="text-center py-section-gap border border-outline-variant bg-surface">
+              <p className="label-mono text-on-surface-variant mb-stack-md">
+                {tr.browsePage.noBusinesses[lang]}
+              </p>
+              <p className="text-body-lg text-on-surface-variant">
+                {tr.browsePage.checkBackSoon[lang]}
+              </p>
+            </div>
           )}
         </div>
       </section>

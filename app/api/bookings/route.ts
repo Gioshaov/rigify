@@ -24,6 +24,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Length validation
+    if (customerName.length > 100 || customerPhone.length > 30 || (customerEmail && customerEmail.length > 254)) {
+      return NextResponse.json(
+        { error: 'Input too long' },
+        { status: 400 }
+      )
+    }
+
     // UUID validation regex
     const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 

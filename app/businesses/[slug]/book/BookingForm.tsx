@@ -483,7 +483,14 @@ export function BookingForm({
                   <p><strong>{tr.booking.service[lang]}:</strong> {selectedService?.name}</p>
                   {selectedStaff && <p><strong>{tr.booking.staff[lang]}:</strong> {selectedStaff.name}</p>}
                   <p><strong>{tr.booking.date[lang]}:</strong> {formatDate(selectedDate)}</p>
-                  <p><strong>{tr.booking.time[lang]}:</strong> {selectedTime} - {calculateEndTime(selectedTime, selectedService?.duration_minutes || 0)}</p>
+                  <p>
+                    <strong>{tr.booking.time[lang]}:</strong> {selectedTime} - {(() => {
+                      const endTime = calculateEndTime(selectedTime, selectedService?.duration_minutes || 0);
+                      return endTime.crossesMidnight
+                        ? `${endTime.time} (+1 day)`
+                        : endTime.time;
+                    })()}
+                  </p>
                   <p><strong>{tr.booking.duration[lang]}:</strong> {selectedService?.duration_minutes} {tr.booking.minutes[lang]}</p>
                   <p><strong>{tr.booking.price[lang]}:</strong> ₾{selectedService?.price}</p>
                 </div>

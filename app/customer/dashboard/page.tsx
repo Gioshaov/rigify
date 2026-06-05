@@ -1,73 +1,52 @@
-'use client'
-
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { formatTbilisi } from "@/lib/utils/datetime";
-import { useEffect, useState } from "react";
-import { useTranslations } from "@/lib/hooks/useTranslations";
+import { getServerTranslations } from "@/lib/utils/server-translations";
+import { redirect } from "next/navigation";
 
-export default function CustomerBookingsPage() {
-  const { tr, lang } = useTranslations();
-  const [user, setUser] = useState<any>(null);
-  const [upcoming, setUpcoming] = useState<any[]>([]);
-  const [past, setPast] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function CustomerBookingsPage() {
+  const { tr, lang } = getServerTranslations();
+  const supabase = createClient();
 
-  useEffect(() => {
-    async function loadData() {
-      const supabase = createClient();
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
-
-      setUser(currentUser);
-      const now = new Date();
-
-      // Get upcoming and past bookings in parallel
-      const [
-        { data: upcomingData },
-        { data: pastData }
-      ] = await Promise.all([
-        supabase
-          .from("bookings")
-          .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-          .eq("customer_id", currentUser.id)
-          .gte("appointment_datetime", now.toISOString())
-          .order("appointment_datetime", { ascending: true }),
-        supabase
-          .from("bookings")
-          .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-          .eq("customer_id", currentUser.id)
-          .lt("appointment_datetime", now.toISOString())
-          .order("appointment_datetime", { ascending: false })
-          .limit(10)
-      ]);
-
-      setUpcoming(upcomingData || []);
-      setPast(pastData || []);
-      setLoading(false);
-    }
-
-    loadData();
-  }, []);
-
-  if (loading) {
-    return (
-      <section>
-        <p className="text-on-surface-variant">{tr.common.loading[lang]}</p>
-      </section>
-    );
-  }
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return (
-      <section>
-        <h1 className="text-headline-md">{tr.customerDashboard.pleaseSignIn[lang]}</h1>
-      </section>
-    );
+    redirect('/login');
   }
+
+  const now = new Date();
+
+  const [
+    { data: upcomingData },
+    { data: pastData }
+  ] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("id, appointment_datetime, status, business_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .eq("customer_id", user.id)
+      .gte("appointment_datetime", now.toISOString())
+      .order("appointment_datetime", { ascending: true }),
+    supabase
+      .from("bookings")
+      .select("id, appointment_datetime, status, business_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .eq("customer_id", user.id)
+      .lt("appointment_datetime", now.toISOString())
+      .order("appointment_datetime", { ascending: false })
+      .limit(10)
+  ]);
+
+  const upcoming = (upcomingData || []).map(b => ({
+    ...b,
+    businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
+    services: Array.isArray(b.services) ? b.services[0] : b.services,
+    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
+  }));
+
+  const past = (pastData || []).map(b => ({
+    ...b,
+    businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
+    services: Array.isArray(b.services) ? b.services[0] : b.services,
+    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
+  }));
 
   return (
     <section className="space-y-stack-lg">

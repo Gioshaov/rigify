@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const redirectTo = String(formData.get("redirect") ?? "");
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -42,21 +43,31 @@ export async function loginAction(formData: FormData) {
     supabase.from("staff").select("id, business_id, is_active").eq("user_id", data.user.id).maybeSingle()
   ]);
 
+  // Validate redirect is relative path (security check)
+  const isValidRedirect = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//');
+
+  // Default redirects based on user type
+  const defaultRedirects = {
+    business: "/dashboard",
+    staff: "/staff-dashboard",
+    customer: "/customer/dashboard"
+  };
+
   // Check if accounts are active
   if (business) {
     if (business.is_active === false) {
       await supabase.auth.signOut();
       return { error: "Your business account has been disabled. Please contact support." };
     }
-    redirect("/dashboard");
+    redirect(isValidRedirect ? redirectTo : defaultRedirects.business);
   } else if (staff) {
     if (staff.is_active === false) {
       await supabase.auth.signOut();
       return { error: "Your staff account has been disabled. Please contact your business owner." };
     }
-    redirect("/staff-dashboard");
+    redirect(isValidRedirect ? redirectTo : defaultRedirects.staff);
   } else if (customer) {
-    redirect("/customer/dashboard");
+    redirect(isValidRedirect ? redirectTo : defaultRedirects.customer);
   } else {
     // User exists but has no business, staff, or customer profile
     return { error: "Account not properly set up. Please contact support." };

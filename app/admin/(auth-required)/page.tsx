@@ -1,8 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { AdminBusinessTable } from './AdminBusinessTable'
+import { redirect } from 'next/navigation'
 
 export default async function AdminDashboard() {
   const supabase = createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user || user.app_metadata?.is_super_admin !== true) {
+    redirect('/admin/login')
+  }
 
   const { data: businesses } = await supabase
     .from('businesses')
