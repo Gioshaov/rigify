@@ -237,7 +237,7 @@
 - Phase 4: Future Enhancements - Advanced features
 
 **Files Created**:
-- `UI_UX_AUDIT.md` - 30KB comprehensive audit report
+- `UI_UX_AUDIT.md` - 30KB comprehensive audit report (now consolidated into UI_GUIDE.md)
 - `memory/project_ui_ux_audit.md` - Memory for future sessions
 - `memory/MEMORY.md` - Memory index
 
@@ -567,7 +567,7 @@ All 19 migrations in `supabase/migrations/`:
 ### Priority 6: UI/UX Improvements
 - Implement Phase 1 from UI/UX audit (accessibility)
 - Focus rings, ARIA labels, semantic landmarks
-- See `UI_UX_AUDIT.md` for full roadmap
+- See `UI_UX_AUDIT.md` for full roadmap (now consolidated into UI_GUIDE.md)
 
 ---
 

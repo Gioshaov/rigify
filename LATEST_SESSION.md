@@ -123,7 +123,7 @@ All pieces are built! Need end-to-end testing:
 ### Priority 5: UI/UX Improvements
 - Implement Phase 1 from UI/UX audit (accessibility)
 - Focus rings, ARIA labels, semantic landmarks
-- See `UI_UX_AUDIT.md` for details
+- See `UI_GUIDE.md` (Known Issues & Improvement Plan section) for details
 - **Estimated**: 1-2 days
 
 ---

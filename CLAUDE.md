@@ -422,8 +422,9 @@ DELETE FROM auth.users WHERE id = '<orphaned-user-id>';
 app/
 ├── (auth)/
 │   ├── login/                    # Unified login (detects user type)
-│   ├── register/                 # Business owner registration
-│   └── customer-register/        # Customer registration
+│   ├── customer-register/        # Customer registration
+│   ├── forgot-password/          # Password reset
+│   └── logout/                   # CSRF-protected logout
 ├── dashboard/                    # Business owner dashboard
 │   ├── page.tsx                  # Today's appointments
 │   ├── appointments/
@@ -488,7 +489,7 @@ export function hasOverlap(
 
 ## Next Development Priorities
 
-1. **Public booking flow** (see SESSION_SUMMARY.md for details)
+1. **Public booking flow** (see LATEST_SESSION.md for details)
    - Business directory (`/businesses`)
    - Business profile page (`/businesses/[slug]`)
    - Booking form with calendar picker
@@ -566,4 +567,5 @@ export function hasOverlap(
 - **LATEST_SESSION.md** — Current status + latest work (read at session start)
 - **SESSION_HISTORY.md** — Full chronological archive (reference only)
 - **UI_GUIDE.md** — Complete UI/UX design system and component patterns
+- **PROJECT_STRUCTURE.md** — Directory organization and file structure guide
 - **supabase/migrations/** — Database schema source of truth

@@ -1,1 +1,21 @@
-# Scripts\n\nUtility scripts for development and maintenance.\n\n## Available Scripts\n\n### contrast-audit.js\nWCAG AA contrast ratio checker for all color combinations in the design system.\n\nUsage:\n```bash\nnode scripts/contrast-audit.js\n```\n\n### find-outline-color.js\nUtility to find color values that meet specific contrast requirements.\n\nUsage:\n```bash\nnode scripts/find-outline-color.js\n```
+# Scripts
+
+Utility scripts for development and maintenance.
+
+## Available Scripts
+
+### contrast-audit.js
+WCAG AA contrast ratio checker for all color combinations in the design system.
+
+Usage:
+```bash
+node scripts/contrast-audit.js
+```
+
+### find-outline-color.js
+Utility to find color values that meet specific contrast requirements.
+
+Usage:
+```bash
+node scripts/find-outline-color.js
+```
