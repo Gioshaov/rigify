@@ -5,8 +5,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Password protection layer - runs before everything else
-  // Allow access to password page and subroutes, and password verification API only
-  if (pathname.startsWith('/password')) {
+  // Allow access to password page (and future subroutes) and password verification API only
+  if (pathname === '/password' || pathname.startsWith('/password/')) {
     return NextResponse.next();
   }
 

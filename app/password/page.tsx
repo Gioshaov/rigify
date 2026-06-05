@@ -61,6 +61,7 @@ export default function PasswordPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
+              maxLength={200}
               className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors"
               autoFocus
               disabled={loading}

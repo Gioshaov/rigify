@@ -32,10 +32,15 @@ function createCookieValue(secret: string): string {
   return crypto.createHmac('sha256', secret).update('rigify_access').digest('hex');
 }
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    // Rate limiting - extract leftmost IP from x-forwarded-for to prevent bypass
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const ip = forwardedFor?.split(',')[0].trim() ||
+               request.headers.get('x-real-ip') ||
+               'unknown';
     if (!checkRateLimit(ip)) {
       console.warn(`Rate limit exceeded for IP: ${ip}`);
       return NextResponse.json(
@@ -55,6 +60,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Prevent DoS via oversized password submissions
+    if (password.length > 1024) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
     const correctPassword = process.env.SITE_PASSWORD;
 
     if (!correctPassword) {
@@ -65,15 +78,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Timing-safe password comparison (pad both to max length to prevent length oracle)
-    const maxLen = Math.max(password.length, correctPassword.length);
+    // Timing-safe password comparison (use byte length to handle multibyte characters correctly)
+    const pwBytes = Buffer.from(password, 'utf8');
+    const cpBytes = Buffer.from(correctPassword, 'utf8');
+    const maxLen = Math.max(pwBytes.length, cpBytes.length);
     const passwordBuf = Buffer.alloc(maxLen);
     const correctBuf = Buffer.alloc(maxLen);
-    passwordBuf.write(password);
-    correctBuf.write(correctPassword);
+    pwBytes.copy(passwordBuf);
+    cpBytes.copy(correctBuf);
 
     const isValid = crypto.timingSafeEqual(passwordBuf, correctBuf) &&
-                    password.length === correctPassword.length;
+                    pwBytes.length === cpBytes.length;
 
     if (isValid) {
       const cookieStore = await cookies();
