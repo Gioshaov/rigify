@@ -81,14 +81,15 @@ After every commit (except trivial changes), **Claude must invoke @code-reviewer
 3. Fix any CRITICAL or MAJOR issues found
 4. Re-commit fixes if needed
 5. Push to GitHub only after `@code-reviewer` passes (PASS or CONDITIONAL PASS)
+   - **CONDITIONAL PASS** requires resolving all flagged conditions before pushing
 
 **Optional Second Opinion:**
 - User can run `/codex:review --background` for architectural/design review
-- When run, must also PASS or CONDITIONAL PASS before pushing
+- If run, must also PASS or CONDITIONAL PASS before pushing
 
 **Review Tools:**
-- `@code-reviewer` (automatic): Catches bugs, security vulnerabilities, performance issues, missing tests
-- `/codex:review` (manual): Catches design issues, spec compliance, architectural problems
+- `@code-reviewer` (Claude-invoked): Catches bugs, security vulnerabilities, performance issues, missing tests
+- `/codex:review` (user-triggered): Catches design issues, spec compliance, architectural problems
 
 **Why This Hybrid Approach:**
 - `@code-reviewer` runs via Agent tool (Claude can invoke it automatically)
