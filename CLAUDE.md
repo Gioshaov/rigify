@@ -57,10 +57,10 @@ git push origin main     # Push to GitHub
 
 ### Code Review Protocol
 
-After every commit (except trivial changes), **Claude automatically runs @code-reviewer**.
+After every commit (except trivial changes), **Claude must invoke @code-reviewer**.
 
 **What qualifies as "trivial" (can skip reviews):**
-- Documentation updates (README, comments only)
+- Documentation updates (README, code comments only - **excludes CLAUDE.md**)
 - Typo fixes in strings/text
 - Formatting changes (spacing, indentation)
 - Version bumps in package.json
@@ -72,24 +72,28 @@ After every commit (except trivial changes), **Claude automatically runs @code-r
 - Database migrations
 - API routes or server actions
 - Authentication or authorization code
+- **CLAUDE.md workflow changes** (always require review)
 
-**Automated Workflow:**
+**Workflow:**
 1. Make changes and commit locally
-2. Claude automatically invokes `@code-reviewer` (thorough review)
-3. **Optional**: User runs `/codex:review --background` for second opinion
-4. Fix any CRITICAL or MAJOR issues found
-5. Re-commit fixes if needed
-6. Push to GitHub only after reviews pass
+2. Claude invokes `@code-reviewer` (thorough review)
+   - **User should verify review happened before pushing**
+3. Fix any CRITICAL or MAJOR issues found
+4. Re-commit fixes if needed
+5. Push to GitHub only after `@code-reviewer` passes (PASS or CONDITIONAL PASS)
+
+**Optional Second Opinion:**
+- User can run `/codex:review --background` for architectural/design review
+- When run, must also PASS or CONDITIONAL PASS before pushing
 
 **Review Tools:**
 - `@code-reviewer` (automatic): Catches bugs, security vulnerabilities, performance issues, missing tests
 - `/codex:review` (manual): Catches design issues, spec compliance, architectural problems
-- Both must PASS or CONDITIONAL PASS before pushing
 
 **Why This Hybrid Approach:**
-- `@code-reviewer` runs automatically via Agent tool (always get safety check)
-- `/codex:review` runs manually via Skill tool (has disable-model-invocation, prevents infinite loops)
-- You control expensive Codex reviews while always getting basic safety validation
+- `@code-reviewer` runs via Agent tool (Claude can invoke it automatically)
+- `/codex:review` runs via Skill tool (has disable-model-invocation flag to prevent infinite loops)
+- You control expensive Codex reviews while always getting thorough code safety validation
 - FAIL verdict = DO NOT push, fix issues first
 
 ---
