@@ -25,6 +25,7 @@ export default function PasswordPage() {
 
       if (data.success) {
         router.push('/');
+        router.refresh(); // Invalidate client-side cache to ensure fresh auth state
       } else {
         setError(data.error || 'Incorrect password');
         setPassword('');

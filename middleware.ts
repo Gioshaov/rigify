@@ -5,8 +5,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Password protection layer - runs before everything else
-  // Allow access to password page and password verification API only
-  if (pathname === '/password') {
+  // Allow access to password page and subroutes, and password verification API only
+  if (pathname.startsWith('/password')) {
     return NextResponse.next();
   }
 
@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    const expectedValue = createCookieValue(secret);
+    const expectedValue = await createCookieValue(secret);
     if (accessCookie.value !== expectedValue) {
       // Invalid cookie - redirect to password page
       const url = request.nextUrl.clone();
@@ -41,10 +41,20 @@ export async function middleware(request: NextRequest) {
   return await updateSession(request);
 }
 
-// Create HMAC-based cookie value to prevent forgery
-function createCookieValue(secret: string): string {
-  const crypto = require('crypto');
-  return crypto.createHmac('sha256', secret).update('rigify_access').digest('hex');
+// Create HMAC-based cookie value to prevent forgery (Web Crypto API for Edge Runtime)
+async function createCookieValue(secret: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode('rigify_access'));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 export const config = {

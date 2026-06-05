@@ -3,6 +3,10 @@ import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
 // Simple in-memory rate limiting (5 attempts per IP per 15 minutes)
+// NOTE: This is for staging only. On serverless platforms (Vercel), this map
+// resets on cold starts and is per-function-instance, so rate limiting is not
+// guaranteed across different workers. For production, use external storage
+// (Upstash Redis, Vercel KV, etc.)
 const rateLimitMap = new Map<string, { attempts: number; resetAt: number }>();
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
@@ -61,11 +65,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Timing-safe password comparison
-    const isValid = crypto.timingSafeEqual(
-      Buffer.from(password.padEnd(correctPassword.length)),
-      Buffer.from(correctPassword)
-    ) && password.length === correctPassword.length;
+    // Timing-safe password comparison (pad both to max length to prevent length oracle)
+    const maxLen = Math.max(password.length, correctPassword.length);
+    const passwordBuf = Buffer.alloc(maxLen);
+    const correctBuf = Buffer.alloc(maxLen);
+    passwordBuf.write(password);
+    correctBuf.write(correctPassword);
+
+    const isValid = crypto.timingSafeEqual(passwordBuf, correctBuf) &&
+                    password.length === correctPassword.length;
 
     if (isValid) {
       const cookieStore = await cookies();
