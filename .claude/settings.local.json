@@ -4,7 +4,8 @@
       "Bash(npx tsc *)",
       "Bash(npm run *)",
       "Bash(node *)",
-      "PowerShell(npm run *)"
+      "PowerShell(npm run *)",
+      "Bash(git commit *)"
     ]
   }
 }

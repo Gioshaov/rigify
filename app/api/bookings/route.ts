@@ -1,6 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { combineLocalDateTime } from '@/lib/utils/datetime'
+import { validateGeorgianPhone, validateName, validateEmail } from '@/lib/utils/validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,28 @@ export async function POST(request: NextRequest) {
     if (customerName.length > 100 || customerPhone.length > 30 || (customerEmail && customerEmail.length > 254)) {
       return NextResponse.json(
         { error: 'Input too long' },
+        { status: 400 }
+      )
+    }
+
+    // Format validation
+    if (!validateName(customerName)) {
+      return NextResponse.json(
+        { error: 'Invalid name format' },
+        { status: 400 }
+      )
+    }
+
+    if (!validateGeorgianPhone(customerPhone)) {
+      return NextResponse.json(
+        { error: 'Invalid phone format' },
+        { status: 400 }
+      )
+    }
+
+    if (customerEmail && !validateEmail(customerEmail)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
         { status: 400 }
       )
     }
@@ -69,6 +92,17 @@ export async function POST(request: NextRequest) {
     // Semantic validation: check if date is valid calendar date
     const testDate = new Date(date + 'T00:00:00')
     if (isNaN(testDate.getTime())) {
+      return NextResponse.json(
+        { error: 'Invalid date value' },
+        { status: 400 }
+      )
+    }
+
+    // Check for date rollover (e.g., 2025-02-30 -> March 2)
+    const [inputYear, inputMonth, inputDay] = date.split('-').map(Number)
+    if (testDate.getFullYear() !== inputYear ||
+        testDate.getMonth() + 1 !== inputMonth ||
+        testDate.getDate() !== inputDay) {
       return NextResponse.json(
         { error: 'Invalid date value' },
         { status: 400 }

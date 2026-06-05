@@ -17,7 +17,22 @@ export default async function BusinessProfilePage({
   const { data: business } = await supabase
     .from("businesses")
     .select(`
-      *,
+      id,
+      name,
+      slug,
+      description,
+      city,
+      district,
+      address,
+      phone,
+      email,
+      website,
+      instagram,
+      cover_image_url,
+      logo_url,
+      rating,
+      review_count,
+      hours,
       business_categories (
         category_id
       )
