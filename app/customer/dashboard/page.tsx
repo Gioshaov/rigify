@@ -71,7 +71,7 @@ export default async function CustomerBookingsPage() {
         <p className="label-mono mb-stack-md">{tr.customerDashboard.upcoming[lang]}</p>
         {upcoming && upcoming.length > 0 ? (
           <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
-            {upcoming.map((b: any) => (
+            {upcoming.map((b) => (
               <li key={b.id} className="py-stack-md px-stack-sm">
                 <div className="flex items-start justify-between">
                   <div>
@@ -102,7 +102,7 @@ export default async function CustomerBookingsPage() {
         <p className="label-mono mb-stack-md">{tr.customerDashboard.pastBookings[lang]}</p>
         {past && past.length > 0 ? (
           <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
-            {past.map((b: any) => (
+            {past.map((b) => (
               <li key={b.id} className="py-stack-md px-stack-sm opacity-60">
                 <div className="flex items-start justify-between">
                   <div>

@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Semantic validation: check if date is valid calendar date
-    const testDate = new Date(date + 'T00:00:00')
+    // Semantic validation: check if date is valid calendar date (use UTC to avoid server timezone issues)
+    const testDate = new Date(date + 'T00:00:00Z')
     if (isNaN(testDate.getTime())) {
       return NextResponse.json(
         { error: 'Invalid date value' },
@@ -100,9 +100,9 @@ export async function POST(request: NextRequest) {
 
     // Check for date rollover (e.g., 2025-02-30 -> March 2)
     const [inputYear, inputMonth, inputDay] = date.split('-').map(Number)
-    if (testDate.getFullYear() !== inputYear ||
-        testDate.getMonth() + 1 !== inputMonth ||
-        testDate.getDate() !== inputDay) {
+    if (testDate.getUTCFullYear() !== inputYear ||
+        testDate.getUTCMonth() + 1 !== inputMonth ||
+        testDate.getUTCDate() !== inputDay) {
       return NextResponse.json(
         { error: 'Invalid date value' },
         { status: 400 }
