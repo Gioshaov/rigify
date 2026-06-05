@@ -162,7 +162,7 @@ export async function onboardBusiness(formData: FormData) {
       console.error('[ONBOARD] Auth creation failed:', staffAuthError.message)
       return {
         success: true,
-        message: `⚠️ Business "${name}" created, but staff account creation failed:\n${staffAuthError.message}\n\nOwner login: ${ownerEmail}`,
+        message: `⚠️ Business "${name}" created, but staff account creation failed. Please contact support.`,
         subdomain,
       }
     }
@@ -171,7 +171,7 @@ export async function onboardBusiness(formData: FormData) {
       console.error('[ONBOARD] Auth creation returned no user')
       return {
         success: true,
-        message: `⚠️ Business "${name}" created, but staff account creation returned no user. Owner login: ${ownerEmail}`,
+        message: `⚠️ Business "${name}" created, but staff account creation failed. Please contact support.`,
         subdomain,
       }
     }
@@ -200,7 +200,7 @@ export async function onboardBusiness(formData: FormData) {
 
       return {
         success: true,
-        message: `⚠️ Business "${name}" created, but staff database insert failed:\n${staffInsertError.message}\n\nOwner login: ${ownerEmail}`,
+        message: `⚠️ Business "${name}" created, but staff account creation failed. Please contact support.`,
         subdomain,
       }
     }

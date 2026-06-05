@@ -49,6 +49,11 @@ export async function updateStaffMember(staffId: string, formData: FormData) {
   if (password && password.length >= 8) authUpdates.password = password
 
   if (Object.keys(authUpdates).length > 0) {
+    // Verify user_id exists before updating auth
+    if (!staffMember.user_id) {
+      return { success: false, message: 'Staff member has no linked auth account' }
+    }
+
     const { error: authError } = await admin.auth.admin.updateUserById(
       staffMember.user_id,
       authUpdates

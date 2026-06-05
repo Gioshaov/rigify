@@ -21,7 +21,15 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
   const { data: booking, error } = await admin
     .from("bookings")
     .select(`
-      *,
+      id,
+      appointment_datetime,
+      price,
+      business_id,
+      customer_id,
+      customer_name,
+      customer_phone,
+      customer_email,
+      created_at,
       services (
         name,
         duration_minutes,
@@ -81,5 +89,13 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
     }
   }
 
-  return <BookingConfirmationClient booking={booking} canViewPII={canViewPII} />;
+  // Transform array joins to single objects for component
+  const transformedBooking = {
+    ...booking,
+    services: Array.isArray(booking.services) ? booking.services[0] : booking.services,
+    staff: Array.isArray(booking.staff) ? booking.staff[0] : booking.staff,
+    businesses: Array.isArray(booking.businesses) ? booking.businesses[0] : booking.businesses,
+  };
+
+  return <BookingConfirmationClient booking={transformedBooking} canViewPII={canViewPII} />;
 }
