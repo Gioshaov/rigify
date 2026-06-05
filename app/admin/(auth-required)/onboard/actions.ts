@@ -187,7 +187,7 @@ export async function onboardBusiness(formData: FormData) {
     const { data: staffRecord, error: staffInsertError } = await admin
       .from('staff')
       .insert(staffInsertData)
-      .select()
+      .select('id, name, business_id')
       .single()
 
     if (staffInsertError) {
@@ -203,17 +203,6 @@ export async function onboardBusiness(formData: FormData) {
         message: `⚠️ Business "${name}" created, but staff account creation failed. Please contact support.`,
         subdomain,
       }
-    }
-
-    // Verify staff was actually created by querying it back
-    const { data: verifyStaff, error: verifyError } = await admin
-      .from('staff')
-      .select('*')
-      .eq('id', staffRecord.id)
-      .single()
-
-    if (verifyError || !verifyStaff) {
-      console.error('[ONBOARD] Staff verification failed:', verifyError?.message)
     }
 
     // Staff created successfully!

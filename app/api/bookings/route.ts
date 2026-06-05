@@ -24,6 +24,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // UUID validation regex
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+    // Validate UUIDs
+    if (!UUID_REGEX.test(businessId) || !UUID_REGEX.test(serviceId)) {
+      return NextResponse.json(
+        { error: 'Invalid ID format' },
+        { status: 400 }
+      )
+    }
+
+    if (staffId && !UUID_REGEX.test(staffId)) {
+      return NextResponse.json(
+        { error: 'Invalid staff ID format' },
+        { status: 400 }
+      )
+    }
+
     // Validate date format (YYYY-MM-DD)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return NextResponse.json(
@@ -36,6 +54,33 @@ export async function POST(request: NextRequest) {
     if (!/^\d{2}:\d{2}$/.test(startTime)) {
       return NextResponse.json(
         { error: 'Invalid time format. Expected HH:MM' },
+        { status: 400 }
+      )
+    }
+
+    // Semantic validation: check if date is valid calendar date
+    const testDate = new Date(date + 'T00:00:00')
+    if (isNaN(testDate.getTime())) {
+      return NextResponse.json(
+        { error: 'Invalid date value' },
+        { status: 400 }
+      )
+    }
+
+    // Check time values are within valid ranges
+    const [hours, minutes] = startTime.split(':').map(Number)
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return NextResponse.json(
+        { error: 'Invalid time value' },
+        { status: 400 }
+      )
+    }
+
+    // Prevent bookings in the past
+    const appointmentCheck = combineLocalDateTime(date, startTime)
+    if (appointmentCheck < new Date()) {
+      return NextResponse.json(
+        { error: 'Cannot book appointments in the past' },
         { status: 400 }
       )
     }

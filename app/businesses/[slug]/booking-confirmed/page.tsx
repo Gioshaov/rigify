@@ -14,6 +14,12 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
     notFound();
   }
 
+  // Validate UUID format
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(bookingId)) {
+    notFound();
+  }
+
   // Use admin client to bypass RLS - booking confirmation needs to work for guests
   const admin = createAdminClient();
   const supabase = createClient();
