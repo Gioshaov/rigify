@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "@/lib/hooks/useTranslations";
 
 type Action = (formData: FormData) => Promise<{ error?: string; success?: boolean } | void>;
 
@@ -12,6 +13,7 @@ interface Customer {
 }
 
 export function CustomerProfileForm({ action, customer }: { action: Action; customer: Customer }) {
+  const { tr, lang } = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -35,7 +37,7 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
       }}
     >
       <label className="block">
-        <span className="label-mono">FULL NAME</span>
+        <span className="label-mono">{tr.customerDashboard.fullName[lang]}</span>
         <input
           name="name"
           required
@@ -46,7 +48,7 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
       </label>
 
       <label className="block">
-        <span className="label-mono">PHONE</span>
+        <span className="label-mono">{tr.customerDashboard.phone[lang]}</span>
         <input
           name="phone"
           type="tel"
@@ -58,7 +60,7 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
       </label>
 
       <label className="block">
-        <span className="label-mono">EMAIL</span>
+        <span className="label-mono">{tr.customerDashboard.email[lang]}</span>
         <input
           name="email"
           type="email"
@@ -69,7 +71,7 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
           disabled
         />
         <p className="text-sm text-on-surface-variant mt-2">
-          Email cannot be changed. Contact support if needed.
+          {tr.customerDashboard.emailCannotChange[lang]}
         </p>
       </label>
 
@@ -81,12 +83,12 @@ export function CustomerProfileForm({ action, customer }: { action: Action; cust
 
       {success && (
         <p className="font-mono text-data-label text-primary" role="alert">
-          Profile updated successfully!
+          {tr.customerDashboard.profileUpdated[lang]}
         </p>
       )}
 
       <button type="submit" disabled={isPending} className="btn-primary">
-        {isPending ? "Saving…" : "Save changes"}
+        {isPending ? tr.customerDashboard.saving[lang] : tr.customerDashboard.saveChanges[lang]}
       </button>
     </form>
   );

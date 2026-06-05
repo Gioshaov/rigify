@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { StaffPageContent } from "@/components/dashboard/StaffPageContent";
 
 export default async function StaffPage() {
   const supabase = createClient();
@@ -34,64 +34,5 @@ export default async function StaffPage() {
     );
   }
 
-  return (
-    <section>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="label-mono text-primary">STAFF</p>
-          <h1 className="mt-stack-sm text-headline-md">Staff management</h1>
-          <p className="mt-stack-md text-on-surface-variant max-w-xl">
-            Staff members can log in to access a limited dashboard with role-based permissions.
-          </p>
-        </div>
-        <Link href="/dashboard/staff/invite" className="btn-primary">
-          Invite Staff
-        </Link>
-      </div>
-
-      <div className="mt-stack-lg">
-        {!staff || staff.length === 0 ? (
-          <div className="text-center py-12 border border-outline-variant rounded-lg">
-            <p className="text-on-surface-variant mb-4">No staff members yet</p>
-            <Link href="/dashboard/staff/invite" className="text-primary hover:underline">
-              Invite your first staff member →
-            </Link>
-          </div>
-        ) : (
-          <div className="border border-outline-variant rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-surface border-b border-outline-variant">
-                <tr>
-                  <th className="text-left px-4 py-3 text-label-sm">Name</th>
-                  <th className="text-left px-4 py-3 text-label-sm">Role</th>
-                  <th className="text-left px-4 py-3 text-label-sm">Status</th>
-                  <th className="text-left px-4 py-3 text-label-sm">Added</th>
-                </tr>
-              </thead>
-              <tbody>
-                {staff.map((member) => (
-                  <tr key={member.id} className="border-b border-outline-variant last:border-0">
-                    <td className="px-4 py-3">{member.name}</td>
-                    <td className="px-4 py-3 capitalize">{member.role}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded text-xs ${
-                        member.is_active
-                          ? 'bg-green-500/20 text-green-300'
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
-                        {member.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-on-surface-variant">
-                      {new Date(member.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </section>
-  );
+  return <StaffPageContent staff={staff || []} />;
 }

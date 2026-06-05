@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslations } from '@/lib/hooks/useTranslations'
+import { formatTbilisi } from '@/lib/utils/datetime'
 
 type CalendarDay = {
   date: string          // ISO: "2024-03-15"
@@ -53,7 +54,7 @@ export function CalendarTimePicker({
     tr.booking.months.october[lang],
     tr.booking.months.november[lang],
     tr.booking.months.december[lang],
-  ], [lang, tr])
+  ], [lang])
 
   // Weekday headers (Monday first)
   const weekdayHeaders = useMemo(() => [
@@ -64,7 +65,7 @@ export function CalendarTimePicker({
     tr.booking.weekdays.friday[lang].substring(0, 3),
     tr.booking.weekdays.saturday[lang].substring(0, 3),
     tr.booking.weekdays.sunday[lang].substring(0, 3),
-  ], [lang, tr])
+  ], [lang])
 
   // Generate calendar days for the current month
   const calendarDays = useMemo(() => {
@@ -82,10 +83,9 @@ export function CalendarTimePicker({
     let firstDayOfWeek = firstDay.getDay() - 1
     if (firstDayOfWeek < 0) firstDayOfWeek = 6 // Sunday becomes 6
 
-    // Today for comparison
+    // Today for comparison (Tbilisi timezone)
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayISO = today.toISOString().split('T')[0]
+    const todayISO = formatTbilisi(today, 'yyyy-MM-dd')
 
     // Generate array of 42 cells (6 rows × 7 cols)
     const days: (CalendarDay | null)[] = []
@@ -119,18 +119,22 @@ export function CalendarTimePicker({
   }, [currentMonth])
 
   // Navigate to previous month
-  const goPrevMonth = () => {
-    const newMonth = new Date(currentMonth)
-    newMonth.setMonth(newMonth.getMonth() - 1)
-    setCurrentMonth(newMonth)
-  }
+  const goPrevMonth = useCallback(() => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev)
+      newMonth.setMonth(newMonth.getMonth() - 1)
+      return newMonth
+    })
+  }, [])
 
   // Navigate to next month
-  const goNextMonth = () => {
-    const newMonth = new Date(currentMonth)
-    newMonth.setMonth(newMonth.getMonth() + 1)
-    setCurrentMonth(newMonth)
-  }
+  const goNextMonth = useCallback(() => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev)
+      newMonth.setMonth(newMonth.getMonth() + 1)
+      return newMonth
+    })
+  }, [])
 
   // Check if we can go to previous month (don't allow past months)
   const canGoPrevMonth = useMemo(() => {

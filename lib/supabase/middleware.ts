@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdminDomain } from "@/lib/utils/domain";
 
 export async function updateSession(request: NextRequest) {
   // ── Subdomain resolution ──────────────────────────────────────────
@@ -37,8 +38,6 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -53,6 +52,16 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  // ── Skip middleware for static assets and Next.js internals ────────
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/static') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt'
+  ) {
+    return response;
+  }
+
   // ── Block /register route ──────────────────────────────────────────
   if (pathname.startsWith('/register')) {
     const url = request.nextUrl.clone();
@@ -65,16 +74,30 @@ export async function updateSession(request: NextRequest) {
     return redirectResponse;
   }
 
-  // ── Protect /admin routes ──────────────────────────────────────────
-  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
-  if (isAdminRoute) {
+  // ── Admin subdomain detection ──────────────────────────────────────
+  const isOnAdminDomain = isAdminDomain(hostname);
+  const isAdminLoginPage = pathname === '/admin/login';
+  const isAdminRoute = (pathname === '/admin' || pathname.startsWith('/admin/')) && !isAdminLoginPage;
+
+  // Block /admin routes on main domain (must use admin subdomain)
+  if (isAdminRoute && !isOnAdminDomain) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/';
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  }
+
+  // Protect /admin routes on admin subdomain (except login page)
+  if (isAdminRoute && isOnAdminDomain) {
     // Require authentication
     if (!user) {
       const url = request.nextUrl.clone();
-      url.pathname = '/login';
+      url.pathname = '/admin/login';
       url.searchParams.set('redirect', request.nextUrl.pathname);
       const redirectResponse = NextResponse.redirect(url);
-      // Copy session cookies to redirect response
       response.cookies.getAll().forEach(cookie => {
         redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
       });
@@ -85,14 +108,28 @@ export async function updateSession(request: NextRequest) {
     const isSuperAdmin = user.app_metadata?.is_super_admin === true;
     if (!isSuperAdmin) {
       const url = request.nextUrl.clone();
-      url.pathname = '/';
+      url.pathname = '/admin/login';
       const redirectResponse = NextResponse.redirect(url);
-      // Copy session cookies to redirect response
       response.cookies.getAll().forEach(cookie => {
         redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
       });
       return redirectResponse;
     }
+  }
+
+  // If on admin subdomain but not accessing admin routes, redirect to admin panel or login
+  if (isOnAdminDomain && !isAdminLoginPage && !isAdminRoute && pathname !== '/admin') {
+    const url = request.nextUrl.clone();
+    if (user?.app_metadata?.is_super_admin === true) {
+      url.pathname = '/admin';
+    } else {
+      url.pathname = '/admin/login';
+    }
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
   }
 
   const isBusinessDashboard = pathname.startsWith("/dashboard") && !pathname.startsWith("/staff-dashboard");

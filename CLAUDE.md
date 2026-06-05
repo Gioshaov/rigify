@@ -4,6 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## UI Design System
+
+**Always read `.claude-ui/claude.ui.md` before any UI work in this project.**
+
+**Always read `.claude/skills/ui-ux-pro-max/SKILL.md` for design principles.**
+
+---
+
 ## Project Overview
 
 **Rigify** is a Georgian beauty & wellness booking marketplace (like Booksy/Fresha for Georgia) with:

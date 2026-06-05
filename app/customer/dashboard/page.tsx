@@ -1,53 +1,85 @@
-import { createClient } from "@/lib/supabase/server";
+'use client'
+
+import { createClient } from "@/lib/supabase/client";
 import { formatTbilisi } from "@/lib/utils/datetime";
+import { useEffect, useState } from "react";
+import { useTranslations } from "@/lib/hooks/useTranslations";
 
-export default async function CustomerBookingsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function CustomerBookingsPage() {
+  const { tr, lang } = useTranslations();
+  const [user, setUser] = useState<any>(null);
+  const [upcoming, setUpcoming] = useState<any[]>([]);
+  const [past, setPast] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!user) {
+  useEffect(() => {
+    async function loadData() {
+      const supabase = createClient();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+      const now = new Date();
+
+      // Get upcoming and past bookings in parallel
+      const [
+        { data: upcomingData },
+        { data: pastData }
+      ] = await Promise.all([
+        supabase
+          .from("bookings")
+          .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
+          .eq("customer_id", currentUser.id)
+          .gte("appointment_datetime", now.toISOString())
+          .order("appointment_datetime", { ascending: true }),
+        supabase
+          .from("bookings")
+          .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
+          .eq("customer_id", currentUser.id)
+          .lt("appointment_datetime", now.toISOString())
+          .order("appointment_datetime", { ascending: false })
+          .limit(10)
+      ]);
+
+      setUpcoming(upcomingData || []);
+      setPast(pastData || []);
+      setLoading(false);
+    }
+
+    loadData();
+  }, []);
+
+  if (loading) {
     return (
       <section>
-        <h1 className="text-headline-md">Please sign in</h1>
+        <p className="text-on-surface-variant">{tr.common.loading[lang]}</p>
       </section>
     );
   }
 
-  const now = new Date();
-
-  // Get upcoming and past bookings in parallel
-  const [
-    { data: upcoming },
-    { data: past }
-  ] = await Promise.all([
-    supabase
-      .from("bookings")
-      .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-      .eq("customer_id", user.id)
-      .gte("appointment_datetime", now.toISOString())
-      .order("appointment_datetime", { ascending: true }),
-    supabase
-      .from("bookings")
-      .select("id, appointment_datetime, status, business_id, businesses(name, address), services(name), staff(name)")
-      .eq("customer_id", user.id)
-      .lt("appointment_datetime", now.toISOString())
-      .order("appointment_datetime", { ascending: false })
-      .limit(10)
-  ]);
+  if (!user) {
+    return (
+      <section>
+        <h1 className="text-headline-md">{tr.customerDashboard.pleaseSignIn[lang]}</h1>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-stack-lg">
       <div>
-        <h1 className="text-headline-md">My Bookings</h1>
+        <h1 className="text-headline-md">{tr.customerDashboard.myBookings[lang]}</h1>
         <p className="mt-stack-sm text-on-surface-variant">
-          View and manage your appointments
+          {tr.customerDashboard.viewAndManage[lang]}
         </p>
       </div>
 
       <div>
-        <p className="label-mono mb-stack-md">UPCOMING</p>
+        <p className="label-mono mb-stack-md">{tr.customerDashboard.upcoming[lang]}</p>
         {upcoming && upcoming.length > 0 ? (
           <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
             {upcoming.map((b: any) => (
@@ -56,10 +88,10 @@ export default async function CustomerBookingsPage() {
                   <div>
                     <p className="font-medium">{b.businesses?.name || "—"}</p>
                     <p className="text-sm text-on-surface-variant mt-1">
-                      {b.businesses?.address || "Address not provided"}
+                      {b.businesses?.address || tr.customerDashboard.addressNotProvided[lang]}
                     </p>
                     <p className="text-sm text-on-surface-variant mt-1">
-                      {b.services?.name || "Service"} · {b.staff?.name || "Staff"}
+                      {b.services?.name || tr.customerDashboard.service[lang]} · {b.staff?.name || tr.customerDashboard.staff[lang]}
                     </p>
                     <p className="font-mono text-data-numeric mt-2">
                       {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
@@ -72,13 +104,13 @@ export default async function CustomerBookingsPage() {
           </ul>
         ) : (
           <p className="text-on-surface-variant border border-outline-variant p-gutter">
-            No upcoming bookings.
+            {tr.customerDashboard.noUpcomingBookings[lang]}
           </p>
         )}
       </div>
 
       <div>
-        <p className="label-mono mb-stack-md">PAST BOOKINGS</p>
+        <p className="label-mono mb-stack-md">{tr.customerDashboard.pastBookings[lang]}</p>
         {past && past.length > 0 ? (
           <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
             {past.map((b: any) => (
@@ -87,10 +119,10 @@ export default async function CustomerBookingsPage() {
                   <div>
                     <p className="font-medium">{b.businesses?.name || "—"}</p>
                     <p className="text-sm text-on-surface-variant mt-1">
-                      {b.businesses?.address || "Address not provided"}
+                      {b.businesses?.address || tr.customerDashboard.addressNotProvided[lang]}
                     </p>
                     <p className="text-sm text-on-surface-variant mt-1">
-                      {b.services?.name || "Service"} · {b.staff?.name || "Staff"}
+                      {b.services?.name || tr.customerDashboard.service[lang]} · {b.staff?.name || tr.customerDashboard.staff[lang]}
                     </p>
                     <p className="font-mono text-data-numeric mt-2">
                       {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
@@ -103,7 +135,7 @@ export default async function CustomerBookingsPage() {
           </ul>
         ) : (
           <p className="text-on-surface-variant border border-outline-variant p-gutter">
-            No past bookings.
+            {tr.customerDashboard.noPastBookings[lang]}
           </p>
         )}
       </div>

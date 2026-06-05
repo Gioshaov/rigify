@@ -27,7 +27,13 @@ type BookingData = {
   };
 };
 
-export function BookingConfirmationClient({ booking }: { booking: BookingData }) {
+export function BookingConfirmationClient({
+  booking,
+  canViewPII = false
+}: {
+  booking: BookingData
+  canViewPII?: boolean
+}) {
   const { tr, lang } = useTranslations();
 
   // Format date with translated weekday and month
@@ -131,9 +137,13 @@ export function BookingConfirmationClient({ booking }: { booking: BookingData })
             <div>
               <p className="label-mono text-on-surface-variant mb-stack-xs">{tr.bookingConfirmed.customer[lang]}</p>
               <p className="text-headline-sm">{booking.customer_name}</p>
-              <p className="text-body-md text-on-surface-variant">{booking.customer_phone}</p>
-              {booking.customer_email && (
-                <p className="text-body-md text-on-surface-variant">{booking.customer_email}</p>
+              {canViewPII && (
+                <>
+                  <p className="text-body-md text-on-surface-variant">{booking.customer_phone}</p>
+                  {booking.customer_email && (
+                    <p className="text-body-md text-on-surface-variant">{booking.customer_email}</p>
+                  )}
+                </>
               )}
             </div>
 

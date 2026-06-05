@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { combineLocalDateTime } from '@/lib/utils/datetime'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -15,10 +16,10 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const supabase = createClient()
+  const admin = createAdminClient()
 
   // Get service to know duration
-  const { data: service, error: serviceError } = await supabase
+  const { data: service, error: serviceError } = await admin
     .from('services')
     .select('duration_minutes')
     .eq('id', serviceId)
@@ -34,10 +35,10 @@ export async function GET(request: NextRequest) {
   const durationMinutes = service.duration_minutes
 
   // Get existing bookings for this date
-  const dayStart = new Date(date + 'T00:00:00').toISOString()
-  const dayEnd = new Date(date + 'T23:59:59').toISOString()
+  const dayStart = combineLocalDateTime(date, '00:00').toISOString()
+  const dayEnd = combineLocalDateTime(date, '23:59').toISOString()
 
-  let query = supabase
+  let query = admin
     .from('bookings')
     .select('appointment_datetime, end_datetime')
     .eq('business_id', businessId)
@@ -50,7 +51,11 @@ export async function GET(request: NextRequest) {
     query = query.eq('staff_id', staffId)
   }
 
-  const { data: bookings } = await query
+  const { data: bookings, error: bookingsError } = await query
+
+  if (bookingsError) {
+    console.error('Bookings fetch error:', bookingsError)
+  }
 
   // Generate time slots (9am to 9pm, 15-min intervals)
   const slots: string[] = []
@@ -66,7 +71,7 @@ export async function GET(request: NextRequest) {
 
   // Filter out slots that would overlap with existing bookings
   const availableSlots = slots.filter((slot) => {
-    const slotStart = new Date(`${date}T${slot}:00`)
+    const slotStart = combineLocalDateTime(date, slot)
     const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60000)
 
     // Check if this slot overlaps with any existing booking

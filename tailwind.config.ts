@@ -27,7 +27,7 @@ const config: Config = {
         "inverse-surface": "#e4e1e9",
         "inverse-on-surface": "#303036",
         outline: "#99907e",
-        "outline-variant": "#4d4637",
+        "outline-variant": "#6c624d",
         "surface-tint": "#e6c364",
         primary: "#e6c364",
         "on-primary": "#0a0a0f",

@@ -17,15 +17,20 @@ export default async function CustomerDashboardLayout({ children }: { children: 
     .maybeSingle();
 
   return (
-    <div className="flex min-h-screen bg-background text-on-surface">
-      <CustomerSidebar customerName={customer?.name} />
-      <div className="flex-1 min-w-0">
-        <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">
-          <p className="label-mono">MY ACCOUNT</p>
-          <p className="label-mono text-on-surface-variant">{user.email}</p>
-        </header>
-        <main className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
+    <>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <div className="flex min-h-screen bg-background text-on-surface">
+        <CustomerSidebar customerName={customer?.name} />
+        <div className="flex-1 min-w-0">
+          <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">
+            <p className="label-mono">MY ACCOUNT</p>
+            <p className="label-mono text-on-surface-variant">{user.email}</p>
+          </header>
+          <main id="main-content" className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

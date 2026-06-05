@@ -39,17 +39,20 @@ export function BusinessGrid({ businesses }: { businesses: Business[] }) {
       if (selectedDistrict !== "all") {
         if (!business.district) return false;
 
-        // Normalize both district strings for comparison
-        const businessDistrict = business.district.toLowerCase().trim();
-        const selectedDistrictName = TBILISI_DISTRICTS.find(d => d.id === selectedDistrict);
+        // Primary match: ID-based
+        if (business.district === selectedDistrict) return true;
 
-        if (selectedDistrictName) {
-          const matchesEn = businessDistrict === selectedDistrictName.en.toLowerCase();
-          const matchesKa = business.district.trim() === selectedDistrictName.ka;
-          const matchesId = businessDistrict === selectedDistrict;
-
-          if (!matchesEn && !matchesKa && !matchesId) return false;
+        // Fallback for legacy data: check name matches
+        const districtInfo = TBILISI_DISTRICTS.find(d => d.id === selectedDistrict);
+        if (districtInfo) {
+          const businessDistrict = business.district.toLowerCase().trim();
+          if (businessDistrict === districtInfo.en.toLowerCase() ||
+              business.district.trim() === districtInfo.ka) {
+            return true;
+          }
         }
+
+        return false;
       }
 
       if (selectedCategory !== "all") {

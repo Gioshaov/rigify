@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "@/lib/hooks/useTranslations";
 
 type Action = (formData: FormData) => Promise<{ error: string } | void>;
 
 export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?: string }) {
+  const { tr, lang } = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -24,19 +26,19 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
       <input type="hidden" name="redirect" value={redirectTo ?? "/dashboard"} />
 
       <label className="block">
-        <span className="label-mono">EMAIL</span>
+        <span className="label-mono">{tr.auth.login.email[lang]}</span>
         <input
           type="email"
           name="email"
           required
           autoComplete="email"
           className="input-field mt-stack-sm"
-          placeholder="you@studio.ge"
+          placeholder={tr.auth.login.emailPlaceholder[lang]}
         />
       </label>
 
       <label className="block">
-        <span className="label-mono">PASSWORD</span>
+        <span className="label-mono">{tr.auth.login.password[lang]}</span>
         <input
           type="password"
           name="password"
@@ -54,7 +56,7 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
       )}
 
       <button type="submit" disabled={isPending} className="btn-primary w-full">
-        {isPending ? "Signing in…" : "Sign in"}
+        {isPending ? tr.auth.login.signingIn[lang] : tr.common.signIn[lang]}
       </button>
     </form>
   );

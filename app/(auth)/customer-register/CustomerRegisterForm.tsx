@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "@/lib/hooks/useTranslations";
 
 type Action = (formData: FormData) => Promise<{ error: string } | void>;
 
 export function CustomerRegisterForm({ action }: { action: Action }) {
+  const { tr, lang } = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -22,7 +24,7 @@ export function CustomerRegisterForm({ action }: { action: Action }) {
       }}
     >
       <label className="block">
-        <span className="label-mono">FULL NAME</span>
+        <span className="label-mono">{tr.auth.customerRegister.fullName[lang]}</span>
         <input
           name="name"
           required
@@ -32,7 +34,7 @@ export function CustomerRegisterForm({ action }: { action: Action }) {
       </label>
 
       <label className="block">
-        <span className="label-mono">PHONE</span>
+        <span className="label-mono">{tr.auth.customerRegister.phone[lang]}</span>
         <input
           name="phone"
           type="tel"
@@ -43,19 +45,19 @@ export function CustomerRegisterForm({ action }: { action: Action }) {
       </label>
 
       <label className="block">
-        <span className="label-mono">EMAIL</span>
+        <span className="label-mono">{tr.auth.login.email[lang]}</span>
         <input
           name="email"
           type="email"
           required
           autoComplete="email"
           className="input-field mt-stack-sm"
-          placeholder="you@example.com"
+          placeholder={tr.auth.login.emailPlaceholder[lang]}
         />
       </label>
 
       <label className="block">
-        <span className="label-mono">PASSWORD</span>
+        <span className="label-mono">{tr.auth.login.password[lang]}</span>
         <input
           name="password"
           type="password"
@@ -63,7 +65,7 @@ export function CustomerRegisterForm({ action }: { action: Action }) {
           minLength={8}
           autoComplete="new-password"
           className="input-field mt-stack-sm"
-          placeholder="At least 8 characters"
+          placeholder={tr.auth.customerRegister.passwordMinLength[lang]}
         />
       </label>
 
@@ -74,7 +76,7 @@ export function CustomerRegisterForm({ action }: { action: Action }) {
       )}
 
       <button type="submit" disabled={isPending} className="btn-primary w-full">
-        {isPending ? "Creating…" : "Create account"}
+        {isPending ? tr.auth.customerRegister.creating[lang] : tr.common.signUp[lang]}
       </button>
     </form>
   );

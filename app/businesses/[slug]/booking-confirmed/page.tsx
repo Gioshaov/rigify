@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { BookingConfirmationClient } from "./BookingConfirmationClient";
 
@@ -15,9 +15,10 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
   }
 
   // Use admin client to bypass RLS - booking confirmation needs to work for guests
-  const supabase = createAdminClient();
+  const admin = createAdminClient();
+  const supabase = createClient();
 
-  const { data: booking, error } = await supabase
+  const { data: booking, error } = await admin
     .from("bookings")
     .select(`
       *,
@@ -44,5 +45,27 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
     notFound();
   }
 
-  return <BookingConfirmationClient booking={booking as any} />;
+  // Check if viewer is authorized to see PII (customer or business owner)
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let canViewPII = false;
+  if (user) {
+    // Check if viewer is the customer
+    if (booking.customer_id === user.id) {
+      canViewPII = true;
+    }
+
+    // Check if viewer is the business owner
+    const { data: business } = await admin
+      .from('businesses')
+      .select('owner_id')
+      .eq('id', booking.business_id)
+      .single();
+
+    if (business?.owner_id === user.id) {
+      canViewPII = true;
+    }
+  }
+
+  return <BookingConfirmationClient booking={booking as any} canViewPII={canViewPII} />;
 }

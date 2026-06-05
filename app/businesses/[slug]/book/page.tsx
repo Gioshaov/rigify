@@ -1,173 +1,83 @@
-'use client'
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { BookingPageClient } from "./BookingPageClient"
+import type { Service, Staff } from "@/lib/types/booking"
 
-import { createClient } from "@/lib/supabase/client";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { BookingForm } from "./BookingForm";
-import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { useTranslations } from "@/lib/hooks/useTranslations";
+type PageProps = {
+  params: { slug: string }
+  searchParams: { service?: string }
+}
 
-export default function BookingPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const { tr, lang } = useTranslations();
+type CustomerInfo = {
+  name: string
+  phone: string
+  email: string
+} | null
 
-  const [business, setBusiness] = useState<any>(null);
-  const [services, setServices] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
-  const [customerInfo, setCustomerInfo] = useState<any>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+export default async function BookingPage({ params, searchParams }: PageProps) {
+  const supabase = createClient()
 
-  useEffect(() => {
-    async function loadData() {
-      const supabase = createClient();
+  // Fetch business with specific fields only
+  const { data: business, error: businessError } = await supabase
+    .from('businesses')
+    .select('id, name, slug, category, address, city, district, phone')
+    .eq('slug', params.slug)
+    .eq('is_active', true)
+    .single()
 
-      // Check if user is logged in
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
+  if (businessError || !business) {
+    redirect('/businesses')
+  }
 
-      // Fetch business
-      const { data: businessData, error: businessError } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
+  // Fetch active services
+  const { data: services, error: servicesError } = await supabase
+    .from('services')
+    .select('id, business_id, name, duration_minutes, price, description, is_active')
+    .eq('business_id', business.id)
+    .eq('is_active', true)
+    .order('name')
 
-      if (businessError || !businessData) {
-        setLoading(false);
-        return;
-      }
+  if (servicesError) {
+    console.error('Services fetch error:', servicesError)
+  }
 
-      setBusiness(businessData);
+  // Fetch active staff
+  const { data: staff, error: staffError } = await supabase
+    .from('staff')
+    .select('id, business_id, name, email, specialty, is_active')
+    .eq('business_id', business.id)
+    .eq('is_active', true)
+    .order('name')
 
-      // Fetch services
-      const { data: servicesData } = await supabase
-        .from("services")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .eq("is_active", true)
-        .order("name");
+  if (staffError) {
+    console.error('Staff fetch error:', staffError)
+  }
 
-      setServices(servicesData || []);
+  // Check if user is logged in
+  const { data: { user } } = await supabase.auth.getUser()
+  let customerInfo: CustomerInfo = null
 
-      // Fetch staff
-      const { data: staffData } = await supabase
-        .from("staff")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .eq("is_active", true)
-        .order("name");
+  if (user) {
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('name, phone, email')
+      .eq('id', user.id)
+      .maybeSingle()
 
-      setStaff(staffData || []);
-
-      // Get customer info if logged in
-      if (user) {
-        const { data: customer } = await supabase
-          .from("customers")
-          .select("name, phone, email")
-          .eq("id", user.id)
-          .single();
-
-        setCustomerInfo(customer);
-      }
-
-      setLoading(false);
+    if (customerError) {
+      console.error('Customer fetch error:', customerError)
+    } else {
+      customerInfo = customer
     }
-
-    loadData();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-background text-on-surface flex items-center justify-center">
-        <p className="label-mono">{tr.common.loading[lang]}</p>
-      </main>
-    );
-  }
-
-  if (!business) {
-    return (
-      <main className="min-h-screen bg-background text-on-surface flex items-center justify-center">
-        <p className="label-mono">Business not found</p>
-      </main>
-    );
-  }
-
-  // Check if we have services
-  if (services.length === 0) {
-    return (
-      <main className="min-h-screen bg-background text-on-surface">
-        <header className="border-b border-outline-variant">
-          <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
-            <Link
-              href={`/businesses/${business.slug}`}
-              className="label-mono hover:text-primary flex items-center gap-2"
-            >
-              {tr.bookingPage.back[lang]}
-            </Link>
-            <div className="flex items-center gap-stack-md">
-              <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
-                RIGIFY
-              </Link>
-              <LanguageToggle />
-            </div>
-          </div>
-        </header>
-
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <div className="border border-outline-variant bg-surface p-gutter text-center">
-            <p className="label-mono text-on-surface-variant mb-stack-md">
-              {tr.bookingPage.noServicesAvailable[lang]}
-            </p>
-            <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-              {tr.bookingPage.noServicesMessage[lang]}
-            </p>
-            <Link href={`/businesses/${business.slug}`} className="btn-secondary">
-              {tr.bookingPage.goBack[lang]}
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
   }
 
   return (
-    <main className="min-h-screen bg-background text-on-surface">
-      <header className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
-          <Link
-            href={`/businesses/${business.slug}`}
-            className="label-mono hover:text-primary flex items-center gap-2"
-          >
-            {tr.bookingPage.back[lang]}
-          </Link>
-          <div className="flex items-center gap-stack-md">
-            <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
-              RIGIFY
-            </Link>
-            <LanguageToggle />
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-4xl px-margin-mobile md:px-margin-desktop py-section-gap">
-        <div className="mb-stack-lg">
-          <h1 className="text-display-md mb-stack-sm">{tr.bookingPage.bookAppointment[lang]}</h1>
-          <p className="text-headline-sm text-on-surface-variant">{business.name}</p>
-        </div>
-
-        <BookingForm
-          businessId={business.id}
-          businessSlug={business.slug}
-          services={services}
-          staff={staff}
-          customerInfo={customerInfo}
-          isLoggedIn={isLoggedIn}
-        />
-      </div>
-    </main>
-  );
+    <BookingPageClient
+      business={business}
+      services={(services as Service[]) || []}
+      staff={(staff as Staff[]) || []}
+      customerInfo={customerInfo}
+      isLoggedIn={!!user}
+    />
+  )
 }

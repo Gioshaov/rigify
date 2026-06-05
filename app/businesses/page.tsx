@@ -47,8 +47,9 @@ export default function BusinessesPage() {
         `)
         .eq("is_active", true);
 
-      // Apply city filter if provided
-      if (cityFilter) {
+      // Apply city filter if provided and valid
+      const validCities = CITIES.map(c => c.id);
+      if (cityFilter && validCities.includes(cityFilter)) {
         query = query.eq("city", cityFilter);
       }
 

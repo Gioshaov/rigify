@@ -1,31 +1,62 @@
-import { createClient } from "@/lib/supabase/server";
+'use client'
+
+import { createClient } from "@/lib/supabase/client";
 import { CustomerProfileForm } from "./CustomerProfileForm";
 import { updateCustomerProfileAction } from "./actions";
+import { useEffect, useState } from "react";
+import { useTranslations } from "@/lib/hooks/useTranslations";
 
-export default async function CustomerProfilePage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function CustomerProfilePage() {
+  const { tr, lang } = useTranslations();
+  const [user, setUser] = useState<any>(null);
+  const [customer, setCustomer] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!user) {
+  useEffect(() => {
+    async function loadData() {
+      const supabase = createClient();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+
+      setUser(currentUser);
+
+      const { data: customerData } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
+
+      setCustomer(customerData);
+      setLoading(false);
+    }
+
+    loadData();
+  }, []);
+
+  if (loading) {
     return (
       <section>
-        <h1 className="text-headline-md">Please sign in</h1>
+        <p className="text-on-surface-variant">{tr.common.loading[lang]}</p>
       </section>
     );
   }
 
-  const { data: customer } = await supabase
-    .from("customers")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  if (!user) {
+    return (
+      <section>
+        <h1 className="text-headline-md">{tr.customerDashboard.pleaseSignIn[lang]}</h1>
+      </section>
+    );
+  }
 
   if (!customer) {
     return (
       <section>
-        <h1 className="text-headline-md">Profile not found</h1>
+        <h1 className="text-headline-md">{tr.customerDashboard.profileNotFound[lang]}</h1>
       </section>
     );
   }
@@ -33,9 +64,9 @@ export default async function CustomerProfilePage() {
   return (
     <section className="max-w-2xl">
       <div>
-        <h1 className="text-headline-md">Profile</h1>
+        <h1 className="text-headline-md">{tr.customerDashboard.profile[lang]}</h1>
         <p className="mt-stack-sm text-on-surface-variant">
-          Manage your personal information
+          {tr.customerDashboard.managePersonalInfo[lang]}
         </p>
       </div>
 

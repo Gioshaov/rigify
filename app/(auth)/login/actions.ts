@@ -22,10 +22,13 @@ export async function loginAction(formData: FormData) {
     return { error: "Login failed." };
   }
 
-  // Super admins bypass all checks and go straight to admin panel
+  // Block super admins from regular login - they must use admin subdomain
   const isSuperAdmin = data.user.app_metadata?.is_super_admin === true;
   if (isSuperAdmin) {
-    redirect("/admin");
+    await supabase.auth.signOut();
+    return {
+      error: "Invalid email or password"
+    };
   }
 
   // Check if user is a business owner, staff, or customer (parallel queries)
