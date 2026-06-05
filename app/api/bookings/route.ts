@@ -50,17 +50,17 @@ export async function POST(request: NextRequest) {
 
     // Double-check availability (prevent race conditions)
     const dayStart = combineLocalDateTime(date, '00:00')
-    const dayEnd = combineLocalDateTime(date, '23:59')
+    const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
 
-    // Check all confirmed bookings on this day
-    // Check ALL bookings regardless of staffId to prevent double-booking
+    // Check all confirmed bookings that overlap with this day
+    // Must include bookings that start before dayStart but end after, or start before dayEnd
     const { data: confirmedBookings, error: overlapError } = await admin
       .from('bookings')
       .select('staff_id, appointment_datetime, end_datetime')
       .eq('business_id', businessId)
       .eq('status', 'confirmed')
-      .gte('appointment_datetime', dayStart.toISOString())
-      .lte('appointment_datetime', dayEnd.toISOString())
+      .lt('appointment_datetime', dayEnd.toISOString())
+      .gte('end_datetime', dayStart.toISOString())
 
     if (overlapError) {
       console.error('Error checking availability:', overlapError)

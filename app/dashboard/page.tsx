@@ -3,10 +3,7 @@ import { DashboardOverviewContent } from "@/components/dashboard/DashboardOvervi
 
 export default async function DashboardOverviewPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return (
@@ -19,20 +16,11 @@ export default async function DashboardOverviewPage() {
     );
   }
 
-  const { data: business, error: bizError } = await supabase
+  const { data: business } = await supabase
     .from("businesses")
     .select("id, name, salome_enabled, is_active, owner_id")
     .eq("owner_id", user.id)
     .maybeSingle();
-
-  if (!business) {
-    const admin = createAdminClient();
-    const { data: adminCheck } = await admin
-      .from("businesses")
-      .select("id, name, owner_id, is_active")
-      .eq("owner_id", user.id)
-      .maybeSingle();
-  }
 
   if (!business) {
     return (

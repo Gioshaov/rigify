@@ -67,5 +67,5 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
     }
   }
 
-  return <BookingConfirmationClient booking={booking as any} canViewPII={canViewPII} />;
+  return <BookingConfirmationClient booking={booking} canViewPII={canViewPII} />;
 }

@@ -47,7 +47,6 @@ export function EditBusinessForm({
 }) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isDirty, setIsDirty] = useState(false)
 
   // Live preview state
   const [liveBusinessName, setLiveBusinessName] = useState(business.name)
@@ -308,10 +307,7 @@ export function EditBusinessForm({
                   businessId={business.id}
                   type="logo"
                   currentUrl={logoUrl}
-                  onUploadComplete={(url) => {
-                    setLogoUrl(url)
-                    setIsDirty(true)
-                  }}
+                  onUploadComplete={(url) => setLogoUrl(url)}
                   variant="admin"
                 />
               </div>
