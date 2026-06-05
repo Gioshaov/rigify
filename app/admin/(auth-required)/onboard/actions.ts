@@ -159,8 +159,7 @@ export async function onboardBusiness(formData: FormData) {
     })
 
     if (staffAuthError) {
-      console.error('[ONBOARD] ❌ Step 1 FAILED - Auth creation error:', staffAuthError.message)
-      console.error('[ONBOARD] Full error:', JSON.stringify(staffAuthError, null, 2))
+      console.error('[ONBOARD] Auth creation failed:', staffAuthError.message)
       return {
         success: true,
         message: `⚠️ Business "${name}" created, but staff account creation failed:\n${staffAuthError.message}\n\nOwner login: ${ownerEmail}`,
@@ -169,7 +168,7 @@ export async function onboardBusiness(formData: FormData) {
     }
 
     if (!staffAuthData.user) {
-      console.error('[ONBOARD] ❌ Step 1 FAILED - No user returned despite no error')
+      console.error('[ONBOARD] Auth creation returned no user')
       return {
         success: true,
         message: `⚠️ Business "${name}" created, but staff account creation returned no user. Owner login: ${ownerEmail}`,
@@ -192,12 +191,11 @@ export async function onboardBusiness(formData: FormData) {
       .single()
 
     if (staffInsertError) {
-      console.error('[ONBOARD] ❌ Step 2 FAILED - Database insert error:', staffInsertError.message)
-      console.error('[ONBOARD] Full error:', JSON.stringify(staffInsertError, null, 2))
+      console.error('[ONBOARD] Staff database insert failed:', staffInsertError.message)
 
       const { error: deleteError } = await admin.auth.admin.deleteUser(staffAuthData.user.id)
       if (deleteError) {
-        console.error('[ONBOARD] Rollback also failed:', deleteError.message)
+        console.error('[ONBOARD] Staff rollback failed:', deleteError.message)
       }
 
       return {
@@ -215,7 +213,7 @@ export async function onboardBusiness(formData: FormData) {
       .single()
 
     if (verifyError || !verifyStaff) {
-      console.error('[ONBOARD] ⚠️ WARNING - Staff was inserted but cannot be queried back:', verifyError?.message)
+      console.error('[ONBOARD] Staff verification failed:', verifyError?.message)
     }
 
     // Staff created successfully!

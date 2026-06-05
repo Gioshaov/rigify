@@ -3,15 +3,24 @@
  */
 
 /**
- * Validates Georgian phone number format
- * Accepts: +995 5XX XXX XXX, 995 5XX XXX XXX, or 5XXXXXXXX
+ * Validates phone number format
+ * Accepts:
+ * - Georgian mobile: +995 5XX XXX XXX (or without prefix)
+ * - Georgian landline: +995 [2|3|4|7|8]X XXX XXX
+ * - International: any number starting with +
  */
 export function validateGeorgianPhone(phone: string): boolean {
   // Remove all spaces for consistent validation
   const cleaned = phone.replace(/\s/g, '')
-  // Match Georgian mobile format: +995 or 995 prefix (optional) + 5 + 8 digits
-  const regex = /^(\+995|995)?5\d{8}$/
-  return regex.test(cleaned)
+
+  // Accept any international number with + prefix (E.164 format)
+  if (cleaned.startsWith('+')) {
+    return cleaned.length >= 10 && cleaned.length <= 15 && /^\+\d+$/.test(cleaned)
+  }
+
+  // Georgian numbers without prefix: mobile (5) or landline (2,3,4,7,8) + 8 digits
+  const georgianRegex = /^(995)?[2345789]\d{8}$/
+  return georgianRegex.test(cleaned)
 }
 
 /**

@@ -35,26 +35,32 @@ export async function GET(request: NextRequest) {
   const durationMinutes = service.duration_minutes
 
   // Get existing bookings for this date
-  const dayStart = combineLocalDateTime(date, '00:00').toISOString()
-  const dayEnd = combineLocalDateTime(date, '23:59').toISOString()
+  const dayStart = combineLocalDateTime(date, '00:00')
+  const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000)
 
-  let query = admin
+  // Fetch all confirmed bookings that overlap with this day
+  const { data: bookings, error: bookingsError } = await admin
     .from('bookings')
-    .select('appointment_datetime, end_datetime')
+    .select('staff_id, appointment_datetime, end_datetime')
     .eq('business_id', businessId)
     .eq('status', 'confirmed')
-    .gte('appointment_datetime', dayStart)
-    .lte('appointment_datetime', dayEnd)
-
-  // If specific staff requested, filter by staff
-  if (staffId) {
-    query = query.eq('staff_id', staffId)
-  }
-
-  const { data: bookings, error: bookingsError } = await query
+    .lt('appointment_datetime', dayEnd.toISOString())
+    .gte('end_datetime', dayStart.toISOString())
 
   if (bookingsError) {
     console.error('Bookings fetch error:', bookingsError)
+  }
+
+  // If "Any Staff" mode, get all active staff for this business
+  let allStaff: { id: string }[] | null = null
+  if (!staffId) {
+    const { data: staffData } = await admin
+      .from('staff')
+      .select('id')
+      .eq('business_id', businessId)
+      .eq('is_active', true)
+
+    allStaff = staffData
   }
 
   // Generate time slots (9am to 9pm, 15-min intervals)
@@ -74,21 +80,38 @@ export async function GET(request: NextRequest) {
     const slotStart = combineLocalDateTime(date, slot)
     const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60000)
 
-    // Check if this slot overlaps with any existing booking
-    const hasOverlap = bookings?.some((booking) => {
-      const bookingStart = new Date(booking.appointment_datetime)
-      const bookingEnd = new Date(booking.end_datetime)
-
-      // Overlap detection: two events overlap if one starts before the other ends
-      return bookingStart < slotEnd && bookingEnd > slotStart
-    })
-
-    // Also check if the service would end after business hours
+    // Check if the service would end after business hours
     const slotEndHour = slotEnd.getHours()
     const slotEndMinute = slotEnd.getMinutes()
     const endsAfterHours = slotEndHour > endHour || (slotEndHour === endHour && slotEndMinute > 0)
 
-    return !hasOverlap && !endsAfterHours
+    if (endsAfterHours) return false
+
+    // Specific staff: check only their bookings
+    if (staffId) {
+      const staffBookings = bookings?.filter(b => b.staff_id === staffId) || []
+      const hasOverlap = staffBookings.some((booking) => {
+        const bookingStart = new Date(booking.appointment_datetime)
+        const bookingEnd = new Date(booking.end_datetime)
+        return bookingStart < slotEnd && bookingEnd > slotStart
+      })
+      return !hasOverlap
+    }
+
+    // "Any Staff": check if at least one staff member is available
+    if (!allStaff || allStaff.length === 0) return false
+
+    const hasAvailableStaff = allStaff.some(staff => {
+      const staffBookings = bookings?.filter(b => b.staff_id === staff.id) || []
+      const hasConflict = staffBookings.some((booking) => {
+        const bookingStart = new Date(booking.appointment_datetime)
+        const bookingEnd = new Date(booking.end_datetime)
+        return bookingStart < slotEnd && bookingEnd > slotStart
+      })
+      return !hasConflict
+    })
+
+    return hasAvailableStaff
   })
 
   return NextResponse.json({ slots: availableSlots })

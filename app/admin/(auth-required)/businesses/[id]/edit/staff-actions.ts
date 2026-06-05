@@ -35,7 +35,7 @@ export async function updateStaffMember(staffId: string, formData: FormData) {
   // Get current staff member to find auth user ID
   const { data: staffMember, error: fetchError } = await admin
     .from('staff')
-    .select('id')
+    .select('id, user_id')
     .eq('id', staffId)
     .single()
 
@@ -50,7 +50,7 @@ export async function updateStaffMember(staffId: string, formData: FormData) {
 
   if (Object.keys(authUpdates).length > 0) {
     const { error: authError } = await admin.auth.admin.updateUserById(
-      staffId,
+      staffMember.user_id,
       authUpdates
     )
 

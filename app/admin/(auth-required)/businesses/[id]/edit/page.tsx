@@ -3,9 +3,10 @@ import { redirect } from 'next/navigation'
 import { EditBusinessForm } from './EditBusinessForm'
 
 export default async function EditBusinessPage({ params }: { params: { id: string } }) {
-  const supabase = createClient()
+  // Use admin client for super admin access (middleware already verified super admin status)
+  const admin = createAdminClient()
 
-  const { data: business, error } = await supabase
+  const { data: business, error } = await admin
     .from('businesses')
     .select(`
       *,
@@ -20,8 +21,7 @@ export default async function EditBusinessPage({ params }: { params: { id: strin
     redirect('/admin')
   }
 
-  // Get staff for this business (use admin client since super admin doesn't own the business)
-  const admin = createAdminClient()
+  // Get staff for this business
   const { data: staff } = await admin
     .from('staff')
     .select('id, name, email, role, is_active, created_at')
