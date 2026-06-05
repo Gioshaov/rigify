@@ -57,13 +57,7 @@ git push origin main     # Push to GitHub
 
 ### Code Review Protocol
 
-After every commit (except trivial changes like typo fixes), run BOTH reviews in parallel:
-
-```bash
-# In Claude Code, run these commands in parallel:
-/codex:review --background
-@code-reviewer
-```
+After every commit (except trivial changes), **Claude automatically runs @code-reviewer**.
 
 **What qualifies as "trivial" (can skip reviews):**
 - Documentation updates (README, comments only)
@@ -79,19 +73,23 @@ After every commit (except trivial changes like typo fixes), run BOTH reviews in
 - API routes or server actions
 - Authentication or authorization code
 
-**Workflow:**
+**Automated Workflow:**
 1. Make changes and commit locally
-2. Run `/codex:review --background` (fast, runs in background)
-3. Run `@code-reviewer` (thorough, runs in foreground)
-4. Wait for both to complete
-5. Fix any CRITICAL or MAJOR issues found
-6. Re-commit fixes if needed
-7. Push to GitHub only after reviews pass
+2. Claude automatically invokes `@code-reviewer` (thorough review)
+3. **Optional**: User runs `/codex:review --background` for second opinion
+4. Fix any CRITICAL or MAJOR issues found
+5. Re-commit fixes if needed
+6. Push to GitHub only after reviews pass
 
-**Review Expectations:**
-- `/codex:review`: Catches design issues, spec compliance, architectural problems
-- `@code-reviewer`: Catches bugs, security vulnerabilities, performance issues, missing tests
+**Review Tools:**
+- `@code-reviewer` (automatic): Catches bugs, security vulnerabilities, performance issues, missing tests
+- `/codex:review` (manual): Catches design issues, spec compliance, architectural problems
 - Both must PASS or CONDITIONAL PASS before pushing
+
+**Why This Hybrid Approach:**
+- `@code-reviewer` runs automatically via Agent tool (always get safety check)
+- `/codex:review` runs manually via Skill tool (has disable-model-invocation, prevents infinite loops)
+- You control expensive Codex reviews while always getting basic safety validation
 - FAIL verdict = DO NOT push, fix issues first
 
 ---
