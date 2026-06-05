@@ -370,6 +370,7 @@ export const translations = {
     staffMember: { ka: "სპეციალისტი", en: "STAFF MEMBER" },
     dateAndTime: { ka: "თარიღი და დრო", en: "DATE & TIME" },
     customer: { ka: "კლიენტი", en: "CUSTOMER" },
+    privateBooking: { ka: "პირადი ჯავშანი", en: "Private booking" },
     location: { ka: "მდებარეობა", en: "LOCATION" },
     price: { ka: "ფასი", en: "PRICE" },
     minutes: { ka: "წუთი", en: "minutes" },

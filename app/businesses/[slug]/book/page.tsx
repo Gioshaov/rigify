@@ -44,7 +44,7 @@ export default async function BookingPage({ params, searchParams }: PageProps) {
   // Fetch active staff
   const { data: staff, error: staffError } = await supabase
     .from('staff')
-    .select('id, business_id, name, email, specialty, is_active')
+    .select('id, business_id, name, specialty, is_active')
     .eq('business_id', business.id)
     .eq('is_active', true)
     .order('name')

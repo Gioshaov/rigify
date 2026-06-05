@@ -375,7 +375,7 @@ export function EditBusinessForm({
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Quick Actions</p>
               <div className="space-y-2">
                 <a
-                  href={`http://localhost:3000/businesses/${business.slug}`}
+                  href={`${typeof window !== 'undefined' ? window.location.origin : ''}/businesses/${business.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between w-full bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded text-sm transition-colors"

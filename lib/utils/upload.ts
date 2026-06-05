@@ -41,7 +41,7 @@ export async function uploadImage(
     const { data, error } = await supabase.storage
       .from('business-images')
       .upload(path, file, {
-        upsert: true, // Replace if exists
+        upsert: true, // Replace if exists (UPDATE policy verifies ownership)
         contentType: file.type,
       })
 

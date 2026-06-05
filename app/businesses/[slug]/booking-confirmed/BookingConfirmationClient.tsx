@@ -145,7 +145,7 @@ export function BookingConfirmationClient({
                   )}
                 </>
               ) : (
-                <p className="text-body-md text-on-surface-variant">Private booking</p>
+                <p className="text-body-md text-on-surface-variant">{tr.bookingConfirmed.privateBooking[lang]}</p>
               )}
             </div>
 
