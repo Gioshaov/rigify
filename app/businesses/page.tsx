@@ -118,7 +118,7 @@ export default function BrowseBusinessesPage() {
             My Bookings
           </Link>
           <Link
-            href="/for-business"
+            href="/for-businesses"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
             For Business
@@ -350,7 +350,7 @@ export default function BrowseBusinessesPage() {
           </span>
         </Link>
         <Link
-          href="/for-business"
+          href="/for-businesses"
           className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform"
         >
           <span className="material-symbols-outlined">business_center</span>

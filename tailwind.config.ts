@@ -21,6 +21,7 @@ const config: Config = {
         "surface-container-high": "#2a292f",
         "surface-container-highest": "#35343a",
         "surface-variant": "#35343a",
+        "surface-elevated": "#2a292f",
         "on-surface": "#e4e1e9",
         "on-surface-variant": "#d0c5b2",
         "on-background": "#e4e1e9",
@@ -58,6 +59,10 @@ const config: Config = {
         "on-error": "#690005",
         "error-container": "#93000a",
         "on-error-container": "#ffdad6",
+        "muted-gold": "#c9a84c",
+        "pure-white": "#ffffff",
+        "text-primary": "#e4e1e9",
+        "text-secondary": "#d0c5b2",
       },
       borderRadius: {
         none: "0px",
@@ -95,6 +100,7 @@ const config: Config = {
       },
       maxWidth: {
         container: "1280px",
+        "container-max": "1280px",
       },
     },
   },

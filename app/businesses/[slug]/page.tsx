@@ -331,7 +331,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
                 </h3>
               </div>
               <p className="italic font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant">
-                "{mockBusiness.review.text}"
+                &ldquo;{mockBusiness.review.text}&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-surface-variant border border-white/10"></div>
@@ -373,7 +373,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
             Bookings
           </span>
         </Link>
-        <Link href="/for-business" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Business

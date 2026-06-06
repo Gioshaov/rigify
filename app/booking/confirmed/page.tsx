@@ -239,7 +239,7 @@ export default function BookingConfirmedPage() {
             My Bookings
           </span>
         </Link>
-        <Link href="/for-business" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             For Business
