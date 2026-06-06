@@ -48,6 +48,57 @@ git push origin main     # Push to GitHub
 
 ---
 
+## Testing & Test Automation
+
+**Test Framework**: Playwright (for E2E browser testing)
+
+### Test ID Strategy
+
+All interactive elements MUST use `data-testid` attributes for Playwright selectors.
+
+**Pattern:**
+```tsx
+// Buttons
+<button data-testid="confirm-booking-btn">Confirm Booking</button>
+<button data-testid="add-to-calendar-btn">Add to Calendar</button>
+
+// Form inputs
+<input data-testid="search-input" type="text" />
+<select data-testid="city-select">...</select>
+
+// Links/Navigation
+<Link data-testid="nav-home" href="/">Home</Link>
+<Link data-testid="nav-businesses" href="/businesses">Browse Studios</Link>
+
+// Key sections/containers
+<div data-testid="booking-summary">...</div>
+<div data-testid="business-card">...</div>
+```
+
+**Naming Convention:**
+- Format: `{element-purpose}-{type}`
+- Use kebab-case
+- Be descriptive: `confirm-booking-btn` not `button1`
+- For repeated elements: `business-card-${index}` or `service-card-${id}`
+
+**When to add:**
+- All buttons (primary actions, navigation, forms)
+- All form inputs (text, select, checkbox, radio)
+- All links (navigation, CTAs)
+- Key containers (cards, summaries, sections that tests will verify)
+
+**When NOT to add:**
+- Pure decorative elements (dividers, spacers)
+- Static text that won't be interacted with
+- Icons inside labeled buttons (test the button, not the icon)
+
+**Why `data-testid` over `id`:**
+- Won't conflict with CSS/JavaScript
+- Clear intent: attribute exists only for testing
+- Industry standard (Playwright, Testing Library, Cypress)
+
+---
+
 ## Git Workflow
 
 - Always create a feature branch before making changes

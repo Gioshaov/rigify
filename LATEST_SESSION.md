@@ -183,7 +183,27 @@
 
 ## What's Next
 
-### Priority 1: Test Phase 1 Pages
+### Priority 1: Add Test IDs to Phase 1 Pages (FIRST TASK TOMORROW)
+Add `data-testid` attributes to all interactive elements for Playwright automation:
+
+**Pages to update:**
+- `app/page.tsx` - Homepage (nav, category cards, city cards, CTAs)
+- `app/businesses/page.tsx` - Browse Studios (search, filters, business cards, pagination)
+- `app/businesses/[slug]/page.tsx` - Business Profile (service cards, portfolio, staff cards, CTA)
+- `app/businesses/[slug]/book/page.tsx` - Booking Flow (calendar, time slots, confirm button)
+- `app/booking/confirmed/page.tsx` - Confirmation (calendar buttons, action buttons)
+
+**Elements to target:**
+- All buttons (primary actions, nav, forms)
+- All form inputs (search, select, text)
+- All links (navigation, CTAs)
+- Key containers (business cards, booking summary, service cards)
+
+**Pattern**: See CLAUDE.md "Testing & Test Automation" section for naming conventions
+
+**Estimated**: 1-2 hours
+
+### Priority 2: Test Phase 1 Pages
 Test all 5 newly implemented pages in browser:
 - Homepage - verify all hover effects work (categories, hero image, city cards)
 - Browse Studios - test search filters, business card hovers, pagination
@@ -192,7 +212,7 @@ Test all 5 newly implemented pages in browser:
 - Confirmation - verify map display, calendar buttons, action buttons
 - Mobile responsiveness at 375px, 768px, 1280px breakpoints
 
-### Priority 2: Phase 2 - Authentication Pages
+### Priority 3: Phase 2 - Authentication Pages
 Continue with Stitch design implementation:
 - Customer Login page (customer_login_rigify design)
 - Customer Registration page (join_rigify_registration design)
@@ -200,7 +220,7 @@ Continue with Stitch design implementation:
 - For Businesses page (for_businesses_rigify_premium design)
 - **Estimated**: 2-3 hours
 
-### Priority 3: Phase 3 - Customer Dashboard
+### Priority 4: Phase 3 - Customer Dashboard
 Implement customer self-service pages:
 - My Bookings page (my_bookings_rigify design)
 - Manage Booking page (manage_booking_rigify design)
@@ -208,7 +228,7 @@ Implement customer self-service pages:
 - Customer Profile page (my_profile_rigify design)
 - **Estimated**: 3-4 hours
 
-### Priority 4: Phase 4 - Business Dashboard Core
+### Priority 5: Phase 4 - Business Dashboard Core
 Implement business owner management pages:
 - Dashboard Overview (dashboard_overview_rigify_business design)
 - Daily Schedule (daily_schedule_rigify_business design)
@@ -219,7 +239,7 @@ Implement business owner management pages:
 - Add Appointment (add_appointment_rigify_business design)
 - **Estimated**: 5-6 hours
 
-### Priority 5: Remaining Phases
+### Priority 6: Remaining Phases
 - Phase 5: Business Dashboard Advanced (4 pages)
 - Phase 6: Additional Features (Salome AI, For Businesses)
 - See plan at `C:\Users\shaos\.claude\plans\witty-growing-walrus.md`
