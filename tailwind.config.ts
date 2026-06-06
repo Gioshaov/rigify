@@ -12,7 +12,7 @@ const config: Config = {
     extend: {
       colors: {
         background: "#0a0a0f",
-        surface: "#16161d",
+        surface: "#1a1a24",
         "surface-dim": "#131318",
         "surface-bright": "#39383e",
         "surface-container-lowest": "#0a0a0f",
@@ -27,7 +27,7 @@ const config: Config = {
         "inverse-surface": "#e4e1e9",
         "inverse-on-surface": "#303036",
         outline: "#99907e",
-        "outline-variant": "#6c624d",
+        "outline-variant": "#4d4637",
         "surface-tint": "#e6c364",
         primary: "#e6c364",
         "on-primary": "#0a0a0f",

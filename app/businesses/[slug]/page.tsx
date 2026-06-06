@@ -1,398 +1,385 @@
-import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/constants/categories";
-import { LanguageToggle } from "@/components/ui/LanguageToggle";
-import { getServerTranslations } from "@/lib/utils/server-translations";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { notFound } from "next/navigation";
 
-export default async function BusinessProfilePage({
-  params
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params;
-  const { tr, lang } = getServerTranslations();
-  const supabase = createClient();
+// Mock data - will be replaced with real database queries
+const mockBusiness = {
+  name: "STERN Barber Shop",
+  slug: "stern-barber-shop",
+  rating: 5.0,
+  location: "Tbilisi, Georgia — Premium Grooming Artistry",
+  address: "12 Rustaveli Avenue, Center\nTbilisi, Georgia",
+  coverImage: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1920&h=800&fit=crop",
+  logo: "S",
+  about: "STERN is an architectural approach to masculine aesthetics. Located in the heart of the city, we combine traditional European barbering heritage with modern geometric precision. Our artisans specialize in custom-tailored silhouettes that respect individual facial structures and personal identity.",
+  services: [
+    {
+      id: 1,
+      name: "Classic Cut",
+      description: "45m — Precision Scissors & Clipper Work",
+      price: "50 GEL",
+    },
+    {
+      id: 2,
+      name: "The Royal Shave",
+      description: "60m — Hot Towel, Straight Razor, Essential Oils",
+      price: "75 GEL",
+    },
+    {
+      id: 3,
+      name: "Beard Sculpture",
+      description: "30m — Freehand Shaping & Lineup",
+      price: "40 GEL",
+    },
+  ],
+  portfolio: [
+    "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=400&h=400&fit=crop",
+  ],
+  staff: [
+    {
+      id: 1,
+      name: "David Stern",
+      title: "Master Barber / Founder",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+    },
+    {
+      id: 2,
+      name: "Levan G.",
+      title: "Senior Stylist",
+      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
+    },
+  ],
+  hours: {
+    weekday: "10:00 - 21:00",
+    weekend: "11:00 - 19:00",
+  },
+  review: {
+    text: "The level of attention to detail is unmatched in this city. It's not just a haircut, it's a structural transformation.",
+    author: "Alexander M.",
+  },
+};
 
-  const { data: business } = await supabase
-    .from("businesses")
-    .select(`
-      id,
-      name,
-      slug,
-      description,
-      city,
-      district,
-      address,
-      phone,
-      email,
-      website,
-      instagram,
-      cover_image_url,
-      logo_url,
-      rating,
-      review_count,
-      hours,
-      business_categories (
-        category_id
-      )
-    `)
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+export default function BusinessProfilePage({ params }: { params: { slug: string } }) {
+  const [user, setUser] = useState<any>(null);
 
-  if (!business) {
-    notFound();
-  }
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+  }, []);
 
-  const [
-    { data: services },
-    { data: staff },
-    { data: reviews }
-  ] = await Promise.all([
-    supabase
-      .from("services")
-      .select("id, name, description, price, duration_minutes, is_active")
-      .eq("business_id", business.id)
-      .eq("is_active", true)
-      .order("name"),
-    supabase
-      .from("staff")
-      .select("id, name, specialty, is_active")
-      .eq("business_id", business.id)
-      .eq("is_active", true)
-      .order("name"),
-    supabase
-      .from("reviews")
-      .select(`
-        id,
-        rating,
-        comment,
-        created_at,
-        customers!inner (
-          name
-        )
-      `)
-      .eq("business_id", business.id)
-      .order("created_at", { ascending: false })
-      .limit(10)
-  ]);
-
-  const normalizedReviews = reviews?.map(r => ({
-    ...r,
-    customers: Array.isArray(r.customers) ? r.customers[0] : r.customers
-  }));
-
-  const categoryLabels = business.business_categories
-    .map((bc: { category_id: string }) => {
-      const cat = CATEGORIES.find((c) => c.id === bc.category_id);
-      return cat?.[lang];
-    })
-    .filter(Boolean);
+  // In production, fetch business by slug from database
+  // const business = await fetchBusinessBySlug(params.slug);
+  // if (!business) notFound();
 
   return (
-    <main className="min-h-screen bg-background text-on-surface">
-      {/* Header */}
-      <header className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-background">
+      {/* Top Navigation */}
+      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+        <div className="flex items-center gap-4">
+          <span className="material-symbols-outlined text-primary cursor-pointer">
+            language
+          </span>
+          <Link href="/">
+            <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
+              RIGIFY
+            </span>
+          </Link>
+        </div>
+        <nav className="hidden md:flex items-center gap-8">
+          <Link
+            href="/"
+            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary hover:text-primary transition-colors duration-200"
+          >
+            Home
+          </Link>
           <Link
             href="/businesses"
-            className="label-mono hover:text-primary flex items-center gap-2"
+            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
-            {tr.businessProfile.back[lang]}
+            Browse
           </Link>
-          <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
-            RIGIFY
+          <Link
+            href="/customer/dashboard"
+            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
+          >
+            My Bookings
           </Link>
-          <div className="flex items-center gap-stack-md">
-            <Link href={`/businesses/${business.slug}/book`} className="btn-primary !py-2">
-              {tr.businessProfile.bookNow[lang]}
+        </nav>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="w-10 h-10 bg-surface-variant flex items-center justify-center border border-white/10 overflow-hidden">
+              <Image
+                src={user.user_metadata?.avatar_url || "/default-avatar.png"}
+                alt="User"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
+            >
+              Sign In
             </Link>
-            <LanguageToggle />
-          </div>
+          )}
         </div>
       </header>
 
-      {/* Cover Image */}
-      <div className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container">
-          <div className="aspect-[21/9] bg-surface-container relative overflow-hidden">
-            {business.cover_image_url ? (
-              <img
-                src={business.cover_image_url}
-                alt={business.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="font-mono text-data-label text-on-surface-variant uppercase tracking-wider">
-                  {tr.businessProfile.noCoverImage[lang]}
+      <main className="pb-24">
+        {/* Hero Section */}
+        <section className="relative h-[353px] md:h-[530px] w-full overflow-hidden">
+          <Image
+            src={mockBusiness.coverImage}
+            alt={mockBusiness.name}
+            fill
+            className="object-cover grayscale brightness-50"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-base md:pb-gutter flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex items-end gap-6">
+              <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-elevated border border-white/10 p-2 relative z-10 flex items-center justify-center">
+                <span className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary select-none">
+                  {mockBusiness.logo}
+                </span>
+              </div>
+              <div className="mb-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className="material-symbols-outlined text-primary text-[20px]"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    star
+                  </span>
+                  <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary">
+                    {mockBusiness.rating} RATING
+                  </span>
+                </div>
+                <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] md:leading-[1.1] uppercase text-white">
+                  {mockBusiness.name}
+                </h1>
+                <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface-variant uppercase mt-1">
+                  {mockBusiness.location}
                 </p>
               </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Business Header */}
-      <section className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-stack-lg">
-          <div className="flex items-start gap-gutter">
-            {/* Logo */}
-            {business.logo_url && (
-              <div className="w-24 h-24 bg-background border border-outline-variant overflow-hidden flex-shrink-0">
-                <img
-                  src={business.logo_url}
-                  alt={`${business.name} logo`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Info */}
-            <div className="flex-1">
-              {/* Categories */}
-              {categoryLabels.length > 0 && (
-                <p className="label-mono text-primary mb-stack-sm">
-                  {categoryLabels.join(" · ").toUpperCase()}
-                </p>
-              )}
-
-              <h1 className="text-display-md-mobile md:text-display-md mb-stack-sm">
-                {business.name}
-              </h1>
-
-              {/* Rating */}
-              {business.review_count > 0 ? (
-                <p className="label-mono text-on-surface-variant mb-stack-md">
-                  ★ {business.rating?.toFixed(1) ?? '0.0'} · {business.review_count} {tr.businessProfile.reviews[lang]}
-                </p>
-              ) : (
-                <p className="label-mono text-on-surface-variant mb-stack-md">
-                  {tr.businessProfile.noReviews[lang]}
-                </p>
-              )}
-
-              {/* Description */}
-              {business.description && (
-                <p className="text-body-lg text-on-surface-variant max-w-3xl">
-                  {business.description}
-                </p>
-              )}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-          {/* Main Column */}
-          <div className="lg:col-span-2 space-y-gutter">
-            {/* Services */}
-            <section className="border border-outline-variant bg-surface">
-              <div className="px-gutter py-stack-lg border-b border-outline-variant">
-                <h2 className="text-headline-lg">{tr.businessProfile.services[lang]}</h2>
-              </div>
-
-              {services && services.length > 0 ? (
-                <div>
-                  {services.map((service, index) => (
-                    <div
-                      key={service.id}
-                      className={`px-gutter py-stack-md flex items-start justify-between ${
-                        index < services.length - 1 ? "border-b border-outline-variant" : ""
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <h3 className="text-headline-sm mb-stack-xs">
-                          {service.name}
-                        </h3>
-                        {service.description && (
-                          <p className="text-body-md text-on-surface-variant">
-                            {service.description}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right ml-gutter">
-                        <p className="text-headline-sm">₾{service.price}</p>
-                        <p className="label-mono text-on-surface-variant">
-                          {service.duration_minutes} {tr.businessProfile.min[lang]}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="px-gutter py-section-gap text-center">
-                  <p className="label-mono text-on-surface-variant">
-                    {tr.businessProfile.noServices[lang]}
-                  </p>
-                </div>
-              )}
-            </section>
-
-            {/* Staff */}
-            {staff && staff.length > 0 && (
-              <section className="border border-outline-variant bg-surface">
-                <div className="px-gutter py-stack-lg border-b border-outline-variant">
-                  <h2 className="text-headline-lg">{tr.businessProfile.ourTeam[lang]}</h2>
-                </div>
-                <div className="px-gutter py-stack-lg grid grid-cols-1 md:grid-cols-2 gap-stack-md">
-                  {staff.map((member) => (
-                    <div key={member.id} className="flex items-start gap-stack-sm">
-                      <div className="w-12 h-12 bg-surface-container flex items-center justify-center flex-shrink-0 font-mono text-headline-sm">
-                        {member.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-headline-sm">{member.name}</p>
-                        {member.specialty && (
-                          <p className="label-mono text-on-surface-variant">
-                            {member.specialty.toUpperCase()}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Reviews */}
-            {normalizedReviews && normalizedReviews.length > 0 && (
-              <section className="border border-outline-variant bg-surface">
-                <div className="px-gutter py-stack-lg border-b border-outline-variant">
-                  <h2 className="text-headline-lg">{tr.businessProfile.reviews[lang]}</h2>
-                </div>
-                <div>
-                  {normalizedReviews.map((review, index) => (
-                    <div
-                      key={review.id}
-                      className={`px-gutter py-stack-lg ${
-                        index < normalizedReviews.length - 1 ? "border-b border-outline-variant" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-stack-sm mb-stack-sm">
-                        <p className="label-mono text-on-surface">
-                          {review.customers?.name || tr.businessProfile.anonymous[lang]}
-                        </p>
-                        <p className="label-mono text-primary">
-                          {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
-                        </p>
-                      </div>
-                      {review.comment && (
-                        <p className="text-body-md text-on-surface-variant">
-                          {review.comment}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-gutter">
-            {/* Book CTA */}
-            <div className="border border-outline-variant bg-surface p-gutter">
-              <p className="label-mono mb-stack-md">{tr.businessProfile.readyToBook[lang]}</p>
-              <Link
-                href={`/businesses/${business.slug}/book`}
-                className="btn-primary w-full"
-              >
-                {tr.businessProfile.bookAppointment[lang]}
+            <div className="hidden md:block">
+              <Link href={`/businesses/${mockBusiness.slug}/book`}>
+                <button className="bg-primary text-on-primary px-10 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:brightness-110 active:scale-95 transition-all">
+                  Book Appointment
+                </button>
               </Link>
             </div>
+          </div>
+        </section>
 
-            {/* Contact */}
-            <div className="border border-outline-variant bg-surface p-gutter">
-              <p className="label-mono mb-stack-md">{tr.businessProfile.contact[lang]}</p>
-              <div className="space-y-stack-md text-body-md">
-                <div>
-                  <p className="label-mono text-on-surface-variant mb-stack-xs">
-                    {tr.businessProfile.address[lang]}
-                  </p>
-                  <p className="text-on-surface">
-                    {business.address}
-                    <br />
-                    {business.city}
-                  </p>
+        {/* Content Grid */}
+        <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop mt-12 grid grid-cols-1 md:grid-cols-12 gap-gutter">
+          {/* Left Column: Details */}
+          <div className="md:col-span-8 space-y-16">
+            {/* About */}
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-1 h-6 bg-primary"></div>
+                <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight">
+                  About the Studio
+                </h2>
+              </div>
+              <p className="font-hanken text-[18px] leading-[1.6] font-normal text-on-surface-variant max-w-2xl">
+                {mockBusiness.about}
+              </p>
+            </section>
+
+            {/* Services */}
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-1 h-6 bg-primary"></div>
+                  <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight">
+                    Services
+                  </h2>
                 </div>
-
-                {business.phone && (
-                  <div>
-                    <p className="label-mono text-on-surface-variant mb-stack-xs">
-                      {tr.businessProfile.phone[lang]}
-                    </p>
-                    <a
-                      href={`tel:${business.phone}`}
-                      className="text-primary hover:underline"
-                    >
-                      {business.phone}
-                    </a>
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant">
+                  CURATED SELECTION
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                {mockBusiness.services.map((service) => (
+                  <div
+                    key={service.id}
+                    className="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
+                  >
+                    <div>
+                      <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white group-hover:text-primary transition-colors">
+                        {service.name}
+                      </h3>
+                      <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface-variant uppercase mt-1">
+                        {service.description}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
+                        {service.price}
+                      </span>
+                    </div>
                   </div>
-                )}
+                ))}
+              </div>
+            </section>
 
-                {business.email && (
-                  <div>
-                    <p className="label-mono text-on-surface-variant mb-stack-xs">
-                      {tr.businessProfile.email[lang]}
-                    </p>
-                    <a
-                      href={`mailto:${business.email}`}
-                      className="text-primary hover:underline break-all"
-                    >
-                      {business.email}
-                    </a>
+            {/* Gallery */}
+            <section>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-1 h-6 bg-primary"></div>
+                <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight">
+                  Portfolio
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {mockBusiness.portfolio.map((image, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square bg-surface-variant border border-white/10 overflow-hidden"
+                  >
+                    <Image
+                      src={image}
+                      alt={`Portfolio ${index + 1}`}
+                      width={400}
+                      height={400}
+                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                    />
                   </div>
-                )}
+                ))}
+              </div>
+            </section>
+          </div>
 
-                {business.instagram && (
-                  <div>
-                    <p className="label-mono text-on-surface-variant mb-stack-xs">
-                      {tr.businessProfile.instagram[lang]}
-                    </p>
-                    <a
-                      href={`https://instagram.com/${business.instagram.replace("@", "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      @{business.instagram.replace("@", "")}
-                    </a>
+          {/* Right Column: Sidebar */}
+          <aside className="md:col-span-4 space-y-12">
+            {/* Staff Section */}
+            <div className="p-8 bg-surface-container-high border border-white/10">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-1 h-6 bg-primary"></div>
+                <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight">
+                  Artisans
+                </h2>
+              </div>
+              <div className="space-y-6">
+                {mockBusiness.staff.map((member) => (
+                  <div key={member.id} className="flex items-center gap-4 group cursor-pointer">
+                    <div className="w-16 h-16 border border-white/10 grayscale group-hover:grayscale-0 transition-all overflow-hidden">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-hanken text-[18px] leading-[1.3] font-semibold text-white group-hover:text-primary transition-colors">
+                        {member.name}
+                      </p>
+                      <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
+                        {member.title}
+                      </p>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
 
-            {/* Hours */}
-            {business.hours && (
-              <div className="border border-outline-variant bg-surface p-gutter">
-                <p className="label-mono mb-stack-md">{tr.businessProfile.hours[lang]}</p>
-                <div className="space-y-stack-xs label-mono text-on-surface-variant">
-                  {Object.entries(business.hours as Record<string, string>).map(
-                    ([day, hours]) => (
-                      <div key={day} className="flex justify-between gap-stack-sm">
-                        <span className="uppercase">{day}</span>
-                        <span>{hours}</span>
-                      </div>
-                    )
-                  )}
+            {/* Location / Info */}
+            <div className="p-8 bg-surface-container border border-white/5">
+              <div className="space-y-6">
+                <div>
+                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase mb-2">
+                    Location
+                  </p>
+                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface whitespace-pre-line">
+                    {mockBusiness.address}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase mb-2">
+                    Opening Hours
+                  </p>
+                  <div className="grid grid-cols-2 gap-y-1 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface-variant">
+                    <span>Mon - Fri</span>
+                    <span className="text-right">{mockBusiness.hours.weekday}</span>
+                    <span>Sat - Sun</span>
+                    <span className="text-right">{mockBusiness.hours.weekend}</span>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+
+            {/* Reviews Preview */}
+            <div className="p-8 border-l border-primary/20 space-y-6">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">format_quote</span>
+                <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase">
+                  Client Voice
+                </h3>
+              </div>
+              <p className="italic font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant">
+                "{mockBusiness.review.text}"
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-surface-variant border border-white/10"></div>
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase">
+                  {mockBusiness.review.author}
+                </span>
+              </div>
+            </div>
+          </aside>
         </div>
+      </main>
+
+      {/* Mobile CTA (Sticky) */}
+      <div className="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
+        <Link href={`/businesses/${mockBusiness.slug}/book`}>
+          <button className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold active:scale-95 transition-all">
+            Book Appointment
+          </button>
+        </Link>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-outline-variant mt-section-gap">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between gap-stack-md text-on-surface-variant">
-          <p className="label-mono">© {new Date().getFullYear()} RIGIFY</p>
-          <p className="label-mono">RIGIFY.GE</p>
-        </div>
+      {/* Mobile Bottom Navigation */}
+      <footer className="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
+        <Link href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+          <span className="material-symbols-outlined">home</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Home
+          </span>
+        </Link>
+        <Link href="/businesses" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+          <span className="material-symbols-outlined">search</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Browse
+          </span>
+        </Link>
+        <Link href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+          <span className="material-symbols-outlined">event_available</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Bookings
+          </span>
+        </Link>
+        <Link href="/for-business" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+          <span className="material-symbols-outlined">business_center</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Business
+          </span>
+        </Link>
       </footer>
-    </main>
+    </div>
   );
 }
