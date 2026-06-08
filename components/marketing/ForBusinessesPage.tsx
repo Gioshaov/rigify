@@ -156,7 +156,7 @@ export default function ForBusinessesPage() {
                   Missed Calls = Lost Revenue
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-                  Your phone rings while you're with a client. You miss the call, they book somewhere else.
+                  Your phone rings while you&apos;re with a client. You miss the call, they book somewhere else.
                 </p>
               </div>
               <div data-testid="problem-card-notebook" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
@@ -178,7 +178,7 @@ export default function ForBusinessesPage() {
                   No Online Presence
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-                  Customers can't find you online. They book with competitors who have modern booking systems.
+                  Customers can&apos;t find you online. They book with competitors who have modern booking systems.
                 </p>
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function ForBusinessesPage() {
                 Join the Waitlist
               </h2>
               <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-12 text-center">
-                We're launching in Tbilisi first. Leave your details and we'll contact you within 48 hours.
+                We&apos;re launching in Tbilisi first. Leave your details and we&apos;ll contact you within 48 hours.
               </p>
 
               {showSuccess ? (
@@ -281,7 +281,7 @@ export default function ForBusinessesPage() {
                     Request Received!
                   </h3>
                   <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-8">
-                    We'll review your request and contact you within 48 hours.
+                    We&apos;ll review your request and contact you within 48 hours.
                   </p>
                   <button
                     data-testid="send-another-btn"

@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
               Check Your Inbox
             </h2>
             <p className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface-variant mb-8">
-              We've sent a password reset link to your email address. Please check your inbox and follow the instructions.
+              We&apos;ve sent a password reset link to your email address. Please check your inbox and follow the instructions.
             </p>
             <Link
               data-testid="back-to-login-btn-success"

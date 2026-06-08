@@ -30,7 +30,7 @@ export function DashboardOverviewContent({
       {/* Header */}
       <div className="mb-12">
         <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-4">
-          Today's Overview
+          Today&apos;s Overview
         </span>
         <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-2">
           {business.name}
@@ -89,7 +89,7 @@ export function DashboardOverviewContent({
       {/* Today's Appointments */}
       <section>
         <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase mb-6">
-          Today's Schedule
+          Today&apos;s Schedule
         </h2>
         {todays && todays.length > 0 ? (
           <div className="bg-surface-container border border-white/5">

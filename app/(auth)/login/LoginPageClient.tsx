@@ -146,7 +146,7 @@ export function LoginPageClient() {
 
       {/* Sign Up Link */}
       <p className="mt-12 font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link data-testid="sign-up-link" href="/customer-register" className="text-primary hover:text-primary-container transition-colors font-semibold">
           Sign Up
         </Link>
