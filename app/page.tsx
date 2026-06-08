@@ -2,56 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { UserMenu } from "@/components/ui/UserMenu";
 
 export default function HomePage() {
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    async function loadUser() {
-      const supabase = createClient();
-
-      // Use getUser() to validate JWT with server (not getSession which reads from cache)
-      const { data: { user }, error } = await supabase.auth.getUser();
-
-      if (error) {
-        console.error('Auth error:', error);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
-      setUser(user);
-      setLoading(false);
-    }
-    loadUser();
-  }, []);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    setUser(null);
-    setShowDropdown(false);
-    router.refresh();
-  }
-
   const categories = [
     {
       name: "Hair Salons",
@@ -113,61 +66,7 @@ export default function HomePage() {
         </nav>
 
         <div className="flex items-center gap-4">
-          {user ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                data-testid="user-menu-btn"
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center hover:border-primary/30 transition-colors"
-              >
-                <span className="material-symbols-outlined text-primary text-[20px]">person</span>
-              </button>
-
-              {showDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-surface-container border border-white/10 shadow-lg z-50">
-                  <div className="p-3 border-b border-white/10">
-                    <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase truncate">
-                      {user.email}
-                    </p>
-                  </div>
-                  <div className="p-2">
-                    <Link
-                      data-testid="dropdown-my-bookings"
-                      href="/customer/dashboard"
-                      className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      <span className="material-symbols-outlined text-[18px]">event_available</span>
-                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">My Bookings</span>
-                    </Link>
-                    <Link
-                      data-testid="dropdown-profile"
-                      href="/customer/dashboard/profile"
-                      className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      <span className="material-symbols-outlined text-[18px]">person</span>
-                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">Profile</span>
-                    </Link>
-                  </div>
-                  <div className="p-2 border-t border-white/10">
-                    <button
-                      data-testid="dropdown-sign-out"
-                      onClick={handleSignOut}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-error hover:bg-error/10 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">logout</span>
-                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link data-testid="sign-in-btn" href="/login" className="border border-primary text-primary px-6 py-2 font-mono text-data-label uppercase tracking-wider hover:bg-primary hover:text-on-primary transition-colors">
-              Sign In
-            </Link>
-          )}
+          <UserMenu />
         </div>
       </header>
 

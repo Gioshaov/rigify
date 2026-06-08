@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CustomerSidebar } from "@/components/customer/CustomerSidebar";
+import { UserMenu } from "@/components/ui/UserMenu";
 
 export default async function CustomerDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -28,9 +29,7 @@ export default async function CustomerDashboardLayout({ children }: { children: 
             <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase">
               My Account
             </p>
-            <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary">
-              {user.email}
-            </p>
+            <UserMenu />
           </header>
           <main id="main-content" className="px-8 py-12">{children}</main>
         </div>

@@ -17,6 +17,31 @@ This single consolidated guide contains:
 
 ---
 
+## ⚠️ CRITICAL: Test IDs Are Mandatory
+
+**EVERY TIME YOU CREATE OR MODIFY A COMPONENT, YOU MUST ADD `data-testid` ATTRIBUTES.**
+
+This is NOT optional. This is NOT a separate task. This is part of the definition of "done" for any component work.
+
+**If you create/modify a component without test IDs, the work is incomplete.**
+
+### Rules
+
+- **Every interactive and meaningful element must have a `data-testid`.**
+- **Every `data-testid` must be unique within the page/view.**
+- **Naming convention:** Use the pattern `{context}-{purpose}-{type}` in kebab-case.
+   - `context` = feature + component, e.g. `edit-service`, `loan-report`, `investor-filter`
+   - `purpose` = what the element is for, e.g. `name`, `price-min`, `submit`, `close`
+   - `type` = element kind, e.g. `input`, `btn`, `dropdown`, `checkbox`, `modal`, `table`
+   - Full examples: `edit-service-name-input`, `loan-report-date-picker`, `investor-filter-submit-btn`
+   - Never use generic names like `button`, `input`, `item` without context and purpose prefixes
+- **Dynamic lists:** Include the record identifier in the ID — e.g. `loan-row-{loanId}`, `investor-card-{investorId}`
+- **Do not reuse IDs across different components**, even if they look similar.
+
+See "Testing & Test Automation" section below for full requirements.
+
+---
+
 ## Project Overview
 
 **Rigify** is a Georgian beauty & wellness booking marketplace (like Booksy/Fresha for Georgia) with:
@@ -52,34 +77,54 @@ git push origin main     # Push to GitHub
 
 **Test Framework**: Playwright (for E2E browser testing)
 
+### ⚠️ CRITICAL REQUIREMENT: Always Add Test IDs
+
+**WHEN CREATING OR MODIFYING ANY COMPONENT, YOU MUST ADD `data-testid` ATTRIBUTES TO ALL INTERACTIVE ELEMENTS IN THE SAME COMMIT.**
+
+- **DO NOT** create a component without test IDs and plan to add them later
+- **DO NOT** skip test IDs even if the task seems urgent
+- **DO NOT** wait for a separate "add test IDs" task
+- Test IDs are NOT optional - they are a required part of every component
+
+**This applies to:**
+- New components (forms, cards, modals, pages)
+- Modified components (adding buttons, inputs, links)
+- All interactive elements (buttons, inputs, links, selects, textareas)
+
 ### Test ID Strategy
 
 All interactive elements MUST use `data-testid` attributes for Playwright selectors.
 
 **Pattern:**
 ```tsx
-// Buttons
-<button data-testid="confirm-booking-btn">Confirm Booking</button>
-<button data-testid="add-to-calendar-btn">Add to Calendar</button>
+// Buttons - {context}-{purpose}-{type}
+<button data-testid="booking-flow-confirm-btn">Confirm Booking</button>
+<button data-testid="booking-confirmed-add-calendar-btn">Add to Calendar</button>
 
 // Form inputs
-<input data-testid="search-input" type="text" />
-<select data-testid="city-select">...</select>
+<input data-testid="browse-studios-search-input" type="text" />
+<select data-testid="browse-studios-city-select">...</select>
 
 // Links/Navigation
-<Link data-testid="nav-home" href="/">Home</Link>
-<Link data-testid="nav-businesses" href="/businesses">Browse Studios</Link>
+<Link data-testid="nav-home-link" href="/">Home</Link>
+<Link data-testid="nav-businesses-link" href="/businesses">Browse Studios</Link>
 
-// Key sections/containers
-<div data-testid="booking-summary">...</div>
-<div data-testid="business-card">...</div>
+// Key sections/containers (use context + descriptive name)
+<div data-testid="booking-flow-summary">...</div>
+<div data-testid="browse-studios-business-card">...</div>
+
+// Dynamic lists - include record identifier
+<div data-testid="business-card-${businessId}">...</div>
+<div data-testid="service-row-${serviceId}">...</div>
 ```
 
 **Naming Convention:**
-- Format: `{element-purpose}-{type}`
-- Use kebab-case
-- Be descriptive: `confirm-booking-btn` not `button1`
-- For repeated elements: `business-card-${index}` or `service-card-${id}`
+- Format: `{context}-{purpose}-{type}` (3 parts, kebab-case)
+- **context** = feature/page, e.g., `edit-service`, `browse-studios`, `booking-flow`
+- **purpose** = what it does, e.g., `name`, `search`, `confirm`, `close`
+- **type** = element kind, e.g., `input`, `btn`, `select`, `link`, `modal`
+- Be descriptive: `edit-service-name-input` not `input1`
+- For dynamic lists: include identifier, e.g., `service-card-${serviceId}`
 
 **When to add:**
 - All buttons (primary actions, navigation, forms)

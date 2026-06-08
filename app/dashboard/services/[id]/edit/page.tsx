@@ -1,14 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import { ServicesContent } from '@/components/dashboard/ServicesContent'
+import { createClient } from "@/lib/supabase/server";
+import { redirect, notFound } from "next/navigation";
+import { EditServiceForm } from "@/components/dashboard/EditServiceForm";
 
-export default async function ServicesPage() {
-  const supabase = createClient()
+export default async function EditServicePage({ params }: { params: { id: string } }) {
+  const supabase = createClient();
 
   // Get current user
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    redirect('/login')
+    redirect('/login');
   }
 
   // Get business
@@ -16,39 +16,41 @@ export default async function ServicesPage() {
     .from('businesses')
     .select('id, name')
     .eq('owner_id', user.id)
-    .single()
+    .single();
 
   if (!business) {
-    redirect('/dashboard')
+    redirect('/dashboard');
   }
 
-  // Get services
-  const { data: services } = await supabase
+  // Get service
+  const { data: service } = await supabase
     .from('services')
     .select('*')
+    .eq('id', params.id)
     .eq('business_id', business.id)
-    .order('name')
+    .single();
+
+  if (!service) {
+    notFound();
+  }
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-3xl">
       {/* Header */}
       <div className="mb-12">
         <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase mb-2">
           MANAGEMENT PORTAL
         </p>
         <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
-          Services
+          Edit Service
         </h1>
         <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-          Manage your services and pricing
+          Update service details and pricing
         </p>
       </div>
 
-      {/* Services Content */}
-      <ServicesContent
-        businessId={business.id}
-        services={services || []}
-      />
+      {/* Edit Form */}
+      <EditServiceForm service={service} businessId={business.id} />
     </div>
   );
 }

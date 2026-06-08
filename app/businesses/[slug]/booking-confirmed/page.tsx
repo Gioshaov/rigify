@@ -39,7 +39,8 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
       services (
         name,
         duration_minutes,
-        price
+        price_min,
+        price_max
       ),
       staff (
         name

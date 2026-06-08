@@ -86,7 +86,7 @@ export function CustomerSidebar({ customerName }: CustomerSidebarProps) {
       </div>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-white/10 space-y-2">
+      <div className="p-4 border-t border-white/10">
         <button
           data-testid="language-toggle-btn"
           className="w-full flex items-center gap-3 px-4 py-3 border border-white/5 text-on-surface-variant hover:bg-surface-container-low hover:border-primary/20 hover:text-primary transition-all"
@@ -96,18 +96,6 @@ export function CustomerSidebar({ customerName }: CustomerSidebarProps) {
             English
           </span>
         </button>
-        <form action="/logout" method="post" className="w-full">
-          <button
-            data-testid="sign-out-btn"
-            type="submit"
-            className="w-full flex items-center gap-3 px-4 py-3 border border-white/5 text-on-surface-variant hover:bg-error/10 hover:border-error/30 hover:text-error transition-all"
-          >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
-            <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase">
-              Sign Out
-            </span>
-          </button>
-        </form>
       </div>
     </aside>
   );

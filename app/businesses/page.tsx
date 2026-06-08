@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { UserMenu } from "@/components/ui/UserMenu";
 
 const mockBusinesses = [
   {
@@ -75,17 +74,6 @@ const mockBusinesses = [
 ];
 
 export default function BrowseBusinessesPage() {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    async function loadUser() {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    }
-    loadUser();
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
@@ -134,19 +122,7 @@ export default function BrowseBusinessesPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          {user ? (
-            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
-            </div>
-          ) : (
-            <Link
-              data-testid="sign-in-btn"
-              href="/login"
-              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-            >
-              Sign In
-            </Link>
-          )}
+          <UserMenu />
         </div>
       </nav>
 
@@ -241,32 +217,32 @@ export default function BrowseBusinessesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {mockBusinesses.map((business) => (
-            <article
+            <Link
               key={business.id}
+              href={`/businesses/${business.slug}`}
               data-testid={`business-card-${business.slug}`}
-              className="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300"
+              className="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300 block"
             >
-              <div className="relative aspect-video overflow-hidden">
-                <Image
-                  src={business.image}
-                  alt={business.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale"
-                />
-                <div className="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-3xl">
-                    {business.icon}
-                  </span>
+              <article>
+                <div className="relative aspect-video overflow-hidden">
+                  <Image
+                    src={business.image}
+                    alt={business.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale"
+                  />
+                  <div className="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary text-3xl">
+                      {business.icon}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <Link data-testid={`business-name-link-${business.slug}`} href={`/businesses/${business.slug}`}>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
                     <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase group-hover:text-primary-fixed transition-colors">
                       {business.name}
                     </h3>
-                  </Link>
                   <div className="flex items-center gap-1 text-primary">
                     <span
                       className="material-symbols-outlined text-sm"
@@ -299,7 +275,8 @@ export default function BrowseBusinessesPage() {
                   ))}
                 </div>
               </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
 
