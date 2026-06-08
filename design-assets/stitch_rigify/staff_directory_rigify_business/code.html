@@ -1,0 +1,391 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIGIFY | Staff Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35343a;
+        }
+        .staff-card-hover:hover {
+            border-color: rgba(230, 195, 100, 0.4);
+            background-color: #1f1f25;
+        }
+        .glow-gold {
+            box-shadow: 0 0 15px rgba(230, 195, 100, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e4e1e9",
+                        "inverse-on-surface": "#303036",
+                        "surface-container-low": "#1b1b20",
+                        "primary-container": "#e6c364",
+                        "secondary-fixed": "#e3e1ef",
+                        "on-tertiary": "#162f5e",
+                        "tertiary": "#d9e2ff",
+                        "surface-container-lowest": "#0e0e13",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-primary-fixed": "#241a00",
+                        "text-secondary": "#a1a1aa",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "on-secondary-fixed": "#1b1b25",
+                        "on-secondary-fixed-variant": "#464651",
+                        "tertiary-container": "#b0c6ff",
+                        "on-surface-variant": "#d0c5b2",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#39383e",
+                        "secondary": "#c7c5d3",
+                        "primary": "#ffe090",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "tertiary-fixed": "#d9e2ff",
+                        "inverse-primary": "#755b00",
+                        "muted-gold": "#9d8653",
+                        "background": "#131318",
+                        "on-surface": "#e4e1e9",
+                        "primary-fixed-dim": "#e6c364",
+                        "surface-dim": "#131318",
+                        "secondary-container": "#494853",
+                        "text-primary": "#ffffff",
+                        "on-background": "#e4e1e9",
+                        "surface-container-highest": "#35343a",
+                        "surface-elevated": "#22222e",
+                        "outline": "#99907e",
+                        "primary-fixed": "#ffe08f",
+                        "outline-variant": "#4d4637",
+                        "pure-white": "#ffffff",
+                        "surface-tint": "#e6c364",
+                        "surface-variant": "#35343a",
+                        "on-tertiary-fixed": "#001944",
+                        "surface-container": "#1f1f25",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#3b5183",
+                        "on-primary-container": "#665000",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "on-primary": "#3d2e00",
+                        "on-secondary-container": "#b9b7c4",
+                        "on-secondary": "#302f3a",
+                        "surface-container-high": "#2a292f",
+                        "surface": "#131318"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">RIGIFY</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform text-on-surface">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Header Section -->
+<section class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm text-primary uppercase tracking-[0.2em] mb-2 block">Management</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white">Staff Directory</h2>
+</div>
+<button class="flex items-center justify-center gap-2 bg-primary px-8 py-4 text-background font-bold h-14 hover:bg-white transition-colors duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 500">add</span>
+<span class="font-label-mono-sm">ADD STAFF</span>
+</button>
+</section>
+<!-- Search and Filter Bar -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-10">
+<div class="md:col-span-8 relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-white/10 px-12 py-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none text-white font-body-md" placeholder="Search by name or role..." type="text">
+</div>
+<div class="md:col-span-4">
+<select class="w-full bg-surface-container-low border border-white/10 px-6 py-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface-variant font-body-md appearance-none">
+<option>All Departments</option>
+<option>Master Barbers</option>
+<option>Estheticians</option>
+<option>Reception</option>
+</select>
+</div>
+</div>
+<!-- Staff Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Staff Member 1 -->
+<div class="bg-surface-container-low border border-white/10 p-6 staff-card-hover transition-all duration-300 group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative w-24 h-32 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A professional close-up portrait of a male artisan with a neatly groomed beard and sharp hairstyle. He is wearing a minimalist black apron in a high-end, dimly lit barber studio with industrial gold accents. The lighting is dramatic and moody, emphasizing a premium dark-mode aesthetic with warm highlight tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA8255ulSdSHkej5YSSgbTjuhkajJnI1rfagXSUzXi2pYba-H4n7RSlUAMc5XIJkjyM8aoitmHea1RY-ogYDI1Y3zkYZPrW7EzY10HH8gU0oBdBR3WM1vm2F4YRFm9NAz7C5Zj90k6Ai3LjV_5TeUWsgG2LkCEtUKMdutqKwbenOzZoVt-TXynzfOvA9CClsqoMgP6mK6zeyNtXM2Qacnk3_br5yUtFVK_NcbxxFDI_ytYYP2igZmp91i8fE0eWsmPPzxPanN0NAg">
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-label-mono-xs text-green-500">ON SHIFT</span>
+</div>
+<span class="font-label-mono-xs text-on-surface-variant">Until 8:00 PM</span>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-white mb-1">Julian Vance</h3>
+<p class="font-label-mono-sm text-primary">MASTER BARBER</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 border border-primary text-primary font-bold hover:bg-primary hover:text-background transition-all duration-300">
+                        EDIT SCHEDULE
+                    </button>
+<button class="w-full py-3 border border-white/10 text-on-surface-variant hover:text-white hover:border-white transition-all duration-300">
+                        VIEW PROFILE
+                    </button>
+</div>
+</div>
+<!-- Staff Member 2 -->
+<div class="bg-surface-container-low border border-white/10 p-6 staff-card-hover transition-all duration-300 group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative w-24 h-32 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A professional portrait of a female artisan with elegant styling and sharp makeup. She is positioned in a luxury wellness studio setting with soft architectural lighting and metallic gold textures in the background. The atmosphere is sophisticated and high-end, featuring a deep charcoal and gold color palette consistent with a premium marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSzfYkgB9HJn-R3daZY_KEt3aIjmqm3JkIIAOCs4epfdjfRaMcru7N7AjUdewF0TbBRVaMB2Wr9y78o_YD88lCIuuh8MRbCzzFBUlDnvpofpZGlRZz-57ZWba2JAaek7jUmwSfifrvIXpxm6k_Fe-93VdMYGzsJwezI6gISj0Rx8AUrYtqK3lzVdqyghYqUL4P3HX2UxD7cAi3YpSfjnbdNOLMBof0XaHDXsUd6UenhlA-mhJsty8qYbIoa07Nnr6Pb1pDHgXF1Hk">
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">Off</span>
+</div>
+<span class="font-label-mono-xs text-on-surface-variant">Starts Tomorrow 9:00 AM</span>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-white mb-1">Elena Rossi</h3>
+<p class="font-label-mono-sm text-primary uppercase">Senior Esthetician</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 border border-primary text-primary font-bold hover:bg-primary hover:text-background transition-all duration-300">
+                        EDIT SCHEDULE
+                    </button>
+<button class="w-full py-3 border border-white/10 text-on-surface-variant hover:text-white hover:border-white transition-all duration-300">
+                        VIEW PROFILE
+                    </button>
+</div>
+</div>
+<!-- Staff Member 3 -->
+<div class="bg-surface-container-low border border-white/10 p-6 staff-card-hover transition-all duration-300 group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative w-24 h-32 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A male creative artisan with a modern aesthetic, standing in a crisp, high-contrast studio environment. The image uses sharp shadows and direct lighting to create a professional, architectural feel. The background is a dark, matte charcoal, with subtle warm glints of gold light catching the edges of the frame." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCotAmmSHJSYqyVXc-qfLqnVpjXEa2i3bHtKtXTA9spCadv7I1NkyNytYDpZzqiatixDqgNHF4iLe63d3ibKqsDLT2TnibWfiD3fwf2931rH59VbugrDck0czjtVlpbptl0qDomkoAiDZWT1MQ2OHjtlPWOEzPsiz1uuFc_hpZ5Nh745febYOC5SSN9xv44j6Jfv2hL-yXuGPCHZt3LC7PSf8D4SHknPis38EENxBve786HcbA9KlV50ebGQ71iXTg5gYNKl5_EE1g">
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-label-mono-xs text-green-500">ON SHIFT</span>
+</div>
+<span class="font-label-mono-xs text-on-surface-variant">Until 6:00 PM</span>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-white mb-1">Marcus Thorne</h3>
+<p class="font-label-mono-sm text-primary uppercase">Texture Specialist</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 border border-primary text-primary font-bold hover:bg-primary hover:text-background transition-all duration-300">
+                        EDIT SCHEDULE
+                    </button>
+<button class="w-full py-3 border border-white/10 text-on-surface-variant hover:text-white hover:border-white transition-all duration-300">
+                        VIEW PROFILE
+                    </button>
+</div>
+</div>
+<!-- Staff Member 4 -->
+<div class="bg-surface-container-low border border-white/10 p-6 staff-card-hover transition-all duration-300 group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative w-24 h-32 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A portrait of a female wellness expert with a clean, sharp, professional look. She is in a minimalist dark studio with geometric line-art patterns subtly projected onto the background. The lighting is high-key but soft, creating a premium luminous quality that stands out against the dark-mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0m2_3yIZ6SZRUtbi-o2C1ojheqiUV-SpiTSuYtHSy63c6v2UXpF5b_X_seJOddozeMh45eCwF1tDPwTzHt3b-dbwNSuSDdOD___KB0M0SGagoMxFkeg6A9c8wtTVVjOFBBSd_I2bSw6nZz6A5jp3E20rCu41u2kaBO0bzmoZkp7LV9SLG33O97Zc_vkXFccunIso1971jd6jkmc4DVs7RRFXMSpLe1NVmw35A_OHCRnv5OqTaJCAZ3eL5Vu0zYKRUDCInfDkXNOY">
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-label-mono-xs text-green-500 uppercase">On Shift</span>
+</div>
+<span class="font-label-mono-xs text-on-surface-variant">Break at 2:00 PM</span>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-white mb-1">Sasha Kovic</h3>
+<p class="font-label-mono-sm text-primary uppercase">Senior Stylist</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 border border-primary text-primary font-bold hover:bg-primary hover:text-background transition-all duration-300">
+                        EDIT SCHEDULE
+                    </button>
+<button class="w-full py-3 border border-white/10 text-on-surface-variant hover:text-white hover:border-white transition-all duration-300">
+                        VIEW PROFILE
+                    </button>
+</div>
+</div>
+<!-- Staff Member 5 -->
+<div class="bg-surface-container-low border border-white/10 p-6 staff-card-hover transition-all duration-300 group">
+<div class="flex items-start justify-between mb-6">
+<div class="relative w-24 h-32 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A portrait of a male professional artisan with a creative and sharp aesthetic. The setting is a luxury dark-themed interior featuring architectural lines and premium materials like marble and brass. The lighting is focused and dramatic, highlighting facial features and creating a mood of expert craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs8YOS6xtRD7Xunp1TreAqnrK5yHMl-ndOL1lJN2OnEHoxzJKKMPY2k32WUyrKnXjdOxNe-eVh6My9qEoIdrrEMLUZcosmWwVMEWuci7Jl7E1vP5j-nCz11pD5aum548SMWJAQ12SGsm1tu8G9rNAFMsOWyvXVgezNyA5nnyHNoORSEFI1SsAGplMozJbFkK4RldlacPtRbUe_d5sWOJD2YiLKlz5R19QnmoawnA2UKYPBpnRp5rKs2sUgRQliCSlNY1nsRH31wUU">
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">Off</span>
+</div>
+<span class="font-label-mono-xs text-on-surface-variant">Sick Leave</span>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-white mb-1">Luka Modric</h3>
+<p class="font-label-mono-sm text-primary uppercase">Junior Barber</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 border border-primary text-primary font-bold hover:bg-primary hover:text-background transition-all duration-300">
+                        EDIT SCHEDULE
+                    </button>
+<button class="w-full py-3 border border-white/10 text-on-surface-variant hover:text-white hover:border-white transition-all duration-300">
+                        VIEW PROFILE
+                    </button>
+</div>
+</div>
+<!-- Empty State / Quick Add -->
+<div class="border border-dashed border-white/20 p-6 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-primary transition-all duration-300">
+<div class="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center mb-4 group-hover:border-primary group-hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">group_add</span>
+</div>
+<h3 class="font-headline-md text-on-surface-variant mb-2 group-hover:text-white transition-colors">Add New Artisan</h3>
+<p class="font-body-md text-on-surface-variant mb-6 max-w-[200px]">Expand your studio's reach with new expert staff.</p>
+<button class="text-primary font-label-mono-sm tracking-widest uppercase">Start Recruitment</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container-low border-t border-white/10">
+<div class="flex justify-around items-center w-full h-16 pb-safe">
+<div class="flex flex-col items-center justify-center text-on-surface-variant pt-2">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-mono-xs text-label-mono-xs">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant pt-2">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-mono-xs text-label-mono-xs">Schedule</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant pt-2">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-mono-xs text-label-mono-xs">Services</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-2">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-mono-xs text-label-mono-xs">Staff</span>
+</div>
+</div>
+</nav>
+<!-- Desktop Sidebar Suggestion (Optional but aligned with layout) -->
+<div class="hidden md:flex fixed left-0 top-16 bottom-0 w-16 bg-surface-container-lowest flex-col items-center py-8 gap-10 border-r border-white/5">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">dashboard</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">calendar_month</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">architecture</span>
+<div class="relative">
+<span class="material-symbols-outlined text-primary cursor-pointer">group</span>
+<div class="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full"></div>
+</div>
+<div class="mt-auto">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-white cursor-pointer transition-colors">settings</span>
+</div>
+</div>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('.staff-card-hover').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('glow-gold');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('glow-gold');
+            });
+        });
+
+        // Search highlight logic (Visual simulation)
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('.staff-card-hover h3').forEach(name => {
+                const card = name.closest('.staff-card-hover');
+                if (name.textContent.toLowerCase().includes(val)) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                } else {
+                    card.style.opacity = '0.3';
+                    card.style.transform = 'scale(0.98)';
+                }
+            });
+        });
+    </script>
+</body></html>

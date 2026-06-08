@@ -78,8 +78,12 @@ export default function BrowseBusinessesPage() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    }
+    loadUser();
   }, []);
 
   return (
@@ -87,10 +91,10 @@ export default function BrowseBusinessesPage() {
       {/* Top Navigation */}
       <nav className="sticky top-0 w-full z-50 flex items-center justify-between px-4 md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary cursor-pointer">
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">
             language
           </span>
-          <Link href="/">
+          <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
               RIGIFY
             </span>
@@ -100,24 +104,28 @@ export default function BrowseBusinessesPage() {
         {/* Desktop Nav Links */}
         <div className="hidden md:flex items-center gap-8">
           <Link
+            data-testid="nav-home"
             href="/"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
             Home
           </Link>
           <Link
+            data-testid="nav-browse"
             href="/businesses"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary border-b border-primary pt-1"
           >
             Browse
           </Link>
           <Link
+            data-testid="nav-my-bookings"
             href="/customer/dashboard"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
             My Bookings
           </Link>
           <Link
+            data-testid="nav-for-business"
             href="/for-businesses"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
@@ -127,17 +135,12 @@ export default function BrowseBusinessesPage() {
 
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="w-10 h-10 rounded-full bg-surface-variant overflow-hidden sharp-border">
-              <Image
-                src={user.user_metadata?.avatar_url || "/default-avatar.png"}
-                alt="Profile"
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
+            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
             </div>
           ) : (
             <Link
+              data-testid="sign-in-btn"
               href="/login"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
             >
@@ -183,6 +186,7 @@ export default function BrowseBusinessesPage() {
                 search
               </span>
               <input
+                data-testid="search-input"
                 className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-12 py-3 text-on-surface placeholder:text-outline outline-none transition-all"
                 placeholder="Salon, Barber, or Stylist..."
                 type="text"
@@ -195,7 +199,7 @@ export default function BrowseBusinessesPage() {
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               District
             </label>
-            <select className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
+            <select data-testid="district-select" className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
               <option>All Districts</option>
               <option>Saburtalo</option>
               <option>Vake</option>
@@ -208,7 +212,7 @@ export default function BrowseBusinessesPage() {
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               Category
             </label>
-            <select className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
+            <select data-testid="category-select" className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
               <option>All Categories</option>
               <option>Hair Styling</option>
               <option>Spa & Massage</option>
@@ -218,7 +222,7 @@ export default function BrowseBusinessesPage() {
           </div>
 
           {/* Search Button */}
-          <button className="bg-primary text-on-secondary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto">
+          <button data-testid="discover-btn" className="bg-primary text-on-secondary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto">
             Discover
           </button>
         </div>
@@ -239,6 +243,7 @@ export default function BrowseBusinessesPage() {
           {mockBusinesses.map((business) => (
             <article
               key={business.id}
+              data-testid={`business-card-${business.slug}`}
               className="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300"
             >
               <div className="relative aspect-video overflow-hidden">
@@ -257,7 +262,7 @@ export default function BrowseBusinessesPage() {
               </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <Link href={`/businesses/${business.slug}`}>
+                  <Link data-testid={`business-name-link-${business.slug}`} href={`/businesses/${business.slug}`}>
                     <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase group-hover:text-primary-fixed transition-colors">
                       {business.name}
                     </h3>
@@ -300,21 +305,21 @@ export default function BrowseBusinessesPage() {
 
         {/* Pagination */}
         <div className="mt-16 flex justify-center items-center gap-4">
-          <button className="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
+          <button data-testid="pagination-prev-btn" className="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
             <span className="material-symbols-outlined">chevron_left</span>
           </button>
           <div className="flex gap-2">
-            <button className="w-12 h-12 flex items-center justify-center bg-primary text-on-secondary font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium">
+            <button data-testid="pagination-page-1" className="w-12 h-12 flex items-center justify-center bg-primary text-on-secondary font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium">
               01
             </button>
-            <button className="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium hover:text-primary transition-colors">
+            <button data-testid="pagination-page-2" className="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium hover:text-primary transition-colors">
               02
             </button>
-            <button className="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium hover:text-primary transition-colors">
+            <button data-testid="pagination-page-3" className="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium hover:text-primary transition-colors">
               03
             </button>
           </div>
-          <button className="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
+          <button data-testid="pagination-next-btn" className="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
             <span className="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
@@ -323,6 +328,7 @@ export default function BrowseBusinessesPage() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
         <Link
+          data-testid="mobile-nav-home"
           href="/"
           className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform"
         >
@@ -332,6 +338,7 @@ export default function BrowseBusinessesPage() {
           </span>
         </Link>
         <Link
+          data-testid="mobile-nav-browse"
           href="/businesses"
           className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 scale-95 transition-transform"
         >
@@ -341,6 +348,7 @@ export default function BrowseBusinessesPage() {
           </span>
         </Link>
         <Link
+          data-testid="mobile-nav-my-bookings"
           href="/customer/dashboard"
           className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform"
         >
@@ -350,6 +358,7 @@ export default function BrowseBusinessesPage() {
           </span>
         </Link>
         <Link
+          data-testid="mobile-nav-business"
           href="/for-businesses"
           className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform"
         >

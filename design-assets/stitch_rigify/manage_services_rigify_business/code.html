@@ -1,0 +1,386 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIGIFY - Services Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .service-card-hover:hover {
+            border-color: rgba(230, 195, 100, 0.4);
+            background-color: #1f1f25;
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #e6c364; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e4e1e9",
+                        "inverse-on-surface": "#303036",
+                        "surface-container-low": "#1b1b20",
+                        "primary-container": "#e6c364",
+                        "secondary-fixed": "#e3e1ef",
+                        "on-tertiary": "#162f5e",
+                        "tertiary": "#d9e2ff",
+                        "surface-container-lowest": "#0e0e13",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-primary-fixed": "#241a00",
+                        "text-secondary": "#a1a1aa",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "on-secondary-fixed": "#1b1b25",
+                        "on-secondary-fixed-variant": "#464651",
+                        "tertiary-container": "#b0c6ff",
+                        "on-surface-variant": "#d0c5b2",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#39383e",
+                        "secondary": "#c7c5d3",
+                        "primary": "#ffe090",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "tertiary-fixed": "#d9e2ff",
+                        "inverse-primary": "#755b00",
+                        "muted-gold": "#9d8653",
+                        "background": "#131318",
+                        "on-surface": "#e4e1e9",
+                        "primary-fixed-dim": "#e6c364",
+                        "surface-dim": "#131318",
+                        "secondary-container": "#494853",
+                        "text-primary": "#ffffff",
+                        "on-background": "#e4e1e9",
+                        "surface-container-highest": "#35343a",
+                        "surface-elevated": "#22222e",
+                        "outline": "#99907e",
+                        "primary-fixed": "#ffe08f",
+                        "outline-variant": "#4d4637",
+                        "pure-white": "#ffffff",
+                        "surface-tint": "#e6c364",
+                        "surface-variant": "#35343a",
+                        "on-tertiary-fixed": "#001944",
+                        "surface-container": "#1f1f25",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#3b5183",
+                        "on-primary-container": "#665000",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "on-primary": "#3d2e00",
+                        "on-secondary-container": "#b9b7c4",
+                        "on-secondary": "#302f3a",
+                        "surface-container-high": "#2a292f",
+                        "surface": "#131318"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-background dark:bg-background border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform text-on-surface">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">RIGIFY</h1>
+</div>
+<div class="hidden md:flex gap-8 items-center">
+<nav class="flex gap-6 font-label-mono-sm text-label-mono-sm tracking-widest uppercase">
+<a class="text-on-surface hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface hover:text-primary transition-colors" href="#">Schedule</a>
+<a class="text-primary transition-colors" href="#">Services</a>
+<a class="text-on-surface hover:text-primary transition-colors" href="#">Staff</a>
+</nav>
+<div class="h-4 w-px bg-white/10"></div>
+<button class="active:scale-95 transition-transform text-on-surface">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+<div class="md:hidden">
+<button class="active:scale-95 transition-transform text-on-surface">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto min-h-screen">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<span class="font-label-mono-sm text-label-mono-sm text-primary tracking-[0.3em] uppercase mb-2 block">Management Portal</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-pure-white">Service Catalog</h2>
+<p class="text-on-surface-variant max-w-xl mt-4">Configure and manage your studio's service offerings. Adjust pricing, duration, and details for consistent excellence.</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-8 py-4 font-display-lg font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="uppercase tracking-widest text-[14px]">Add New Service</span>
+</button>
+</div>
+<!-- Filters & Stats (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-surface-container border border-white/10 p-6 flex flex-col justify-between h-32">
+<span class="font-label-mono-xs text-on-surface-variant uppercase tracking-widest">Total Services</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display-lg font-bold text-primary">12</span>
+<span class="text-on-surface-variant text-sm">Active offerings</span>
+</div>
+</div>
+<div class="bg-surface-container border border-white/10 p-6 flex flex-col justify-between h-32">
+<span class="font-label-mono-xs text-on-surface-variant uppercase tracking-widest">Average Value</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display-lg font-bold text-primary">65</span>
+<span class="text-on-surface-variant text-sm">GEL / service</span>
+</div>
+</div>
+<div class="bg-surface-container border border-white/10 p-6 flex flex-col justify-between h-32 group cursor-pointer hover:border-primary/50 transition-colors">
+<span class="font-label-mono-xs text-on-surface-variant uppercase tracking-widest">Service Status</span>
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+<span class="text-pure-white font-medium">All systems online</span>
+</div>
+</div>
+</div>
+<!-- Services List -->
+<div class="space-y-4">
+<!-- Service Row 1 -->
+<div class="service-card-hover group bg-surface-container-low border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container-highest border border-white/5 flex items-center justify-center overflow-hidden">
+<img alt="Service" class="w-full h-full object-cover opacity-80" data-alt="A macro close-up of a professional barber's hand holding a high-end silver hair clipper against a blurred background of a luxury dark-toned barbershop. The lighting is dramatic and cinematic, emphasizing the metallic textures and sharp precision of the tool. The overall atmosphere is sophisticated, minimalist, and masculine, following a gold and charcoal color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpU_V-NuCblaUJH_fO3sX_ny5hmPR0lHM98n-snQvwsthNcHeSN6GtkuF9zj87_99UQ4sm5kWvHd9spEqMRaeS2fOpyZRFSR_A_FcvVcx57RlFlRkU7ndVZtlpqYTYikHIBmu9V0ZkSS31sOsx_sf0KrfL2EOHtEY7Eb9jrWUwNRbB3-El3n7REFHKCvWDDZMrKtwE7i1E84gmfNMJvSQZzUFtweRj-hS7G8MsVSbbhDPBK8A8xhp_ISeIly--p5c4bhjKW4oPbkk">
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h3 class="font-headline-md text-pure-white">Classic Cut &amp; Steam</h3>
+<span class="bg-primary/10 text-primary px-2 py-0.5 font-label-mono-xs text-xs uppercase tracking-widest border border-primary/20">Popular</span>
+</div>
+<p class="text-on-surface-variant text-sm font-body-md max-w-md">Precision hair tailoring followed by a revitalizing facial steam treatment and style.</p>
+</div>
+</div>
+<div class="flex flex-wrap md:flex-nowrap items-center gap-8 w-full md:w-auto border-t md:border-t-0 border-white/5 pt-4 md:pt-0">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Duration</span>
+<div class="flex items-center gap-2 text-pure-white">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="schedule">schedule</span>
+<span class="font-label-mono-sm">45 MIN</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Price</span>
+<span class="font-display-lg text-2xl text-primary font-bold">50 GEL</span>
+</div>
+<div class="flex items-center gap-3 ml-auto">
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-primary hover:border-primary transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-error hover:border-error transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Service Row 2 -->
+<div class="service-card-hover group bg-surface-container-low border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container-highest border border-white/5 flex items-center justify-center overflow-hidden">
+<img alt="Service" class="w-full h-full object-cover opacity-80" data-alt="A detailed shot of a luxury straight razor resting on a pristine black marble surface. Droplets of water are visible on the polished blade, catching the warm gold accent lighting of the studio. The aesthetic is extremely clean, modern, and sharp, reflecting the high-end grooming standards of an exclusive wellness marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0DhF6MuSypE7eMTlVgHRteqjLykoEtCmmjVF9wqBeaDhWOVpuvshw6-1D-UwqfrxI49MUbipC3zTQ5dcdBivk8k69UUn_58RjALKWcVAILkFZqTjvVDkdQZ1PlSZX_gJggBZRhm0ATgWg9rsqolL9dzfuoIMhi_XV_AJrHBS_GeEhd-o6hOFKTC58aKoWsZ_LqyTeota-qSQ3EmU6aXIDy1dFsyaiEV3nvTWlIzKnX5EJL-27z-WgO9oDtjUHzlMTCyVhsQtZ3FQ">
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h3 class="font-headline-md text-pure-white">Signature Beard Trim</h3>
+</div>
+<p class="text-on-surface-variant text-sm font-body-md max-w-md">Sculpting and conditioning with hot towel finish and artisanal beard oil.</p>
+</div>
+</div>
+<div class="flex flex-wrap md:flex-nowrap items-center gap-8 w-full md:w-auto border-t md:border-t-0 border-white/5 pt-4 md:pt-0">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Duration</span>
+<div class="flex items-center gap-2 text-pure-white">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="schedule">schedule</span>
+<span class="font-label-mono-sm">30 MIN</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Price</span>
+<span class="font-display-lg text-2xl text-primary font-bold">35 GEL</span>
+</div>
+<div class="flex items-center gap-3 ml-auto">
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-primary hover:border-primary transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-error hover:border-error transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Service Row 3 -->
+<div class="service-card-hover group bg-surface-container-low border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container-highest border border-white/5 flex items-center justify-center overflow-hidden">
+<img alt="Service" class="w-full h-full object-cover opacity-80" data-alt="A serene scene showing the application of essential oils onto dark, smooth basalt massage stones in a low-lit, premium wellness room. Soft candlelight flickers in the background, creating a calm and immersive atmosphere. The visual style is rooted in modern minimalism with tactile edges, emphasizing deep blacks and warm gold light highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn2w-Efldu4BvHSxAnIIoNi5jHitScv0B3xmvLXrMCIvUtLwi0UeazdhokBHCJ0swAvLFhgiGWCcOzc3r97sXlXVL3bBHhJkVfo1fRTmO5L0v6aAmYFKbFaAAizYxVA2ElsAa8-15J7HLLvotWMleBUeTHtVvbvLq9PlJAmoW45vSCFLTI6vi1f5QIkFRmpco7Q7kS-xrv4V3bkKDoj3EvK-FZeK35ayE0xeOjBqNrlM4qYQEJQ4z-q-X_7vZhKh0d4Ihx0v0VRaA">
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h3 class="font-headline-md text-pure-white">Aromatherapy Head Massage</h3>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 font-label-mono-xs text-xs uppercase tracking-widest border border-white/10">Premium</span>
+</div>
+<p class="text-on-surface-variant text-sm font-body-md max-w-md">Decompression session using therapeutic pressure points and essential oils.</p>
+</div>
+</div>
+<div class="flex flex-wrap md:flex-nowrap items-center gap-8 w-full md:w-auto border-t md:border-t-0 border-white/5 pt-4 md:pt-0">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Duration</span>
+<div class="flex items-center gap-2 text-pure-white">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="schedule">schedule</span>
+<span class="font-label-mono-sm">20 MIN</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Price</span>
+<span class="font-display-lg text-2xl text-primary font-bold">25 GEL</span>
+</div>
+<div class="flex items-center gap-3 ml-auto">
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-primary hover:border-primary transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-error hover:border-error transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Service Row 4 -->
+<div class="service-card-hover group bg-surface-container-low border border-white/10 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-container-highest border border-white/5 flex items-center justify-center overflow-hidden">
+<img alt="Service" class="w-full h-full object-cover opacity-80" data-alt="A crisp, high-contrast shot of a barber applying shaving foam with a traditional badger hair brush. The foam is white and textured, stark against the dark, architectural background of the shop. The lighting focuses on the artisan's hand and the brush, creating a sense of professional authority and meticulous care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnqzrP71t_O2oIs9wJN6OpTK-k8ovY0a0fxwM0v7XsqWHQ835P7RYnGcVh89CySsvedzkE6l-qVJtENOEbhPlN4x3sc_rdx8NSgD-MKyXcPXVOZvISXHGIrxQMvQH6aJ1EC3nKyVcZ3tVpS1P5_cs2TikgF26a6OgHHZTyKwU3sYxYwYZsXvHMSkG4BHAmp4VC2NSPdJBCqccijhONGOB6wGAONSaMYqWWy7dP9lpuOCUWyk-AbFG7mPstSghVsYbW8FjgZew2u7Q">
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h3 class="font-headline-md text-pure-white">Royal Hot Towel Shave</h3>
+</div>
+<p class="text-on-surface-variant text-sm font-body-md max-w-md">The ultimate luxury shaving ritual including multi-step skin preparation.</p>
+</div>
+</div>
+<div class="flex flex-wrap md:flex-nowrap items-center gap-8 w-full md:w-auto border-t md:border-t-0 border-white/5 pt-4 md:pt-0">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Duration</span>
+<div class="flex items-center gap-2 text-pure-white">
+<span class="material-symbols-outlined text-primary scale-75" data-icon="schedule">schedule</span>
+<span class="font-label-mono-sm">60 MIN</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-on-surface-variant uppercase mb-1">Price</span>
+<span class="font-display-lg text-2xl text-primary font-bold">75 GEL</span>
+</div>
+<div class="flex items-center gap-3 ml-auto">
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-primary hover:border-primary transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-3 border border-white/10 text-on-surface-variant hover:text-error hover:border-error transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-12 flex justify-center">
+<button class="text-on-surface hover:text-primary font-label-mono-sm uppercase tracking-widest flex items-center gap-2 border border-white/10 px-6 py-3 transition-all hover:bg-white/5">
+<span class="">View All Services</span>
+<span class="material-symbols-outlined scale-75" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container-low dark:bg-surface-container-low border-t border-white/10 pb-safe">
+<div class="flex justify-around items-center w-full h-16">
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Schedule</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="content_cut" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Staff</span>
+</a>
+</div>
+</nav>
+<!-- Floating Action Button Contextual Support -->
+<button class="fixed bottom-24 right-6 md:bottom-12 md:right-12 bg-primary-container text-on-primary-container w-16 h-16 flex items-center justify-center shadow-2xl z-40 hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl" data-icon="add" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<script>
+        // Simple scroll observer for header transparency/solid shift
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('bg-background/95', 'backdrop-blur-md');
+            } else {
+                header.classList.remove('bg-background/95', 'backdrop-blur-md');
+            }
+        });
+
+        // Button hover interaction sound simulation (visual feedback)
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                // Future implementation: subtle haptic or audio feedback
+            });
+        });
+    </script>
+
+
+</body></html>

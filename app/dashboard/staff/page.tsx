@@ -22,7 +22,7 @@ export default async function StaffPage() {
   // Get all staff for this business
   const { data: staff, error: staffError } = await supabase
     .from("staff")
-    .select("id, name, user_id, role, is_active, created_at")
+    .select("id, name, email, user_id, role, is_active, created_at")
     .eq("business_id", business.id)
     .order("created_at", { ascending: false });
 

@@ -1,0 +1,331 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(230, 195, 100, 0.1);
+        }
+        .sharp-border {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1a24;
+            border-radius: 0;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e4e1e9",
+                        "inverse-on-surface": "#303036",
+                        "surface-container-low": "#1b1b20",
+                        "primary-container": "#e6c364",
+                        "secondary-fixed": "#e3e1ef",
+                        "on-tertiary": "#162f5e",
+                        "tertiary": "#d9e2ff",
+                        "surface-container-lowest": "#0e0e13",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-primary-fixed": "#241a00",
+                        "text-secondary": "#a1a1aa",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "on-secondary-fixed": "#1b1b25",
+                        "on-secondary-fixed-variant": "#464651",
+                        "tertiary-container": "#b0c6ff",
+                        "on-surface-variant": "#d0c5b2",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#39383e",
+                        "secondary": "#c7c5d3",
+                        "primary": "#ffe090",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "tertiary-fixed": "#d9e2ff",
+                        "inverse-primary": "#755b00",
+                        "muted-gold": "#9d8653",
+                        "background": "#131318",
+                        "on-surface": "#e4e1e9",
+                        "primary-fixed-dim": "#e6c364",
+                        "surface-dim": "#131318",
+                        "secondary-container": "#494853",
+                        "text-primary": "#ffffff",
+                        "on-background": "#e4e1e9",
+                        "surface-container-highest": "#35343a",
+                        "surface-elevated": "#22222e",
+                        "outline": "#99907e",
+                        "primary-fixed": "#ffe08f",
+                        "outline-variant": "#4d4637",
+                        "pure-white": "#ffffff",
+                        "surface-tint": "#e6c364",
+                        "surface-variant": "#35343a",
+                        "on-tertiary-fixed": "#001944",
+                        "surface-container": "#1f1f25",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#3b5183",
+                        "on-primary-container": "#665000",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "on-primary": "#3d2e00",
+                        "on-secondary-container": "#b9b7c4",
+                        "on-secondary": "#302f3a",
+                        "surface-container-high": "#2a292f",
+                        "surface": "#131318"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">RIGIFY</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<div class="w-8 h-8 sharp-border bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a business owner in a premium barber shop setting. The lighting is dramatic and low-key, highlighting textures of wood and leather in the background. The man has a well-groomed beard and wears a minimalist black shirt, embodying the sophisticated and authoritative brand identity of a luxury service provider." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6xcL-SA8MkZd5T53tTfLEjNOwduYiWChpOcFV8ibQX5o70tvZjQluJh9_xmjC2_tVPB-BlKhHFhvEl8aAEVRQN9asR8wr84JLwQbLnWzChIbMqQWS52mBwvl_0qX_NG0JDPM48dm8iszUrJdTclO7TWoNFK6jNyOWewxsepZRzf_RUsFdR5VVR4lBH2Y3swetjV0njI4FlBt0NT_ucbYVzQi1ZMkjCHZD5dstoZmXVGFVD2OGOrV-Hph5NnnR_QJWSjNR1vVJUds">
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto min-h-screen">
+<!-- Welcome Section -->
+<section class="mb-10">
+<p class="font-label-mono-sm text-label-mono-sm text-primary mb-2">GOOD MORNING, ALEX</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white">Daily Overview</h2>
+</section>
+<!-- Metrics Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- Revenue -->
+<div class="bg-surface-container-low sharp-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-4">TOTAL REVENUE</p>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-display-lg text-primary">450</span>
+<span class="font-headline-md text-headline-md text-muted-gold pb-1">GEL</span>
+</div>
+<div class="mt-4 flex items-center text-green-400 gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-xs font-label-mono-xs">+12% FROM YESTERDAY</span>
+</div>
+</div>
+<!-- Appointments -->
+<div class="bg-surface-container-low sharp-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-4">APPOINTMENTS</p>
+<div class="font-display-lg text-display-lg text-white">12</div>
+<div class="mt-4 flex items-center text-on-surface-variant gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-label-mono-xs">8 REMAINING TODAY</span>
+</div>
+</div>
+<!-- New Customers -->
+<div class="bg-surface-container-low sharp-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-4">NEW CUSTOMERS</p>
+<div class="font-display-lg text-display-lg text-white">3</div>
+<div class="mt-4 flex items-center text-primary gap-1">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="text-xs font-label-mono-xs">PREMIUM TIERS</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Next Up Section -->
+<div class="lg:col-span-5">
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary mb-6">NEXT UP</h3>
+<div class="bg-surface-elevated sharp-border p-6 gold-glow relative">
+<div class="flex items-center gap-6">
+<div class="w-20 h-24 sharp-border overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover" data-alt="High-fashion portrait of a client with a sleek, modern aesthetic. The lighting is directional and sharp, reflecting a professional studio environment. The subject is poised and stylish, perfectly capturing the high-end, exclusive marketplace feel for beauty and wellness services. Deep shadows and gold accents in the lighting create a premium atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoaDcq54b1yuKo8V3HKsRHamP2RP5OBb7b_7-isLjgq7KW3F36P-O9RvAJ39nkrlHS6zW-PhHyJGr9Jak8gWxLJpnVeCtT4CSr0iCk5KN1gEOgaSpsmkA_kjpSPU8gSCUh1lRMa8sexxcqyYR2zXwi3ab1ff60fbdCmJYdo3ugqeZ9KRvEGL4a6XcgFdGmVS3AFpJ4lDLJ5znH1UF3NmGlqyIBouKcG5dAjUVqlKgC6jFYtUuzOnN8yNChgJvmORmfdhJ8bkMCnoY">
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-primary text-black font-label-mono-xs text-[10px] px-2 py-1 uppercase">14:30 PM</span>
+<span class="material-symbols-outlined text-muted-gold">more_vert</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-white mb-1">Marcus Thorne</h4>
+<p class="font-body-md text-on-surface-variant">Signature Grooming &amp; Facial</p>
+<div class="mt-4 flex items-center gap-4">
+<button class="bg-primary text-black font-label-mono-sm text-label-mono-sm px-4 py-2 hover:opacity-90 transition-opacity">CHECK IN</button>
+<button class="border border-white/20 text-white font-label-mono-sm text-label-mono-sm px-4 py-2 hover:bg-white/5 transition-colors">DETAILS</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Revenue Chart -->
+<div class="lg:col-span-7">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary">WEEKLY PERFORMANCE</h3>
+<select class="bg-transparent border-none text-on-surface-variant font-label-mono-xs text-label-mono-xs focus:ring-0 cursor-pointer">
+<option>LAST 7 DAYS</option>
+<option>THIS MONTH</option>
+</select>
+</div>
+<div class="bg-surface-container-low sharp-border p-8 h-64 flex flex-col justify-between">
+<div class="flex items-end justify-between h-32 gap-2">
+<!-- Simulated Chart Bars -->
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[80%] group-hover:h-[85%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[40%] group-hover:h-[45%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[60%] group-hover:h-[65%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[90%] group-hover:h-[100%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[70%] group-hover:h-[75%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2 border border-primary/40">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[85%] group-hover:h-[90%] transition-all duration-300"></div>
+</div>
+<div class="flex-1 bg-surface-container-high relative group h-1/2">
+<div class="absolute bottom-0 w-full bg-muted-gold opacity-30 h-full"></div>
+<div class="absolute bottom-0 w-full bg-primary h-[20%] group-hover:h-[25%] transition-all duration-300"></div>
+</div>
+</div>
+<div class="flex justify-between mt-4 font-label-mono-xs text-on-surface-variant">
+<span>MON</span>
+<span>TUE</span>
+<span>WED</span>
+<span>THU</span>
+<span>FRI</span>
+<span class="text-primary">SAT</span>
+<span>SUN</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Asymmetric Layout -->
+<section class="mt-16">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary">RECENT ACTIVITY</h3>
+<button class="text-on-surface-variant font-label-mono-xs text-label-mono-xs hover:text-white transition-colors">VIEW ALL</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-surface-container-low sharp-border p-4 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 sharp-border bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">payments</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-white">Payment received from <span class="font-bold">Elena K.</span></p>
+<p class="font-label-mono-xs text-on-surface-variant">2 minutes ago</p>
+</div>
+<div class="text-primary font-label-mono-sm">+120 GEL</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low sharp-border p-4 hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 sharp-border bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">event_available</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-white">New appointment booked for <span class="font-bold">Tomorrow</span></p>
+<p class="font-label-mono-xs text-on-surface-variant">45 minutes ago</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container-low border-t border-white/10 md:hidden">
+<div class="flex justify-around items-center w-full h-16 pb-safe">
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Schedule</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Staff</span>
+</a>
+</div>
+</nav>
+<!-- Desktop Floating Action Button -->
+<button class="hidden md:flex fixed bottom-10 right-10 w-14 h-14 bg-primary text-black items-center justify-center hover:scale-110 active:scale-95 transition-all gold-glow z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Simple micro-interaction for metric cards
+        document.querySelectorAll('.bg-surface-container-low').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'rgba(230, 195, 100, 0.3)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            });
+        });
+    </script>
+</body></html>

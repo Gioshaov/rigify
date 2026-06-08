@@ -1,0 +1,457 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Analytics &amp; Reports | Luxe Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+            font-family: 'Hanken+Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(230, 195, 100, 0.15);
+        }
+        .chart-container {
+            position: relative;
+            background: linear-gradient(180deg, rgba(26, 26, 36, 1) 0%, rgba(19, 19, 24, 1) 100%);
+        }
+        /* Hide scrollbar for clean aesthetic */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#303036",
+                      "surface": "#131318",
+                      "pure-white": "#ffffff",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#001944",
+                      "on-primary-fixed-variant": "#584400",
+                      "text-primary": "#ffffff",
+                      "surface-bright": "#39383e",
+                      "inverse-primary": "#755b00",
+                      "outline": "#99907e",
+                      "on-secondary-container": "#b9b7c4",
+                      "secondary-fixed": "#e3e1ef",
+                      "on-tertiary-fixed-variant": "#2f4576",
+                      "secondary-container": "#494853",
+                      "on-secondary": "#302f3a",
+                      "on-tertiary": "#162f5e",
+                      "surface-tint": "#e6c364",
+                      "surface-container-low": "#1b1b20",
+                      "surface-dim": "#131318",
+                      "on-surface-variant": "#d0c5b2",
+                      "muted-gold": "#9d8653",
+                      "on-surface": "#e4e1e9",
+                      "surface-variant": "#35343a",
+                      "tertiary-fixed-dim": "#b0c6ff",
+                      "outline-variant": "#4d4637",
+                      "surface-container-lowest": "#0e0e13",
+                      "inverse-surface": "#e4e1e9",
+                      "background": "#131318",
+                      "on-primary": "#3d2e00",
+                      "tertiary-fixed": "#d9e2ff",
+                      "on-secondary-fixed": "#1b1b25",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "secondary": "#c7c5d3",
+                      "primary-fixed-dim": "#e6c364",
+                      "text-secondary": "#a1a1aa",
+                      "tertiary-container": "#b0c6ff",
+                      "on-tertiary-container": "#3b5183",
+                      "on-background": "#e4e1e9",
+                      "surface-elevated": "#22222e",
+                      "primary": "#ffe090",
+                      "surface-container-high": "#2a292f",
+                      "surface-container": "#1f1f25",
+                      "primary-fixed": "#ffe08f",
+                      "on-secondary-fixed-variant": "#464651",
+                      "primary-container": "#e6c364",
+                      "surface-container-highest": "#35343a",
+                      "tertiary": "#d9e2ff",
+                      "on-primary-fixed": "#241a00",
+                      "secondary-fixed-dim": "#c7c5d3",
+                      "on-error": "#690005",
+                      "on-primary-container": "#665000"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "gutter": "24px",
+                      "base": "8px",
+                      "margin-desktop": "40px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Hanken Grotesk"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "label-mono-xs": ["JetBrains Mono"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "display-lg-mobile": ["Hanken Grotesk"],
+                      "label-mono-sm": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-white/10 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 transition-transform" data-icon="menu">menu</span>
+<h1 class="font-headline-md text-headline-md text-primary">Financial Overview</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-4 font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-primary">
+<span class="hover:text-primary transition-colors duration-200 cursor-pointer">Live Feed</span>
+<span class="text-on-surface-variant">/</span>
+<span class="hover:text-primary transition-colors duration-200 cursor-pointer">Export Data</span>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 transition-transform" data-icon="settings">settings</span>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen sticky top-16 w-80 bg-surface-elevated border-r border-white/10 py-8">
+<div class="px-8 mb-10">
+<div class="flex items-center gap-4 mb-2">
+<div class="w-10 h-10 bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xl">L</div>
+<div>
+<p class="font-headline-md text-body-md text-primary leading-none">Luxe Studio</p>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mt-1">Verified Merchant</p>
+</div>
+</div>
+<div class="mt-4 px-3 py-1 border border-primary/20 bg-primary/5 inline-block">
+<span class="font-label-mono-xs text-label-mono-xs text-primary uppercase">Premium Tier</span>
+</div>
+</div>
+<nav class="flex flex-col flex-grow">
+<a class="text-on-surface px-8 py-4 flex items-center gap-4 hover:bg-surface-container-high hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-md text-body-md">Business Wallet</span>
+</a>
+<a class="text-primary bg-surface-container-highest border-l-4 border-primary px-8 py-4 flex items-center gap-4 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-body-md text-body-md">Revenue Reports</span>
+</a>
+<a class="text-on-surface px-8 py-4 flex items-center gap-4 hover:bg-surface-container-high hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-body-md text-body-md">Tax Documents</span>
+</a>
+<a class="text-on-surface px-8 py-4 flex items-center gap-4 hover:bg-surface-container-high hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-body-md text-body-md">Banking Settings</span>
+</a>
+<div class="mt-auto">
+<a class="text-on-surface px-8 py-4 flex items-center gap-4 hover:bg-surface-container-high hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow px-margin-mobile md:px-margin-desktop py-10 pb-32 max-w-container-max mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-pure-white mb-2">Analytics</h2>
+<p class="text-text-secondary font-body-md">Real-time performance metrics for your enterprise.</p>
+</div>
+<div class="flex items-center bg-surface-container p-1 border border-white/10 self-start md:self-auto">
+<button class="px-6 py-2 bg-primary text-on-primary font-label-mono-sm text-label-mono-sm uppercase transition-all duration-200">Last 30 Days</button>
+<button class="px-6 py-2 text-on-surface-variant font-label-mono-sm text-label-mono-sm uppercase hover:text-primary transition-all duration-200">Quarter</button>
+<button class="px-6 py-2 text-on-surface-variant font-label-mono-sm text-label-mono-sm uppercase hover:text-primary transition-all duration-200">Year</button>
+</div>
+</div>
+<!-- Key Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<!-- Revenue Card -->
+<div class="bg-surface-container border border-white/10 p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/5 -mr-8 -mt-8 rotate-45 group-hover:bg-primary/10 transition-colors"></div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-4 tracking-tighter">Total Revenue</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-primary">$42,850.00</span>
+<span class="text-xs text-green-400 font-label-mono-xs">+12.5%</span>
+</div>
+<div class="mt-4 w-full h-1 bg-white/5">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+</div>
+<!-- Average Value -->
+<div class="bg-surface-container border border-white/10 p-6 relative overflow-hidden group">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-4 tracking-tighter">Avg Booking Value</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-pure-white">$85.20</span>
+<span class="text-xs text-green-400 font-label-mono-xs">+3.1%</span>
+</div>
+<div class="mt-4 w-full h-1 bg-white/5">
+<div class="h-full bg-primary/40" style="width: 45%"></div>
+</div>
+</div>
+<!-- Retention -->
+<div class="bg-surface-container border border-white/10 p-6 relative overflow-hidden group">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-4 tracking-tighter">Retention Rate</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-pure-white">68%</span>
+<span class="text-xs text-on-error font-label-mono-xs">-2.4%</span>
+</div>
+<div class="mt-4 w-full h-1 bg-white/5">
+<div class="h-full bg-primary/60" style="width: 68%"></div>
+</div>
+</div>
+<!-- Occupancy -->
+<div class="bg-surface-container border border-white/10 p-6 relative overflow-hidden group">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-4 tracking-tighter">Occupancy</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-pure-white">92.4%</span>
+<span class="text-xs text-green-400 font-label-mono-xs">+5.8%</span>
+</div>
+<div class="mt-4 w-full h-1 bg-white/5">
+<div class="h-full bg-primary/80" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<!-- Revenue Trend & Top Services Bento -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+<!-- Revenue Trend -->
+<div class="lg:col-span-2 bg-surface-container border border-white/10 p-8 flex flex-col">
+<div class="flex justify-between items-center mb-10">
+<h3 class="font-headline-md text-headline-md text-pure-white">Revenue Trend</h3>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary"></div>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Current Period</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-white/20"></div>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Previous</span>
+</div>
+</div>
+</div>
+<div class="flex-grow h-64 relative">
+
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 grid grid-cols-6 h-full w-full">
+<div class="border-l border-white/5 h-full"></div>
+<div class="border-l border-white/5 h-full"></div>
+<div class="border-l border-white/5 h-full"></div>
+<div class="border-l border-white/5 h-full"></div>
+<div class="border-l border-white/5 h-full"></div>
+<div class="border-l border-white/5 h-full"></div>
+</div>
+<!-- SVG Line Chart -->
+<svg class="absolute bottom-0 w-full h-full overflow-visible" viewBox="0 0 1000 200">
+<defs>
+<linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgba(230, 195, 100, 0.4);stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(230, 195, 100, 0);stop-opacity:1"></stop>
+</linearGradient>
+</defs>
+<path d="M0,150 Q100,120 200,140 T400,80 T600,110 T800,40 L1000,60" fill="none" stroke="#e6c364" stroke-width="3"></path>
+<path d="M0,150 Q100,120 200,140 T400,80 T600,110 T800,40 L1000,60 V200 H0 Z" fill="url(#gradient)"></path>
+<path d="M0,170 Q150,160 300,180 T600,150 T900,175 L1000,160" fill="none" stroke="rgba(255,255,255,0.1)" stroke-dasharray="8,8" stroke-width="2"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full flex justify-between pt-4">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">WK 1</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">WK 2</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">WK 3</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">WK 4</span>
+</div>
+</div>
+</div>
+<!-- Top Services -->
+<div class="bg-surface-container border border-white/10 p-8">
+<h3 class="font-headline-md text-headline-md text-pure-white mb-8">Top Services</h3>
+<div class="space-y-6">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="font-body-md text-on-surface">Signature Sculpting</span>
+<span class="font-label-mono-sm text-primary">412 bookings</span>
+</div>
+<div class="w-full h-2 bg-white/5">
+<div class="h-full bg-primary" style="width: 88%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="font-body-md text-on-surface">Aromatherapy Hydration</span>
+<span class="font-label-mono-sm text-primary">328 bookings</span>
+</div>
+<div class="w-full h-2 bg-white/5">
+<div class="h-full bg-primary/70" style="width: 65%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="font-body-md text-on-surface">Deep Tissue Restoration</span>
+<span class="font-label-mono-sm text-primary">215 bookings</span>
+</div>
+<div class="w-full h-2 bg-white/5">
+<div class="h-full bg-primary/50" style="width: 48%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<span class="font-body-md text-on-surface">Artisan Beard Shaping</span>
+<span class="font-label-mono-sm text-primary">192 bookings</span>
+</div>
+<div class="w-full h-2 bg-white/5">
+<div class="h-full bg-primary/30" style="width: 42%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Performance Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Staff Performance -->
+<div class="bg-surface-container border border-white/10 p-8">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-md text-headline-md text-pure-white">Staff Performance</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<div class="space-y-8">
+<!-- Staff Item -->
+<div class="flex items-center gap-6">
+<img alt="Marcus R." class="w-12 h-12 object-cover border border-white/10 grayscale hover:grayscale-0 transition-all" data-alt="A portrait of a male professional stylist with a sharp, minimalist aesthetic. He has a focused expression and is wearing a dark, high-end uniform in a dimly lit, luxury grooming studio setting with golden ambient lighting. The background is a sophisticated charcoal color, reflecting the premium wellness studio atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg0WpHjAYaAEiUW04pzxETCFtChZpBs2TTEsJf5G-MlgqMPJvqhj9_VGzYZFRqpulv0Cm80X-rWiDhqWSoq71BxAUYxXjLpoEdTgmPsV8WPhcHdavYT3DQUa2UE5xz1V2FQ-lHz-ZEOJoGTKbixDPLKxzS8td0gW_ere-b4xES0HZdU6Kk0bSeoft7srjU3gzmrPjjg2qQJOsqsaAiZLhTGJ-55rPwLmzIQZzkKM-OsO_Nwh_hcoo-i48ypqOBiRlAO2cat74_fw4">
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-2">
+<p class="font-body-md text-pure-white">Marcus Richardson</p>
+<p class="font-label-mono-sm text-on-surface-variant uppercase">98% Satisf.</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3 flex-grow bg-white/5">
+<div class="h-full bg-primary" style="width: 94%"></div>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-primary w-12 text-right">158 bks</span>
+</div>
+</div>
+</div>
+<!-- Staff Item -->
+<div class="flex items-center gap-6">
+<img alt="Sienna W." class="w-12 h-12 object-cover border border-white/10 grayscale hover:grayscale-0 transition-all" data-alt="A portrait of a professional female beauty artisan with a sleek, minimalist style. She is looking directly at the camera in a modern, luxury wellness clinic. The lighting is low-key with gold accents reflecting off the background surfaces. Her professional appearance conveys trust and premium service quality within a high-end marketplace environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDACNBuapqH3HWDCA5eeCJAqX44rPd3BPcPIbPeACC-RG61LzxICQz3jmcxscVrXFIdfSierjGZ6mZZ9zpvo6JZ3HWj5onzDpfTKP3dujKvFaZuVu8RUnRHij2ZOQJLgluNyeWzmh9tuJdCuR8Wj1QLjf-8SpG3-nAjGl4o7Qn1l__oE20RJeo5vp2XAvJIFOllOxY4IQisruw558IeVuWzYLV2LKHRbd-B09B1RBDpjHwxYvCIUEKuqPTK5v2K8yMLaBkggND2gl0">
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-2">
+<p class="font-body-md text-pure-white">Sienna West</p>
+<p class="font-label-mono-sm text-on-surface-variant uppercase">95% Satisf.</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3 flex-grow bg-white/5">
+<div class="h-full bg-primary" style="width: 82%"></div>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-primary w-12 text-right">132 bks</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Customer Demographics -->
+<div class="bg-surface-container border border-white/10 p-8 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-pure-white mb-2">Customer Loyalty</h3>
+<p class="text-text-secondary font-body-md mb-8">Analysis of visitor behavior and frequency.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="relative w-40 h-40">
+<!-- SVG Donut Chart -->
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="15.915" stroke="rgba(255,255,255,0.05)" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="15.915" stroke="#e6c364" stroke-dasharray="65 35" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="15.915" stroke="rgba(255,255,255,0.2)" stroke-dasharray="35 65" stroke-dashoffset="-65" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-pure-white">65%</span>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Returning</span>
+</div>
+</div>
+<div class="flex-grow space-y-4 w-full">
+<div class="flex justify-between items-center p-4 border border-white/5 bg-white/5">
+<div>
+<p class="font-label-mono-sm text-primary uppercase">Elite Members</p>
+<p class="text-xs text-on-surface-variant">Top 10% spenders</p>
+</div>
+<span class="font-headline-md text-pure-white">84</span>
+</div>
+<div class="flex justify-between items-center p-4 border border-white/5 bg-white/5">
+<div>
+<p class="font-label-mono-sm text-pure-white uppercase">New Client Growth</p>
+<p class="text-xs text-on-surface-variant">Active this month</p>
+</div>
+<span class="font-headline-md text-pure-white">+18%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container border-t border-white/10 flex justify-around items-center h-20 px-base pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold border-t-2 border-primary pt-2" href="#">
+<span class="material-symbols-outlined" data-icon="insert_chart">insert_chart</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Payouts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button - Only for Primary Actions (Not typically on Analytics but included for Demo) -->
+<!-- Suppressed on Analytics as per mandate for task-focused screens -->
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.bg-surface-container').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('border-primary/40');
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('border-primary/40');
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

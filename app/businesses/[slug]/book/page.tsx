@@ -61,8 +61,12 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
   ];
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    }
+    loadUser();
   }, []);
 
   const handlePrevMonth = () => {
@@ -93,12 +97,13 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
           <button
+            data-testid="back-btn"
             onClick={() => router.back()}
             className="text-on-surface active:opacity-80 transition-opacity"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
-          <Link href="/">
+          <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter">
               RIGIFY
             </span>
@@ -107,18 +112,21 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
         <div className="hidden md:flex items-center gap-8">
           <nav className="flex gap-6">
             <Link
+              data-testid="nav-home"
               href="/"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200"
             >
               HOME
             </Link>
             <Link
+              data-testid="nav-browse"
               href="/businesses"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200"
             >
               BROWSE
             </Link>
             <Link
+              data-testid="nav-my-bookings"
               href="/customer/dashboard"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary transition-colors duration-200"
             >
@@ -127,16 +135,10 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary">language</span>
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary">language</span>
           {user && (
-            <div className="w-10 h-10 bg-surface-container-high border border-white/10 overflow-hidden">
-              <Image
-                src={user.user_metadata?.avatar_url || "/default-avatar.png"}
-                alt="User Profile"
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
+            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
             </div>
           )}
         </div>
@@ -170,6 +172,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
               </h2>
               <div className="flex gap-4">
                 <button
+                  data-testid="calendar-prev-month-btn"
                   onClick={handlePrevMonth}
                   className="w-10 h-10 flex items-center justify-center border border-white/10 hover:border-primary transition-colors"
                 >
@@ -178,6 +181,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
                   </span>
                 </button>
                 <button
+                  data-testid="calendar-next-month-btn"
                   onClick={handleNextMonth}
                   className="w-10 h-10 flex items-center justify-center border border-white/10 hover:border-primary transition-colors"
                 >
@@ -205,6 +209,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
               {calendarDays.map((dayObj, index) => (
                 <div
                   key={index}
+                  data-testid={dayObj.day ? `calendar-day-${dayObj.day}` : `calendar-day-empty-${index}`}
                   className={`
                     aspect-square flex items-center justify-center font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium border
                     ${
@@ -243,6 +248,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
                 {timeSlots.map((time) => (
                   <button
                     key={time}
+                    data-testid={`time-slot-${time.replace(/[:\s]/g, '-').toLowerCase()}`}
                     onClick={() => setSelectedTime(time)}
                     className={`
                       p-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium border transition-all
@@ -277,7 +283,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
                   check_circle
                 </span>
               </div>
-              <button className="w-full bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium py-4 hover:bg-primary-fixed-dim transition-all active:scale-[0.98] uppercase">
+              <button data-testid="confirm-booking-btn" className="w-full bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium py-4 hover:bg-primary-fixed-dim transition-all active:scale-[0.98] uppercase">
                 Confirm Booking
               </button>
             </div>
@@ -287,19 +293,20 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Home
           </span>
         </Link>
-        <Link href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
           </span>
         </Link>
         <Link
+          data-testid="mobile-nav-my-bookings"
           href="/customer/dashboard"
           className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1"
         >
@@ -313,7 +320,7 @@ export default function BookAppointmentPage({ params }: { params: { slug: string
             My Bookings
           </span>
         </Link>
-        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Business

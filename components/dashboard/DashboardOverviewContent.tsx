@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "@/lib/hooks/useTranslations";
 import { formatTbilisi } from "@/lib/utils/datetime";
 
 type Business = {
@@ -26,63 +25,154 @@ export function DashboardOverviewContent({
   business: Business;
   todays: Booking[];
 }) {
-  const { tr, lang } = useTranslations();
-
   return (
-    <section className="space-y-stack-lg">
-      <div>
-        <p className="label-mono text-primary">{tr.dashboard.overview.today[lang]}</p>
-        <h1 className="mt-stack-sm text-headline-md">{business.name}</h1>
+    <div className="max-w-7xl">
+      {/* Header */}
+      <div className="mb-12">
+        <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-4">
+          Today's Overview
+        </span>
+        <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-2">
+          {business.name}
+        </h1>
         {!business.is_active && (
-          <p className="mt-stack-md font-mono text-data-label text-primary">
-            {tr.dashboard.overview.businessInactive[lang]}
-          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-error/10 border border-error/20 mt-4">
+            <span className="material-symbols-outlined text-error text-[14px]">warning</span>
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-error uppercase">
+              Business Inactive
+            </span>
+          </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-outline-variant">
-        <Metric label={tr.dashboard.overview.appointmentsToday[lang]} value={String(todays?.length ?? 0)} />
-        <Metric
-          label={tr.dashboard.overview.salome[lang]}
-          value={business.salome_enabled ? tr.dashboard.overview.on[lang] : tr.dashboard.overview.off[lang]}
-        />
-        <Metric
-          label={tr.dashboard.overview.status[lang]}
-          value={business.is_active ? tr.dashboard.overview.live[lang] : tr.dashboard.overview.draft[lang]}
-        />
+      {/* Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div className="bg-surface-container border border-white/5 p-8">
+          <div className="flex items-start justify-between mb-4">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+              Appointments Today
+            </span>
+            <span className="material-symbols-outlined text-primary text-[24px]">event</span>
+          </div>
+          <p className="font-hanken text-[48px] leading-[1.1] font-bold text-primary">
+            {todays?.length ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-surface-container border border-white/5 p-8">
+          <div className="flex items-start justify-between mb-4">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+              Salome AI
+            </span>
+            <span className="material-symbols-outlined text-primary text-[24px]">mic</span>
+          </div>
+          <p className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary">
+            {business.salome_enabled ? "Active" : "Inactive"}
+          </p>
+        </div>
+
+        <div className="bg-surface-container border border-white/5 p-8">
+          <div className="flex items-start justify-between mb-4">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+              Business Status
+            </span>
+            <span className="material-symbols-outlined text-primary text-[24px]">
+              {business.is_active ? "check_circle" : "draft"}
+            </span>
+          </div>
+          <p className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary">
+            {business.is_active ? "Live" : "Draft"}
+          </p>
+        </div>
       </div>
 
-      <div>
-        <p className="label-mono mb-stack-md">{tr.dashboard.overview.upcomingToday[lang]}</p>
+      {/* Today's Appointments */}
+      <section>
+        <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase mb-6">
+          Today's Schedule
+        </h2>
         {todays && todays.length > 0 ? (
-          <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
-            {todays.map((b) => (
-              <li key={b.id} className="grid grid-cols-12 gap-stack-md py-stack-md px-stack-sm">
-                <span className="col-span-2 font-mono text-data-numeric">
-                  {formatTbilisi(b.appointment_datetime, "HH:mm")}
+          <div className="bg-surface-container border border-white/5">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-surface-container-low">
+              <div className="col-span-2">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                  Time
                 </span>
-                <span className="col-span-4">{b.customer_name}</span>
-                <span className="col-span-3 text-on-surface-variant">{b.services?.name ?? "—"}</span>
-                <span className="col-span-2 text-on-surface-variant">{b.staff?.name ?? "—"}</span>
-                <span className="col-span-1 label-mono text-primary">{b.booking_source.toUpperCase()}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-on-surface-variant border border-outline-variant p-gutter">
-            {tr.dashboard.overview.noAppointments[lang]}
-          </p>
-        )}
-      </div>
-    </section>
-  );
-}
+              </div>
+              <div className="col-span-3">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                  Customer
+                </span>
+              </div>
+              <div className="col-span-3">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                  Service
+                </span>
+              </div>
+              <div className="col-span-2">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                  Staff
+                </span>
+              </div>
+              <div className="col-span-2">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                  Source
+                </span>
+              </div>
+            </div>
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-background p-gutter">
-      <p className="label-mono">{label}</p>
-      <p className="mt-stack-sm font-mono text-2xl text-primary">{value}</p>
+            {/* Table Rows */}
+            <div>
+              {todays.map((b, index) => (
+                <div
+                  key={b.id}
+                  data-testid={`appointment-row-${b.id}`}
+                  className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-surface-container-low transition-colors ${
+                    index !== todays.length - 1 ? 'border-b border-white/5' : ''
+                  }`}
+                >
+                  <div className="col-span-2 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[16px]">schedule</span>
+                    <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold">
+                      {formatTbilisi(b.appointment_datetime, "HH:mm")}
+                    </span>
+                  </div>
+                  <div className="col-span-3 flex items-center">
+                    <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
+                      {b.customer_name}
+                    </span>
+                  </div>
+                  <div className="col-span-3 flex items-center">
+                    <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                      {b.services?.name ?? "—"}
+                    </span>
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                      {b.staff?.name ?? "—"}
+                    </span>
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    <span className="px-2 py-1 bg-primary/10 border border-primary/20 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase">
+                      {b.booking_source}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-surface-container border border-white/5 p-12 text-center">
+            <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-primary text-[32px]">event_busy</span>
+            </div>
+            <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+              No appointments scheduled for today
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

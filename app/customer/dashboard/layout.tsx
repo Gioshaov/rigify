@@ -21,14 +21,18 @@ export default async function CustomerDashboardLayout({ children }: { children: 
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <div className="flex min-h-screen bg-background text-on-surface">
+      <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
         <CustomerSidebar customerName={customer?.name} />
         <div className="flex-1 min-w-0">
-          <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">
-            <p className="label-mono">MY ACCOUNT</p>
-            <p className="label-mono text-on-surface-variant">{user.email}</p>
+          <header className="border-b border-white/10 px-8 h-16 flex items-center justify-between bg-surface">
+            <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase">
+              My Account
+            </p>
+            <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary">
+              {user.email}
+            </p>
           </header>
-          <main id="main-content" className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
+          <main id="main-content" className="px-8 py-12">{children}</main>
         </div>
       </div>
     </>

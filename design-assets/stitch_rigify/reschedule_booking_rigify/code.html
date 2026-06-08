@@ -1,0 +1,312 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Reschedule Booking - RIGIFY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35343a;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#e6c364",
+                        "surface-container-low": "#1b1b20",
+                        "muted-gold": "#9d8653",
+                        "primary-fixed-dim": "#e6c364",
+                        "outline": "#99907e",
+                        "background": "#131318",
+                        "tertiary": "#d9e2ff",
+                        "on-tertiary": "#162f5e",
+                        "surface": "#131318",
+                        "secondary-container": "#494853",
+                        "secondary-fixed": "#e3e1ef",
+                        "on-secondary-fixed": "#1b1b25",
+                        "secondary": "#c7c5d3",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-primary": "#3d2e00",
+                        "on-error": "#690005",
+                        "on-surface": "#e4e1e9",
+                        "text-primary": "#ffffff",
+                        "on-tertiary-fixed": "#001944",
+                        "on-primary-container": "#665000",
+                        "inverse-primary": "#755b00",
+                        "surface-dim": "#131318",
+                        "text-secondary": "#a1a1aa",
+                        "tertiary-fixed": "#d9e2ff",
+                        "on-secondary-fixed-variant": "#464651",
+                        "primary": "#ffe090",
+                        "inverse-surface": "#e4e1e9",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "surface-variant": "#35343a",
+                        "surface-container": "#1f1f25",
+                        "on-tertiary-container": "#3b5183",
+                        "pure-white": "#ffffff",
+                        "outline-variant": "#4d4637",
+                        "tertiary-container": "#b0c6ff",
+                        "on-primary-fixed": "#241a00",
+                        "surface-bright": "#39383e",
+                        "error-container": "#93000a",
+                        "on-surface-variant": "#d0c5b2",
+                        "surface-container-high": "#2a292f",
+                        "surface-container-lowest": "#0e0e13",
+                        "primary-fixed": "#ffe08f",
+                        "surface-container-highest": "#35343a",
+                        "surface-elevated": "#22222e",
+                        "on-secondary-container": "#b9b7c4",
+                        "on-secondary": "#302f3a",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "inverse-on-surface": "#303036",
+                        "on-background": "#e4e1e9",
+                        "surface-tint": "#e6c364"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md">
+<!-- Top Navigation (Shell suppressed for back action focus) -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
+<button class="flex items-center text-primary active:opacity-80 transition-opacity" onclick="window.history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-primary tracking-tight">Reschedule Booking</h1>
+<div class="w-6"></div> <!-- Spacer for centering -->
+</header>
+<main class="flex-1 max-w-container-max mx-auto w-full px-margin-mobile py-8 mb-32">
+<!-- Current Booking Context -->
+<section class="mb-10 animate-in fade-in slide-in-from-top duration-500">
+<div class="p-6 bg-surface-container-low border border-white/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="font-label-mono-xs text-label-mono-xs text-muted-gold uppercase tracking-widest bg-surface-container-highest px-2 py-1">Current Appointment</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Classic Cut &amp; Steam</h2>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-sm">storefront</span>
+<span class="font-body-md">STERN Barber Shop</span>
+</div>
+<div class="flex flex-wrap gap-4 pt-4 border-t border-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase">Thursday, Oct 24</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase">14:30 — 15:30</span>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Calendar Section -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="font-label-mono-sm text-label-mono-sm uppercase text-primary tracking-widest flex items-center gap-2">
+<span class="w-4 h-[1px] bg-primary"></span>
+                        Select New Date
+                    </h3>
+<div class="flex items-center gap-4">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<span class="font-label-mono-sm text-label-mono-sm uppercase">November 2024</span>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container border border-white/5 p-4">
+<div class="calendar-grid text-center mb-4">
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">MO</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">TU</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">WE</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">TH</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">FR</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2">SA</div>
+<div class="font-label-mono-xs text-label-mono-xs text-on-surface-variant pb-2 text-error/60">SU</div>
+</div>
+<div class="calendar-grid gap-1">
+<!-- Simplified Calendar Generation -->
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/20 cursor-not-allowed">28</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/20 cursor-not-allowed">29</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/20 cursor-not-allowed">30</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/20 cursor-not-allowed">31</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30 transition-all">01</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30 transition-all">02</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/40">03</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">04</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">05</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm bg-primary text-background font-bold border border-primary">06</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">07</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">08</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">09</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/40">10</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">11</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">12</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">13</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">14</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">15</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm border border-transparent hover:border-primary/30">16</button>
+<button class="aspect-square flex items-center justify-center font-label-mono-sm text-on-surface-variant/40">17</button>
+</div>
+</div>
+</section>
+<!-- Time Slot Picker -->
+<section class="space-y-6">
+<h3 class="font-label-mono-sm text-label-mono-sm uppercase text-primary tracking-widest flex items-center gap-2">
+<span class="w-4 h-[1px] bg-primary"></span>
+                    Available Slots
+                </h3>
+<div class="space-y-8">
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase tracking-tighter mb-4">Morning</p>
+<div class="time-grid gap-3">
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">09:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">10:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface-variant/30 cursor-not-allowed line-through">11:00</button>
+</div>
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase tracking-tighter mb-4">Afternoon</p>
+<div class="time-grid gap-3">
+<button class="h-12 border border-primary bg-primary/10 text-primary font-bold font-label-mono-sm">14:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">15:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">16:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">17:00</button>
+</div>
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase tracking-tighter mb-4">Evening</p>
+<div class="time-grid gap-3">
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">18:00</button>
+<button class="h-12 border border-white/10 font-label-mono-sm text-on-surface hover:border-primary hover:text-primary transition-all">19:00</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Detail Imagery Placeholder -->
+<section class="mt-16 border-t border-white/10 pt-16">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="relative group">
+<img alt="Interior of STERN Barber Shop" class="w-full aspect-video object-cover border border-white/10 filter grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A moody, high-contrast interior photograph of a premium modern barber shop at night. The space features black leather chairs, dark oak paneling, and warm amber spotlighting hitting polished chrome tools. A minimalist, sophisticated architectural style with clean lines and sharp edges, perfectly capturing a luxury grooming experience in a dark-mode-first aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWMSBdjpPFrK9q-EsX6ujBAdXhjhJxJOvQCghbCJymTXC4od6U8u9EToHmiPtjLZfot1Uo0da-buk4JOZQnMLEn3QVXEEue6Dy5wmMqOoB6vvKxaB_Gfh8UAfQwApsI2j4RqT0FFZuP1b7-uCwbHsP_92qsJRRLWrlPG_cwBOKpsHqAoOteWZyOmNziwJwUKsl8qmB-9w0q5gO2wq3S6IGEx3gD3k9acuohYFO2MPNKjAvaDNbzh7z-swTTxEu6tFfG-1U8gj_1ag">
+<div class="absolute inset-0 border border-primary/20 pointer-events-none group-hover:border-primary transition-all"></div>
+</div>
+<div class="space-y-4">
+<h4 class="font-label-mono-sm text-label-mono-sm uppercase text-primary tracking-widest">Why reschedule?</h4>
+<p class="text-on-surface-variant font-body-lg leading-relaxed">
+                        We understand that plans change. Our rescheduling policy allows you to modify your booking up to 12 hours before the service at no additional cost. 
+                    </p>
+<div class="flex items-center gap-4 text-primary">
+<span class="material-symbols-outlined">info</span>
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-tight">Booking Policy applies</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Footer Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile z-50">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
+<div class="hidden md:block">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">New Appointment Selection</p>
+<p class="font-body-md text-primary font-bold">Wed, Nov 06 @ 14:00</p>
+</div>
+<button class="w-full md:w-auto px-12 py-5 bg-primary text-on-primary font-headline-md text-headline-md uppercase tracking-tight hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(230,195,100,0.15)]">
+                Confirm New Time
+            </button>
+</div>
+</footer>
+<!-- Micro-interactions & Interactivity -->
+<script>
+        // Simple selection simulation for time slots
+        const timeButtons = document.querySelectorAll('.time-grid button:not(.cursor-not-allowed)');
+        timeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                timeButtons.forEach(b => {
+                    b.classList.remove('border-primary', 'bg-primary/10', 'text-primary', 'font-bold');
+                    b.classList.add('border-white/10', 'text-on-surface');
+                });
+                btn.classList.remove('border-white/10', 'text-on-surface');
+                btn.classList.add('border-primary', 'bg-primary/10', 'text-primary', 'font-bold');
+            });
+        });
+
+        // Simple selection simulation for calendar
+        const calendarButtons = document.querySelectorAll('.calendar-grid:not(.text-center) button:not(.cursor-not-allowed)');
+        calendarButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                calendarButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-background', 'font-bold', 'border-primary');
+                    b.classList.add('border-transparent');
+                });
+                btn.classList.remove('border-transparent');
+                btn.classList.add('bg-primary', 'text-background', 'font-bold', 'border-primary');
+            });
+        });
+    </script>
+</body></html>

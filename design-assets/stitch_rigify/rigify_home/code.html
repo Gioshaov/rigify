@@ -1,0 +1,389 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIGIFY | Premium Beauty &amp; Wellness Georgia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f1f25;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e6c364;
+        }
+        body {
+            background-color: #131318;
+            color: #e4e1e9;
+            overflow-x: hidden;
+        }
+        .sharp-edge {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#3b5183",
+                        "primary-fixed-dim": "#e6c364",
+                        "surface": "#131318",
+                        "on-tertiary": "#162f5e",
+                        "error": "#ffb4ab",
+                        "pure-white": "#ffffff",
+                        "surface-bright": "#39383e",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "surface-container-low": "#1b1b20",
+                        "surface-dim": "#131318",
+                        "outline": "#99907e",
+                        "on-background": "#e4e1e9",
+                        "primary-fixed": "#ffe08f",
+                        "secondary-container": "#494853",
+                        "surface-container-lowest": "#0e0e13",
+                        "on-primary-container": "#665000",
+                        "on-secondary-fixed": "#1b1b25",
+                        "on-error": "#690005",
+                        "on-secondary-container": "#b9b7c4",
+                        "inverse-primary": "#755b00",
+                        "on-primary": "#3d2e00",
+                        "on-surface-variant": "#d0c5b2",
+                        "surface-elevated": "#22222e",
+                        "surface-container-high": "#2a292f",
+                        "on-surface": "#e4e1e9",
+                        "surface-variant": "#35343a",
+                        "inverse-on-surface": "#303036",
+                        "inverse-surface": "#e4e1e9",
+                        "outline-variant": "#4d4637",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "secondary": "#c7c5d3",
+                        "primary-container": "#e6c364",
+                        "on-secondary-fixed-variant": "#464651",
+                        "muted-gold": "#9d8653",
+                        "text-secondary": "#a1a1aa",
+                        "surface-tint": "#e6c364",
+                        "tertiary-container": "#b0c6ff",
+                        "on-secondary": "#302f3a",
+                        "tertiary-fixed": "#d9e2ff",
+                        "surface-container-highest": "#35343a",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "on-primary-fixed-variant": "#584400",
+                        "surface-container": "#1f1f25",
+                        "tertiary": "#d9e2ff",
+                        "on-primary-fixed": "#241a00",
+                        "text-primary": "#ffffff",
+                        "background": "#131318",
+                        "on-tertiary-fixed": "#001944",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#ffe090",
+                        "secondary-fixed": "#e3e1ef",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="language">language</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter uppercase">RIGIFY</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-mono-sm text-label-mono-sm text-primary transition-colors duration-200 uppercase" href="#">Home</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200 uppercase" href="#">Browse</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200 uppercase" href="#">My Bookings</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200 uppercase" href="#">For Business</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover grayscale" data-alt="A professional, high-end portrait of a person against a minimalist dark grey background, styled with cinematic dramatic lighting and sharp focus. The individual exudes a sense of premium service and luxury professionalism. The color palette is restricted to deep blacks, charcoal grays, and natural skin tones, perfectly aligning with a dark mode luxury beauty platform aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0I6RQfSJ1XJE7Q8fPLfnJ6KdGPrXvYsOnC88wPDc7OacVjM68hn1rZIJ3i45a4OFP3usAvhJLQhvsgdb90gL8glOFAJcjWWPeiDz_dy9C4hmeLgC5DuaWPY45RXnar3hVK6QggUvwSQIHuJeJjcl7gjfTUDWZFNVW_AHeeZqGEFe1akUI1_If3tIFiWC4shPNcAqu_JoClYx_pSBK1TQ6wuo-73r5jj_eQDlhlNN-bo1AU2fTakVd25NV0AXYA1Rir61AyoP_X38">
+</div>
+</div>
+</header>
+<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<!-- Hero Section -->
+<section class="relative min-h-[80vh] flex flex-col justify-center py-20 animate-in fade-in slide-in-from-bottom-5 duration-700">
+<div class="absolute inset-0 -z-10 opacity-30 pointer-events-none">
+
+</div>
+<div class="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+<div class="flex items-center gap-2">
+<span class="w-8 h-[1px] bg-primary"></span>
+
+</div>
+<h2 class="font-display-lg text-display-lg md:text-[64px] leading-tight text-white tracking-tighter">
+                    Book Beauty &amp; Wellness <br>Appointments in <span class="text-primary italic">Georgia</span>
+</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                    Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="bg-primary text-on-primary px-10 py-5 font-label-mono-sm text-label-mono-sm uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98]">
+                        Browse Studios
+                    </button>
+<button class="border border-white/20 text-white px-10 py-5 font-label-mono-sm text-label-mono-sm uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98]">
+                        For Businesses
+                    </button>
+</div>
+</div>
+<!-- Hero Image Frame (Asymmetric Layout) -->
+<div class="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-1/3 aspect-[4/5] border border-white/10 p-4 bg-surface-container-lowest shadow-2xl">
+<div class="relative w-full h-full overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 hover:scale-110 grayscale hover:grayscale-0" data-alt="A high-fashion, premium close-up of a luxury beauty treatment in a modern minimalist studio. The lighting is sophisticated and directional, creating deep shadows and luminous highlights. The aesthetic is clean, sharp, and architectural, reflecting the high-end marketplace positioning of the brand. Textures of skin and premium products are visible in extreme detail under a warm, golden atmospheric glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl91M7x3SfK7ePZrib2pMktEZNPCptK4Hssn8flQ5_FmUq5MFMQD98Lj-IOOXd64FATAIcSy6oE7mDhm6xT7rYIea8llgJy9bdThdUSUak5jTOOXw94aGHbElOix8zKs-qp2CMwnYdZE5Dl0iS26c7Mxf13Ldd0vnPfL_cGhOtYh4FOpSnsziYQnSM5BoT6QG0MFpS14zKU2rGZIgHwBO3cAubkNcMsQn-7olKlrl-OXJ9qnexVvgo4nk_0g2MPewiSmHanD2llc8">
+<div class="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-4 py-2 border-l-2 border-primary">
+<span class="font-label-mono-xs text-label-mono-xs text-primary uppercase">Elite Artisans</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Categories Grid -->
+<section class="py-24 animate-in fade-in slide-in-from-bottom-5 duration-700">
+<div class="flex justify-between items-end mb-12">
+<div>
+
+<p class="font-headline-md text-headline-md text-white">Categories</p>
+</div>
+<div class="hidden md:block h-[1px] flex-grow mx-12 bg-white/10"></div>
+<a class="font-label-mono-xs text-label-mono-xs text-on-surface-variant hover:text-primary uppercase flex items-center gap-2" href="#">
+                    View All Categories <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
+<!-- Hair Salons -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="A sleek, high-end hair salon interior with architectural lighting and dark charcoal walls. Minimalist workstations with large mirrors and sharp edges dominate the space. The atmosphere is professional, quiet, and luxurious, featuring a monochromatic color palette with subtle gold highlights from modern light fixtures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHeqsjr9sht1Gl8-MdQdHV7rmmihBjI_yv3g4J-JsgNQa47Sskn0U_qEx_KtAyG2Y5fc8wu-6I2TCEilFkLJ3CQgpz_QeaJciarwzh2Pfm4696aUAKHIhsRjmJyoLHeRVaUPPsTWBYJYUbeIk-fFU1lUi1dxQMfM6Z3H8o8HZ221LdigiCBCkoRb2WG7OtcyuH__oFrpKs-q6Chb7cVQo5HqC7BBRS8SaNcX3M-dPeoov6-40FXuwxhI9JPhmnK22Kmcfk0Qx_Ftg">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Hair Salons</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+<!-- Barbershops -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="A vintage yet modern high-end barbershop featuring premium leather chairs and dark wood paneling with sharp, geometric details. The lighting is warm and cinematic, casting dramatic shadows. The focus is on the precision and craft of traditional grooming in a contemporary, upscale setting, perfectly matching the dark luxury UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQwakR8Q5VF2ZsLImc1VZC90fzToIefLCDbb5hj2nlDtRdvcc-iLNs1T-lWiLtjhRwlqQI5w9QoPylUx40T6W6eAIq6UkNHjIli780EL_B5BUA29PlRIlbufWtencqCIf-0sPF_Pmt-vv7JUl8akEZVSl8Lffep3zUbr8BTMwZWNKkqf15sgGq-8Hqq4txWJuDld5tFQkybrhpRcPlgUfJCGeWyUM9Cv5g1nViTK_0IXMija0RsYqI38h8bc2pEMYIIG6EUsaUzgo">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Barbershops</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+<!-- Nail Salons -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="Close-up of a minimalist nail salon treatment station. High-gloss black surfaces, white minimalist containers, and precision instruments laid out on a clean, dark stone countertop. The mood is clinical yet exceptionally luxurious, emphasizing hygiene and technical mastery through a sharp, high-contrast visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUdjOSD-xc0mABGTFwOazbd5udjwGOr7Drau01uKQlBZEGXoEkuG59bZBU76zBcPjzHU7lIFz8vUI8R8sDcKJyigGMWRuTwPzcuaw3P8t3cu3cgWITmSR2snJpPL4nUc_tNaMfhdIc6CJwK-3_fOpir__Jl_3XaOJ3gNDClqBuRVY6TPvGI_CVwnjimrvmcdp1PfA_6TXmEawgzBl6Bzm6kwDOachoDuKe7hZT1AbzHznXPFbDvhjN2V5m4AhPbeJLobiWkj03Xk">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Nail Salons</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+<!-- Massage & Spa -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="A serene, ultra-modern spa room with dark slate walls and a central massage table illuminated by a single vertical beam of light. A subtle mist fills the air, catching the light and creating a tactile, immersive environment. The design is purely architectural and minimalist, conveying deep relaxation and exclusive wellness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmyAPAuhZmdsSBuo5f8usexopqoLfPgjZnkhPvvnH0bn6ICMOvOknMVAM8OlXM0ceyx5d1LAqqqY7U5POb3ldj31gBE9vsvORvQudTtqOgYo2Jdcx0xSoD_9Ba2X2gwhb6V0CdjkS6Q-kzwZRzvu3ZC6tmGzOFPxgI_RwDfj_reMoRfTP2pk0EgD_H4P_9D9EfrQfNp_Rqqs55fF28GARj2HMGTE2Pd0ntwO06LMrO_mumogtojbn-QaAlIeqdP8FvNkmatVuMlXE">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Massage &amp; Spa</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+<!-- Cosmetology -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="A high-tech cosmetology clinic setting. Clinical equipment with glowing LED indicators is arranged on a matte black architectural shelving unit. The lighting is cool-toned and precise, highlighting the scientific and professional nature of the skin treatments. No clutter, only essential, beautifully designed tools of the trade." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWrhjQH7D12EYRosNP9sO8ZTyg5D8wY30EZyXA8Gk9ZVn7sylNsXM6oLJCKQhUuW5bXEckIhejC68B01OVrKZFozB4YfmmxA9z266er5VEt4eDYLBJQsPV1z6EI1CcswZNMkLSdSz9QOti0RF-JJOm32qWiUSzdn2Nc4Kz1AyOuguo8uc4jekkfvg27wNfQYJu4GxNizAWtFekVpSoIX8QuVwOQ7DSF4SQ7fR9ieWdDD24Ivy8pVdTXe4EEIEnFSRg6ROD8Xzgh6w">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Cosmetology</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+<!-- Tattoo & Piercing -->
+<div class="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 grayscale" data-alt="A contemporary tattoo studio that looks more like a high-end art gallery. Polished concrete floors, white neon strip lighting against dark walls, and minimalist leather furniture. The atmosphere is edgy yet sophisticated, focusing on the artistry and precision of the craft in a clean, professional space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWO2NuKRMlVxTdjc-f0e21-YYWcsf71D_By00uNSrbUi1EZ2aBpWeijKtnqIQOIeZ_cHntPnTHK5WedlED75w3AZeHkECSpbMH3gtoYGWHtfofSQk9qcVFo_4417fIhGz9V-MFN5Al6dMXYR6HaLXjMWYvPupoLrMKmQz6FUDRlmNIvp6sDZZ5j4gcYA7sm8Qgkufgc7-6GJCyZ33SWk5wbxeQrDK3mH942lChpzTniOP3xHN5IDATERO3TUD_8NSSJG11cCoRlx0">
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
+
+<h4 class="font-headline-md text-headline-md text-white mb-2">Tattoo &amp; Piercing</h4>
+<div class="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Cities Section -->
+<section class="py-24 mb-24 animate-in fade-in slide-in-from-bottom-5 duration-700">
+<div class="text-center mb-16">
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary uppercase tracking-[0.4em] mb-4">The Expansion</h3>
+<p class="font-display-lg-mobile text-display-lg-mobile text-white uppercase">Regional Presence</p>
+</div>
+<div class="flex flex-col md:flex-row gap-8">
+<!-- Tbilisi - Active -->
+<div class="flex-1 border border-primary p-8 bg-surface-container-high transition-transform duration-300 hover:-translate-y-2">
+<div class="flex justify-between items-start mb-12">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="location_on">location_on</span>
+<div class="px-3 py-1 border border-primary text-primary font-label-mono-xs text-label-mono-xs uppercase">Active</div>
+</div>
+<h5 class="font-display-lg-mobile text-display-lg-mobile text-white mb-4">Tbilisi</h5>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">The heart of Georgian beauty. Over 200+ premium studios and independent artisans ready for booking.</p>
+<div class="flex items-center gap-2 text-primary font-label-mono-sm text-label-mono-sm uppercase group cursor-pointer">
+                        Explore City <span class="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-2" data-icon="east">east</span>
+</div>
+</div>
+<!-- Batumi - Coming Soon -->
+<div class="flex-1 border border-white/10 p-8 bg-surface-container opacity-60 transition-all duration-300 hover:opacity-100 group">
+<div class="flex justify-between items-start mb-12">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl" data-icon="waves">waves</span>
+<div class="px-3 py-1 border border-white/20 text-on-surface-variant font-label-mono-xs text-label-mono-xs uppercase">Coming Soon</div>
+</div>
+<h5 class="font-display-lg-mobile text-display-lg-mobile text-white mb-4">Batumi</h5>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Coastal elegance meets premium wellness. Bringing the Rigify standard to the Black Sea coast this summer.</p>
+<div class="h-[1px] w-12 bg-white/20 group-hover:bg-primary transition-colors duration-300"></div>
+</div>
+<!-- Kutaisi - Coming Soon -->
+<div class="flex-1 border border-white/10 p-8 bg-surface-container opacity-60 transition-all duration-300 hover:opacity-100 group">
+<div class="flex justify-between items-start mb-12">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl" data-icon="architecture">architecture</span>
+<div class="px-3 py-1 border border-white/20 text-on-surface-variant font-label-mono-xs text-label-mono-xs uppercase">Coming Soon</div>
+</div>
+<h5 class="font-display-lg-mobile text-display-lg-mobile text-white mb-4">Kutaisi</h5>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Preserving tradition while embracing modern grooming. Our network is expanding to the historic capital soon.</p>
+<div class="h-[1px] w-12 bg-white/20 group-hover:bg-primary transition-colors duration-300"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Simulation / Bottom Space -->
+<footer class="bg-surface-container-lowest border-t border-white/10 py-16 px-margin-mobile md:px-margin-desktop mb-20 md:mb-0">
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary uppercase mb-6 tracking-tighter">RIGIFY</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm mb-8">
+                    The ultimate destination for luxury beauty and wellness services in Georgia. Connecting elite practitioners with discerning clients.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="facebook">face_nod</span>
+</a>
+<a class="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="photo_camera">photo_camera</span>
+</a>
+<a class="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+</a>
+</div>
+</div>
+<div>
+<h6 class="font-label-mono-sm text-label-mono-sm text-white uppercase mb-6">Marketplace</h6>
+<ul class="space-y-4 font-body-md text-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Browse Studios</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Special Offers</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Gift Cards</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Reviews</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-label-mono-sm text-label-mono-sm text-white uppercase mb-6">Partners</h6>
+<ul class="space-y-4 font-body-md text-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Register Business</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Partner Dashboard</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Support</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-label-mono-xs text-on-surface-variant uppercase">
+<span class="">© 2024 RIGIFY. All rights reserved.</span>
+<div class="flex gap-8">
+<a class="hover:text-white" href="#">Privacy Policy</a>
+<a class="hover:text-white" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Browse</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">My Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Business</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for Category Cards
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Potential for more complex JS animations if needed
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-5', 'duration-700');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+
+
+</body></html>

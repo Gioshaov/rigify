@@ -1,0 +1,331 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIGIFY - Select Date &amp; Time</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#3b5183",
+                    "primary-fixed-dim": "#e6c364",
+                    "surface": "#131318",
+                    "on-tertiary": "#162f5e",
+                    "error": "#ffb4ab",
+                    "pure-white": "#ffffff",
+                    "surface-bright": "#39383e",
+                    "secondary-fixed-dim": "#c7c5d3",
+                    "surface-container-low": "#1b1b20",
+                    "surface-dim": "#131318",
+                    "outline": "#99907e",
+                    "on-background": "#e4e1e9",
+                    "primary-fixed": "#ffe08f",
+                    "secondary-container": "#494853",
+                    "surface-container-lowest": "#0e0e13",
+                    "on-primary-container": "#665000",
+                    "on-secondary-fixed": "#1b1b25",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#b9b7c4",
+                    "inverse-primary": "#755b00",
+                    "on-primary": "#3d2e00",
+                    "on-surface-variant": "#d0c5b2",
+                    "surface-elevated": "#22222e",
+                    "surface-container-high": "#2a292f",
+                    "on-surface": "#e4e1e9",
+                    "surface-variant": "#35343a",
+                    "inverse-on-surface": "#303036",
+                    "inverse-surface": "#e4e1e9",
+                    "outline-variant": "#4d4637",
+                    "on-tertiary-fixed-variant": "#2f4576",
+                    "secondary": "#c7c5d3",
+                    "primary-container": "#e6c364",
+                    "on-secondary-fixed-variant": "#464651",
+                    "muted-gold": "#9d8653",
+                    "text-secondary": "#a1a1aa",
+                    "surface-tint": "#e6c364",
+                    "tertiary-container": "#b0c6ff",
+                    "on-secondary": "#302f3a",
+                    "tertiary-fixed": "#d9e2ff",
+                    "surface-container-highest": "#35343a",
+                    "tertiary-fixed-dim": "#b0c6ff",
+                    "on-primary-fixed-variant": "#584400",
+                    "surface-container": "#1f1f25",
+                    "tertiary": "#d9e2ff",
+                    "on-primary-fixed": "#241a00",
+                    "text-primary": "#ffffff",
+                    "background": "#131318",
+                    "on-tertiary-fixed": "#001944",
+                    "on-error-container": "#ffdad6",
+                    "primary": "#ffe090",
+                    "secondary-fixed": "#e3e1ef",
+                    "error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-mono-sm": ["JetBrains Mono"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "label-mono-xs": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35343a;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e6c364;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+<div class="flex items-center gap-4">
+<button class="text-on-surface active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter">RIGIFY</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6">
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200" href="#">HOME</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200" href="#">BROWSE</a>
+<a class="font-label-mono-sm text-label-mono-sm text-primary transition-colors duration-200" href="#">MY BOOKINGS</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">language</span>
+<div class="w-10 h-10 bg-surface-container-high border border-white/10 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a stylish man in a high-end grooming studio. The portrait is captured with cinematic lighting, focusing on his sharp facial features and clean hairstyle. The background is a dark, luxurious salon with gold accents and architectural precision, maintaining the premium brand aesthetic of Rigify." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9OS0IkfC9WS0dX8dykmt32vO3aLYeV1ULFkPpY6EfkIyAlVxWXWhKBVeexEZg3U0BgZcFdYIAMDgf-XmhHXOBdMNr3HDm98qNCDNs1-veduifuINW_EbALsuOoboeazRFVYPKPjwxdO1W87h7CeWJoA1b-fcgNUmhDa0W87JoQvOOeo9ycWSXigZOP9P7aPd6mXkXB1ljwhNvbEwJYGCcdDMBlXEUETJ4inJ7L8n4_8fTRJK1Lkaf-hQLaVscmJV41GwXH3Ntsq8">
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 mb-24">
+<!-- Progress Indicator -->
+<div class="mb-12">
+<div class="flex justify-between items-end mb-4">
+<h1 class="font-headline-md text-headline-md text-primary uppercase tracking-widest">Select Date &amp; Time</h1>
+<span class="font-label-mono-sm text-label-mono-sm text-muted-gold">STEP 03 / 05</span>
+</div>
+<div class="w-full h-1 bg-white/5 relative">
+<div class="absolute top-0 left-0 h-full bg-primary transition-all duration-500" style="width: 60%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Calendar -->
+<section class="lg:col-span-7 bg-surface-container-low p-6 md:p-8 border border-white/10">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline-md text-headline-md text-pure-white">October 2024</h2>
+<div class="flex gap-4">
+<button class="w-10 h-10 flex items-center justify-center border border-white/10 hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-white/10 hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="calendar-grid text-center mb-4">
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">MON</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">TUE</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">WED</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">THU</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">FRI</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">SAT</div>
+<div class="font-label-mono-xs text-label-mono-xs text-muted-gold pb-4">SUN</div>
+</div>
+<div class="calendar-grid gap-1">
+<!-- Placeholder days -->
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/20 font-label-mono-sm">28</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/20 font-label-mono-sm">29</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/20 font-label-mono-sm">30</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">01</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">02</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">03</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">04</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">05</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">06</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">07</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">08</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">09</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">10</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">11</div>
+<!-- Selected Day -->
+<div class="aspect-square flex items-center justify-center bg-primary text-background font-label-mono-sm border border-primary">12</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">13</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">14</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">15</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">16</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">17</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">18</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">19</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">20</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">21</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">22</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">23</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">24</div>
+<div class="aspect-square flex items-center justify-center text-on-surface font-label-mono-sm hover:bg-surface-variant cursor-pointer transition-colors border border-white/5">25</div>
+</div>
+</section>
+<!-- Right Column: Time Slots -->
+<section class="lg:col-span-5 flex flex-col gap-6">
+<div class="bg-surface-container-low border border-white/10 p-6 md:p-8 flex-grow">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-label-mono-sm text-label-mono-sm text-muted-gold">AVAILABLE SLOTS</h3>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface">12 OCT</span>
+</div>
+</div>
+<div class="h-[400px] overflow-y-auto pr-4 grid grid-cols-2 gap-2" id="time-grid">
+<!-- Time Slots will be generated by JS -->
+</div>
+</div>
+<!-- Summary & CTA -->
+<div class="bg-surface-elevated border border-primary/20 p-6">
+<div class="flex justify-between items-center mb-6">
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-muted-gold">SELECTED APPOINTMENT</p>
+<p class="font-body-lg text-body-lg text-pure-white" id="selected-summary">Oct 12, 2024 at 10:15 AM</p>
+</div>
+<span class="material-symbols-outlined text-primary scale-125" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<button class="w-full bg-primary text-background font-label-mono-sm text-label-mono-sm py-4 hover:bg-primary-fixed-dim transition-all active:scale-[0.98] uppercase tracking-widest">
+                        Confirm Booking
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Browse</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">My Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60" href="#">
+<span class="material-symbols-outlined">business_center</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Business</span>
+</a>
+</nav>
+<script>
+        // Generate time slots from 9 AM to 9 PM with 15-min intervals
+        const timeGrid = document.getElementById('time-grid');
+        const summaryText = document.getElementById('selected-summary');
+        let selectedTime = "10:15 AM";
+
+        function generateTimeSlots() {
+            const startHour = 9;
+            const endHour = 21;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let min = 0; min < 60; min += 15) {
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour > 12 ? hour - 12 : hour;
+                    const displayMin = min === 0 ? '00' : min;
+                    const timeString = `${displayHour}:${displayMin} ${ampm}`;
+                    
+                    const slot = document.createElement('button');
+                    slot.className = `p-3 font-label-mono-sm text-label-mono-sm border border-white/5 hover:border-primary/50 transition-all ${timeString === selectedTime ? 'bg-primary text-background border-primary' : 'bg-surface text-on-surface-variant'}`;
+                    slot.innerText = timeString;
+                    
+                    slot.addEventListener('click', () => {
+                        // Reset all slots
+                        document.querySelectorAll('#time-grid button').forEach(btn => {
+                            btn.classList.remove('bg-primary', 'text-background', 'border-primary');
+                            btn.classList.add('bg-surface', 'text-on-surface-variant', 'border-white/5');
+                        });
+                        // Highlight selected
+                        slot.classList.add('bg-primary', 'text-background', 'border-primary');
+                        slot.classList.remove('bg-surface', 'text-on-surface-variant', 'border-white/5');
+                        selectedTime = timeString;
+                        summaryText.innerText = `Oct 12, 2024 at ${selectedTime}`;
+                    });
+                    
+                    timeGrid.appendChild(slot);
+                }
+            }
+        }
+
+        generateTimeSlots();
+
+        // Calendar simple interaction
+        document.querySelectorAll('.calendar-grid div.cursor-pointer').forEach(day => {
+            day.addEventListener('click', () => {
+                document.querySelectorAll('.calendar-grid div').forEach(d => {
+                    if(d.classList.contains('bg-primary')) {
+                        d.classList.remove('bg-primary', 'text-background', 'border-primary');
+                        d.classList.add('text-on-surface', 'border-white/5');
+                    }
+                });
+                day.classList.add('bg-primary', 'text-background', 'border-primary');
+                day.classList.remove('text-on-surface', 'border-white/5');
+            });
+        });
+    </script>
+</body></html>

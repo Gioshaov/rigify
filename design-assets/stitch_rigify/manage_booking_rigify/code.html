@@ -1,0 +1,282 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Manage Appointment | RIGIFY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#b0c6ff",
+                    "primary-fixed": "#ffe08f",
+                    "on-secondary-fixed": "#1b1b25",
+                    "on-secondary-fixed-variant": "#464651",
+                    "background": "#131318",
+                    "tertiary-fixed-dim": "#b0c6ff",
+                    "tertiary-fixed": "#d9e2ff",
+                    "surface-elevated": "#22222e",
+                    "outline-variant": "#4d4637",
+                    "error-container": "#93000a",
+                    "outline": "#99907e",
+                    "inverse-primary": "#755b00",
+                    "on-primary-fixed": "#241a00",
+                    "inverse-on-surface": "#303036",
+                    "surface-container-high": "#2a292f",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#1b1b20",
+                    "secondary-container": "#494853",
+                    "on-primary": "#3d2e00",
+                    "on-tertiary-fixed-variant": "#2f4576",
+                    "primary": "#ffe090",
+                    "surface-container-lowest": "#0e0e13",
+                    "on-primary-container": "#665000",
+                    "on-error-container": "#ffdad6",
+                    "secondary": "#c7c5d3",
+                    "surface-variant": "#35343a",
+                    "surface-container-highest": "#35343a",
+                    "inverse-surface": "#e4e1e9",
+                    "on-secondary": "#302f3a",
+                    "secondary-fixed-dim": "#c7c5d3",
+                    "surface-tint": "#e6c364",
+                    "on-surface-variant": "#d0c5b2",
+                    "primary-container": "#e6c364",
+                    "text-secondary": "#a1a1aa",
+                    "text-primary": "#ffffff",
+                    "on-background": "#e4e1e9",
+                    "on-tertiary": "#162f5e",
+                    "on-secondary-container": "#b9b7c4",
+                    "surface-bright": "#39383e",
+                    "on-surface": "#e4e1e9",
+                    "on-primary-fixed-variant": "#584400",
+                    "tertiary": "#d9e2ff",
+                    "surface-container": "#1f1f25",
+                    "surface": "#131318",
+                    "pure-white": "#ffffff",
+                    "on-tertiary-container": "#3b5183",
+                    "on-tertiary-fixed": "#001944",
+                    "secondary-fixed": "#e3e1ef",
+                    "on-error": "#690005",
+                    "primary-fixed-dim": "#e6c364",
+                    "surface-dim": "#131318",
+                    "muted-gold": "#9d8653"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-mono-sm": ["JetBrains Mono"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "label-mono-xs": ["JetBrains Mono"],
+                    "display-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131318;
+            color: #e4e1e9;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e6c364;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- Top AppBar (Back suppression logic: Shell is hidden on focused task pages) -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
+<button class="flex items-center justify-center p-2 hover:bg-white/5 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-primary">arrow_back_ios_new</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Manage Booking</h1>
+<div class="w-10"></div> <!-- Spacer for symmetry -->
+</header>
+<main class="max-w-container-max mx-auto pb-32">
+<!-- Hero Section -->
+<section class="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden">
+<img alt="STERN Barber Shop" class="w-full h-full object-cover" data-alt="A high-end, luxury barbershop interior called STERN Barber Shop. The aesthetic is strictly modern and minimalist with sharp architectural lines, dark charcoal walls, and warm gold accent lighting. Large leather barber chairs sit before oversized mirrors in a pristine, cinematic environment. The lighting is low-key and dramatic, emphasizing the premium and exclusive atmosphere of the space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh2cs-6bgI9J3br6k-u0X665UTtRR_l0EhTz3JRmu_JFhYJn16F__Ex_EpTBME9XaCXnYyXbTrEHdHHXlG60WSWNrP8IObqwkBgN0WvFZS-QaSVx6LTb1thKEfSIlS4opKuB4YmdJ89j1HnhtN9U2zijRJS_8XpOwkkRt2hFF_formHLiVMAqy-ljDnMAy0JkZ0y0syFsRVEByQa-dAjstU-Y8b-6JFxgUQ-dxV2jbGzpcZ2ZANgp2v4UmwfFVSHN2EW_LghGAFZ8">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-margin-mobile md:p-margin-desktop">
+<span class="font-label-mono-sm text-label-mono-sm bg-primary text-on-primary-fixed px-3 py-1 inline-block mb-2">PREMIUM STUDIO</span>
+<h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-pure-white tracking-tighter">STERN Barber Shop</h2>
+</div>
+</section>
+<div class="px-margin-mobile md:px-margin-desktop mt-base grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Details -->
+<div class="md:col-span-7 space-y-gutter">
+<!-- Status & ID Section -->
+<div class="bg-surface-container border border-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 bg-primary"></span>
+<span class="font-label-mono-sm text-label-mono-sm text-primary uppercase">Confirmed</span>
+</div>
+<p class="font-body-md text-on-surface-variant">Booking ID: <span class="font-label-mono-sm text-pure-white">#RG-99421-B</span></p>
+</div>
+<div class="flex items-center gap-4 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
+<div class="flex flex-col">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Date &amp; Time</span>
+<span class="font-body-lg text-pure-white">Oct 24, 2023 at 14:30</span>
+</div>
+</div>
+</div>
+<!-- Appointment Details Card -->
+<div class="bg-surface-container border border-white/10 overflow-hidden">
+<div class="p-6 border-b border-white/10">
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mb-4">Service Details</h3>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-headline-md text-headline-md text-pure-white mb-1">Classic Cut &amp; Steam</h4>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-sm">45m</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="text-sm">50 GEL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Staff Member -->
+<div class="p-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-variant border border-primary/30">
+<img alt="Julian Vance" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Close-up professional portrait of a male barber named Julian Vance. He has a clean-shaven, sharp look with focused eyes. The portrait is shot in a high-contrast black and white style with dramatic lighting that highlights the textures of the background and his features, fitting the premium Rigify aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf_c6hgfz8Gy1_XarPcL0pLT4WgwKRDCFTBMwV3lWLLFtapwvAJcqqeMTJwWS16G3M1haYf8ZYnuXnUeUE4sB4TqX-iRBRhkY69IZkOcc-YOfVltQsg_KnvhDHThK-ztbrSB6-PTH0nZAwqdGdAhFlRt-MNPe2oO6VFGKZ60OFOwueNcwGQH97jGYfF0HTzq76RUsettaOxlINq7tPvIYEhudPKG20FBY6HF2RsYjnhvNLFi12aF_F7jccTDmBmR2E4XWdmuHS7zI">
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Staff Member</p>
+<p class="font-body-lg text-pure-white">Julian Vance</p>
+</div>
+</div>
+<button class="text-primary hover:bg-primary/10 p-2 transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+</div>
+</div>
+<!-- Location & Info -->
+<div class="bg-surface-container border border-white/10 p-6">
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mb-4">Location</h3>
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex-1">
+<p class="font-body-lg text-pure-white mb-2">12 Rustaveli Avenue</p>
+<p class="text-on-surface-variant mb-6">Tbilisi, Georgia. Building B, 2nd Floor.</p>
+<button class="flex items-center gap-2 text-primary font-label-mono-sm text-label-mono-sm uppercase border border-primary px-4 py-2 hover:bg-primary hover:text-on-primary transition-all duration-300">
+<span class="material-symbols-outlined text-sm">directions</span>
+                                Get Directions
+                            </button>
+</div>
+<div class="w-full md:w-48 h-32 bg-surface-variant border border-white/5 relative overflow-hidden group">
+<img alt="Map location" class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-110 group-hover:scale-100" data-location="Tbilisi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUYtMgn8m9sbvDNzpvhvD8WlPplOccgW2c2sy4jcF_-_dSE_L5H62mWCW6JsPe1U-INIW_Z9W0abIFQ_WeuOScs_z11Ga0gRSy9DTVcQ6GbJYlfEQKafo7zf1mq3TQgDPqeMJ2bNMdUNNkOJJfVRkYxaRWXZMppGvorU-vohLv7Dlhshr-boASGuhk-YzExc3kfMpH_S8UhfKzCUvhV-QRHq2wUTUpbg5zqD26_chLhniZaPm99kjBhnZ_a_C7I9GSdB8P0js8DEI">
+<div class="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/40 transition-all"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sticky Actions -->
+<div class="md:col-span-5">
+<div class="sticky top-24 space-y-gutter">
+<div class="bg-surface-elevated border border-primary/20 p-8">
+<h3 class="font-headline-md text-headline-md text-pure-white mb-8">Manage Appointment</h3>
+<div class="space-y-4">
+<button class="w-full bg-primary text-on-primary-fixed py-4 px-6 font-bold font-display-lg-mobile text-body-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">event_repeat</span>
+                                Reschedule
+                            </button>
+<button class="w-full border border-white/20 text-pure-white py-4 px-6 font-medium hover:bg-white/5 hover:border-white/40 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">cancel</span>
+                                Cancel Appointment
+                            </button>
+</div>
+<div class="mt-8 pt-8 border-t border-white/10">
+<p class="text-label-mono-xs text-on-surface-variant uppercase text-center mb-4">Need Help?</p>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex flex-col items-center gap-2 p-4 bg-surface hover:bg-white/5 transition-colors border border-white/5">
+<span class="material-symbols-outlined text-primary">call</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase">Call Studio</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 bg-surface hover:bg-white/5 transition-colors border border-white/5">
+<span class="material-symbols-outlined text-primary">mail</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase">Email</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Cancellation Policy -->
+<div class="p-6 bg-surface-container border-l-2 border-primary/30">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-2">Cancellation Policy</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                            Cancellations made less than <span class="text-pure-white font-medium">24 hours</span> before the appointment will be charged a 50% service fee. Rescheduling is free of charge up to 12 hours prior.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Supressed for focused task, but kept as a subtle placeholder or hidden) -->
+<!-- As per the rules: suppress the navigation shell if the page intent is focused. -->
+<script>
+        // Micro-interaction for feedback
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.add('opacity-50');
+                setTimeout(() => this.classList.remove('opacity-50'), 150);
+            });
+        });
+
+        // Sticky header transparency on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-surface/90', 'backdrop-blur-md');
+            } else {
+                header.classList.remove('bg-surface/90', 'backdrop-blur-md');
+            }
+        });
+    </script>
+</body></html>

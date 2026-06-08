@@ -1,0 +1,239 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Salome AI - Voice Interaction</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343b",
+                        "on-tertiary-fixed-variant": "#004883",
+                        "on-surface-variant": "#d0c5b2",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1b1b22",
+                        "on-primary": "#3d2e00",
+                        "surface-tint": "#e6c364",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#e4e1e8",
+                        "background": "#131319",
+                        "primary": "#ffe090",
+                        "on-secondary-fixed": "#1b1b20",
+                        "on-surface": "#e4e1eb",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#393840",
+                        "surface": "#131319",
+                        "surface-container": "#1f1f26",
+                        "secondary-container": "#47464c",
+                        "surface-container-high": "#292930",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-tertiary-container": "#005497",
+                        "on-tertiary": "#00315d",
+                        "tertiary": "#d4e4ff",
+                        "on-primary-fixed": "#241a00",
+                        "on-background": "#e4e1eb",
+                        "on-secondary-container": "#b6b4bb",
+                        "secondary": "#c8c5cc",
+                        "on-primary-container": "#665000",
+                        "primary-fixed-dim": "#e6c364",
+                        "tertiary-container": "#a4c9ff",
+                        "primary-fixed": "#ffe08f",
+                        "primary-container": "#e6c364",
+                        "on-secondary-fixed-variant": "#47464c",
+                        "inverse-surface": "#e4e1eb",
+                        "tertiary-fixed": "#d4e3ff",
+                        "on-secondary": "#303035",
+                        "outline": "#99907e",
+                        "inverse-primary": "#755b00",
+                        "on-tertiary-fixed": "#001c39",
+                        "surface-variant": "#34343b",
+                        "tertiary-fixed-dim": "#a4c9ff",
+                        "surface-dim": "#131319",
+                        "inverse-on-surface": "#303037",
+                        "surface-container-lowest": "#0d0e14",
+                        "outline-variant": "#4d4637",
+                        "secondary-fixed-dim": "#c8c5cc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "container-max": "1200px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #131319;
+            color: #e4e1eb;
+            overflow: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .orb-glow {
+            filter: drop-shadow(0 0 30px rgba(230, 195, 100, 0.3)) drop-shadow(0 0 60px rgba(164, 201, 255, 0.2));
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        .activity-light {
+            background: radial-gradient(circle, rgba(164, 201, 255, 0.15) 0%, transparent 70%);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(230, 195, 100, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer-anim 2s infinite;
+        }
+        @keyframes shimmer-anim {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md h-screen flex flex-col items-center justify-between">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-gradient-to-b from-background/80 to-transparent backdrop-blur-md">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors Active: scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="text-headline-md font-headline-md font-bold text-primary">Salome AI</div>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors Active: scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">minimize</span>
+</button>
+</header>
+<!-- Main Atmospheric Content -->
+<main class="flex-1 w-full flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Background Ambient Glows -->
+<div class="activity-light -top-1/4 -left-1/4"></div>
+<div class="activity-light -bottom-1/4 -right-1/4" style="background: radial-gradient(circle, rgba(166, 123, 255, 0.1) 0%, transparent 70%);"></div>
+<!-- The Immersive Orb -->
+<div class="relative z-10 flex flex-col items-center gap-12 max-w-lg px-margin-mobile text-center">
+<div class="relative w-64 h-64 md:w-80 md:h-80 orb-glow">
+<img alt="The central Salome AI visualizer" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuuFyJBgRDEYUi_nmG4NAO5_jvbPBLVRtpnapqvV735fQQ2iykEiZZAskIF1ZoKr3xFCNXAG25wDwbq7Gf8fUH6LZ5M6Ga7QT18tgoxiDG9qsgNb_t8PXq0wqBs3luJzH5Yt-u6NZSjBKUun6WWyd5nOCzQTNG-FqWcmFnaMYqPb0aGWO52j_o9bk8s218RGmvIeAWR31FGLh_yFbU9XFV3KHGP7vXAsCl0oUwmJ3K8CvjiKqx4rQX5NWNEY7YU7tee0zjdKDUWz4">
+<!-- Visual Waveform Micro-Interaction -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-full h-24 flex items-center justify-around px-8 opacity-40">
+<div class="h-12 w-1 bg-primary rounded-full animate-[bounce_1.2s_infinite]"></div>
+<div class="h-16 w-1 bg-tertiary-container rounded-full animate-[bounce_1s_infinite]"></div>
+<div class="h-8 w-1 bg-primary-container rounded-full animate-[bounce_1.5s_infinite]"></div>
+<div class="h-20 w-1 bg-secondary rounded-full animate-[bounce_0.8s_infinite]"></div>
+<div class="h-14 w-1 bg-primary rounded-full animate-[bounce_1.1s_infinite]"></div>
+</div>
+</div>
+</div>
+<!-- Real-time Transcription -->
+<div class="space-y-4 px-4">
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface leading-tight">
+                    “I need to book a haircut with Julian this Saturday morning.”
+                </h1>
+<div class="flex items-center justify-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[18px]">mic_none</span>
+<span class="font-label-caps text-label-caps tracking-widest">LISTENING</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Panel (Glassmorphism) -->
+<section class="w-full glass-panel pt-8 pb-12 px-margin-mobile md:px-margin-desktop rounded-t-[32px] z-20">
+<div class="max-w-container-max mx-auto space-y-6">
+<!-- AI Status -->
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_rgba(230,195,100,0.8)]"></div>
+<p class="font-label-caps text-label-caps text-on-surface-variant opacity-80 uppercase tracking-widest">AI is thinking...</p>
+</div>
+<!-- Bento-style Suggestion Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Primary Action -->
+<button class="flex items-center justify-between bg-primary-container text-on-primary rounded-2xl p-6 transition-all hover:brightness-110 active:scale-95 shadow-[0_0_20px_rgba(230,195,100,0.15)] group">
+<div class="text-left">
+<span class="font-label-caps text-label-caps opacity-70 block mb-1">RECOMMENDED</span>
+<span class="font-headline-md text-headline-md block">Select 10:30 AM</span>
+</div>
+<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<!-- Secondary Actions -->
+<div class="grid grid-cols-1 gap-4">
+<button class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 transition-all hover:bg-white/10 active:scale-[0.98]">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">event_available</span>
+</div>
+<span class="font-body-lg text-body-lg">Check Sarah's availability</span>
+</button>
+<button class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 transition-all hover:bg-white/10 active:scale-[0.98]">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">history</span>
+</div>
+<span class="font-body-lg text-body-lg">Repeat my last booking</span>
+</button>
+</div>
+</div>
+<!-- Footer Small Controls -->
+<div class="flex justify-center pt-4">
+<div class="h-1.5 w-16 bg-on-surface-variant/20 rounded-full"></div>
+</div>
+</div>
+</section>
+<!-- Bottom Navigation (Hidden on this transactional screen as per Suppression Rules, but structure kept for future context) -->
+<nav class="hidden">
+<!-- BottomNavBar Logic: Suppressed because the page is task-focused with a clear 'Close' action -->
+</nav>
+<script>
+        // Subtle micro-interaction for the orb to follow mouse slightly
+        document.addEventListener('mousemove', (e) => {
+            const orb = document.querySelector('.orb-glow');
+            if (!orb) return;
+            
+            const x = (e.clientX / window.innerWidth - 0.5) * 15;
+            const y = (e.clientY / window.innerHeight - 0.5) * 15;
+            
+            orb.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        // Simulating the "Thinking" state transition
+        setTimeout(() => {
+            const statusText = document.querySelector('.font-label-caps.text-on-surface-variant');
+            if(statusText) statusText.innerText = "Processing your request...";
+        }, 2500);
+    </script>
+</body></html>

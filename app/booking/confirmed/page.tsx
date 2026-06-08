@@ -25,8 +25,12 @@ export default function BookingConfirmedPage() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    }
+    loadUser();
   }, []);
 
   return (
@@ -34,8 +38,8 @@ export default function BookingConfirmedPage() {
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary">language</span>
-          <Link href="/">
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary">language</span>
+          <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
               RIGIFY
             </span>
@@ -43,14 +47,8 @@ export default function BookingConfirmedPage() {
         </div>
         <div className="flex items-center">
           {user && (
-            <div className="w-8 h-8 bg-surface-container-highest border border-white/10 flex items-center justify-center overflow-hidden">
-              <Image
-                src={user.user_metadata?.avatar_url || "/default-avatar.png"}
-                alt="User Profile"
-                width={32}
-                height={32}
-                className="w-full h-full object-cover"
-              />
+            <div data-testid="user-avatar" className="w-8 h-8 bg-surface-container-highest border border-white/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[16px]">person</span>
             </div>
           )}
         </div>
@@ -77,7 +75,7 @@ export default function BookingConfirmedPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
           {/* Summary Card */}
-          <section className="md:col-span-7 bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-8 flex flex-col gap-8">
+          <section data-testid="booking-summary" className="md:col-span-7 bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-8 flex flex-col gap-8">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
               <div className="flex-1">
                 <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-2">
@@ -182,7 +180,7 @@ export default function BookingConfirmedPage() {
                 Calendar Integration
               </h3>
               <div className="flex flex-col gap-3">
-                <button className="w-full py-4 border border-white/10 flex items-center justify-center gap-3 hover:bg-white/5 transition-all active:scale-95 group">
+                <button data-testid="add-to-google-calendar-btn" className="w-full py-4 border border-white/10 flex items-center justify-center gap-3 hover:bg-white/5 transition-all active:scale-95 group">
                   <span className="material-symbols-outlined text-primary">
                     calendar_add_on
                   </span>
@@ -190,7 +188,7 @@ export default function BookingConfirmedPage() {
                     Add to Google Calendar
                   </span>
                 </button>
-                <button className="w-full py-4 border border-white/10 flex items-center justify-center gap-3 hover:bg-white/5 transition-all active:scale-95 group">
+                <button data-testid="add-to-apple-calendar-btn" className="w-full py-4 border border-white/10 flex items-center justify-center gap-3 hover:bg-white/5 transition-all active:scale-95 group">
                   <span className="material-symbols-outlined text-primary">event</span>
                   <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-text-primary group-hover:text-primary transition-colors">
                     Add to Apple Calendar
@@ -202,12 +200,12 @@ export default function BookingConfirmedPage() {
             {/* Actions */}
             <div className="flex flex-col gap-4">
               <Link href="/customer/dashboard">
-                <button className="w-full h-16 bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors active:scale-95">
+                <button data-testid="view-my-bookings-btn" className="w-full h-16 bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors active:scale-95">
                   View My Bookings
                 </button>
               </Link>
               <Link href="/">
-                <button className="w-full h-16 border border-primary text-primary font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase hover:bg-primary/5 transition-colors active:scale-95">
+                <button data-testid="back-to-home-btn" className="w-full h-16 border border-primary text-primary font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase hover:bg-primary/5 transition-colors active:scale-95">
                   Back to Home
                 </button>
               </Link>
@@ -218,19 +216,20 @@ export default function BookingConfirmedPage() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Home
           </span>
         </Link>
-        <Link href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
           </span>
         </Link>
         <Link
+          data-testid="mobile-nav-my-bookings"
           href="/customer/dashboard"
           className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1"
         >
@@ -239,7 +238,7 @@ export default function BookingConfirmedPage() {
             My Bookings
           </span>
         </Link>
-        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             For Business

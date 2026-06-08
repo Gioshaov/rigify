@@ -18,11 +18,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .maybeSingle();
 
   return (
-    <div className="flex min-h-screen bg-background text-on-surface">
+    <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
       <Sidebar businessName={business?.name} city={business?.city} />
       <div className="flex-1 min-w-0">
         <DashboardHeader userEmail={user.email ?? ''} />
-        <main className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
+        <main className="px-8 py-12">{children}</main>
       </div>
     </div>
   );

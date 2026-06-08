@@ -69,8 +69,12 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    }
+    loadUser();
   }, []);
 
   // In production, fetch business by slug from database
@@ -82,10 +86,10 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary cursor-pointer">
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">
             language
           </span>
-          <Link href="/">
+          <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
               RIGIFY
             </span>
@@ -93,18 +97,21 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
         </div>
         <nav className="hidden md:flex items-center gap-8">
           <Link
+            data-testid="nav-home"
             href="/"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary hover:text-primary transition-colors duration-200"
           >
             Home
           </Link>
           <Link
+            data-testid="nav-browse"
             href="/businesses"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
             Browse
           </Link>
           <Link
+            data-testid="nav-my-bookings"
             href="/customer/dashboard"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
@@ -113,17 +120,12 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
         </nav>
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="w-10 h-10 bg-surface-variant flex items-center justify-center border border-white/10 overflow-hidden">
-              <Image
-                src={user.user_metadata?.avatar_url || "/default-avatar.png"}
-                alt="User"
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
+            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
             </div>
           ) : (
             <Link
+              data-testid="sign-in-btn"
               href="/login"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
             >
@@ -173,7 +175,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
             </div>
             <div className="hidden md:block">
               <Link href={`/businesses/${mockBusiness.slug}/book`}>
-                <button className="bg-primary text-on-primary px-10 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:brightness-110 active:scale-95 transition-all">
+                <button data-testid="book-appointment-btn-desktop" className="bg-primary text-on-primary px-10 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:brightness-110 active:scale-95 transition-all">
                   Book Appointment
                 </button>
               </Link>
@@ -215,6 +217,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
                 {mockBusiness.services.map((service) => (
                   <div
                     key={service.id}
+                    data-testid={`service-card-${service.id}`}
                     className="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
                   >
                     <div>
@@ -274,7 +277,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
               </div>
               <div className="space-y-6">
                 {mockBusiness.staff.map((member) => (
-                  <div key={member.id} className="flex items-center gap-4 group cursor-pointer">
+                  <div key={member.id} data-testid={`staff-card-${member.id}`} className="flex items-center gap-4 group cursor-pointer">
                     <div className="w-16 h-16 border border-white/10 grayscale group-hover:grayscale-0 transition-all overflow-hidden">
                       <Image
                         src={member.image}
@@ -347,7 +350,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
       {/* Mobile CTA (Sticky) */}
       <div className="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
         <Link href={`/businesses/${mockBusiness.slug}/book`}>
-          <button className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold active:scale-95 transition-all">
+          <button data-testid="book-appointment-btn-mobile" className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold active:scale-95 transition-all">
             Book Appointment
           </button>
         </Link>
@@ -355,25 +358,25 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
 
       {/* Mobile Bottom Navigation */}
       <footer className="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
-        <Link href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Home
           </span>
         </Link>
-        <Link href="/businesses" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
           </span>
         </Link>
-        <Link href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Bookings
           </span>
         </Link>
-        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Business

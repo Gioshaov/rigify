@@ -1,279 +1,456 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useState, FormEvent } from 'react'
-import { LanguageToggle } from '@/components/ui/LanguageToggle'
-import { useTranslations } from '@/lib/hooks/useTranslations'
+import Link from "next/link";
+import { useState, useEffect, FormEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForBusinessesPage() {
-  const { tr, lang } = useTranslations()
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    business_name: '',
-    phone: '',
-    city: '',
-    message: '',
-  })
-  const [loading, setLoading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [error, setError] = useState('')
+    name: "",
+    business_name: "",
+    phone: "",
+    city: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    }
+    loadUser();
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (!res.ok) {
-        const data = await res.json()
-        setError(data.error || 'Failed to submit request')
-        setLoading(false)
-        return
+        const data = await res.json();
+        setError(data.error || "Failed to submit request");
+        setLoading(false);
+        return;
       }
 
-      setShowSuccess(true)
-      setFormData({ name: '', business_name: '', phone: '', city: '', message: '' })
+      setShowSuccess(true);
+      setFormData({ name: "", business_name: "", phone: "", city: "", message: "" });
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function scrollToContact() {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
-    <main className="min-h-screen bg-background text-on-surface">
-      {/* Header */}
-      <header className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop h-16 flex items-center justify-between">
-          <Link href="/" className="font-mono text-data-label uppercase tracking-[0.2em] text-primary">
-            RIGIFY
+    <div className="min-h-screen bg-background font-hanken text-on-surface antialiased">
+      {/* Top Navigation */}
+      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+        <div className="flex items-center gap-4">
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
+          <Link data-testid="logo-link" href="/">
+            <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
+              RIGIFY
+            </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-stack-lg">
-            <Link href="/" className="label-mono hover:text-primary">{tr.common.home[lang]}</Link>
-            <Link href="/login" className="btn-secondary !py-2">{tr.common.signIn[lang]}</Link>
-            <LanguageToggle />
+        </div>
+        <div className="hidden md:flex items-center gap-8">
+          <nav className="flex gap-6">
+            <Link
+              data-testid="nav-home"
+              href="/"
+              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
+            >
+              Home
+            </Link>
+            <Link
+              data-testid="nav-browse"
+              href="/businesses"
+              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
+            >
+              Browse
+            </Link>
+            <Link
+              data-testid="nav-for-business"
+              href="/for-businesses"
+              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase"
+            >
+              For Business
+            </Link>
           </nav>
+        </div>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
+            </div>
+          ) : (
+            <Link
+              data-testid="sign-in-btn"
+              href="/login"
+              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-md">{tr.forBusinesses.hero.subtitle[lang]}</p>
-          <h1 className="text-display-lg-mobile md:text-display-lg max-w-3xl">
-            {tr.forBusinesses.hero.title[lang]}
-          </h1>
-          <p className="mt-stack-lg text-body-md text-on-surface-variant max-w-2xl">
-            {tr.forBusinesses.hero.description[lang]}
-          </p>
-          <div className="mt-stack-lg">
-            <button onClick={scrollToContact} className="btn-primary">
-              {tr.forBusinesses.hero.requestAccess[lang]}
+      <main>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden border-b border-white/10 bg-surface">
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(230, 195, 100, 0.1) 35px, rgba(230, 195, 100, 0.1) 70px)`
+            }}></div>
+          </div>
+          <div className="relative max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-24 md:py-32">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6">
+              For Businesses
+            </span>
+            <h1 className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold md:text-[72px] text-primary uppercase max-w-4xl mb-8">
+              Grow Your Salon with Rigify
+            </h1>
+            <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary max-w-2xl mb-12">
+              Online booking, AI voice receptionist, and Instagram chatbots — all in one platform. Built for beauty and wellness businesses in Georgia.
+            </p>
+            <button
+              data-testid="get-started-btn"
+              onClick={scrollToContact}
+              className="bg-primary text-background px-12 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 flex items-center gap-3 group"
+            >
+              Get Started
+              <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Problem Section */}
-      <section className="border-b border-outline-variant bg-surface">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-lg">{tr.forBusinesses.problem.title[lang]}</p>
-          <div className="grid md:grid-cols-3 gap-stack-lg">
-            <div className="bg-background border border-outline-variant rounded-lg p-gutter">
-              <div className="text-3xl mb-stack-md">📞</div>
-              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.missedCalls[lang]}</h3>
-              <p className="text-body-sm text-on-surface-variant">
-                {tr.forBusinesses.problem.missedCallsDesc[lang]}
-              </p>
-            </div>
-            <div className="bg-background border border-outline-variant rounded-lg p-gutter">
-              <div className="text-3xl mb-stack-md">📔</div>
-              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.notebook[lang]}</h3>
-              <p className="text-body-sm text-on-surface-variant">
-                {tr.forBusinesses.problem.notebookDesc[lang]}
-              </p>
-            </div>
-            <div className="bg-background border border-outline-variant rounded-lg p-gutter">
-              <div className="text-3xl mb-stack-md">🔍</div>
-              <h3 className="text-title-md mb-stack-sm">{tr.forBusinesses.problem.noPresence[lang]}</h3>
-              <p className="text-body-sm text-on-surface-variant">
-                {tr.forBusinesses.problem.noPresenceDesc[lang]}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What You Get Section */}
-      <section className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <p className="label-mono text-primary mb-stack-lg">{tr.forBusinesses.whatYouGet.title[lang]}</p>
-          <div className="grid md:grid-cols-2 gap-stack-xl">
-            <div>
-              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.bookingPage[lang]}</h3>
-              <p className="text-body-md text-on-surface-variant">
-                {tr.forBusinesses.whatYouGet.bookingPageDesc[lang]}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.aiReceptionist[lang]}</h3>
-              <p className="text-body-md text-on-surface-variant">
-                {tr.forBusinesses.whatYouGet.aiReceptionistDesc[lang]}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.dashboard[lang]}</h3>
-              <p className="text-body-md text-on-surface-variant">
-                {tr.forBusinesses.whatYouGet.dashboardDesc[lang]}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-headline-sm mb-stack-sm">{tr.forBusinesses.whatYouGet.instagramLink[lang]}</h3>
-              <p className="text-body-md text-on-surface-variant">
-                {tr.forBusinesses.whatYouGet.instagramLinkDesc[lang]}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Salome Spotlight Section */}
-      <section className="border-b border-outline-variant bg-surface">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <div className="max-w-2xl mx-auto text-center">
-            <p className="label-mono text-primary mb-stack-md">{tr.forBusinesses.salome.title[lang]}</p>
-            <h2 className="text-headline-lg mb-stack-lg">{tr.forBusinesses.salome.subtitle[lang]}</h2>
-            <div className="bg-background border border-outline-variant rounded-xl p-gutter mb-stack-lg">
-              <div className="text-6xl mb-stack-md">🎙️</div>
-              <p className="text-body-lg text-on-surface-variant">
-                {tr.forBusinesses.salome.description[lang]}
-              </p>
-            </div>
-            <p className="text-body-sm text-on-surface-variant">
-              {tr.forBusinesses.salome.noTraining[lang]}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form Section */}
-      <section id="contact" className="border-b border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-section-gap">
-          <div className="max-w-xl mx-auto">
-            <p className="label-mono text-primary mb-stack-md text-center">{tr.forBusinesses.contact.title[lang]}</p>
-            <h2 className="text-headline-lg mb-stack-sm text-center">{tr.forBusinesses.contact.subtitle[lang]}</h2>
-            <p className="text-body-md text-on-surface-variant mb-stack-lg text-center">
-              {tr.forBusinesses.contact.description[lang]}
-            </p>
-
-            {showSuccess ? (
-              <div className="bg-primary/10 border border-primary rounded-xl p-gutter text-center">
-                <div className="text-4xl mb-stack-sm">✓</div>
-                <h3 className="text-title-lg mb-stack-sm">{tr.forBusinesses.contact.thankYou[lang]}</h3>
-                <p className="text-body-md text-on-surface-variant">
-                  {tr.forBusinesses.contact.willContact[lang]}
+        {/* Problem Section */}
+        <section className="border-b border-white/10 bg-background">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-12">
+              The Problem
+            </span>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div data-testid="problem-card-missed-calls" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-primary text-[32px]">phone_missed</span>
+                </div>
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                  Missed Calls = Lost Revenue
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Your phone rings while you're with a client. You miss the call, they book somewhere else.
                 </p>
-                <button
-                  onClick={() => setShowSuccess(false)}
-                  className="mt-stack-md text-primary hover:underline text-sm"
-                >
-                  {tr.forBusinesses.contact.sendAnother[lang]}
-                </button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-stack-md">
-                <div>
-                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.fullName[lang]}</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  />
+              <div data-testid="problem-card-notebook" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-primary text-[32px]">book</span>
                 </div>
-
-                <div>
-                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.businessName[lang]}</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.business_name}
-                    onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  />
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                  Paper Notebooks & Chaos
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Managing appointments in a notebook is messy, error-prone, and unprofessional.
+                </p>
+              </div>
+              <div data-testid="problem-card-no-presence" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-primary text-[32px]">search_off</span>
                 </div>
-
-                <div>
-                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.phoneNumber[lang]}</label>
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    placeholder="+995 555 123 456"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.city[lang]}</label>
-                  <select
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  >
-                    <option value="">{tr.forBusinesses.contact.selectCity[lang]}</option>
-                    <option value="tbilisi">{tr.forBusinesses.contact.tbilisi[lang]}</option>
-                    <option value="batumi">{tr.forBusinesses.contact.batumi[lang]}</option>
-                    <option value="kutaisi">{tr.forBusinesses.contact.kutaisi[lang]}</option>
-                    <option value="other">{tr.forBusinesses.contact.other[lang]}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-label-md mb-2">{tr.forBusinesses.contact.message[lang]}</label>
-                  <textarea
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    rows={4}
-                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  />
-                </div>
-
-                {error && (
-                  <p className="text-sm text-red-500">{error}</p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full btn-primary disabled:opacity-50"
-                >
-                  {loading ? tr.forBusinesses.contact.sendingMessage[lang] : tr.forBusinesses.contact.sendRequest[lang]}
-                </button>
-              </form>
-            )}
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                  No Online Presence
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Customers can't find you online. They book with competitors who have modern booking systems.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer className="border-t border-outline-variant">
-        <div className="mx-auto max-w-container px-margin-mobile md:px-margin-desktop py-stack-xl">
-          <p className="label-mono text-on-surface-variant text-center">© RIGIFY · Tbilisi</p>
-        </div>
-      </footer>
-    </main>
-  )
+        {/* What You Get Section */}
+        <section className="border-b border-white/10 bg-surface">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-12">
+              What You Get
+            </span>
+            <div className="grid md:grid-cols-2 gap-12">
+              <div data-testid="feature-booking-page" className="border-l-2 border-primary pl-8">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                  Your Own Booking Page
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Beautiful, mobile-friendly page where customers book 24/7. Share it on Instagram, Facebook, or Google.
+                </p>
+              </div>
+              <div data-testid="feature-ai-receptionist" className="border-l-2 border-primary pl-8">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                  Salome — AI Voice Receptionist
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Answers calls in Georgian, Russian, or English. Books appointments while you focus on clients.
+                </p>
+              </div>
+              <div data-testid="feature-dashboard" className="border-l-2 border-primary pl-8">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                  Dashboard & Calendar
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  See all bookings, manage staff schedules, and track revenue from one clean dashboard.
+                </p>
+              </div>
+              <div data-testid="feature-instagram-link" className="border-l-2 border-primary pl-8">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                  Instagram & Facebook Chatbots
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+                  Customers book directly through DMs. No back-and-forth messaging, just instant bookings.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Salome Spotlight */}
+        <section className="border-b border-white/10 bg-background">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+            <div className="max-w-3xl mx-auto text-center">
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6">
+                Meet Salome
+              </span>
+              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] text-primary mb-8">
+                Your AI Receptionist That Never Sleeps
+              </h2>
+              <div className="bg-surface-container border border-white/5 p-12 mb-8">
+                <div className="w-24 h-24 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8">
+                  <span className="material-symbols-outlined text-primary text-[48px]">mic</span>
+                </div>
+                <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary">
+                  Salome speaks Georgian, Russian, and English fluently. She checks availability in real-time, books appointments, and sends confirmations — all through a phone call.
+                </p>
+              </div>
+              <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-outline uppercase">
+                No training required • Works 24/7 • Sounds human
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Form */}
+        <section id="contact" className="border-b border-white/10 bg-surface">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+            <div className="max-w-xl mx-auto">
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6 text-center">
+                Get Early Access
+              </span>
+              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-4 text-center">
+                Join the Waitlist
+              </h2>
+              <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-12 text-center">
+                We're launching in Tbilisi first. Leave your details and we'll contact you within 48 hours.
+              </p>
+
+              {showSuccess ? (
+                <div data-testid="success-message" className="bg-primary/10 border border-primary p-12 text-center">
+                  <div className="w-20 h-20 bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-6">
+                    <span
+                      className="material-symbols-outlined text-primary text-[40px]"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      check_circle
+                    </span>
+                  </div>
+                  <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                    Request Received!
+                  </h3>
+                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-8">
+                    We'll review your request and contact you within 48 hours.
+                  </p>
+                  <button
+                    data-testid="send-another-btn"
+                    onClick={() => setShowSuccess(false)}
+                    className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase"
+                  >
+                    Send Another Request
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      data-testid="contact-name-input"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      placeholder="Your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Business Name
+                    </label>
+                    <input
+                      data-testid="contact-business-input"
+                      type="text"
+                      required
+                      value={formData.business_name}
+                      onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      placeholder="Salon/Studio name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      data-testid="contact-phone-input"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      placeholder="+995 555 123 456"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      City
+                    </label>
+                    <select
+                      data-testid="contact-city-select"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface outline-none appearance-none cursor-pointer"
+                    >
+                      <option value="">Select City</option>
+                      <option value="tbilisi">Tbilisi</option>
+                      <option value="batumi">Batumi</option>
+                      <option value="kutaisi">Kutaisi</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Message (Optional)
+                    </label>
+                    <textarea
+                      data-testid="contact-message-textarea"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      rows={4}
+                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all resize-none"
+                      placeholder="Tell us about your business..."
+                    />
+                  </div>
+
+                  {error && (
+                    <p className="text-sm text-red-500 font-hanken">{error}</p>
+                  )}
+
+                  <button
+                    data-testid="contact-submit-btn"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-primary text-background py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {loading ? "Sending..." : "Send Request"}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-surface py-12">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-8 border-b border-white/10">
+              <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
+                RIGIFY
+              </span>
+              <div className="flex gap-6">
+                <Link data-testid="footer-home" href="/" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
+                  Home
+                </Link>
+                <Link data-testid="footer-browse" href="/businesses" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
+                  Browse
+                </Link>
+                <Link data-testid="footer-for-business" href="/for-businesses" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
+                  For Business
+                </Link>
+              </div>
+            </div>
+            <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase">
+                © 2024 RIGIFY Digital
+              </p>
+              <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase flex items-center gap-2">
+                <span className="material-symbols-outlined text-[14px]">lock</span>
+                Encrypted Access
+              </p>
+            </div>
+          </div>
+        </footer>
+      </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+          <span className="material-symbols-outlined">home</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Home
+          </span>
+        </Link>
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+          <span className="material-symbols-outlined">search</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            Browse
+          </span>
+        </Link>
+        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+          <span className="material-symbols-outlined">event_available</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            My Bookings
+          </span>
+        </Link>
+        <Link
+          data-testid="mobile-nav-business"
+          href="/for-businesses"
+          className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1"
+        >
+          <span className="material-symbols-outlined">business_center</span>
+          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+            For Business
+          </span>
+        </Link>
+      </nav>
+    </div>
+  );
 }

@@ -1,0 +1,343 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>STERN Barber Shop | RIGIFY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #131318;
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .gold-glow:active {
+            box-shadow: 0 0 15px rgba(230, 195, 100, 0.3);
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #131318; }
+        ::-webkit-scrollbar-thumb { background: #35343a; }
+        ::-webkit-scrollbar-thumb:hover { background: #e6c364; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#3b5183",
+                      "primary-fixed-dim": "#e6c364",
+                      "surface": "#131318",
+                      "on-tertiary": "#162f5e",
+                      "error": "#ffb4ab",
+                      "pure-white": "#ffffff",
+                      "surface-bright": "#39383e",
+                      "secondary-fixed-dim": "#c7c5d3",
+                      "surface-container-low": "#1b1b20",
+                      "surface-dim": "#131318",
+                      "outline": "#99907e",
+                      "on-background": "#e4e1e9",
+                      "primary-fixed": "#ffe08f",
+                      "secondary-container": "#494853",
+                      "surface-container-lowest": "#0e0e13",
+                      "on-primary-container": "#665000",
+                      "on-secondary-fixed": "#1b1b25",
+                      "on-error": "#690005",
+                      "on-secondary-container": "#b9b7c4",
+                      "inverse-primary": "#755b00",
+                      "on-primary": "#3d2e00",
+                      "on-surface-variant": "#d0c5b2",
+                      "surface-elevated": "#22222e",
+                      "surface-container-high": "#2a292f",
+                      "on-surface": "#e4e1e9",
+                      "surface-variant": "#35343a",
+                      "inverse-on-surface": "#303036",
+                      "inverse-surface": "#e4e1e9",
+                      "outline-variant": "#4d4637",
+                      "on-tertiary-fixed-variant": "#2f4576",
+                      "secondary": "#c7c5d3",
+                      "primary-container": "#e6c364",
+                      "on-secondary-fixed-variant": "#464651",
+                      "muted-gold": "#9d8653",
+                      "text-secondary": "#a1a1aa",
+                      "surface-tint": "#e6c364",
+                      "tertiary-container": "#b0c6ff",
+                      "on-secondary": "#302f3a",
+                      "tertiary-fixed": "#d9e2ff",
+                      "surface-container-highest": "#35343a",
+                      "tertiary-fixed-dim": "#b0c6ff",
+                      "on-primary-fixed-variant": "#584400",
+                      "surface-container": "#1f1f25",
+                      "tertiary": "#d9e2ff",
+                      "on-primary-fixed": "#241a00",
+                      "text-primary": "#ffffff",
+                      "background": "#131318",
+                      "on-tertiary-fixed": "#001944",
+                      "on-error-container": "#ffdad6",
+                      "primary": "#ffe090",
+                      "secondary-fixed": "#e3e1ef",
+                      "error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "container-max": "1280px",
+                      "margin-desktop": "40px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "label-mono-sm": ["JetBrains Mono"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "label-mono-xs": ["JetBrains Mono"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "display-lg-mobile": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Anchor -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="language">language</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter uppercase font-extrabold">RIGIFY</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-primary hover:text-primary transition-colors duration-200" href="#">Home</a>
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface hover:text-primary transition-colors duration-200" href="#">Browse</a>
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface hover:text-primary transition-colors duration-200" href="#">My Bookings</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-variant flex items-center justify-center border border-white/10 overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="A close-up professional portrait of a stylish man with a well-groomed beard and sharp haircut. The image is captured in a high-contrast dark studio setting with dramatic side lighting that highlights his facial features and the texture of his skin. The overall aesthetic is moody, sophisticated, and premium, aligned with a high-end grooming marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ-BEY-sQ72ENg7sMknJgyNfdCTkZkAbsqNEu4l8CIK7creXyZK11mayprxGRR1HgcULHwwd9j-n6LPO4__n8fL5MX66yJwrfavM3iz06Y7gDKi2oO4ip5FOF3S2VT2y5y4PzeYtF5K5-UPD4yDotTi3e3YVVqScI4NrhJ6Ag1pvX1bEPjueMaQkSsBMu8VNtxHywytyifwjthkeC_y1Q59iCDx4ww8tRzPQRUcIyw5j-kLKFEBII6Deyb30R8vBXN8V6047E4qXg">
+</div>
+</div>
+</header>
+<main class="pb-24">
+<!-- Hero Section -->
+<section class="relative h-[353px] md:h-[530px] w-full overflow-hidden">
+<img class="w-full h-full object-cover grayscale brightness-50" data-alt="The interior of a high-end luxury barber shop with dark charcoal walls and golden ambient lighting. Handcrafted leather chairs sit in front of minimalist stations with large mirrors and sharp wooden accents. The atmosphere is quiet and exclusive, evoking a sense of heritage and precision craftsmanship. The color palette is strictly monochrome with rich gold highlights from architectural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqDk7O60t08GrQBaU-DBr5jKBWkbDdttw8BVwOfzOcBkrwYeFv1l-zXTlqFdc5unMiIsAaEpuGw1vWD5EB1voVRlk_AELu3tyZ_fejhnV71RwvCwQunwU-BZkFhNQlfPkg3rtGVh4S2Lv5ukdylY1PKYtIZM-UTKU_BdhNVPfPRyeAgnt19B9KRK-nrDbs0UWemjxyTzJb23qRZA150cjuI66y9rTsjjniQqGJOpgWB59iOLkxv7C4Hxl9emxkPmlXA6MzyMdlFYg">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-base md:pb-gutter flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex items-end gap-6">
+<div class="w-24 h-24 md:w-32 md:h-32 bg-surface-elevated border border-white/10 p-2 relative z-10 flex items-center justify-center">
+<span class="font-display-lg text-display-lg text-primary select-none">S</span>
+</div>
+<div class="mb-2">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm text-primary">5.0 RATING</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg uppercase tracking-tight text-white">STERN Barber Shop</h1>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mt-1">Tbilisi, Georgia — Premium Grooming Artistry</p>
+</div>
+</div>
+<div class="hidden md:block">
+<button class="bg-primary text-on-primary px-10 py-5 font-label-mono-sm text-label-mono-sm uppercase font-bold tracking-widest hover:brightness-110 active:scale-95 transition-all">
+                        Book Appointment
+                    </button>
+</div>
+</div>
+</section>
+<!-- Content Grid -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-12 grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Details -->
+<div class="md:col-span-8 space-y-16">
+<!-- About -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-1 h-6 bg-primary"></div>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">About the Studio</h2>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                        STERN is an architectural approach to masculine aesthetics. Located in the heart of the city, we combine traditional European barbering heritage with modern geometric precision. Our artisans specialize in custom-tailored silhouettes that respect individual facial structures and personal identity.
+                    </p>
+</section>
+<!-- Services Bento -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="w-1 h-6 bg-primary"></div>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Services</h2>
+</div>
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">CURATED SELECTION</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Service Item -->
+<div class="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+<div>
+<h3 class="font-headline-md text-headline-md text-white group-hover:text-primary transition-colors">Classic Cut</h3>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mt-1">45m — Precision Scissors &amp; Clipper Work</p>
+</div>
+<div class="text-right">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary">50 GEL</span>
+</div>
+</div>
+<!-- Service Item -->
+<div class="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+<div>
+<h3 class="font-headline-md text-headline-md text-white group-hover:text-primary transition-colors">The Royal Shave</h3>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mt-1">60m — Hot Towel, Straight Razor, Essential Oils</p>
+</div>
+<div class="text-right">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary">75 GEL</span>
+</div>
+</div>
+<!-- Service Item -->
+<div class="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+<div>
+<h3 class="font-headline-md text-headline-md text-white group-hover:text-primary transition-colors">Beard Sculpture</h3>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase mt-1">30m — Freehand Shaping &amp; Lineup</p>
+</div>
+<div class="text-right">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary">40 GEL</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery Grid -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-1 h-6 bg-primary"></div>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Portfolio</h2>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+<div class="aspect-square bg-surface-variant border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="A detailed macro shot of a straight razor being prepared for a shave. The metal blade gleams under a focused golden spotlight against a dark, textured background. The scene conveys a sense of sharp precision and classic barbering tradition within a luxurious, dark-mode environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe8tPXwjVw2hUhUX1kaNkDBHxW3alyaQCy8jzBixy21r1UzGcnCktVK8TEeh0jNCz5kWtokEd5TaaogWyC6jERU1TeUUZqNjV5FYNaTeEG9FOBie4TTZisKZDdcEtj1oiHeyzKGH-aA0Lq2BdFnEX4Mj2nfBUhyRndR5BCrvxXZluLtrbthtw470m6a1ZbPnt7UovuvWqoKraRlCZZCWQF3HokXv9PWTciicIWcky17L1NHdFGA1u4xMRYDwQZHagA4JiPJl53-NE">
+</div>
+<div class="aspect-square bg-surface-variant border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="A high-contrast side profile photo of a man receiving a haircut. The barber's hands are visible using professional shears, focusing on a sharp, clean fade. The background is blurred to emphasize the texture of the hair and the surgical precision of the cut. The lighting is warm and cinematic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAULfVru6toKZU7k3np0fyAg75oY0Ry0cgl1Sxmdq9vXxSJOc_B0WsfXxAxPZWloF39tCUEA55R-UPxa9-SXuo9CsGABagYu7sgelZC6WAUAJlJIz9FjyxVP9E2A_abatFiAPzv9Gs5zeo2uVt5h1lSecY_NprTX1S81lsxakhxhcQRtyGdf7PCY1nl-3Msc2ftE5rA4kBocA4kZQIAKIKK7xkddNjq5CsE82K1UDBoFXufEavjVbHoJ_QX9eemZvbft9hC_lyRR5k">
+</div>
+<div class="aspect-square bg-surface-variant border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="A dramatic black and white image of a vintage barber chair in a spotlight. The chair is made of dark leather and polished chrome, sitting centrally in a minimalist dark studio space. Soft golden reflections on the chrome parts provide a sense of premium luxury and historical heritage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSXl2X63ila4GRzgej9xkTO2ygZ3iWCHWZB400q6wk5J_tZThLTdYUm2icgZaEYM7ntqd6ZARoj-kO8n56IbaFNLyKhnU8IWVE1KTFIMeAl5ESxJ2SO6QazdRMfyiuazGoJo9od4dxCDQsOuFB4NtS_7qUDQ5VExKpi-I91isCUAtG2vdP3wmrgu7IuPrSOjqwiXeKWy9U5z6RfIQwj1DxY4OcinRp4nySplwf__DBUXGBQYCZ0Va-EMa4a-iU5ZwqTfQnOO-qPy8">
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<aside class="md:col-span-4 space-y-12">
+<!-- Staff Section -->
+<div class="p-8 bg-surface-container-high border border-white/10">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-1 h-6 bg-primary"></div>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Artisans</h2>
+</div>
+<div class="space-y-6">
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-16 h-16 border border-white/10 grayscale group-hover:grayscale-0 transition-all overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A headshot of a professional barber with tattoos and a focused expression. He is wearing a dark denim apron over a black shirt. The background is a blurred high-end salon interior with golden accent lighting. He embodies a modern, artisan aesthetic that is both rugged and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi9oK6N0-uxDxIv6tp1MArkr08TD6iGeVWTJrnuWPT8u0AMK3O8T-lyRQ6WA7BllH97bbVTsaSa8GP7nvYWCDBRWS9ntPfuPgHKhhlnPLhwV6koJbH5xOocsQ2OFzMcGr23JkV_rMeAwYbXn5EYjlITWVuGY5LcntP5Cpf3uXNlQ-IagV3rwBeTXLuQWdPkv9Fq4OAvVbtaGBnV_EBrdyNshfXmalVfyuTNHspw0PkDleuu82Zx5Awf53rnsoEZ3vXc4mH_MhdBfQ">
+</div>
+<div>
+<p class="font-headline-md text-[18px] text-white group-hover:text-primary transition-colors">David Stern</p>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Master Barber / Founder</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-16 h-16 border border-white/10 grayscale group-hover:grayscale-0 transition-all overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young, stylish male barber with a neat haircut and modern glasses. He is looking confidently at the camera. The image uses low-key lighting to create a sophisticated, high-end feel consistent with a premium grooming brand in a dark-mode UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkEitzX_rSnGyjUTu0x_6V4BTdnDYh2eQ_RyaIRT5RW7CNQegPMIS0-yvYf-c8hklXS34g1k9hnP5j1NHz61u_mmny1VYTca6BkW5m0u2f0IwPgFCO5x0q7Fko9oxLO5aVvo0y6VFUZm8Wjwpt1gygCeszdn2MzO6i_L_WbiJ8D1M-Su-qbG0d8gN71AdmTMR0VMtOcAVpmumpEi8I4pWukL5uzRUQml2ZTR3euJ67AyUT0V5JkXIC-SMPbiMYiKHlNTpHABW2COE">
+</div>
+<div>
+<p class="font-headline-md text-[18px] text-white group-hover:text-primary transition-colors">Levan G.</p>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase">Senior Stylist</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Location / Info -->
+<div class="p-8 bg-surface-container border border-white/5">
+<div class="space-y-6">
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-primary uppercase mb-2">Location</p>
+<p class="font-body-md text-body-md text-on-surface">12 Rustaveli Avenue, Center<br>Tbilisi, Georgia</p>
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-primary uppercase mb-2">Opening Hours</p>
+<div class="grid grid-cols-2 gap-y-1 font-label-mono-sm text-label-mono-sm uppercase text-on-surface-variant">
+<span>Mon - Fri</span> <span class="text-right">10:00 - 21:00</span>
+<span>Sat - Sun</span> <span class="text-right">11:00 - 19:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reviews Preview -->
+<div class="p-8 border-l border-primary/20 space-y-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="format_quote">format_quote</span>
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary uppercase">Client Voice</h3>
+</div>
+<p class="italic font-body-md text-on-surface-variant">"The level of attention to detail is unmatched in this city. It's not just a haircut, it's a structural transformation."</p>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-white/10"></div>
+<span class="font-label-mono-xs text-label-mono-xs uppercase">Alexander M.</span>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Mobile CTA (Sticky) -->
+<div class="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
+<button class="w-full bg-primary text-on-primary py-4 font-label-mono-sm text-label-mono-sm uppercase font-bold tracking-widest active:scale-95 transition-all">
+            Book Appointment
+        </button>
+</div>
+<!-- Bottom Navigation Shell -->
+<footer class="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Browse</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Bookings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Business</span>
+</div>
+</footer>
+<script>
+        // Micro-interactions for service selection
+        document.querySelectorAll('.group.cursor-pointer').forEach(item => {
+            item.addEventListener('click', () => {
+                // Potential ripple or activation effect
+                item.style.backgroundColor = 'rgba(230, 195, 100, 0.05)';
+                setTimeout(() => {
+                    item.style.backgroundColor = '';
+                }, 200);
+            });
+        });
+    </script>
+</body></html>

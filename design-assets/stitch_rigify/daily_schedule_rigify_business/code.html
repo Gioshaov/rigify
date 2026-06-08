@@ -1,0 +1,405 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RIGIFY - Business Schedule</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0a0a0f; /* Base Level 0 */
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e6c364;
+        }
+        .neon-thread {
+            box-shadow: 0 0 10px rgba(230, 195, 100, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e4e1e9",
+                        "inverse-on-surface": "#303036",
+                        "surface-container-low": "#1b1b20",
+                        "primary-container": "#e6c364",
+                        "secondary-fixed": "#e3e1ef",
+                        "on-tertiary": "#162f5e",
+                        "tertiary": "#d9e2ff",
+                        "surface-container-lowest": "#0e0e13",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-primary-fixed": "#241a00",
+                        "text-secondary": "#a1a1aa",
+                        "secondary-fixed-dim": "#c7c5d3",
+                        "on-secondary-fixed": "#1b1b25",
+                        "on-secondary-fixed-variant": "#464651",
+                        "tertiary-container": "#b0c6ff",
+                        "on-surface-variant": "#d0c5b2",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#39383e",
+                        "secondary": "#c7c5d3",
+                        "primary": "#ffe090",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "tertiary-fixed": "#d9e2ff",
+                        "inverse-primary": "#755b00",
+                        "muted-gold": "#9d8653",
+                        "background": "#131318",
+                        "on-surface": "#e4e1e9",
+                        "primary-fixed-dim": "#e6c364",
+                        "surface-dim": "#131318",
+                        "secondary-container": "#494853",
+                        "text-primary": "#ffffff",
+                        "on-background": "#e4e1e9",
+                        "surface-container-highest": "#35343a",
+                        "surface-elevated": "#22222e",
+                        "outline": "#99907e",
+                        "primary-fixed": "#ffe08f",
+                        "outline-variant": "#4d4637",
+                        "pure-white": "#ffffff",
+                        "surface-tint": "#e6c364",
+                        "surface-variant": "#35343a",
+                        "on-tertiary-fixed": "#001944",
+                        "surface-container": "#1f1f25",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#3b5183",
+                        "on-primary-container": "#665000",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#2f4576",
+                        "on-primary": "#3d2e00",
+                        "on-secondary-container": "#b9b7c4",
+                        "on-secondary": "#302f3a",
+                        "surface-container-high": "#2a292f",
+                        "surface": "#131318"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-mono-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-mono-xs": ["JetBrains Mono"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface custom-scrollbar">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background fixed top-0 w-full z-50 border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">RIGIFY</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<div class="w-8 h-8 bg-surface-container-high border border-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Header Section -->
+<section class="mb-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<p class="font-label-mono-sm text-label-mono-sm text-primary mb-2">MANAGEMENT PORTAL</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg">Daily Schedule</h2>
+<p class="text-on-surface-variant font-body-md mt-2">Thursday, Oct 24th — 12 Appointments Scheduled</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary px-6 py-3 font-display-lg text-body-md font-bold hover:opacity-90 active:scale-95 transition-all">
+                        ADD APPOINTMENT
+                    </button>
+</div>
+</div>
+</section>
+<!-- Staff Filter Bar -->
+<section class="mb-12">
+<div class="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar">
+<button class="flex-shrink-0 px-5 py-2 border-2 border-primary text-primary font-label-mono-sm text-label-mono-sm active:opacity-80">
+                    ALL STAFF
+                </button>
+<button class="flex-shrink-0 px-5 py-2 border border-white/10 text-on-surface-variant font-label-mono-sm text-label-mono-sm hover:border-primary/50 transition-colors">
+                    JULIAN VANCE
+                </button>
+<button class="flex-shrink-0 px-5 py-2 border border-white/10 text-on-surface-variant font-label-mono-sm text-label-mono-sm hover:border-primary/50 transition-colors">
+                    SARAH CHEN
+                </button>
+<button class="flex-shrink-0 px-5 py-2 border border-white/10 text-on-surface-variant font-label-mono-sm text-label-mono-sm hover:border-primary/50 transition-colors">
+                    MARCUS REED
+                </button>
+<button class="flex-shrink-0 px-5 py-2 border border-white/10 text-on-surface-variant font-label-mono-sm text-label-mono-sm hover:border-primary/50 transition-colors">
+                    ELARA VOSS
+                </button>
+</div>
+</section>
+<!-- Timeline / List View -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Main Schedule List -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Appointment Card: 09:00 -->
+<div class="group bg-surface-container-low border-l-2 border-primary flex flex-col md:flex-row p-6 gap-6 hover:bg-surface-container transition-colors relative overflow-hidden">
+<div class="md:w-32 flex flex-col justify-center">
+<span class="font-label-mono-sm text-primary text-lg">09:00</span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">60 MIN</span>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-display-lg text-headline-md text-white">Classic Cut &amp; Steam</h3>
+<p class="text-on-surface-variant font-body-md">Client: <span class="text-white font-semibold">Alexander Wright</span></p>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+<span class="material-symbols-outlined text-primary text-sm">content_cut</span>
+<span class="font-label-mono-sm text-on-surface">STAFF: JULIAN VANCE</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 border border-white/10 hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-primary">edit</span>
+</button>
+<button class="p-2 border border-white/10 hover:border-error transition-colors active:scale-90">
+<span class="material-symbols-outlined text-error">close</span>
+</button>
+</div>
+</div>
+<!-- Appointment Card: 10:30 -->
+<div class="group bg-surface-container-low border-l-2 border-white/10 flex flex-col md:flex-row p-6 gap-6 hover:bg-surface-container transition-colors">
+<div class="md:w-32 flex flex-col justify-center">
+<span class="font-label-mono-sm text-on-surface text-lg">10:30</span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">45 MIN</span>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-display-lg text-headline-md text-white">Beard Sculpt &amp; Oil Treatment</h3>
+<p class="text-on-surface-variant font-body-md">Client: <span class="text-white font-semibold">Dominic Thorne</span></p>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">person</span>
+<span class="font-label-mono-sm text-on-surface">STAFF: SARAH CHEN</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 border border-white/10 hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-primary">edit</span>
+</button>
+<button class="p-2 border border-white/10 hover:border-error transition-colors active:scale-90">
+<span class="material-symbols-outlined text-error">close</span>
+</button>
+</div>
+</div>
+<!-- Time Break Marker -->
+<div class="flex items-center gap-4 py-4">
+<div class="h-[1px] flex-grow bg-white/10"></div>
+<span class="font-label-mono-xs text-on-surface-variant">LUNCH BREAK — 12:00</span>
+<div class="h-[1px] flex-grow bg-white/10"></div>
+</div>
+<!-- Appointment Card: 13:00 -->
+<div class="group bg-surface-container-low border-l-2 border-white/10 flex flex-col md:flex-row p-6 gap-6 hover:bg-surface-container transition-colors">
+<div class="md:w-32 flex flex-col justify-center">
+<span class="font-label-mono-sm text-on-surface text-lg">13:00</span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">90 MIN</span>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-display-lg text-headline-md text-white">Premium Full Grooming</h3>
+<p class="text-on-surface-variant font-body-md">Client: <span class="text-white font-semibold">Sebastian Graves</span></p>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">auto_awesome</span>
+<span class="font-label-mono-sm text-on-surface">STAFF: JULIAN VANCE</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 border border-white/10 hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-primary">edit</span>
+</button>
+<button class="p-2 border border-white/10 hover:border-error transition-colors active:scale-90">
+<span class="material-symbols-outlined text-error">close</span>
+</button>
+</div>
+</div>
+<!-- Appointment Card: 15:00 -->
+<div class="group bg-surface-container-low border-l-2 border-white/10 flex flex-col md:flex-row p-6 gap-6 hover:bg-surface-container transition-colors">
+<div class="md:w-32 flex flex-col justify-center">
+<span class="font-label-mono-sm text-on-surface text-lg">15:00</span>
+<span class="font-label-mono-xs text-on-surface-variant uppercase">30 MIN</span>
+</div>
+<div class="flex-grow space-y-1">
+<h3 class="font-display-lg text-headline-md text-white">Line-Up &amp; Fade</h3>
+<p class="text-on-surface-variant font-body-md">Client: <span class="text-white font-semibold">Jordan Miller</span></p>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">content_cut</span>
+<span class="font-label-mono-sm text-on-surface">STAFF: MARCUS REED</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 border border-white/10 hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-primary">edit</span>
+</button>
+<button class="p-2 border border-white/10 hover:border-error transition-colors active:scale-90">
+<span class="material-symbols-outlined text-error">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Side Summary -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Staff Availability Bento -->
+<div class="bg-surface-container-high p-8 border border-white/10">
+<h4 class="font-display-lg text-headline-md mb-6">Staff Insights</h4>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-primary"></div>
+<span class="font-body-md">Julian Vance</span>
+</div>
+<span class="font-label-mono-sm text-primary">4/6 Booked</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-green-500"></div>
+<span class="font-body-md">Sarah Chen</span>
+</div>
+<span class="font-label-mono-sm">2/5 Booked</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-primary"></div>
+<span class="font-body-md">Marcus Reed</span>
+</div>
+<span class="font-label-mono-sm text-primary">5/5 Booked</span>
+</div>
+</div>
+</div>
+<!-- Capacity Metric Card -->
+<div class="bg-surface-container-high p-8 border border-white/10 overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="font-label-mono-sm text-on-surface-variant mb-2">DAILY CAPACITY</h4>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-4xl text-primary">82%</span>
+<span class="font-body-md text-on-surface-variant mb-1">Booked</span>
+</div>
+<div class="mt-6 h-1 w-full bg-white/5">
+<div class="h-full bg-primary" style="width: 82%"></div>
+</div>
+</div>
+<!-- Aesthetic background element -->
+<div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-9xl">analytics</span>
+</div>
+</div>
+<!-- Quick Reports -->
+<div class="p-8 border border-primary/20 bg-primary/5">
+<h4 class="font-display-lg text-headline-md text-primary mb-4">Urgent Tasks</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-lg">warning</span>
+<p class="font-body-md text-on-surface">3 Pending confirmations for tomorrow.</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-lg">inventory_2</span>
+<p class="font-body-md text-on-surface">Aftershave stock low (Julian).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low fixed bottom-0 w-full z-50 border-t border-white/10 md:hidden">
+<div class="flex justify-around items-center w-full h-16 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-mono-xs text-label-mono-xs">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-mono-xs text-label-mono-xs">Schedule</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-mono-xs text-label-mono-xs">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 hover:text-primary-fixed-dim active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-mono-xs text-label-mono-xs">Staff</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple Interaction logic for filters
+        const filterButtons = document.querySelectorAll('section button');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => {
+                    b.classList.remove('border-primary', 'text-primary');
+                    b.classList.add('border-white/10', 'text-on-surface-variant');
+                });
+                btn.classList.add('border-primary', 'text-primary');
+                btn.classList.remove('border-white/10', 'text-on-surface-variant');
+            });
+        });
+
+        // Interactive highlighting for appointment cards
+        const cards = document.querySelectorAll('.group');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('neon-thread');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('neon-thread');
+            });
+        });
+    </script>
+</body></html>

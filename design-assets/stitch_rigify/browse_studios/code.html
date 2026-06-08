@@ -1,0 +1,413 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#3b5183",
+                    "primary-fixed-dim": "#e6c364",
+                    "surface": "#131318",
+                    "on-tertiary": "#162f5e",
+                    "error": "#ffb4ab",
+                    "pure-white": "#ffffff",
+                    "surface-bright": "#39383e",
+                    "secondary-fixed-dim": "#c7c5d3",
+                    "surface-container-low": "#1b1b20",
+                    "surface-dim": "#131318",
+                    "outline": "#99907e",
+                    "on-background": "#e4e1e9",
+                    "primary-fixed": "#ffe08f",
+                    "secondary-container": "#494853",
+                    "surface-container-lowest": "#0e0e13",
+                    "on-primary-container": "#665000",
+                    "on-secondary-fixed": "#1b1b25",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#b9b7c4",
+                    "inverse-primary": "#755b00",
+                    "on-primary": "#3d2e00",
+                    "on-surface-variant": "#d0c5b2",
+                    "surface-elevated": "#22222e",
+                    "surface-container-high": "#2a292f",
+                    "on-surface": "#e4e1e9",
+                    "surface-variant": "#35343a",
+                    "inverse-on-surface": "#303036",
+                    "inverse-surface": "#e4e1e9",
+                    "outline-variant": "#4d4637",
+                    "on-tertiary-fixed-variant": "#2f4576",
+                    "secondary": "#c7c5d3",
+                    "primary-container": "#e6c364",
+                    "on-secondary-fixed-variant": "#464651",
+                    "muted-gold": "#9d8653",
+                    "text-secondary": "#a1a1aa",
+                    "surface-tint": "#e6c364",
+                    "tertiary-container": "#b0c6ff",
+                    "on-secondary": "#302f3a",
+                    "tertiary-fixed": "#d9e2ff",
+                    "surface-container-highest": "#35343a",
+                    "tertiary-fixed-dim": "#b0c6ff",
+                    "on-primary-fixed-variant": "#584400",
+                    "surface-container": "#1f1f25",
+                    "tertiary": "#d9e2ff",
+                    "on-primary-fixed": "#241a00",
+                    "text-primary": "#ffffff",
+                    "background": "#131318",
+                    "on-tertiary-fixed": "#001944",
+                    "on-error-container": "#ffdad6",
+                    "primary": "#ffe090",
+                    "secondary-fixed": "#e3e1ef",
+                    "error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-mono-sm": ["JetBrains Mono"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "label-mono-xs": ["JetBrains Mono"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0a0a0f; color: #e4e1e9; }
+        .sharp-border { border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gold-border { border: 1px solid #e6c364; }
+        .active-gold { border-left: 1px solid #e6c364; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0e0e13; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #e6c364; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<nav class="sticky top-0 w-full z-50 flex items-center justify-between px-4 md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="language">language</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">RIGIFY</span>
+</div>
+<!-- Desktop Nav Links -->
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface hover:text-primary transition-colors duration-200" href="#">Home</a>
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-primary border-b border-primary pt-1" href="#">Browse</a>
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface hover:text-primary transition-colors duration-200" href="#">My Bookings</a>
+<a class="font-label-mono-sm text-label-mono-sm uppercase text-on-surface hover:text-primary transition-colors duration-200" href="#">For Business</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden sharp-border">
+<img alt="Profile" data-alt="A professional headshot of a person with clean skin and neat hair, photographed against a dark charcoal background. The lighting is dramatic and high-contrast, characteristic of a luxury brand profile. The image is crisp, modern, and aligned with a premium beauty and wellness marketplace aesthetic, featuring deep blacks and soft skin tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAI6ifUykxyByhlTRSVaX3ffTFb7NIQpbrX2n8RR70isxqTLvI_K_aUFUtyp8grr849tofvf73S9ktEKo6jc54AQhSTWyVPCFD9ljnD8A_0y9Dwd_iRadGYlp7SCib5ZUSr4Cd2nTzd1Jy4JVz0lhMDR-VZE13yhDaJxY3p-juXbni6aAZ3LEo3AVa9nFbzBHQ2Az75lqfk50CRO6nhI8WmTvq_X7_OQYpEaAf50LMTo8QyqxO2Tq_DumKAfIA0aAiq6GaDiVyUL2k">
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
+<div class="absolute inset-0 z-0">
+<img alt="Tbilisi Architecture" class="w-full h-full object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000" data-alt="An atmospheric, cinematic view of the architectural skyline of Tbilisi at dusk. The city lights twinkle with a golden hue against the deep blue and black of the evening sky. The composition emphasizes the blend of historical and ultra-modern architecture, reflecting a premium and sophisticated atmosphere. The image is high-contrast and follows a dark, luxurious aesthetic with deep shadows and sharp highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJr39TGWbGvxJNBtuIVMMgikG0-is3JCiHiNBOnni8m_kZyiuurDGS4EmAs9DMMHD_br7nek4zZnMyOwuh6s6_V5xUi1DoNxtMa4W91z6xltTnFtotOBj13jU1GIkBAkPCbmJ-CDAtN0qFBEbLwb6bVip1358LwqV26N4CV82TXbKJTpjAv8HP9NoaeobAFbUe3pxVsA3Ok5t3MCG8FGTj6vMz5LFCHfZnRKz7srAVzOJECs1eILBWQaMSXD57PTSX8gbAtlv3LaE">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-container-max mx-auto w-full">
+<span class="font-label-mono-sm text-label-mono-sm text-primary uppercase mb-4 block tracking-[0.3em]">Curated Excellence</span>
+<h1 class="font-display-lg text-display-lg md:text-[64px] text-primary uppercase max-w-2xl leading-[0.9] tracking-tighter">Beauty &amp; Wellness <br>in Tbilisi</h1>
+</div>
+</header>
+<!-- Search & Filters -->
+<section class="relative z-20 -mt-12 px-4 md:px-margin-desktop">
+<div class="max-w-container-max mx-auto bg-surface-elevated sharp-border p-6 md:p-8 flex flex-col md:flex-row gap-4 items-end">
+<!-- Search Box -->
+<div class="flex-1 w-full">
+<label class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-2 block">Find Artisan</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-white/10 focus:border-primary px-12 py-3 text-on-surface placeholder:text-outline outline-none transition-all" placeholder="Salon, Barber, or Stylist..." type="text">
+</div>
+</div>
+<!-- District Dropdown -->
+<div class="w-full md:w-64">
+<label class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-2 block">District</label>
+<select class="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
+<option>All Districts</option>
+<option>Saburtalo</option>
+<option>Vake</option>
+<option>Old Tbilisi</option>
+</select>
+</div>
+<!-- Category Dropdown -->
+<div class="w-full md:w-64">
+<label class="font-label-mono-xs text-label-mono-xs text-on-surface-variant uppercase mb-2 block">Category</label>
+<select class="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer">
+<option>All Categories</option>
+<option>Hair Styling</option>
+<option>Spa &amp; Massage</option>
+<option>Nail Art</option>
+<option>Barbershop</option>
+</select>
+</div>
+<!-- Search Button -->
+<button class="bg-primary text-on-secondary px-8 py-3 font-label-mono-sm uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto">
+                Discover
+            </button>
+</div>
+</section>
+<!-- Business Grid -->
+<main class="max-w-container-max mx-auto px-4 md:px-margin-desktop py-16">
+<div class="flex justify-between items-end mb-12">
+<div>
+
+<div class="h-1 w-12 bg-primary mt-2"></div>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-outline uppercase">48 RESULTS FOUND</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Business Card 1 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Luxury Salon" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale" data-alt="A wide-angle, cinematic photograph of a high-end luxury hair salon interior. The space features sleek black leather chairs, large minimalist mirrors with backlit gold edges, and polished concrete floors. The lighting is sophisticated, with focused warm spotlights creating a moody, exclusive atmosphere. The color palette is strictly deep charcoals and glowing gold accents, reflecting a premium wellness marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqXuxrBYYtfp2J-yoVifSqu7FhD_2elsyAzyzk9vkCwOowvtqamLcJ_9t1ZiNOOh5x753E1XjupP6OWN1ihjjMizzx_LUZgXEiqrZBZC8sjljqHZaSIZ0WmqdUCSbvtSeSdH2Dk3NcV-Zn2vOTb9yJeOVZ7rXQytcAeBNcJCUrr8t4kVayOqOmewDwQejuwTovV6TMZ6ydKE-lgCJy97BVUj1hzjoOIOwoUpmdAA8mdZCv34qsdlTsffrDRzpc08_w2KNW50kYJo4">
+
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="content_cut">content_cut</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase group-hover:text-primary-fixed transition-colors">AURELIA STUDIO</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">4.8</span>
+<span class="text-outline text-[10px]">(120)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        VAKE, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">HAIR</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">COLORING</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">SPA</span>
+</div>
+</div>
+</article>
+<!-- Business Card 2 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Barbershop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" data-alt="An ultra-modern, masculine barbershop interior featuring dark wood paneling and vintage-style chrome barber chairs. The lighting is low and atmospheric, with sharp neon-like gold strips highlighting the architectural lines of the room. The space is immaculately clean and minimal, emphasizing an elite grooming experience. The photograph is shot in high-definition with deep contrast and a focus on premium textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSv9BSp8KRDbnBa6b05E0_tsggbC1lc1_Bo2UQ364vvdrFVOkSyLx7uYeAg_zXXnh0wgyOzb2p-mnQ5Kk4l8XSydWLp8NMXcoBfEr1W34ZGa-qgbet9veKKsl9eLvicrtjZ08d0h-xPvD7SMDqsHfeQjbaeJw1M7nEq0J7fStGzz19zAVxzKqYrNI8nOAI5EMGSb26rtzo9rQIT1RfvC83xqI99kdM9SlCZf6tBa4hLpAu1V8fxdJjscN0TA8aqBddIHyHXJQdVB8">
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="face">face</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase">CRAFT &amp; CO</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">4.9</span>
+<span class="text-outline text-[10px]">(84)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        SABURTALO, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">BARBER</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">SHAVE</span>
+</div>
+</div>
+</article>
+<!-- Business Card 3 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Wellness Spa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" data-alt="A serene and luxurious wellness spa interior. The room features dark stone walls with water trickling down a textured surface, illuminated by hidden warm gold LEDs. Minimalist wooden lounge beds with crisp white towels are arranged in a balanced, architectural layout. The air appears soft and hazy, creating a sense of deep calm and exclusivity. The aesthetic is high-end, dark, and tactile, focusing on natural materials and premium design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkz_RjkWqoAMEc3t1WdwtlXNDD489z0kMw4XzsUA3d_5jEdJBBESDX7zMhKOdVAhFB7hzuHe0v-6ED15eJ4ODixi50HGca8TswYjLT1XtAYU9vxhsnkdfvPdI_bXx5pxr4-P2lA5gZ_qJVORJFAY28IqRjOIq183qsgSotAo5vEoWQjeHKjVbU29RKQbmStUPDObfUZvMp0-ohMJqMWDH3Y7r-XGGjIqF7xOEuIEkpjFn60gCQ1c9I4dTAGsQSo0KfyfgPyUYXpg4">
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="spa">spa</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase">ZENITH WELLNESS</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">4.7</span>
+<span class="text-outline text-[10px]">(215)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        OLD TBILISI, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">MASSAGE</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">FACIAL</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">YOGA</span>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Nail Art Studio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" data-alt="A minimalist and chic nail art studio with a focus on geometric interior design. The workstations are sleek charcoal grey with high-intensity task lighting that casts sharp shadows. Elegant glass displays showcase premium beauty products. The atmosphere is professional and architectural, with a focus on precision and high-end aesthetics. The color palette is dark with subtle gold details in the fixtures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4Qjwd8fcmAdxvkOpTbFnEHthva0zcdXHDPnajpcy15F6qY_tDL5uOV4bcwkRTDIagaRa9z47XPK_5aoCuVTARENSgOlnsN-qdcdth0l3ehAKcou6g6uCh10NhPoPoE57NpNgdzEJvlJwCz9hnByz7WWR29iPsVWDX8eyauaUUa9mX5_O-O6j0xDM4vs3N32foj-6STbbDqbspbdizWbrdPBOE3gAwIWhj6dHKvoiGFMF8t-gnihiXaiZ7s9VdLZl0QXVQtsTwyAM">
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="brush">brush</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase">GLOSS &amp; GRIT</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">4.8</span>
+<span class="text-outline text-[10px]">(56)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        VAKE, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">MANICURE</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">PEDICURE</span>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Dermatology Clinic" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" data-alt="A futuristic and clinical dermatology space. The interior is characterized by seamless surfaces in deep charcoal and subtle integrated lighting that creates a soft glow. High-tech equipment is displayed as part of the minimalist decor. The overall feeling is one of supreme medical expertise combined with luxury spa comfort. The image is high-contrast, focusing on the precision and high-end nature of the services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFpswVsUZd_ypzc2LBhfxNQHOmwv1KbE5sZL7hyfWbBIcYTrBlM7bNyQCBrTsv5n6ONX5keFS0SCdeIuBNDLW_d5Ft1radeqBCl4F4r9E1vvgZvFgiXhWR1HWVCJX05xLUSutze1JhdqlJun1vQcI4FCxwUvqQslfKUk0Yl6aYWy_gj8-YKit5O_EeZsoaKlQPurGwX7n98CQWvjxkBo8V6ZfTsnEeTAvQNnkf0PuTC6mdRWwASqeGuJpRP9XluPBsUe_YL-SFHRI">
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="health_and_safety">health_and_safety</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase">DERMA ELITE</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">4.9</span>
+<span class="text-outline text-[10px]">(142)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        SABURTALO, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">SKINCARE</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">LASER</span>
+</div>
+</div>
+</article>
+<!-- Card 6 -->
+<article class="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img alt="Yoga Shala" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" data-alt="A moody and atmospheric yoga studio featuring dark wooden floors and dim, warm lighting. Large floor-to-ceiling windows look out onto a city park at night. The interior is empty of people but filled with a sense of calm energy. Minimalist props like black yoga mats are neatly arranged. The lighting focuses on the architectural texture of the room, using shadows and gold highlights to define the space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn3Uq8-KnWNJg1ad3rHsu_SB56fw_X-qKiEKejzu93CcD6Uew-5dBmmed67V9xq3QWtRWOoKm3wubuqeAMD-syj7FbyZ-lm_NMhra4s3AQo74xEppTtSzFUgyUkP1aDfUR1Darf1i0VnCNeAWEivXd_ms0wtS69NPsATm-wQ-4tmra4vxnjDTqMMhhnkalz1GoSsbgR26K8CjNGDS1CizJWSVZzUXDxcgkZi9J3GLgfs2QoHESkbXSuFV6mao2rIv5DRr236Brlno">
+<div class="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="self_improvement">self_improvement</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md text-primary uppercase">PRANA HOUSE</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-mono-sm text-label-mono-sm">5.0</span>
+<span class="text-outline text-[10px]">(92)</span>
+</div>
+</div>
+<p class="font-label-mono-xs text-label-mono-xs text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        OLD TBILISI, TBILISI
+                    </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">YOGA</span>
+<span class="px-2 py-1 border border-white/5 bg-white/5 font-label-mono-xs text-label-mono-xs text-on-surface-variant">MEDITATION</span>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<div class="mt-16 flex justify-center items-center gap-4">
+<button class="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<div class="flex gap-2">
+<button class="w-12 h-12 flex items-center justify-center bg-primary text-on-secondary font-label-mono-sm">01</button>
+<button class="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-label-mono-sm hover:text-primary transition-colors">02</button>
+<button class="w-12 h-12 flex items-center justify-center sharp-border text-on-surface font-label-mono-sm hover:text-primary transition-colors">03</button>
+</div>
+<button class="w-12 h-12 flex items-center justify-center sharp-border text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Browse</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">My Bookings</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">For Business</span>
+</button>
+</nav>
+<!-- Spacer for mobile nav -->
+<div class="h-20 md:hidden"></div>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('article').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.querySelector('img').classList.remove('grayscale');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('img').classList.add('grayscale');
+            });
+        });
+    </script>
+
+
+
+
+</body></html>

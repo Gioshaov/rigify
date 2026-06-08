@@ -1,0 +1,335 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Add New Artisan | RIGIFY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #0a0a0f;
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: #e6c364 !important;
+            box-shadow: 0 0 0 1px #e6c364;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-elevated": "#22222e",
+                      "on-secondary-fixed-variant": "#464651",
+                      "background": "#131318",
+                      "primary-fixed-dim": "#e6c364",
+                      "outline": "#99907e",
+                      "on-tertiary-container": "#3b5183",
+                      "primary-container": "#e6c364",
+                      "text-secondary": "#a1a1aa",
+                      "on-surface": "#e4e1e9",
+                      "secondary-fixed-dim": "#c7c5d3",
+                      "on-error": "#690005",
+                      "on-tertiary-fixed": "#001944",
+                      "surface-container-high": "#2a292f",
+                      "tertiary": "#d9e2ff",
+                      "tertiary-fixed": "#d9e2ff",
+                      "inverse-surface": "#e4e1e9",
+                      "surface-tint": "#e6c364",
+                      "on-surface-variant": "#d0c5b2",
+                      "primary": "#ffe090",
+                      "text-primary": "#ffffff",
+                      "surface-bright": "#39383e",
+                      "secondary": "#c7c5d3",
+                      "secondary-container": "#494853",
+                      "on-secondary-fixed": "#1b1b25",
+                      "surface-container": "#1f1f25",
+                      "tertiary-fixed-dim": "#b0c6ff",
+                      "on-secondary-container": "#b9b7c4",
+                      "surface": "#131318",
+                      "inverse-primary": "#755b00",
+                      "tertiary-container": "#b0c6ff",
+                      "on-tertiary-fixed-variant": "#2f4576",
+                      "on-primary-fixed": "#241a00",
+                      "on-primary-container": "#665000",
+                      "surface-container-low": "#1b1b20",
+                      "on-tertiary": "#162f5e",
+                      "error": "#ffb4ab",
+                      "secondary-fixed": "#e3e1ef",
+                      "surface-container-lowest": "#0e0e13",
+                      "on-primary": "#3d2e00",
+                      "on-error-container": "#ffdad6",
+                      "outline-variant": "#4d4637",
+                      "pure-white": "#ffffff",
+                      "on-primary-fixed-variant": "#584400",
+                      "surface-variant": "#35343a",
+                      "on-background": "#e4e1e9",
+                      "surface-dim": "#131318",
+                      "muted-gold": "#9d8653",
+                      "inverse-on-surface": "#303036",
+                      "surface-container-highest": "#35343a",
+                      "error-container": "#93000a",
+                      "on-secondary": "#302f3a",
+                      "primary-fixed": "#ffe08f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "40px",
+                      "container-max": "1280px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-mono-xs": ["JetBrains Mono"],
+                      "display-lg-mobile": ["Hanken Grotesk"],
+                      "label-mono-sm": ["JetBrains Mono"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "body-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background selection:bg-primary selection:text-black">
+<!-- Top Navigation Bar -->
+<nav class="bg-background fixed top-0 w-full z-50 border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-display-lg text-headline-md text-primary tracking-tight">RIGIFY</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8 font-label-mono-sm text-on-surface uppercase tracking-widest">
+<a class="hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="hover:text-primary transition-colors duration-200" href="#">Schedule</a>
+<a class="hover:text-primary transition-colors duration-200" href="#">Services</a>
+<a class="text-primary transition-colors duration-200" href="#">Staff</a>
+</div>
+<button class="active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-margin-mobile md:px-0 max-w-3xl mx-auto">
+<header class="mb-12">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-mono-xs text-primary bg-primary/10 px-2 py-1">ADMIN PORTAL</span>
+</div>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white">Add New Artisan</h1>
+<p class="text-on-surface-variant mt-2 font-body-lg">Expand your team with elite talent.</p>
+</header>
+<form class="space-y-16" id="staff-form">
+<!-- Profile Section -->
+<section class="space-y-8">
+<div class="flex items-center gap-4 border-l-2 border-primary pl-4">
+<span class="font-label-mono-sm text-primary">01</span>
+<h2 class="font-headline-md text-white uppercase tracking-tight">Personal Profile</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+<!-- Photo Upload -->
+<div class="md:col-span-1">
+<div class="relative group cursor-pointer aspect-square bg-surface-container-low border border-white/10 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-primary/50">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl group-hover:text-primary transition-colors">add_a_photo</span>
+<span class="font-label-mono-xs text-on-surface-variant mt-2 text-center">UPLOAD PHOTO</span>
+<!-- Hidden input -->
+<input class="absolute inset-0 opacity-0 cursor-pointer" type="file">
+</div>
+</div>
+<!-- Details -->
+<div class="md:col-span-3 space-y-6">
+<div class="space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">Full Name</label>
+<input class="w-full bg-surface-container-low border border-white/10 p-4 text-white font-body-md rounded-none placeholder:text-on-secondary-fixed-variant" placeholder="e.g. Alexander Voss" type="text">
+</div>
+<div class="space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">Professional Title</label>
+<input class="w-full bg-surface-container-low border border-white/10 p-4 text-white font-body-md rounded-none placeholder:text-on-secondary-fixed-variant" placeholder="e.g. Master Barber &amp; Style Director" type="text">
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">Artisan Bio</label>
+<textarea class="w-full bg-surface-container-low border border-white/10 p-4 text-white font-body-md rounded-none placeholder:text-on-secondary-fixed-variant resize-none" placeholder="Describe the artisan's expertise, philosophy, and years of experience..." rows="4"></textarea>
+</div>
+</section>
+<!-- Role & Permissions Section -->
+<section class="space-y-8">
+<div class="flex items-center gap-4 border-l-2 border-primary pl-4">
+<span class="font-label-mono-sm text-primary">02</span>
+<h2 class="font-headline-md text-white uppercase tracking-tight">Role &amp; Permissions</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Role Card 1 -->
+<label class="relative block group cursor-pointer">
+<input checked="" class="hidden peer" name="role" type="radio">
+<div class="p-6 border border-white/10 bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary">content_cut</span>
+<div class="w-4 h-4 border border-white/20 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-[12px] opacity-0 peer-checked:opacity-100">check</span>
+</div>
+</div>
+<h3 class="font-headline-md text-white text-lg mb-1">Standard Artisan</h3>
+<p class="text-on-surface-variant text-sm font-body-md">Can manage own schedule, services, and client gallery.</p>
+</div>
+</label>
+<!-- Role Card 2 -->
+<label class="relative block group cursor-pointer">
+<input class="hidden peer" name="role" type="radio">
+<div class="p-6 border border-white/10 bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+<div class="w-4 h-4 border border-white/20 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-[12px] opacity-0 peer-checked:opacity-100">check</span>
+</div>
+</div>
+<h3 class="font-headline-md text-white text-lg mb-1">Lead / Manager</h3>
+<p class="text-on-surface-variant text-sm font-body-md">Full access to shop settings, analytics, and team management.</p>
+</div>
+</label>
+</div>
+</section>
+<!-- Primary Shift Section -->
+<section class="space-y-8">
+<div class="flex items-center gap-4 border-l-2 border-primary pl-4">
+<span class="font-label-mono-sm text-primary">03</span>
+<h2 class="font-headline-md text-white uppercase tracking-tight">Primary Shift</h2>
+</div>
+<div class="bg-surface-container-low p-8 border border-white/10">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">Start Time</label>
+<select class="w-full bg-background border border-white/10 p-3 text-white font-label-mono-sm appearance-none rounded-none cursor-pointer">
+<option>08:00 AM</option>
+<option selected="">09:00 AM</option>
+<option>10:00 AM</option>
+<option>11:00 AM</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">End Time</label>
+<select class="w-full bg-background border border-white/10 p-3 text-white font-label-mono-sm appearance-none rounded-none cursor-pointer">
+<option>05:00 PM</option>
+<option selected="">06:00 PM</option>
+<option>07:00 PM</option>
+<option>08:00 PM</option>
+</select>
+</div>
+<div class="col-span-2 space-y-2">
+<label class="font-label-mono-sm text-on-surface-variant uppercase">Work Days</label>
+<div class="flex gap-2">
+<button class="w-10 h-10 border border-primary bg-primary text-black font-label-mono-sm" type="button">M</button>
+<button class="w-10 h-10 border border-primary bg-primary text-black font-label-mono-sm" type="button">T</button>
+<button class="w-10 h-10 border border-primary bg-primary text-black font-label-mono-sm" type="button">W</button>
+<button class="w-10 h-10 border border-primary bg-primary text-black font-label-mono-sm" type="button">T</button>
+<button class="w-10 h-10 border border-primary bg-primary text-black font-label-mono-sm" type="button">F</button>
+<button class="w-10 h-10 border border-white/10 text-on-surface-variant font-label-mono-sm" type="button">S</button>
+<button class="w-10 h-10 border border-white/10 text-on-surface-variant font-label-mono-sm" type="button">S</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Form Actions -->
+<div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center gap-4">
+<button class="w-full md:w-auto px-12 py-5 bg-primary text-black font-label-mono-sm text-sm uppercase tracking-widest hover:bg-primary-fixed hover:scale-[1.02] active:scale-95 transition-all" type="submit">
+                    Create Profile
+                </button>
+<button class="w-full md:w-auto px-12 py-5 border border-white/20 text-white font-label-mono-sm text-sm uppercase tracking-widest hover:border-white transition-all" type="button">
+                    Cancel
+                </button>
+</div>
+</form>
+</main>
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="md:hidden bg-surface-container-low fixed bottom-0 w-full z-50 border-t border-white/10">
+<div class="flex justify-around items-center w-full h-16 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">DASHBOARD</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">SCHEDULE</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">SERVICES</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-2 active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-mono-xs text-label-mono-xs mt-1">STAFF</span>
+</a>
+</div>
+</nav>
+<!-- Background Decorative Elements -->
+<div class="fixed top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none z-[-1]">
+<div class="w-full h-full bg-gradient-to-l from-primary/20 to-transparent"></div>
+</div>
+<div class="fixed bottom-[-10%] left-[-5%] w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none z-[-1]"></div>
+<script>
+        // Simple day toggle interaction
+        const dayButtons = document.querySelectorAll('.grid button[type="button"]');
+        dayButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const isActive = btn.classList.contains('bg-primary');
+                if (isActive) {
+                    btn.classList.remove('bg-primary', 'text-black', 'border-primary');
+                    btn.classList.add('border-white/10', 'text-on-surface-variant');
+                } else {
+                    btn.classList.add('bg-primary', 'text-black', 'border-primary');
+                    btn.classList.remove('border-white/10', 'text-on-surface-variant');
+                }
+            });
+        });
+
+        // Form submission prevent default for demo
+        document.getElementById('staff-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Artisan Profile Successfully Initialized.');
+        });
+    </script>
+</body></html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>My Bookings | RIGIFY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "surface-elevated": "#22222e",
+                "on-surface-variant": "#d0c5b2",
+                "on-surface": "#e4e1e9",
+                "surface-container-high": "#2a292f",
+                "on-secondary-container": "#b9b7c4",
+                "on-error": "#690005",
+                "on-primary": "#3d2e00",
+                "inverse-primary": "#755b00",
+                "outline": "#99907e",
+                "surface-dim": "#131318",
+                "surface-container-low": "#1b1b20",
+                "surface-bright": "#39383e",
+                "pure-white": "#ffffff",
+                "secondary-fixed-dim": "#c7c5d3",
+                "on-secondary-fixed": "#1b1b25",
+                "on-primary-container": "#665000",
+                "surface-container-lowest": "#0e0e13",
+                "primary-fixed": "#ffe08f",
+                "on-background": "#e4e1e9",
+                "secondary-container": "#494853",
+                "primary-fixed-dim": "#e6c364",
+                "surface": "#131318",
+                "on-tertiary": "#162f5e",
+                "on-tertiary-container": "#3b5183",
+                "error": "#ffb4ab",
+                "primary": "#ffe090",
+                "on-tertiary-fixed": "#001944",
+                "on-error-container": "#ffdad6",
+                "background": "#131318",
+                "text-primary": "#ffffff",
+                "error-container": "#93000a",
+                "secondary-fixed": "#e3e1ef",
+                "on-primary-fixed-variant": "#584400",
+                "tertiary-fixed-dim": "#b0c6ff",
+                "surface-container-highest": "#35343a",
+                "surface-container": "#1f1f25",
+                "tertiary": "#d9e2ff",
+                "on-primary-fixed": "#241a00",
+                "text-secondary": "#a1a1aa",
+                "muted-gold": "#9d8653",
+                "on-secondary-fixed-variant": "#464651",
+                "tertiary-fixed": "#d9e2ff",
+                "on-secondary": "#302f3a",
+                "tertiary-container": "#b0c6ff",
+                "surface-tint": "#e6c364",
+                "outline-variant": "#4d4637",
+                "inverse-surface": "#e4e1e9",
+                "surface-variant": "#35343a",
+                "inverse-on-surface": "#303036",
+                "secondary": "#c7c5d3",
+                "primary-container": "#e6c364",
+                "on-tertiary-fixed-variant": "#2f4576"
+              },
+              "borderRadius": {
+                "DEFAULT": "0px",
+                "lg": "0px",
+                "xl": "0px",
+                "full": "9999px"
+              },
+              "spacing": {
+                "gutter": "24px",
+                "base": "8px",
+                "margin-mobile": "16px",
+                "margin-desktop": "40px",
+                "container-max": "1280px"
+              },
+              "fontFamily": {
+                "label-mono-sm": ["JetBrains Mono"],
+                "body-md": ["Hanken Grotesk"],
+                "body-lg": ["Hanken Grotesk"],
+                "headline-md": ["Hanken Grotesk"],
+                "display-lg-mobile": ["Hanken Grotesk"],
+                "label-mono-xs": ["JetBrains Mono"],
+                "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #131318;
+            color: #e4e1e9;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e6c364;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col custom-scrollbar overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl">language</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter leading-none">RIGIFY</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200" href="#">HOME</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200" href="#">BROWSE</a>
+<a class="font-label-mono-sm text-label-mono-sm text-primary transition-colors duration-200" href="#">MY BOOKINGS</a>
+<a class="font-label-mono-sm text-label-mono-sm text-on-surface hover:text-primary transition-colors duration-200" href="#">FOR BUSINESS</a>
+</nav>
+<div class="w-10 h-10 bg-surface-container-highest overflow-hidden border border-white/10">
+<img alt="User Profile" class="w-full h-full object-cover grayscale contrast-125" data-alt="A professional, high-contrast black and white portrait of a man in his early 30s with a clean haircut and sophisticated appearance. The lighting is dramatic and moody, casting subtle shadows that highlight his sharp facial features against a deep, dark grey background. The image maintains the premium, minimalist aesthetic of a luxury grooming platform, reflecting the core brand colors of black and white." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNn-TqNeI0byTM5e82O-oN7wdPgwPZuR0kArxIYhm9k615YMnay_UgdleTLT8vEaDVy-9scK5GOuhwCXva2iGI98lHDJFYdhuJK2gtGr5Ik687aptl-jdiftDcSFnPTDNwV5WOtWIodVHqS9lY7nD5jHrqBIC6fZiZ6yweHb73wNwuBKad4qSa4KcWf_8c4om28EtfY-JcI38I7QKZMTIxJM49xoja8f02Y-REAnJMTy98RQbGgOy2WAfrJAjBHxnyzxn8cn2xR2Y">
+</div>
+</div>
+</header>
+<main class="flex-grow container max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-12 pb-32">
+<!-- Page Title & Background Glow -->
+<div class="relative mb-12">
+<div class="absolute -left-10 top-0 w-64 h-64 bg-primary/5 blur-[120px] rounded-full"></div>
+<h2 class="font-display-lg text-display-lg text-primary relative z-10">My Bookings</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-lg">Manage your upcoming appointments and review your past grooming sessions.</p>
+</div>
+<!-- Custom Tabs -->
+<div class="flex border-b border-white/10 mb-10 overflow-x-auto no-scrollbar">
+<button class="px-8 py-4 font-label-mono-sm text-label-mono-sm transition-all border-b-2 border-primary text-primary" id="tab-upcoming" onclick="switchTab('upcoming')">UPCOMING</button>
+<button class="px-8 py-4 font-label-mono-sm text-label-mono-sm transition-all border-b-2 border-transparent text-on-surface-variant hover:text-primary" id="tab-past" onclick="switchTab('past')">PAST</button>
+</div>
+<!-- Content Sections -->
+<div class="space-y-6" id="upcoming-section">
+<!-- Booking Card 1 (Upcoming) -->
+<div class="group relative bg-surface-container border border-white/10 p-6 flex flex-col md:flex-row gap-6 transition-all hover:bg-surface-container-high">
+<div class="w-full md:w-48 h-48 bg-surface-container-lowest border border-white/5 overflow-hidden">
+<img alt="STERN Barber Shop" class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-110" data-alt="A moody, atmospheric interior shot of a luxury modern barber shop named STERN. The space is characterized by sleek black leather chairs, dark wood cabinetry, and polished concrete floors. Soft, focused warm light illuminates the workstations, creating a premium and exclusive atmosphere that aligns with a high-end grooming marketplace aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfeP_BZnfygSRdbPPsyF1UR3UOCwSiSeu6GKQDtvtUa27SFH5X8WkW0W_czhqy_F4L_eNZr6EEU4prMG9nlbAEW3yJ3pZK-wx2K9wFPczLELkEUuIsMNcbTp81ZSZpWq6d4vIDcteAwkCj-gxRVCJj3sGEsleh5qn5WS0OlLthoyTZOsShaJiFNgVd5gkCE6xZBId5PxVdjijVYwvxvD5kfjxbxjdFrIxsmWXl7H2B7oCyojnwHuAIcf8d4yLRpEqHUsdAEdSyC2k">
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<div class="flex flex-wrap items-start justify-between gap-4 mb-2">
+<div>
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary mb-1">STERN BARBER SHOP</h3>
+<h4 class="font-headline-md text-headline-md text-pure-white">Classic Cut &amp; Steam</h4>
+</div>
+<span class="px-3 py-1 bg-primary/10 border border-primary/20 text-primary font-label-mono-xs text-label-mono-xs">CONFIRMED</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12 mt-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-muted-gold text-xl">calendar_today</span>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">DATE &amp; TIME</p>
+<p class="font-body-md text-body-md text-on-surface">Oct 12, 2024 at 10:15 AM</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="Staff Member" class="w-full h-full object-cover grayscale" data-alt="A close-up portrait of a professional male barber with a meticulous beard and stylish apron. The lighting is crisp and detailed, showcasing a focused and authoritative expert in his craft. The background is a soft-focus studio setting, emphasizing the artisan's presence and aligning with a premium concierge service vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAVE1Bq29zsWNNGmU-SQuGnjgnyvXzyfhqgEE-Npyvge89ZCpd19BeWky3ASVBje80hM46UIw6O_jzewh6WNsdT2JJUlzY36stBz6X9wBOvYLZnlEUmfJq3T8MElENA1bge20Zd1PODuQA4A2r-_exdBx58GrNxIFTPRBhsxAmTQLsJ-eqhE5vHYLSl_5-n6lU9IIg1Yovz0RVffEbpjytPFVEik5gRXXKDzkwqWfuNsNhB5Keq12HJ7j9fs_uY_EdQt9F6qPcc4A">
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">STAFF MEMBER</p>
+<p class="font-body-md text-body-md text-on-surface">Julian Vance</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-4">
+<button class="bg-primary text-on-primary px-8 py-3 font-label-mono-sm text-label-mono-sm hover:brightness-110 transition-all">MANAGE</button>
+<button class="border border-white/20 text-on-surface px-8 py-3 font-label-mono-sm text-label-mono-sm hover:border-error hover:text-error transition-all">CANCEL</button>
+</div>
+</div>
+</div>
+<!-- Booking Card 2 (Upcoming) -->
+<div class="group relative bg-surface-container border border-white/10 p-6 flex flex-col md:flex-row gap-6 transition-all hover:bg-surface-container-high">
+<div class="w-full md:w-48 h-48 bg-surface-container-lowest border border-white/5 overflow-hidden">
+<img alt="Aura Spa" class="w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-110" data-alt="A serene, high-end wellness spa interior featuring smooth dark stone walls and a minimalist wooden massage table. A single gold bowl and a white orchid are placed carefully as decorative accents. The lighting is extremely soft and low-key, creating an atmosphere of deep tranquility and elite luxury grooming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVD8YaiA4ltMkytLrXiVL2K0-0Mnhh-dGuTrGZkBVei9fx2cAIo8easgomDuIuy-1DjTaD2H1FLiBsfYHlQM4lxGAjZg9HoiEi_Xv1_hZ4ifvZMN9Mf2dqFo-LFLdZE6Ne70NGreFNc-9hlblrEySEBcV9yVRY0Wxawo0JQATHpvxFJr51wJJ0y-DdXZR7y9exyIzZm_JIg0k2AfMkRRyRuuGstEMpTUL5T-GyLD-ak891XrMz_tRuTXZbaHba3nhtb75yRH7-Au4">
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<div class="flex flex-wrap items-start justify-between gap-4 mb-2">
+<div>
+<h3 class="font-label-mono-sm text-label-mono-sm text-primary mb-1">AURA WELLNESS</h3>
+<h4 class="font-headline-md text-headline-md text-pure-white">Deep Tissue Sculpt</h4>
+</div>
+<span class="px-3 py-1 bg-primary/10 border border-primary/20 text-primary font-label-mono-xs text-label-mono-xs">CONFIRMED</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12 mt-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-muted-gold text-xl">calendar_today</span>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">DATE &amp; TIME</p>
+<p class="font-body-md text-body-md text-on-surface">Oct 24, 2024 at 02:00 PM</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="Staff Member" class="w-full h-full object-cover grayscale" data-alt="A minimalist, high-contrast portrait of a female wellness therapist. She is dressed in a crisp, dark professional uniform. Her expression is calm and professional, set against a dark architectural background with subtle gold lighting accents that mirror the premium Rigify branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDGB3KteXg_kMyRkm4JKIWi3ZB2380adCVJoezJm3Ga77LW8ghlgskZ6R7nMwVbHk3Q-4fx7dLXnt0TI2D_e6IQnGSsvdHdDGtxJK3DLSGt7GdrUHPe_mlPGYT7cEUlpvKerXzEbDVhjcyGVXrrsg05-WuwM56iJ0u0B_rJJeWTU-2ZB1P0A8Jk9eCH4ZxxgDwLIrsvJDfWhr6h2AkztdMUd7U9FxsK2rNoV8mHjP3r8X2tdlI8nlov0lmqKI5HS4Xf2_JccxBZ2c">
+</div>
+<div>
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">STAFF MEMBER</p>
+<p class="font-body-md text-body-md text-on-surface">Elena Rossi</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-4">
+<button class="bg-primary text-on-primary px-8 py-3 font-label-mono-sm text-label-mono-sm hover:brightness-110 transition-all">MANAGE</button>
+<button class="border border-white/20 text-on-surface px-8 py-3 font-label-mono-sm text-label-mono-sm hover:border-error hover:text-error transition-all">CANCEL</button>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden space-y-6" id="past-section">
+<!-- Past Booking Card -->
+<div class="opacity-80 group relative bg-surface-container-low border border-white/5 p-6 flex flex-col md:flex-row gap-6 transition-all hover:opacity-100">
+<div class="w-full md:w-32 h-32 bg-surface-container-lowest border border-white/5 overflow-hidden">
+<img alt="Old Town Barber" class="w-full h-full object-cover grayscale brightness-50" data-alt="A gritty but clean vintage-inspired barber shop setting. The image is captured in black and white with high grain for a tactile, artisanal feel. Old-fashioned spray bottles and combs are laid out on a dark marble surface, evoking a sense of history and professional expertise in the world of male grooming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbRdS1OKBITUQ3mrfULnhCymK66I429XaCAgasKNjNXhqyAUYewMIOatpCRllPaZiH1Od4Mfp5fWZ2VRMWYtdgvHljX-Dg8te7cs0bb0I6ve5DmZ-oeORcoqY9ZYGq9TRMnOOEGvTUhZ3OOOLP2lYgfcED6SAmc_hi_lOK8XRpCzR9FyU6Inc_3itKX7plPLDNb3tSZ9ThC6Q_23NosFTRe2a5N8-nbozVj__qL9Liebi7KfemsCAjF62uSoefE6ptrhpqXDhdJz8">
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div>
+<h3 class="font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-1">STERN BARBER SHOP</h3>
+<h4 class="font-headline-md text-headline-md text-on-surface">Precision Beard Trim</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Sept 14, 2024 • 11:30 AM</p>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="px-3 py-1 bg-white/5 border border-white/10 text-on-surface-variant font-label-mono-xs text-label-mono-xs">COMPLETED</span>
+</div>
+</div>
+<div class="mt-6">
+<button class="text-primary border border-primary/30 px-6 py-2 font-label-mono-sm text-label-mono-sm hover:bg-primary/10 transition-all">LEAVE REVIEW</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">Browse</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">My Bookings</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">business_center</span>
+<span class="font-label-mono-xs text-label-mono-xs uppercase mt-1">For Business</span>
+</button>
+</nav>
+<script>
+        function switchTab(tab) {
+            const upcomingSection = document.getElementById('upcoming-section');
+            const pastSection = document.getElementById('past-section');
+            const tabUpcoming = document.getElementById('tab-upcoming');
+            const tabPast = document.getElementById('tab-past');
+
+            if (tab === 'upcoming') {
+                upcomingSection.classList.remove('hidden');
+                pastSection.classList.add('hidden');
+                tabUpcoming.classList.add('border-primary', 'text-primary');
+                tabUpcoming.classList.remove('border-transparent', 'text-on-surface-variant');
+                tabPast.classList.remove('border-primary', 'text-primary');
+                tabPast.classList.add('border-transparent', 'text-on-surface-variant');
+            } else {
+                upcomingSection.classList.add('hidden');
+                pastSection.classList.remove('hidden');
+                tabPast.classList.add('border-primary', 'text-primary');
+                tabPast.classList.remove('border-transparent', 'text-on-surface-variant');
+                tabUpcoming.classList.remove('border-primary', 'text-primary');
+                tabUpcoming.classList.add('border-transparent', 'text-on-surface-variant');
+            }
+        }
+
+        // Simple enter animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.group');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100 + 300);
+            });
+        });
+    </script>
+</body></html>

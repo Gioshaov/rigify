@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatTbilisi } from "@/lib/utils/datetime";
-import { getServerTranslations } from "@/lib/utils/server-translations";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function CustomerBookingsPage() {
-  const { tr, lang } = getServerTranslations();
   const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -59,75 +58,199 @@ export default async function CustomerBookingsPage() {
   }));
 
   return (
-    <section className="space-y-stack-lg">
-      <div>
-        <h1 className="text-headline-md">{tr.customerDashboard.myBookings[lang]}</h1>
-        <p className="mt-stack-sm text-on-surface-variant">
-          {tr.customerDashboard.viewAndManage[lang]}
+    <div className="max-w-5xl">
+      {/* Header */}
+      <div className="mb-12">
+        <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
+          My Bookings
+        </h1>
+        <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+          View and manage your upcoming and past appointments
         </p>
       </div>
 
-      <div>
-        <p className="label-mono mb-stack-md">{tr.customerDashboard.upcoming[lang]}</p>
-        {upcoming && upcoming.length > 0 ? (
-          <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
-            {upcoming.map((b) => (
-              <li key={b.id} className="py-stack-md px-stack-sm">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{b.businesses?.name || "—"}</p>
-                    <p className="text-sm text-on-surface-variant mt-1">
-                      {b.businesses?.address || tr.customerDashboard.addressNotProvided[lang]}
-                    </p>
-                    <p className="text-sm text-on-surface-variant mt-1">
-                      {b.services?.name || tr.customerDashboard.service[lang]} · {b.staff?.name || tr.customerDashboard.staff[lang]}
-                    </p>
-                    <p className="font-mono text-data-numeric mt-2">
-                      {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
-                    </p>
-                  </div>
-                  <span className="label-mono text-primary">{b.status.toUpperCase()}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-on-surface-variant border border-outline-variant p-gutter">
-            {tr.customerDashboard.noUpcomingBookings[lang]}
-          </p>
-        )}
-      </div>
+      {/* Upcoming Bookings */}
+      <section className="mb-16">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase">
+            Upcoming Appointments
+          </h2>
+          {upcoming && upcoming.length > 0 && (
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+              {upcoming.length} {upcoming.length === 1 ? 'Booking' : 'Bookings'}
+            </span>
+          )}
+        </div>
 
-      <div>
-        <p className="label-mono mb-stack-md">{tr.customerDashboard.pastBookings[lang]}</p>
-        {past && past.length > 0 ? (
-          <ul className="divide-y divide-outline-variant border-t border-b border-outline-variant">
-            {past.map((b) => (
-              <li key={b.id} className="py-stack-md px-stack-sm opacity-60">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{b.businesses?.name || "—"}</p>
-                    <p className="text-sm text-on-surface-variant mt-1">
-                      {b.businesses?.address || tr.customerDashboard.addressNotProvided[lang]}
-                    </p>
-                    <p className="text-sm text-on-surface-variant mt-1">
-                      {b.services?.name || tr.customerDashboard.service[lang]} · {b.staff?.name || tr.customerDashboard.staff[lang]}
-                    </p>
-                    <p className="font-mono text-data-numeric mt-2">
-                      {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
-                    </p>
+        {upcoming && upcoming.length > 0 ? (
+          <div className="space-y-4">
+            {upcoming.map((b) => (
+              <article
+                key={b.id}
+                data-testid={`booking-card-${b.id}`}
+                className="bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-6"
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    {/* Business Name */}
+                    <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-3">
+                      {b.businesses?.name || "—"}
+                    </h3>
+
+                    {/* Service & Staff */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-symbols-outlined text-primary text-[16px]">
+                        cut
+                      </span>
+                      <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
+                        {b.services?.name || "Service"}
+                      </span>
+                    </div>
+
+                    {b.staff && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-primary text-[16px]">
+                          person
+                        </span>
+                        <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
+                          {b.staff.name}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Date & Time */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="material-symbols-outlined text-primary text-[16px]">
+                        schedule
+                      </span>
+                      <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold">
+                        {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
+                      </span>
+                    </div>
+
+                    {/* Address */}
+                    {b.businesses?.address && (
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-text-secondary text-[16px]">
+                          location_on
+                        </span>
+                        <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                          {b.businesses.address}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <span className="label-mono text-on-surface-variant">{b.status.toUpperCase()}</span>
+
+                  {/* Status & Actions */}
+                  <div className="flex flex-col items-end gap-4">
+                    <span className="px-3 py-1 bg-primary/10 border border-primary/20 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase">
+                      {b.status}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        data-testid={`reschedule-btn-${b.id}`}
+                        className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-primary/30 hover:text-primary transition-all uppercase"
+                      >
+                        Reschedule
+                      </button>
+                      <button
+                        data-testid={`cancel-btn-${b.id}`}
+                        className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-error/30 hover:text-error transition-all uppercase"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </li>
+              </article>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p className="text-on-surface-variant border border-outline-variant p-gutter">
-            {tr.customerDashboard.noPastBookings[lang]}
-          </p>
+          <div className="bg-surface-container border border-white/5 p-12 text-center">
+            <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-primary text-[32px]">event_busy</span>
+            </div>
+            <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-6">
+              No upcoming bookings
+            </p>
+            <Link
+              data-testid="browse-salons-btn"
+              href="/businesses"
+              className="inline-flex items-center gap-2 bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all"
+            >
+              Browse Salons
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          </div>
         )}
-      </div>
-    </section>
+      </section>
+
+      {/* Past Bookings */}
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-text-secondary uppercase">
+            Past Appointments
+          </h2>
+          {past && past.length > 0 && (
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+              Last {past.length}
+            </span>
+          )}
+        </div>
+
+        {past && past.length > 0 ? (
+          <div className="space-y-4 opacity-60">
+            {past.map((b) => (
+              <article
+                key={b.id}
+                data-testid={`past-booking-card-${b.id}`}
+                className="bg-surface-container-low border border-white/5 p-6"
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <h3 className="font-hanken text-[18px] leading-[1.6] font-normal text-on-surface mb-2">
+                      {b.businesses?.name || "—"}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-symbols-outlined text-text-secondary text-[14px]">
+                        cut
+                      </span>
+                      <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                        {b.services?.name || "Service"}
+                      </span>
+                      {b.staff && (
+                        <>
+                          <span className="text-text-secondary">·</span>
+                          <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                            {b.staff.name}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-text-secondary text-[14px]">
+                        schedule
+                      </span>
+                      <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary">
+                        {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 border border-white/5 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
+                    {b.status}
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-surface-container-low border border-white/5 p-8 text-center">
+            <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+              No past bookings
+            </p>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

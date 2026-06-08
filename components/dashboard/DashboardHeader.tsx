@@ -1,14 +1,14 @@
 "use client";
 
-import { useTranslations } from "@/lib/hooks/useTranslations";
-
 export function DashboardHeader({ userEmail }: { userEmail: string }) {
-  const { tr, lang } = useTranslations();
-
   return (
-    <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">
-      <p className="label-mono">{tr.dashboard.title[lang]}</p>
-      <p className="label-mono text-on-surface-variant">{userEmail}</p>
+    <header className="border-b border-white/10 px-8 h-16 flex items-center justify-between bg-surface">
+      <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase">
+        Business Dashboard
+      </p>
+      <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary">
+        {userEmail}
+      </p>
     </header>
   );
 }

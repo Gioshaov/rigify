@@ -11,7 +11,9 @@
       "Bash(cat next.config.ts)",
       "Bash(cat next.config.js)",
       "Bash(cat next.config.mjs)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(xargs grep -l \"services\\\\|staff\\\\|appointment\")",
+      "Bash(xargs wc -l)"
     ]
   }
 }

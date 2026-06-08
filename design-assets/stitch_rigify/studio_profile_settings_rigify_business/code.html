@@ -1,0 +1,379 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Studio Profile &amp; Settings | Rigify Business</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131318;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35343a;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4d4637;
+        }
+        .gold-glow:focus-within {
+            box-shadow: 0 0 0 1px #e6c364;
+        }
+        .time-picker-custom::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(10deg);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-secondary": "#302f3a",
+                "tertiary-fixed": "#d9e2ff",
+                "on-primary-fixed": "#241a00",
+                "on-secondary-fixed-variant": "#464651",
+                "on-tertiary-fixed": "#001944",
+                "text-primary": "#ffffff",
+                "primary": "#ffe090",
+                "error-container": "#93000a",
+                "surface-container-highest": "#35343a",
+                "on-primary": "#3d2e00",
+                "inverse-primary": "#755b00",
+                "surface-container-lowest": "#0e0e13",
+                "on-tertiary-fixed-variant": "#2f4576",
+                "tertiary-container": "#b0c6ff",
+                "surface-container": "#1f1f25",
+                "on-error": "#690005",
+                "secondary": "#c7c5d3",
+                "on-background": "#e4e1e9",
+                "inverse-surface": "#e4e1e9",
+                "on-surface-variant": "#d0c5b2",
+                "tertiary": "#d9e2ff",
+                "secondary-fixed-dim": "#c7c5d3",
+                "surface-tint": "#e6c364",
+                "on-primary-container": "#665000",
+                "outline-variant": "#4d4637",
+                "inverse-on-surface": "#303036",
+                "background": "#131318",
+                "secondary-fixed": "#e3e1ef",
+                "primary-fixed": "#ffe08f",
+                "surface-container-low": "#1b1b20",
+                "primary-container": "#e6c364",
+                "pure-white": "#ffffff",
+                "primary-fixed-dim": "#e6c364",
+                "outline": "#99907e",
+                "on-primary-fixed-variant": "#584400",
+                "tertiary-fixed-dim": "#b0c6ff",
+                "surface": "#131318",
+                "surface-bright": "#39383e",
+                "on-secondary-fixed": "#1b1b25",
+                "text-secondary": "#a1a1aa",
+                "muted-gold": "#9d8653",
+                "secondary-container": "#494853",
+                "surface-container-high": "#2a292f",
+                "surface-dim": "#131318",
+                "surface-variant": "#35343a",
+                "on-secondary-container": "#b9b7c4",
+                "on-tertiary-container": "#3b5183",
+                "on-surface": "#e4e1e9",
+                "on-error-container": "#ffdad6",
+                "surface-elevated": "#22222e",
+                "error": "#ffb4ab",
+                "on-tertiary": "#162f5e"
+              },
+              "borderRadius": {
+                "DEFAULT": "0px",
+                "lg": "0px",
+                "xl": "0px",
+                "full": "9999px"
+              },
+              "spacing": {
+                "container-max": "1280px",
+                "margin-desktop": "40px",
+                "margin-mobile": "16px",
+                "gutter": "24px",
+                "base": "8px"
+              },
+              "fontFamily": {
+                "headline-md": ["Hanken Grotesk"],
+                "body-lg": ["Hanken Grotesk"],
+                "label-mono-sm": ["JetBrains Mono"],
+                "display-lg-mobile": ["Hanken Grotesk"],
+                "body-md": ["Hanken Grotesk"],
+                "label-mono-xs": ["JetBrains Mono"],
+                "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "label-mono-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-mono-xs": ["10px", {"lineHeight": "1.0", "letterSpacing": "0.2em", "fontWeight": "500"}],
+                "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-32">
+<!-- Top AppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-white/10 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button aria-label="Go back" class="material-symbols-outlined text-primary active:scale-95 transition-transform">arrow_back</button>
+<h1 class="font-headline-md text-headline-md text-primary">Studio Settings</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono-sm text-label-mono-sm uppercase tracking-widest text-primary">Rigify</span>
+</div>
+</header>
+<main class="mt-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto space-y-16">
+<!-- Section 01: Business Profile -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md flex items-center gap-3">
+<span class="w-1 h-6 bg-primary"></span>
+                    Business Profile
+                </h2>
+
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Cover & Logo Management -->
+<div class="md:col-span-12 space-y-gutter">
+<div class="relative h-64 md:h-80 w-full bg-surface-container overflow-hidden group">
+<img alt="Cover Preview" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="A high-end modern barber shop interior with black leather chairs, dark wood cabinetry, and focused warm spotlighting. The atmosphere is sophisticated and cinematic, utilizing a dark mode aesthetic with deep shadows and sharp, clean architectural lines typical of a luxury wellness studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD55MH7fKzEkDxY1DU9If8-E8sETcuknXOy-gSbTpPa8jcOVP_9RNUdYmzUXsOQzVoVeZfJZJmP1zHizQ68bAvo3MkQ_wYykyJUtZ0qJm6NgcTKlDXuwQHZBA3hCDUmPxOXV7Av0iUOCDS__doHOz0Xvb36lxkBLsjLURDpJ_G0UGc3lRaAbAf4-76iUkLduGLrieqcqfoC4XWw3tJCAH4n1pzIBMpQpiIUHXbiyXHb17qqVQtyuzwRUoj8E4xyQlCiLC58OG8OgcU">
+<div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-primary text-on-primary px-6 py-2 font-label-mono-sm uppercase flex items-center gap-2">
+<span class="material-symbols-outlined">photo_camera</span> Change Cover
+                            </button>
+</div>
+<!-- Logo Overlay -->
+<div class="absolute -bottom-4 left-8 h-24 w-24 md:h-32 md:w-32 bg-surface-elevated border border-white/10 p-2 group/logo">
+<div class="w-full h-full bg-surface-container flex items-center justify-center relative overflow-hidden">
+<img alt="Logo Preview" class="w-full h-full object-cover" data-alt="A minimalist logo for a premium barbershop featuring a sharp, stylized razor blade icon in gold against a deep charcoal background. The design is elegant, symmetrical, and reflects professional craftsmanship and high-end wellness branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX1ym3U3ESttop_CfFlYPt_1za3dcomEHr5HSlACuBXDA8N_Kc_7d5J3hp4enXyoRZAHmCKqgMeDKEKIe1dx32O5jA7mJNWWYEUb8ODYXGWj5y0lUfb8V7cf_-7esW2YzfE-3UWJOXFbQVlivldZF1QkEYEIbm7-qGfdDTElCjLEqRFmw0KJBWKtdsPO24QTCtw4oa1-ooXU3Hv8KmZbiz1xs9WlFoXW_PXbytwgZK3aR7dnthnmez1GlWwkugMzCgsWrL76V1qto">
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover/logo:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-primary">edit</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Fields -->
+<div class="md:col-span-6 mt-8">
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant block mb-2">STUDIO NAME</label>
+<input class="w-full bg-surface-container border border-white/10 px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors font-headline-md" type="text" value="STERN Barber Shop">
+</div>
+<div class="md:col-span-6 mt-8">
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant block mb-2">BUSINESS CATEGORY</label>
+<select class="w-full bg-surface-container border border-white/10 px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors appearance-none">
+<option>Premium Barbershop</option>
+<option>Wellness Spa</option>
+<option>Tattoo Artistry</option>
+<option>Luxury Skincare</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Section 02: Gallery & Media -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md flex items-center gap-3">
+<span class="w-1 h-6 bg-primary"></span>
+                    Gallery &amp; Media
+                </h2>
+
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+<div class="aspect-square bg-surface-container border border-dashed border-primary/40 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">add_a_photo</span>
+<span class="font-label-mono-xs text-label-mono-xs">UPLOAD NEW</span>
+</div>
+<!-- Mock Gallery Items -->
+<div class="aspect-square relative group overflow-hidden border border-white/10">
+<img alt="Gallery item 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close-up detail of a professional grooming kit including high-quality steel scissors, a straight razor, and a leather roll, arranged on a dark stone surface. The lighting is low-key and moody, emphasizing the texture of the metal and leather within a luxury studio setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDWAwZpoX-P7pitt5tok5prRNs9dPciAzTEbqRA-p2ucD3XlAffQnD8Kv43Tz1mGomYo8oD4ISfGrpRl4bohxNNXJMy3bAaZzB-zfPSsEUmXOqTB8aG7tM46uA5wqSO12IUped8nyR_pzHqMAJ8JlrjHiNcXYBMetpndAZoN1qv2jigpRGNKI5EE6D94iBQ6Y5T8bQzHfkh9O9m78pLlLnvBFPmKTI0RCxPswe95iZmdMzqnUg8pVa7NgXVqj4UVZoNkTY0Rm6SYI">
+<button class="absolute top-2 right-2 h-8 w-8 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-error text-sm">delete</span></button>
+</div>
+<div class="aspect-square relative group overflow-hidden border border-white/10">
+<img alt="Gallery item 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A sophisticated barber skillfully working on a client's haircut in a dimly lit, high-end studio. The focus is sharp on the precision of the cut, with a background of premium dark cabinetry and soft golden accent lights, creating a professional and exclusive atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAH15EMH4Cf3Vpsq3Z9HbaquEUxaD-fGDGVdt9r7zHAO_YiZHeWU3q95NjZafoEaXI4cocWgMsY-PMbMGD3FpxtKvHnNiZQbM8qpwG89dGSTH67MgevU0UO53iICuemksmLdIGr19QrPgZCvXq3sQ543XaB_9EHahA7W_4A-S3lbw4QPT7QDxm0P4CFVgS1MRyUdAVg9dB-WKPLJukTM2KiUYS_SAc0jJGGIfvZyRqOO5rmBOWSxd2qYVXXuaB-fExYzsQCQ6UvdyA">
+<button class="absolute top-2 right-2 h-8 w-8 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-error text-sm">delete</span></button>
+</div>
+<div class="aspect-square relative group overflow-hidden border border-white/10">
+<img alt="Gallery item 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="The waiting area of an exclusive grooming lounge featuring a dark grey velvet sofa, a minimalist black coffee table with design magazines, and a large abstract art piece on the wall. The mood is calm and luxurious, with architectural lighting highlighting the textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeu8Gn-ecsG5mbJGB1_8axoTBf9ngxtR4qWxrX7Tbnm2dThUz8mQVdtstxhxdt7hE-HPG2kjbzxboJ7K7c9BwvwpHbOGX3ZRz39W6ZhAo1YVcw4HwJX7bLcVqceursLPQqPaqKkMr3Rc7sCr4M7qPDDIcZ1PP3AguKFyL4SLJqVidHku2cJM3y86rec7AXOq6TVFfO2PEDBvrH4r18eOcEwGZyyKnJXU_ohexzsWIKXBlUM4KYgb4dYbwagzY7A8b6KNDhKSBgmoI">
+<button class="absolute top-2 right-2 h-8 w-8 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-error text-sm">delete</span></button>
+</div>
+<div class="aspect-square relative group overflow-hidden border border-white/10">
+<img alt="Gallery item 4" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A row of classic black leather barber chairs reflected in a floor-to-ceiling mirror within a modern, minimalist studio space. The lighting is crisp and cool, creating a sense of clean, architectural precision and high-end professional service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WwaP3IYZFWYvw9pY349KUWFKhdLSMVfJGVqZnAk6YelmxY-A0Vd_Ep0Fks7dZgm2fUqGodB7L6O4PZbmkCt7QcG-II_9auOeykvvWc02uEwHWiYRVg-8wQ4_CYxMUsCzf6FC-uTWl2e1-m9Zq-EbJYbGTwFcGzdODaF9vz5K9lDAy-4uxS1R2rFPUcTl651KG4h32t0nWaswx9CKg0iUkQHDl4TMquexFHKUF8XjQXLkNGPVfuDlnAaDvgaEPgdRr3SmZTldlmM">
+<button class="absolute top-2 right-2 h-8 w-8 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-error text-sm">delete</span></button>
+</div>
+</div>
+</section>
+<!-- Section 03: Operating Hours -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md flex items-center gap-3">
+<span class="w-1 h-6 bg-primary"></span>
+                    Operating Hours
+                </h2>
+
+</div>
+<div class="bg-surface-elevated border border-white/10">
+<!-- Day Row Template -->
+<div class="divide-y divide-white/5">
+<!-- Mon -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-4 min-w-[120px]">
+<span class="font-label-mono-sm text-label-mono-sm text-primary">MON</span>
+<div class="h-px flex-1 bg-white/10 hidden md:block"></div>
+</div>
+<div class="flex items-center gap-4 flex-1">
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="09:00">
+<span class="text-on-surface-variant">to</span>
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="20:00">
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">CLOSED</span>
+<button class="w-12 h-6 bg-surface-container border border-white/10 relative transition-colors duration-200" onclick="this.classList.toggle('bg-primary'); this.classList.toggle('bg-surface-container')">
+<div class="absolute top-1 left-1 w-4 h-4 bg-white transition-all transform translate-x-0"></div>
+</button>
+</div>
+</div>
+<!-- Tue - Fri (Compact Mock) -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-4 min-w-[120px]">
+<span class="font-label-mono-sm text-label-mono-sm text-primary">TUE - FRI</span>
+</div>
+<div class="flex items-center gap-4 flex-1">
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="09:00">
+<span class="text-on-surface-variant">to</span>
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="20:00">
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">CLOSED</span>
+<button class="w-12 h-6 bg-surface-container border border-white/10 relative"><div class="absolute top-1 left-1 w-4 h-4 bg-white"></div></button>
+</div>
+</div>
+<!-- Sat -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-4 min-w-[120px]">
+<span class="font-label-mono-sm text-label-mono-sm text-primary">SAT</span>
+</div>
+<div class="flex items-center gap-4 flex-1">
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="10:00">
+<span class="text-on-surface-variant">to</span>
+<input class="time-picker-custom bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" type="time" value="18:00">
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">CLOSED</span>
+<button class="w-12 h-6 bg-surface-container border border-white/10 relative"><div class="absolute top-1 left-1 w-4 h-4 bg-white"></div></button>
+</div>
+</div>
+<!-- Sun -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-surface-container-highest/20">
+<div class="flex items-center gap-4 min-w-[120px]">
+<span class="font-label-mono-sm text-label-mono-sm text-muted-gold">SUN</span>
+</div>
+<div class="flex items-center gap-4 flex-1 opacity-50 pointer-events-none">
+<input class="bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" disabled="" type="time">
+<span class="text-on-surface-variant">to</span>
+<input class="bg-surface-container border border-white/10 px-4 py-2 text-on-surface flex-1" disabled="" type="time">
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-mono-xs text-label-mono-xs text-primary">CLOSED</span>
+<button class="w-12 h-6 bg-primary border border-white/10 relative"><div class="absolute top-1 left-1 w-4 h-4 bg-white translate-x-6"></div></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 04: Location & Contact -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md flex items-center gap-3">
+<span class="w-1 h-6 bg-primary"></span>
+                    Location &amp; Contact
+                </h2>
+
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-6">
+<div>
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant block mb-2">STUDIO ADDRESS</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">location_on</span>
+<input class="w-full bg-surface-container border border-white/10 pl-12 pr-4 py-3 text-on-surface focus:border-primary transition-colors" type="text" value="821 Luxury Blvd, Floor 4, Miami, FL">
+</div>
+</div>
+<div>
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant block mb-2">PHONE NUMBER</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">call</span>
+<input class="w-full bg-surface-container border border-white/10 pl-12 pr-4 py-3 text-on-surface focus:border-primary transition-colors" type="tel" value="+1 (555) 012-3456">
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant block mb-2">SOCIAL CHANNELS</label>
+<div class="space-y-3">
+<div class="flex items-center gap-3 bg-surface-container border border-white/10 p-1 pl-4">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">IG</span>
+<input class="bg-transparent border-none focus:ring-0 flex-1 text-on-surface py-2" placeholder="@sternbarbers" type="text">
+</div>
+<div class="flex items-center gap-3 bg-surface-container border border-white/10 p-1 pl-4">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">FB</span>
+<input class="bg-transparent border-none focus:ring-0 flex-1 text-on-surface py-2" placeholder="facebook.com/sternbarbers" type="text">
+</div>
+<div class="flex items-center gap-3 bg-surface-container border border-white/10 p-1 pl-4">
+<span class="font-label-mono-xs text-label-mono-xs text-on-surface-variant">WEB</span>
+<input class="bg-transparent border-none focus:ring-0 flex-1 text-on-surface py-2" placeholder="www.sternbarber.com" type="text">
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile md:p-6 z-50">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="font-label-mono-xs text-label-mono-xs text-on-surface-variant hidden md:block">
+                LAST UPDATED: 24 OCT 2023 • 14:32 PM
+            </p>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<button class="flex-1 md:px-12 py-4 font-label-mono-sm border border-white/20 text-on-surface hover:bg-white/5 transition-colors uppercase">Discard</button>
+<button class="flex-1 md:px-12 py-4 bg-primary text-on-primary font-headline-md font-bold hover:bg-primary-container active:scale-95 transition-all shadow-lg shadow-primary/20">SAVE CHANGES</button>
+</div>
+</div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.classList.add('gold-glow');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.classList.remove('gold-glow');
+            });
+        });
+
+        // Toggle Switch Animation Logic
+        document.querySelectorAll('button[onclick]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const dot = this.querySelector('div');
+                if (this.classList.contains('bg-primary')) {
+                    dot.style.transform = 'translateX(24px)';
+                } else {
+                    dot.style.transform = 'translateX(0px)';
+                }
+            });
+        });
+    </script>
+
+
+</body></html>
