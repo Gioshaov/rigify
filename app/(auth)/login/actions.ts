@@ -43,8 +43,17 @@ export async function loginAction(formData: FormData) {
     supabase.from("staff").select("id, business_id, is_active").eq("user_id", data.user.id).maybeSingle()
   ]);
 
-  // Validate redirect is relative path (security check)
-  const isValidRedirect = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//');
+  // Validate redirect is safe relative path (security check against open redirects)
+  let isValidRedirect = false;
+  if (redirectTo && redirectTo.startsWith('/')) {
+    try {
+      const url = new URL(redirectTo, 'http://localhost');
+      // Only allow if hostname is localhost (meaning it was a relative path)
+      isValidRedirect = url.hostname === 'localhost';
+    } catch {
+      isValidRedirect = false;
+    }
+  }
 
   // Default redirects based on user type
   const defaultRedirects = {

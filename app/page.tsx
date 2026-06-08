@@ -2,20 +2,55 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadUser() {
       const supabase = createClient();
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      setUser(currentUser);
+
+      // Use getUser() to validate JWT with server (not getSession which reads from cache)
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error('Auth error:', error);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      setUser(user);
+      setLoading(false);
     }
     loadUser();
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUser(null);
+    setShowDropdown(false);
+    router.refresh();
+  }
 
   const categories = [
     {
@@ -55,35 +90,81 @@ export default function HomePage() {
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary cursor-pointer">language</span>
-          <Link href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
+          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
+          <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
             RIGIFY
           </Link>
         </div>
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
+          <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
             Home
           </Link>
-          <Link href="/businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+          <Link data-testid="nav-browse" href="/businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
             Browse
           </Link>
-          <Link href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+          <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
             My Bookings
           </Link>
-          <Link href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+          <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
             For Business
           </Link>
         </nav>
 
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5" />
+            <div className="relative" ref={dropdownRef}>
+              <button
+                data-testid="user-menu-btn"
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center hover:border-primary/30 transition-colors"
+              >
+                <span className="material-symbols-outlined text-primary text-[20px]">person</span>
+              </button>
+
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-surface-container border border-white/10 shadow-lg z-50">
+                  <div className="p-3 border-b border-white/10">
+                    <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <div className="p-2">
+                    <Link
+                      data-testid="dropdown-my-bookings"
+                      href="/customer/dashboard"
+                      className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">event_available</span>
+                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">My Bookings</span>
+                    </Link>
+                    <Link
+                      data-testid="dropdown-profile"
+                      href="/customer/dashboard/profile"
+                      className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">person</span>
+                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">Profile</span>
+                    </Link>
+                  </div>
+                  <div className="p-2 border-t border-white/10">
+                    <button
+                      data-testid="dropdown-sign-out"
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-error hover:bg-error/10 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">logout</span>
+                      <span className="font-hanken text-[14px] leading-[1.5] font-normal">Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <Link href="/login" className="btn-secondary !py-2">
+            <Link data-testid="sign-in-btn" href="/login" className="border border-primary text-primary px-6 py-2 font-mono text-data-label uppercase tracking-wider hover:bg-primary hover:text-on-primary transition-colors">
               Sign In
             </Link>
           )}
@@ -104,10 +185,10 @@ export default function HomePage() {
               Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/businesses" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
+              <Link data-testid="hero-browse-studios-btn" href="/businesses" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
                 Browse Studios
               </Link>
-              <Link href="/for-businesses" className="border border-white/20 text-white px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98] text-center">
+              <Link data-testid="hero-for-businesses-btn" href="/for-businesses" className="border border-white/20 text-white px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98] text-center">
                 For Businesses
               </Link>
             </div>
@@ -137,15 +218,16 @@ export default function HomePage() {
               <p className="font-hanken text-headline-md text-white font-semibold">Categories</p>
             </div>
             <div className="hidden md:block h-[1px] flex-grow mx-12 bg-white/10"></div>
-            <Link href="/businesses" className="font-mono text-[10px] text-on-surface-variant hover:text-primary uppercase flex items-center gap-2 tracking-[0.2em]">
+            <Link data-testid="view-all-categories-link" href="/businesses" className="font-mono text-[10px] text-on-surface-variant hover:text-primary uppercase flex items-center gap-2 tracking-[0.2em]">
               View All Categories <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <Link
                 key={category.name}
+                data-testid={`category-card-${index}`}
                 href={category.href}
                 className="group relative bg-surface-container overflow-hidden aspect-video md:aspect-[16/7]"
               >
@@ -183,7 +265,7 @@ export default function HomePage() {
               <p className="font-hanken text-body-md text-on-surface-variant mb-8">
                 The heart of Georgian beauty. Over 200+ premium studios and independent artisans ready for booking.
               </p>
-              <Link href="/businesses" className="flex items-center gap-2 text-primary font-mono text-data-label uppercase group cursor-pointer">
+              <Link data-testid="explore-tbilisi-link" href="/businesses" className="flex items-center gap-2 text-primary font-mono text-data-label uppercase group cursor-pointer">
                 Explore City <span className="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-2">east</span>
               </Link>
             </div>
@@ -226,13 +308,13 @@ export default function HomePage() {
               The ultimate destination for luxury beauty and wellness services in Georgia. Connecting elite practitioners with discerning clients.
             </p>
             <div className="flex gap-4">
-              <a className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Facebook">
+              <a data-testid="footer-facebook-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Facebook">
                 <span className="material-symbols-outlined text-[20px]">face_nod</span>
               </a>
-              <a className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Instagram">
+              <a data-testid="footer-instagram-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Instagram">
                 <span className="material-symbols-outlined text-[20px]">photo_camera</span>
               </a>
-              <a className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Email">
+              <a data-testid="footer-email-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Email">
                 <span className="material-symbols-outlined text-[20px]">mail</span>
               </a>
             </div>
@@ -241,20 +323,20 @@ export default function HomePage() {
           <div>
             <h6 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h6>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
-              <li><Link href="/businesses" className="hover:text-primary transition-colors">Browse Studios</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Gift Cards</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Reviews</Link></li>
+              <li><Link data-testid="footer-browse-studios" href="/businesses" className="hover:text-primary transition-colors">Browse Studios</Link></li>
+              <li><Link data-testid="footer-special-offers" href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
+              <li><Link data-testid="footer-gift-cards" href="#" className="hover:text-primary transition-colors">Gift Cards</Link></li>
+              <li><Link data-testid="footer-reviews" href="#" className="hover:text-primary transition-colors">Reviews</Link></li>
             </ul>
           </div>
 
           <div>
             <h6 className="font-mono text-data-label text-white uppercase mb-6">Partners</h6>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
-              <li><Link href="/for-businesses" className="hover:text-primary transition-colors">Register Business</Link></li>
-              <li><Link href="/dashboard" className="hover:text-primary transition-colors">Partner Dashboard</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Pricing</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Support</Link></li>
+              <li><Link data-testid="footer-register-business" href="/for-businesses" className="hover:text-primary transition-colors">Register Business</Link></li>
+              <li><Link data-testid="footer-partner-dashboard" href="/dashboard" className="hover:text-primary transition-colors">Partner Dashboard</Link></li>
+              <li><Link data-testid="footer-pricing" href="#" className="hover:text-primary transition-colors">Pricing</Link></li>
+              <li><Link data-testid="footer-support" href="#" className="hover:text-primary transition-colors">Support</Link></li>
             </ul>
           </div>
         </div>
@@ -262,27 +344,27 @@ export default function HomePage() {
         <div className="max-w-container-max mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-on-surface-variant uppercase tracking-[0.2em]">
           <span>© 2024 RIGIFY. All rights reserved.</span>
           <div className="flex gap-8">
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link data-testid="footer-privacy-policy" href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link data-testid="footer-terms-of-service" href="#" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>
         </Link>
-        <Link href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
         </Link>
-        <Link href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
+        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">My Bookings</span>
         </Link>
-        <Link href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
+        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>
         </Link>
