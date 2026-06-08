@@ -1,6 +1,6 @@
 # Rigify Development Session Summary
 
-**Last Updated**: June 7, 2026  
+**Last Updated**: June 9, 2026  
 **Repository**: https://github.com/Gioshaov/rigify
 
 ---
@@ -888,4 +888,102 @@ All 19 migrations in `supabase/migrations/`:
 - Priority 4: Business Dashboard redesign (7 Stitch designs)
 
 **Status**: All implementation committed and pushed. Documentation updated but uncommitted.
+
+---
+
+### Session 12 - Date: June 9, 2026 - Complete E2E Test Automation Infrastructure
+
+**Objective**: Implement comprehensive Playwright test automation infrastructure to catch regressions at session end
+
+**Accomplished**:
+1. **Database Migration for Test Data Isolation** ✅
+   - Created migration adding `is_test boolean` column to businesses table
+   - Updated RLS policy to exclude test businesses from production queries
+   - Created fix migration for correct policy naming
+   - Applied both migrations to remote database
+   
+2. **Playwright Setup** ✅
+   - Installed @playwright/test, tsx, dotenv packages
+   - Created playwright.config.ts with auto dev server start
+   - Added 7 test scripts to package.json
+   - Updated .gitignore for test artifacts
+   - Installed Chromium browser
+   
+3. **Test Infrastructure (Phase 2)** ✅
+   - Created complete test directory structure
+   - Built test fixtures (test-users.ts with business owner, customer, guest data)
+   - Built database helpers (admin client, cleanup, test data getters)
+   - Built test helpers (site password bypass, login, date selection, unique phones)
+   - Created idempotent seed script with duplicate cleanup
+   - Successfully seeded test data (business owner, customer, test business)
+   
+4. **Critical Test Suites (Phase 3)** ✅
+   - Guest booking flow test (browse → select → book → confirm)
+   - Login flow test (business owner, customer, invalid credentials)
+   - Browse studios test (grid display, search, filters, hover effects)
+   - Booking validation test (invalid phone, past dates)
+   - Business dashboard test (navigation to all sections)
+   
+5. **CI/CD Integration (Phase 4)** ✅
+   - Created GitHub Actions workflow (.github/workflows/playwright.yml)
+   - Configured for automatic runs on push/PR to main/develop
+   - Uses separate test environment variables
+   - Includes test data seeding step
+   - Uploads test artifacts for 30 days
+   
+6. **Development Tools (Phase 5)** ✅
+   - Created test ID audit script (scripts/audit-test-ids.ts)
+   - Finds potential missing test IDs on interactive elements
+   - Regex-based tool for development spot-checks
+   
+7. **Documentation (Phase 6)** ✅
+   - Created comprehensive TESTING.md guide
+   - Updated CLAUDE.md with test commands and organization
+   - Documented all helpers, fixtures, best practices
+   
+8. **Code Review & Critical Fixes** ✅
+   - Fixed C1: RLS policy name mismatch (businesses_public_select)
+   - Fixed C2: listUsers pagination issue (prevents silent failures >1000 users)
+   - Fixed C3: Environment variable validation (clear error messages)
+   - Fixed M1: Missing assertion in phone validation test
+   - Fixed M2: Removed flaky waitForTimeout calls (replaced with deterministic checks)
+
+**Files Changed**:
+- Created: 18 files (complete test infrastructure)
+- Modified: 8 files (package.json, .gitignore, CLAUDE.md, test fixes)
+- Migrations: 2 (is_test column + RLS fix)
+- Net: 1800+ lines of test automation code
+
+**Commits**:
+- `6de4f52` - Implement comprehensive E2E test automation infrastructure with Playwright
+- `8136aa0` - Fix critical issues from code review
+
+**Available Commands**:
+```bash
+npm run test:e2e          # Run all tests
+npm run test:e2e:ui       # Interactive UI mode
+npm run test:e2e:headed   # Watch browser
+npm run test:e2e:debug    # Debug mode
+npm run test:report       # View HTML report
+npm run seed:test         # Seed test data
+npm run audit:testids     # Find missing test IDs
+```
+
+**Verification**:
+- ✅ Test infrastructure complete and functional
+- ✅ Test data seeding works (idempotent)
+- ✅ Site password bypass working
+- ✅ All CRITICAL code review issues fixed
+- ✅ All MAJOR code review issues fixed
+- ✅ Commits pushed to GitHub
+- ✅ CI/CD workflow active (will run on next push)
+- ⚠️ Tests currently fail due to missing test IDs on some pages (expected, Priority 1 to fix)
+
+**Next Steps**:
+- Priority 0: Run `npm run test:e2e` at end of each session for regression testing
+- Priority 1: Add missing test IDs to existing pages so tests pass
+- Priority 2: Complete Business Dashboard features (delete service, add service, etc.)
+- Priority 3: Customer Dashboard (4 Stitch designs)
+
+**Status**: All implementation committed and pushed to GitHub. CI/CD active. Ready for regression testing.
 
