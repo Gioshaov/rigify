@@ -87,6 +87,11 @@ export function BookAppointmentContent({
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
 
+  // Customer details
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
   // Use the service from props
   const selectedService = initialSelectedService;
 
@@ -165,9 +170,9 @@ export function BookAppointmentContent({
     : "Select date and time";
 
   // Helper to format price
-  const formatPrice = (minCents: number, maxCents: number) => {
-    const min = (minCents / 100).toFixed(0);
-    const max = (maxCents / 100).toFixed(0);
+  const formatPrice = (minGel: number, maxGel: number) => {
+    const min = minGel.toFixed(0);
+    const max = maxGel.toFixed(0);
     return min === max ? `${min} GEL` : `${min}-${max} GEL`;
   };
 
@@ -214,9 +219,9 @@ export function BookAppointmentContent({
           serviceId: selectedService.id,
           date: bookingDate,
           startTime: time24,
-          customerName: 'Guest', // Will be replaced with actual customer data if logged in
-          customerPhone: '',
-          customerEmail: '',
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim(),
+          customerEmail: customerEmail.trim() || undefined,
           staffId: null // "Any Staff" mode
         }),
       });
@@ -470,7 +475,7 @@ export function BookAppointmentContent({
               )}
 
               {/* Date & Time Summary */}
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-6 pb-6 border-b border-white/10">
                 <div>
                   <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold">
                     DATE & TIME
@@ -485,6 +490,56 @@ export function BookAppointmentContent({
                 >
                   {selectedService && selectedDate && selectedTime ? "check_circle" : "schedule"}
                 </span>
+              </div>
+
+              {/* Customer Details Form */}
+              <div className="mb-6">
+                <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold mb-4">
+                  YOUR DETAILS
+                </p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      data-testid="customer-name-input"
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      data-testid="customer-phone-input"
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="5XX XXX XXX"
+                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
+                      Email (Optional)
+                    </label>
+                    <input
+                      data-testid="customer-email-input"
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Error Message */}
@@ -502,7 +557,7 @@ export function BookAppointmentContent({
               <button
                 data-testid="confirm-booking-btn"
                 onClick={handleConfirmBooking}
-                disabled={!selectedService || !selectedDate || !selectedTime || isBooking}
+                disabled={!selectedService || !selectedDate || !selectedTime || !customerName.trim() || !customerPhone.trim() || isBooking}
                 className="w-full bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium py-4 hover:bg-primary-fixed-dim transition-all active:scale-[0.98] uppercase disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isBooking ? (

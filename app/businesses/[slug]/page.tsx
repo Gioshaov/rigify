@@ -69,9 +69,9 @@ export default async function BusinessProfilePage({
   );
 
   // Helper to format price range
-  const formatPrice = (minCents: number, maxCents: number) => {
-    const min = (minCents / 100).toFixed(0);
-    const max = (maxCents / 100).toFixed(0);
+  const formatPrice = (minGel: number, maxGel: number) => {
+    const min = minGel.toFixed(0);
+    const max = maxGel.toFixed(0);
     return min === max ? `${min} GEL` : `${min}-${max} GEL`;
   };
 

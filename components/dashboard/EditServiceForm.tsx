@@ -30,8 +30,8 @@ export function EditServiceForm({ service, businessId }: EditServiceFormProps) {
     description: service.description || '',
     category: service.category || 'other',
     duration_minutes: service.duration_minutes,
-    price_min: service.price_min / 100,
-    price_max: service.price_max / 100,
+    price_min: service.price_min,
+    price_max: service.price_max,
     is_active: service.is_active,
   });
 
@@ -58,8 +58,8 @@ export function EditServiceForm({ service, businessId }: EditServiceFormProps) {
           description: formData.description,
           category: formData.category,
           duration_minutes: formData.duration_minutes,
-          price_min: Math.round(formData.price_min * 100),
-          price_max: Math.round(formData.price_max * 100),
+          price_min: formData.price_min,
+          price_max: formData.price_max,
           is_active: formData.is_active,
         }),
       });

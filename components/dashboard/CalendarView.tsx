@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from "react";
+import { formatInTimeZone } from "date-fns-tz";
+import { TBILISI_TZ } from "@/lib/utils/datetime";
 import { DayAppointments } from "./DayAppointments";
 
 type Booking = {
@@ -77,11 +79,12 @@ export function CalendarView({ bookings, businessId }: CalendarViewProps) {
     return days;
   }
 
-  // Get bookings for a specific date
+  // Get bookings for a specific date (using Tbilisi timezone)
   function getBookingsForDate(date: Date): Booking[] {
-    const dateStr = date.toISOString().split('T')[0];
+    // Format both dates in Tbilisi timezone to avoid UTC shifts
+    const dateStr = formatInTimeZone(date, TBILISI_TZ, 'yyyy-MM-dd');
     return bookings.filter(b => {
-      const bookingDate = new Date(b.appointment_datetime).toISOString().split('T')[0];
+      const bookingDate = formatInTimeZone(new Date(b.appointment_datetime), TBILISI_TZ, 'yyyy-MM-dd');
       return bookingDate === dateStr;
     });
   }

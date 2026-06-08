@@ -159,7 +159,7 @@ export function AppointmentsListView({ bookings }: AppointmentsListViewProps) {
                                 Price
                               </p>
                               <p className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary">
-                                ₾{(booking.price / 100).toFixed(2)}
+                                ₾{booking.price.toFixed(2)}
                               </p>
                             </div>
                           )}

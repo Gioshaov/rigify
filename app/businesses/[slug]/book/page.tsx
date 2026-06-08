@@ -21,11 +21,12 @@ export default async function BookAppointmentPage({
 }) {
   const supabase = createClient();
 
-  // Fetch business
+  // Fetch business (only if active)
   const { data: business, error: businessError } = await supabase
     .from('businesses')
     .select('id, name, slug')
     .eq('slug', params.slug)
+    .eq('is_active', true)
     .single();
 
   if (businessError || !business) {
