@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
 
@@ -84,6 +84,8 @@ export function BookAppointmentContent({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
 
   // Use the service from props
   const selectedService = initialSelectedService;
@@ -95,6 +97,50 @@ export function BookAppointmentContent({
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+
+  // Fetch available slots when date or service changes
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!selectedDate || !selectedService) {
+        setAvailableSlots([]);
+        return;
+      }
+
+      setIsLoadingAvailability(true);
+      setBookingError(null);
+
+      const bookingDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
+
+      try {
+        const response = await fetch(
+          `/api/availability?businessId=${business.id}&serviceId=${selectedService.id}&date=${bookingDate}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch availability');
+        }
+
+        const data = await response.json();
+        // Convert 24-hour slots to 12-hour format to match UI
+        const slots12h = data.slots.map((slot24: string) => {
+          const [hours, minutes] = slot24.split(':').map(Number);
+          const ampm = hours >= 12 ? "PM" : "AM";
+          const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+          const displayMin = minutes === 0 ? "00" : minutes;
+          return `${displayHour}:${displayMin} ${ampm}`;
+        });
+        setAvailableSlots(slots12h);
+      } catch (error) {
+        console.error('Error fetching availability:', error);
+        setBookingError('Failed to load available slots. Please try again.');
+        setAvailableSlots([]);
+      } finally {
+        setIsLoadingAvailability(false);
+      }
+    };
+
+    fetchAvailability();
+  }, [selectedDate, currentMonth, currentYear, selectedService, business.id]);
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
@@ -340,25 +386,46 @@ export function BookAppointmentContent({
                   </span>
                 </div>
               </div>
-              <div className="h-[400px] overflow-y-auto pr-4 grid grid-cols-2 gap-2">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    data-testid={`time-slot-${time.replace(/[:\s]/g, '-').toLowerCase()}`}
-                    onClick={() => setSelectedTime(time)}
-                    className={`
-                      p-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium border transition-all cursor-pointer
-                      ${
-                        time === selectedTime
-                          ? "bg-primary text-background border-primary"
-                          : "bg-surface text-on-surface-variant border-white/5 hover:border-primary hover:bg-surface-variant active:scale-95"
-                      }
-                    `}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
+              {isLoadingAvailability ? (
+                <div className="h-[400px] flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent animate-spin rounded-full mx-auto mb-3"></div>
+                    <p className="font-mono text-[10px] tracking-[0.2em] text-on-surface-variant">LOADING SLOTS...</p>
+                  </div>
+                </div>
+              ) : !selectedDate ? (
+                <div className="h-[400px] flex items-center justify-center">
+                  <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant">SELECT A DATE FIRST</p>
+                </div>
+              ) : (
+                <div className="h-[400px] overflow-y-auto pr-4 grid grid-cols-2 gap-2">
+                  {timeSlots.map((time) => {
+                    const isAvailable = availableSlots.includes(time);
+                    const isDisabled = !isAvailable;
+
+                    return (
+                      <button
+                        key={time}
+                        data-testid={`time-slot-${time.replace(/[:\s]/g, '-').toLowerCase()}`}
+                        onClick={() => !isDisabled && setSelectedTime(time)}
+                        disabled={isDisabled}
+                        className={`
+                          p-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium border transition-all
+                          ${
+                            isDisabled
+                              ? "bg-surface/50 text-on-surface-variant/30 border-white/5 cursor-not-allowed line-through"
+                              : time === selectedTime
+                              ? "bg-primary text-background border-primary cursor-pointer"
+                              : "bg-surface text-on-surface-variant border-white/5 hover:border-primary hover:bg-surface-variant active:scale-95 cursor-pointer"
+                          }
+                        `}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Summary & CTA */}

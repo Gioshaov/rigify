@@ -24,43 +24,18 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
   const admin = createAdminClient();
   const supabase = createClient();
 
-  const { data: booking, error } = await admin
+  // Step 1: Fetch minimal booking metadata (NO PII)
+  const { data: bookingMeta, error: metaError } = await admin
     .from("bookings")
-    .select(`
-      id,
-      appointment_datetime,
-      price,
-      business_id,
-      customer_id,
-      customer_name,
-      customer_phone,
-      customer_email,
-      created_at,
-      services (
-        name,
-        duration_minutes,
-        price_min,
-        price_max
-      ),
-      staff (
-        name
-      ),
-      businesses (
-        name,
-        slug,
-        phone,
-        address,
-        city
-      )
-    `)
+    .select("id, business_id, customer_id, created_at")
     .eq("id", bookingId)
     .single();
 
-  if (error || !booking) {
+  if (metaError || !bookingMeta) {
     notFound();
   }
 
-  // Check if viewer is authorized to see PII (customer or business owner)
+  // Step 2: Check if viewer is authorized to see PII (BEFORE fetching it)
   const { data: { user } } = await supabase.auth.getUser();
 
   let canViewPII = false;
@@ -68,32 +43,112 @@ export default async function BookingConfirmedPage({ params, searchParams }: Pag
 
   if (user) {
     // Check if viewer is the customer
-    if (booking.customer_id === user.id) {
+    if (bookingMeta.customer_id === user.id) {
       canViewPII = true;
       isAuthorizedViewer = true;
     }
 
     // Check if viewer is the business owner
-    const { data: business } = await admin
-      .from('businesses')
-      .select('owner_id')
-      .eq('id', booking.business_id)
-      .single();
+    if (!isAuthorizedViewer) {
+      const { data: business } = await admin
+        .from('businesses')
+        .select('owner_id')
+        .eq('id', bookingMeta.business_id)
+        .single();
 
-    if (business?.owner_id === user.id) {
-      canViewPII = true;
-      isAuthorizedViewer = true;
+      if (business?.owner_id === user.id) {
+        canViewPII = true;
+        isAuthorizedViewer = true;
+      }
     }
   }
 
-  // Guest bookings expire after 24 hours for unauthenticated/unauthorized viewers
+  // Step 3: Guest bookings expire after 24 hours for unauthenticated/unauthorized viewers
   if (!isAuthorizedViewer) {
-    const bookingAge = Date.now() - new Date(booking.created_at).getTime();
+    const bookingAge = Date.now() - new Date(bookingMeta.created_at).getTime();
     const twentyFourHours = 24 * 60 * 60 * 1000;
 
     if (bookingAge > twentyFourHours) {
       notFound();
     }
+  }
+
+  // Step 4: Fetch full booking data - conditionally include PII fields based on authorization
+  let booking;
+
+  if (canViewPII) {
+    // Authorized viewer: fetch WITH PII
+    const { data, error } = await admin
+      .from("bookings")
+      .select(`
+        id,
+        appointment_datetime,
+        price,
+        customer_name,
+        customer_phone,
+        customer_email,
+        services (
+          name,
+          duration_minutes,
+          price_min,
+          price_max
+        ),
+        staff (
+          name
+        ),
+        businesses (
+          name,
+          slug,
+          phone,
+          address,
+          city
+        )
+      `)
+      .eq("id", bookingId)
+      .single();
+
+    if (error || !data) {
+      notFound();
+    }
+    booking = data;
+  } else {
+    // Guest/unauthorized: fetch WITHOUT PII
+    const { data, error } = await admin
+      .from("bookings")
+      .select(`
+        id,
+        appointment_datetime,
+        price,
+        services (
+          name,
+          duration_minutes,
+          price_min,
+          price_max
+        ),
+        staff (
+          name
+        ),
+        businesses (
+          name,
+          slug,
+          phone,
+          address,
+          city
+        )
+      `)
+      .eq("id", bookingId)
+      .single();
+
+    if (error || !data) {
+      notFound();
+    }
+    // Add undefined PII fields for type compatibility
+    booking = {
+      ...data,
+      customer_name: undefined,
+      customer_phone: undefined,
+      customer_email: undefined,
+    };
   }
 
   // Transform array joins to single objects for component
