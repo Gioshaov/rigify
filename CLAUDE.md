@@ -171,6 +171,50 @@ All interactive elements MUST use `data-testid` attributes for Playwright select
 - Clear intent: attribute exists only for testing
 - Industry standard (Playwright, Testing Library, Cypress)
 
+### Running Tests
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run tests in UI mode (interactive)
+npm run test:e2e:ui
+
+# Run tests in headed mode (see browser)
+npm run test:e2e:headed
+
+# Debug a specific test
+npm run test:e2e:debug tests/e2e/booking/guest-booking-flow.spec.ts
+
+# View last test report
+npm run test:report
+
+# Seed test data (required before first run)
+npm run seed:test
+
+# Audit test ID coverage (development only)
+npm run audit:testids
+```
+
+### Test Organization
+
+- `tests/e2e/auth/` - Authentication flows (login, register)
+- `tests/e2e/booking/` - Booking flows (guest, customer, validation)
+- `tests/e2e/business/` - Business browsing, search, filters
+- `tests/e2e/dashboard/` - Dashboard tests (business, customer, staff)
+- `tests/e2e/admin/` - Admin panel tests
+- `tests/utils/` - Test helpers and database utilities
+- `tests/e2e/fixtures/` - Test data and user credentials
+
+### Writing New Tests
+
+1. Always use existing test IDs (never hardcode selectors like `.btn` or `#submit`)
+2. Use test helpers from `tests/utils/test-helpers.ts`
+3. Clean up test data in `afterEach` hooks
+4. Use unique phone numbers via `generateUniquePhone()`
+5. Follow AAA pattern: Arrange, Act, Assert
+6. See `TESTING.md` for comprehensive guide
+
 ---
 
 ## Git Workflow
