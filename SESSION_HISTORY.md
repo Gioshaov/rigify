@@ -815,3 +815,77 @@ All 19 migrations in `supabase/migrations/`:
 - ⏳ Phases 3-6: Pending
 - ✅ Design system: Colors verified and fixed
 - ✅ All Stitch effects: Preserved with exact durations
+
+---
+
+### Session 11 - Date: June 8, 2026 (Evening) - Critical Fixes + Stitch Design Restoration
+
+**Objective**: Fix Vercel build errors, investigate lost Stitch design, restore browse page design with real data, prevent future design loss
+
+**Accomplished**:
+1. **Fixed ESLint errors blocking Vercel deployment** ✅
+   - Fixed 8 `react/no-unescaped-entities` errors across 4 files
+   - Escaped apostrophes with `&apos;` entity
+   - Build now passes, Vercel deployment successful
+   
+2. **Investigated missing Stitch design** ✅
+   - Traced issue to commit `b8ac8ac` (earlier in day)
+   - Found that fixing "mock data" issue accidentally removed entire Stitch UI
+   - Page went from 353 lines → 172 lines, lost floating search panel
+   - Root cause: "throwing out baby with bathwater" - fixed data but removed design
+   - Documented full investigation in plan file
+   
+3. **Restored Stitch `browse_studios` design with real data** ✅
+   - Converted `/businesses/page.tsx` to client component with useState/useEffect
+   - Added floating search panel (-mt-12 overlap, exact Stitch styling)
+   - Wired filters to real Supabase data (search, district, category)
+   - Simplified BusinessGrid to display-only component (260 → 127 lines)
+   - Fully functional: beautiful design + real data + working filters
+   
+4. **Fixed missing Stitch hover effects** ✅
+   - Restored exact hover effects on business cards:
+     - Image scale-105 zoom with grayscale-to-color (700ms transition)
+     - Card border hover to primary/40 (300ms)
+     - Title color transition to primary-fixed
+     - Icon badge positioning (-bottom-6)
+     - Filled star icons for ratings
+   - All transitions match original Stitch design spec
+   
+5. **Added prevention guidelines** ✅
+   - Updated CLAUDE.md with critical Stitch implementation requirements
+   - Must reference original design files before implementing
+   - Must preserve ALL hover effects and transitions
+   - Must verify before committing
+   - Must add design reference comments in code
+   - Prevents future "lost design" incidents
+
+6. **Cleaned up GitHub branches** ✅
+   - Deleted 3 merged/outdated feature branches
+   - Repository now has only `main` branch
+
+**Files Changed**:
+- Modified: 7 files (4 ESLint fixes, 2 Stitch implementation, 1 prevention guideline)
+- Created: 1 plan file (investigation documentation)
+- Net code change: Cleaner, more maintainable codebase
+
+**Commits**:
+- `a59cb35` - Fix ESLint react/no-unescaped-entities errors blocking Vercel build
+- `773f025` - Restore Stitch browse_studios design with real Supabase data  
+- `8aa4031` - Fix missing Stitch hover effects on business cards
+
+**Verification**:
+- ✅ All Stitch visual design elements present and correct
+- ✅ All hover effects working (verified with line-by-line code review)
+- ✅ Real Supabase data integration working
+- ✅ All filters functional (search, district, category)
+- ✅ TypeScript errors: None
+- ✅ Build status: Passing on Vercel
+
+**Next Steps**:
+- Priority 1: Complete Business Dashboard features (delete service, add service, staff management)
+- Priority 2: Add test IDs to Phase 1 public pages for Playwright automation
+- Priority 3: Customer Dashboard (4 Stitch designs: my_bookings, manage_booking, reschedule, profile)
+- Priority 4: Business Dashboard redesign (7 Stitch designs)
+
+**Status**: All implementation committed and pushed. Documentation updated but uncommitted.
+

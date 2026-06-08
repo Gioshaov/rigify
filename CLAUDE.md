@@ -4,6 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## ⚠️ CRITICAL: Implementing Stitch Designs
+
+**When implementing ANY page with a Stitch design, you MUST:**
+
+1. **Reference the original design file** at `design-assets/stitch_rigify/<design-name>/`
+   - Read the `code.html` file to see exact classes and structure
+   - View the `screen.png` to understand visual behavior
+   
+2. **Preserve ALL hover effects and transitions:**
+   - Image hover effects (scale, grayscale transitions)
+   - Border hover effects (color changes)
+   - Text hover effects (color transitions)
+   - Card/container hover effects
+   - Check transition durations (duration-300, duration-700, etc.)
+   
+3. **Verify before committing:**
+   - Compare your implementation to the design file
+   - Check all interactive states (hover, focus, active)
+   - Test in browser to verify animations work
+   
+4. **Add design reference comment in code:**
+   ```tsx
+   // Stitch Design: design-assets/stitch_rigify/<design-name>/
+   ```
+
+**If you simplify or modify a Stitch component**, you risk losing critical visual design elements. Always start from the original design and adapt, don't rebuild from scratch.
+
+---
+
 ## UI Design System
 
 **Always read `UI_GUIDE.md` before any UI work in this project.**

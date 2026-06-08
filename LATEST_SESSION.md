@@ -1,7 +1,7 @@
 # Latest Session Summary
 
 **Last Updated**: June 8, 2026  
-**Session**: Day 10 - Business Dashboard Improvements + Navigation Optimization
+**Session**: Session 11 - Critical Fixes + Stitch Design Restoration
 
 ---
 
@@ -58,117 +58,150 @@
 
 ---
 
-## Latest Session Work (Session 10 - June 8, 2026)
+## Latest Session Work (Session 11 - June 8, 2026)
 
-**Objective**: Fix business dashboard functionality, optimize navigation UX, enforce test ID requirements
+**Objective**: Fix critical Vercel build errors, investigate/restore lost Stitch design, fix hover effects, add prevention guidelines
 
-### 1. Service Edit Functionality ✅
-**Problem**: Edit buttons on service cards were non-functional (static buttons with no navigation)
+### 1. Fix ESLint Build Errors Blocking Vercel ✅
+**Problem**: Vercel deployment failing with 8 `react/no-unescaped-entities` errors
 
-**Solution Implemented**:
-- Created `app/dashboard/services/[id]/edit/page.tsx` - Server component for edit route
-- Created `components/dashboard/EditServiceForm.tsx` - Client form with state management
-- Created `app/api/services/[id]/route.ts` - PATCH endpoint for updates
-- Updated `components/dashboard/ServicesContent.tsx` - Changed edit button from `<button>` to `<Link>`
+**Root Cause**: Raw apostrophes in JSX text (Today's, Don't, We're, etc.)
 
-**Features**:
-- Form pre-populated with existing service data
-- Price conversion: GEL (display) ↔ cents (database)
-- Category dropdown (hair, beard, massage, nails, skincare, other)
-- Status toggle (active/inactive)
-- Loading state with spinner during submission
-- Error handling with user-friendly messages
-- Cancel/Save buttons with proper navigation
+**Solution**: Escaped all apostrophes with `&apos;` entity
 
-**Files**:
-- Created: 3 (page, form component, API route)
-- Modified: 1 (ServicesContent.tsx)
+**Files Fixed**:
+- `components/dashboard/DashboardOverviewContent.tsx` (2 errors)
+- `components/marketing/ForBusinessesPage.tsx` (4 errors)
+- `app/(auth)/forgot-password/page.tsx` (1 error)
+- `app/(auth)/login/LoginPageClient.tsx` (1 error)
 
-### 2. Dashboard Navigation Optimization ✅
-**Problem**: Navigating between dashboard sections required 3 clicks (navigate → re-filter → re-filter) because filter state reset on page change
+**Result**: Build passes, Vercel deployment successful
 
-**Root Cause**: View filters stored in local `useState` which unmounts on navigation
+**Commit**: `a59cb35`
 
-**Solution**: URL-based persistent state using Next.js `useSearchParams` and `router.push()`
+---
+
+### 2. Investigation: Lost Stitch Design ✅
+**Problem**: User reported `/businesses` page missing Stitch design implementation
+
+**Investigation Results**:
+- **When**: Commit `b8ac8ac` - "Fix all 5 Codex review issues (P1 and P2)"
+- **What happened**: Entire page replaced (353 lines → 172 lines) to fix "mock data" issue
+- **What was lost**: Stitch floating search panel with `-mt-12` overlap, exact styling, Material icons
+- **What was kept**: Real Supabase data fetching, BusinessGrid component
+
+**Root Cause**: "Throwing out the baby with the bathwater" - fixed data problem but accidentally removed visual design
+
+**Documentation**: Created investigation report in plan file
+
+---
+
+### 3. Restore Stitch browse_studios Design ✅
+**Objective**: Restore exact Stitch design while keeping real Supabase data
 
 **Implementation**:
-- `components/dashboard/AppointmentsContent.tsx`:
-  - Replaced `useState` hooks with URL param reading
-  - Filter params: `view` (calendar/list), `status` (all/confirmed/pending/completed), `staff` (staff ID)
-  - Example URL: `/dashboard/appointments?view=calendar&status=confirmed&staff=abc123`
 
-- `components/dashboard/ServicesContent.tsx`:
-  - Replaced `useState` hooks with URL param reading
-  - Filter params: `category` (all/hair/beard/etc), `status` (all/active/inactive)
-  - Example URL: `/dashboard/services?category=hair&status=active`
+**app/businesses/page.tsx** - Converted to client component:
+- Added `"use client"` directive
+- Moved Supabase query to `useEffect`
+- Added filter state (search, district, category)
+- Added Stitch floating search panel:
+  - `-mt-12` overlap on hero
+  - `bg-surface-elevated sharp-border p-6 md:p-8`
+  - Horizontal flex layout
+  - Search input with Material icon
+  - District/Category dropdowns using real constants
+  - "Discover" button
+- Filter businesses before passing to grid
+- Results count display
 
-**Benefits**:
-- Filters persist across navigation (bookmarked in URL)
-- Browser back/forward works correctly
-- Shareable filtered views (send URL to colleague)
-- Reduced clicks: 3 → 1
+**app/businesses/BusinessGrid.tsx** - Simplified to display-only:
+- Removed internal filter UI (lines 84-177)
+- Removed filter state management (lines 27-30)  
+- Removed filtering logic (lines 33-80)
+- Just displays business cards grid
+- Reduced from 260 to ~100 lines
 
-**Files Modified**: 2 (AppointmentsContent.tsx, ServicesContent.tsx)
+**Result**:
+- Full Stitch browse_studios design restored
+- Fully functional with real Supabase data
+- No duplicate filter UI
+- Net: 254 insertions, 287 deletions (cleaner code)
 
-### 3. Staff Filter Bug Fix ✅
-**Problem**: Staff filter in appointments didn't work when booking had multiple staff members assigned
+**Commit**: `773f025`
 
-**Root Cause**: Code only checked first staff member in array (`staff[0]`), ignored the rest
+---
 
-**Fix**: Use `.some()` to check if ANY staff member in the array matches the selected filter
+### 4. Fix Missing Stitch Hover Effects ✅
+**Problem**: Business cards on `/businesses` page missing critical hover effects from Stitch design
 
-**Before**:
-```typescript
-const bookingStaff = Array.isArray(booking.staff) ? booking.staff[0] : booking.staff;
-if (!bookingStaff || bookingStaff.id !== staffFilter) return false;
-```
+**Missing Effects**:
+- Image scale-105 zoom on hover
+- Grayscale-to-color transition (700ms)
+- Card border color change (300ms)
+- Title color transition
+- Proper icon badge positioning
 
-**After**:
-```typescript
-if (Array.isArray(booking.staff)) {
-  const hasMatchingStaff = booking.staff.some(s => s.id === staffFilter);
-  if (!hasMatchingStaff) return false;
-}
-```
+**Root Cause**: When simplifying BusinessGrid, hover effects were not preserved from original Stitch design
 
-**Files Modified**: 1 (AppointmentsContent.tsx)
+**Solution**: Retrieved exact Stitch structure from git history and restored all hover effects
 
-### 4. Test ID Requirements Enforcement ✅
-**Problem**: EditServiceForm created without `data-testid` attributes, violating project standards
+**Implementation** (`app/businesses/BusinessGrid.tsx`):
+- Added `group` class structure for hover states
+- Image: `group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale`
+- Card: `hover:border-primary/40 transition-all duration-300`
+- Title: `group-hover:text-primary-fixed transition-colors`
+- Icon badge: `absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border`
+- Rating star: `fontVariationSettings: "'FILL' 1"` for filled icon
+
+**Result**: All hover effects working exactly as designed in Stitch specification
+
+**Commit**: `8aa4031`
+
+---
+
+### 5. Add Prevention Guidelines to CLAUDE.md ✅
+**Problem**: Need to prevent future incidents of losing Stitch design elements
+
+**Solution**: Added critical implementation guidelines to CLAUDE.md
+
+**New Section**: "⚠️ CRITICAL: Implementing Stitch Designs"
+
+**Requirements Added**:
+1. Must reference original design file at `design-assets/stitch_rigify/<design-name>/`
+2. Must preserve ALL hover effects and transitions
+3. Must verify before committing (compare to design file)
+4. Must add design reference comment in code
+
+**Impact**: Makes design fidelity a blocking requirement for all Stitch implementations
+
+**Files Modified**: `CLAUDE.md` (uncommitted)
+
+---
+
+### 6. GitHub Branch Cleanup ✅
+**Problem**: 4 branches on GitHub (1 main + 3 feature), unclear which were needed
 
 **Action Taken**:
-- Added 9 test IDs to EditServiceForm component
-- Updated CLAUDE.md with critical warnings (2 sections)
-- Established mandatory 3-part naming pattern: `{context}-{purpose}-{type}`
+- Identified 2 merged branches:
+  - `feature/codex-setup-and-git-workflow` (merged)
+  - `feature/stitch-design-phase1` (merged)
+- Identified 1 outdated branch:
+  - `feature/ui-improvements` (outdated, missing 13,737 lines of Stitch work)
+- Deleted all 3 feature branches locally and remotely
 
-**Test IDs Added**:
-```typescript
-data-testid="edit-service-name-input"
-data-testid="edit-service-category-select"
-data-testid="edit-service-status-select"
-data-testid="edit-service-description-textarea"
-data-testid="edit-service-duration-input"
-data-testid="edit-service-price-min-input"
-data-testid="edit-service-price-max-input"
-data-testid="edit-service-cancel-btn"
-data-testid="edit-service-save-btn"
-```
+**Result**: Clean repository with only `main` branch
 
-**CLAUDE.md Updates**:
-1. Added critical warning at top (immediately visible)
-2. Enhanced "Testing & Test Automation" section with requirements
-3. Defined 3-part naming pattern: `{context}-{purpose}-{type}`
-4. Updated all examples to use consistent 3-part format
-5. Made clear: test IDs are NOT optional, NOT a separate task
-
-**Files Modified**: 2 (EditServiceForm.tsx, CLAUDE.md)
+---
 
 ### Session Summary
-- **Files Created**: 3 (edit page, edit form, API route)
-- **Files Modified**: 4 (ServicesContent, AppointmentsContent, EditServiceForm, CLAUDE.md)
-- **Bugs Fixed**: 2 (staff filter, service edit navigation)
-- **UX Improvements**: Navigation optimization (3 clicks → 1)
-- **Process Improvements**: Mandatory test ID enforcement
+- **Files Modified**: 8 (4 ESLint fixes, 2 Stitch restoration, 1 hover effects, 1 prevention guidelines)
+- **Commits**: 3 (ESLint fixes, Stitch restoration, hover effects fix)
+- **Branches Deleted**: 3 (cleanup)
+- **Critical Fixes**: Vercel build unblocked, Stitch design fully restored
+- **Design Restoration**: Browse studios page with exact Stitch styling + real data + all hover effects
+- **Investigation**: Documented exactly when/how design was lost
+- **Prevention**: Added CLAUDE.md guidelines to prevent future design loss
 
 ---
 
@@ -245,27 +278,29 @@ Replace current dashboard with premium Stitch designs:
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `feature/stitch-design-phase1`  
-**Status**: Uncommitted changes (Session 10 work not committed)
+**Branch**: `main` (all feature branches cleaned up)  
+**Status**: Implementation committed, documentation uncommitted
+**Latest Commit**: `8aa4031` - Fix missing Stitch hover effects on business cards
 
 **Build Status**: ✅ Passing on Vercel  
 **TypeScript**: ✅ No errors  
-**Working Tree**: ⚠️ Modified (7 files modified, 7 files created)
+**Working Tree**: ⚠️ Modified (3 documentation files uncommitted)
 
-**Session 10 Changes**:
-- Modified: CLAUDE.md, AppointmentsContent.tsx, ServicesContent.tsx, EditServiceForm.tsx
-- Created: EditServiceForm.tsx, app/api/services/[id]/route.ts, app/dashboard/services/[id]/edit/page.tsx
+**Session 11 Changes**:
+- Modified: 8 files (ESLint fixes, Stitch restoration, hover effects, prevention guidelines)
+- Created: 1 plan file (investigation documentation)
+- Commits: 3 (a59cb35, 773f025, 8aa4031)
 
 **Total Stats** (All Sessions):
 - 19 migrations applied
-- 77+ files created (+7 this session)
-- 104+ files modified (+4 this session)
-- 47+ commits (Session 10 not committed yet)
-- 5200+ lines of code (+200 this session)
-- 58+ issues fixed (+2 this session)
+- 80+ files created
+- 110+ files modified
+- 50+ commits
+- 5300+ lines of code
+- 60+ issues fixed
 
 ---
 
 **Session Started**: June 8, 2026  
 **Session Ended**: June 8, 2026  
-**Ready For**: Commit Session 10 changes, then continue with Priority 1 (Delete Service)
+**Ready For**: Commit documentation, then continue with Priority 1 (Complete Business Dashboard Features)
