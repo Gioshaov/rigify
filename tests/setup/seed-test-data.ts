@@ -16,7 +16,7 @@ export async function seedTestData() {
 
   // 1. Create test business owner (idempotent check)
   let ownerId: string;
-  const { data: existingOwner } = await adminClient.auth.admin.listUsers();
+  const { data: existingOwner } = await adminClient.auth.admin.listUsers({ perPage: 1000, page: 1 });
   const ownerUser = existingOwner.users.find(u => u.email === TEST_USERS.businessOwner.email);
 
   if (ownerUser) {

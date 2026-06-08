@@ -13,7 +13,11 @@
       "Bash(cat next.config.mjs)",
       "Bash(git checkout *)",
       "Bash(xargs grep -l \"services\\\\|staff\\\\|appointment\")",
-      "Bash(xargs wc -l)"
+      "Bash(xargs wc -l)",
+      "Bash(dir /b)",
+      "Bash(xargs grep -l \"data-testid\")",
+      "PowerShell(supabase db *)",
+      "Bash(xargs grep -l \"businesses\")"
     ]
   }
 }

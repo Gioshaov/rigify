@@ -33,9 +33,9 @@ test.describe('Booking Validation', () => {
     await page.getByTestId('customer-phone-input').fill('123'); // Too short
     await page.getByTestId('confirm-booking-btn').click();
 
-    // Should show validation error (either client-side or from API)
-    // Wait a moment to see if error appears
-    await page.waitForTimeout(2000);
+    // Should stay on booking page (validation prevents navigation)
+    await page.waitForTimeout(1000); // Give time for validation to trigger
+    await expect(page).toHaveURL(/\/book/, { timeout: 5000 });
   });
 
   test('should prevent booking past dates', async ({ page }) => {

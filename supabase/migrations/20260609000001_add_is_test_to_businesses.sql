@@ -7,8 +7,9 @@ create index if not exists businesses_is_test_idx
   where is_test = true;
 
 -- Update RLS policies to exclude test businesses from public views
+drop policy if exists "businesses_public_select" on public.businesses;
 drop policy if exists "businesses_public_read" on public.businesses;
-create policy "businesses_public_read"
+create policy "businesses_public_select"
   on public.businesses for select
   using (
     is_active = true

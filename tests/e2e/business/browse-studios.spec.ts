@@ -23,12 +23,9 @@ test.describe('Browse Studios Page', () => {
     await searchInput.fill('test');
     await page.getByTestId('browse-studios-search-btn').click();
 
-    // Wait for URL to update with search param
-    await page.waitForTimeout(1000); // Wait for search to apply
-
-    // Business cards should still be visible
+    // Wait for search to apply by checking business cards are still visible
     const businessCards = page.locator('[data-testid^="business-card-"]');
-    await expect(businessCards.first()).toBeVisible();
+    await expect(businessCards.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should filter businesses by district', async ({ page }) => {
@@ -38,12 +35,9 @@ test.describe('Browse Studios Page', () => {
     const districtSelect = page.getByTestId('browse-studios-district-select');
     await districtSelect.selectOption('vake');
 
-    // Wait for filtering to apply
-    await page.waitForTimeout(1000);
-
-    // Business cards should still be visible
+    // Wait for filtering to apply by checking business cards remain visible
     const businessCards = page.locator('[data-testid^="business-card-"]');
-    await expect(businessCards.first()).toBeVisible();
+    await expect(businessCards.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should preserve Stitch design hover effects', async ({ page }) => {
