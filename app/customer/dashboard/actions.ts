@@ -16,13 +16,14 @@ export async function cancelBookingAction(bookingId: string) {
   }
 
   // Verify booking belongs to user
-  const { data: booking } = await supabase
+  const { data: booking, error: fetchError } = await supabase
     .from("bookings")
     .select("id, customer_id, appointment_datetime, status")
     .eq("id", bookingId)
     .single();
 
-  if (!booking) {
+  if (fetchError || !booking) {
+    console.error("Fetch booking error:", fetchError);
     return { success: false, error: "Booking not found" };
   }
 
@@ -73,13 +74,14 @@ export async function rescheduleBookingAction(data: {
   }
 
   // Verify booking belongs to user
-  const { data: booking } = await supabase
+  const { data: booking, error: fetchError } = await supabase
     .from("bookings")
     .select("id, customer_id, business_id, service_id, staff_id, status")
     .eq("id", data.bookingId)
     .single();
 
-  if (!booking) {
+  if (fetchError || !booking) {
+    console.error("Fetch booking error:", fetchError);
     return { success: false, error: "Booking not found" };
   }
 
@@ -104,13 +106,14 @@ export async function rescheduleBookingAction(data: {
   // Check availability for new time slot
   // Get service duration using admin client (to bypass RLS)
   const admin = createAdminClient();
-  const { data: service } = await admin
+  const { data: service, error: serviceError } = await admin
     .from("services")
     .select("duration_minutes")
     .eq("id", booking.service_id)
     .single();
 
-  if (!service) {
+  if (serviceError || !service) {
+    console.error("Fetch service error:", serviceError);
     return { success: false, error: "Service not found" };
   }
 
@@ -125,7 +128,7 @@ export async function rescheduleBookingAction(data: {
   const targetStaffId = data.staffId;
 
   // Verify selected staff exists, is active, and belongs to this business
-  const { data: staffMember } = await admin
+  const { data: staffMember, error: staffError } = await admin
     .from("staff")
     .select("id")
     .eq("id", targetStaffId)
@@ -133,7 +136,8 @@ export async function rescheduleBookingAction(data: {
     .eq("is_active", true)
     .single();
 
-  if (!staffMember) {
+  if (staffError || !staffMember) {
+    console.error("Fetch staff error:", staffError);
     return { success: false, error: "Selected staff member is no longer available" };
   }
 
@@ -161,7 +165,7 @@ export async function rescheduleBookingAction(data: {
   }
 
   // Update booking (with ownership check and status guard)
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("bookings")
     .update({
       appointment_datetime: newDateTime.toISOString(),
@@ -169,11 +173,16 @@ export async function rescheduleBookingAction(data: {
     })
     .eq("id", data.bookingId)
     .eq("customer_id", user.id)
-    .eq("status", "confirmed");  // prevent rescheduling if concurrently cancelled
+    .eq("status", "confirmed")  // prevent rescheduling if concurrently cancelled
+    .select("id");
 
   if (error) {
     console.error("Reschedule booking error:", error);
     return { success: false, error: "Failed to reschedule booking" };
+  }
+
+  if (!updated || updated.length === 0) {
+    return { success: false, error: "Booking could not be rescheduled — it may have been cancelled" };
   }
 
   revalidatePath("/customer/dashboard");
