@@ -42,18 +42,19 @@ export default async function CustomerBookingsPage() {
 
   // Supabase !inner joins return objects at runtime, but SDK infers arrays without generated types
   // Array.isArray guards handle the type/runtime mismatch safely
+  // TODO: Remove Array.isArray guards after running supabase gen types
   const upcoming = (upcomingData || []).map((b: BookingRow) => ({
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,
-    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
+    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff
   }));
 
   const past = (pastData || []).map((b: BookingRow) => ({
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,
-    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
+    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff
   }));
 
   return (

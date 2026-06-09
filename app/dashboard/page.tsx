@@ -253,7 +253,7 @@ export default async function DashboardOverviewPage() {
                 {activeStaff.map((member) => {
                   const initials = member.name
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n: string) => n[0])
                     .join("")
                     .toUpperCase()
                     .slice(0, 2);
