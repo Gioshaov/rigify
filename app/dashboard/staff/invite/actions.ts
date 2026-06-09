@@ -59,6 +59,7 @@ export async function inviteStaffAction(formData: FormData) {
     business_id: business.id,
     user_id: newUser.user.id,
     name,
+    email, // Save email to staff table
     role,
     specialty: specialty || null,
     is_active: true,
