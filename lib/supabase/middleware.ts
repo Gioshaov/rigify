@@ -6,7 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // User type cache to avoid triple DB query on every navigation
 // WARNING: Module-level cache persists across requests. Known limitations:
 // - Not invalidated when user roles change (stale data window = TTL)
-// - Grows unbounded in long-running processes (not an issue on Vercel serverless)
+// - Grows unbounded in long-running processes (bounded in serverless production, unbounded in local dev)
 // - Cache is per-instance (inconsistent across edge deployments on cold start)
 const userTypeCache = new Map<string, { type: string; timestamp: number }>();
 const CACHE_TTL = 10000; // 10 seconds (reduced to limit stale data window after role changes)
