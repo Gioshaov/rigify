@@ -139,22 +139,28 @@ export async function rescheduleBookingAction(data: {
 
   // Check for overlapping bookings for the selected staff - CORRECT overlap logic
   // TODO: Not atomic — concurrent reschedules may still create overlaps (requires DB-level constraint or serializable transaction)
-  const { data: overlapping } = await admin
+  const { data: overlapping, error: overlapError } = await admin
     .from("bookings")
     .select("id")
     .eq("business_id", booking.business_id)
     .eq("staff_id", targetStaffId)
     .neq("id", data.bookingId)
     .neq("status", "cancelled")
+    .not("end_datetime", "is", null)                         // exclude bookings with missing end_datetime
     .lt("appointment_datetime", endDateTime.toISOString())   // existing.start < newEnd
     .gt("end_datetime", newDateTime.toISOString())           // existing.end > newStart
     .limit(1);
+
+  if (overlapError) {
+    console.error("Overlap check error:", overlapError);
+    return { success: false, error: "Failed to verify availability" };
+  }
 
   if (overlapping && overlapping.length > 0) {
     return { success: false, error: "This time slot is not available" };
   }
 
-  // Update booking (with ownership check)
+  // Update booking (with ownership check and status guard)
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -162,7 +168,8 @@ export async function rescheduleBookingAction(data: {
       staff_id: targetStaffId,
     })
     .eq("id", data.bookingId)
-    .eq("customer_id", user.id);
+    .eq("customer_id", user.id)
+    .eq("status", "confirmed");  // prevent rescheduling if concurrently cancelled
 
   if (error) {
     console.error("Reschedule booking error:", error);
