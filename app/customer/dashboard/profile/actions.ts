@@ -30,7 +30,7 @@ export async function updateCustomerProfileAction(formData: FormData) {
   }
 
   revalidatePath("/customer/dashboard/profile");
-  // Removed duplicate parent path revalidation for better performance
+  revalidatePath("/customer/dashboard");
 
   return { success: true };
 }

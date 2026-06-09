@@ -6,9 +6,6 @@ import { cancelBookingAction } from "./actions";
 import { RescheduleModal } from "./RescheduleModal";
 import { createClient } from "@/lib/supabase/client";
 
-// Client-side cache for staff lists (per business)
-const staffCache = new Map<string, Array<{ id: string; name: string; specialty: string | null }>>();
-
 type BookingCardProps = {
   booking: {
     id: string;
@@ -31,17 +28,9 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const [error, setError] = useState<string | null>(null);
   const [staff, setStaff] = useState<Array<{ id: string; name: string; specialty: string | null }>>([]);
 
-  // Fetch staff when reschedule modal opens (with client-side caching)
+  // Fetch staff when reschedule modal opens
   useEffect(() => {
-    if (showRescheduleModal) {
-      // Check cache first
-      const cached = staffCache.get(booking.business_id);
-      if (cached) {
-        setStaff(cached);
-        return;
-      }
-
-      // Fetch and cache if not available
+    if (showRescheduleModal && staff.length === 0) {
       const fetchStaff = async () => {
         const supabase = createClient();
         const { data } = await supabase
@@ -52,37 +41,23 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
           .order('name', { ascending: true });
 
         if (data) {
-          staffCache.set(booking.business_id, data);
           setStaff(data);
         }
       };
       fetchStaff();
     }
-  }, [showRescheduleModal, booking.business_id]);
+  }, [showRescheduleModal, booking.business_id, staff.length]);
 
   const handleCancel = async () => {
     setLoading(true);
     setError(null);
 
-    // Optimistic update - provide immediate visual feedback
-    const cardElement = document.querySelector(`[data-testid="${isPast ? 'past-' : ''}booking-card-${booking.id}"]`);
-    if (cardElement) {
-      (cardElement as HTMLElement).style.opacity = '0.5';
-      (cardElement as HTMLElement).style.pointerEvents = 'none';
-    }
-
     const result = await cancelBookingAction(booking.id);
 
     if (result.success) {
       setShowCancelModal(false);
-      // Reload page to refresh booking list (lightweight, no server rebuild)
-      window.location.reload();
+      // Page will auto-refresh due to revalidatePath
     } else {
-      // Revert optimistic update on error
-      if (cardElement) {
-        (cardElement as HTMLElement).style.opacity = '1';
-        (cardElement as HTMLElement).style.pointerEvents = 'auto';
-      }
       setError(result.error || "Failed to cancel booking");
       setLoading(false);
     }

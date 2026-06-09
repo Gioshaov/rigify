@@ -157,10 +157,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
     });
 
     if (result.success) {
-      // Close modal immediately for better UX
       onClose();
-      // Reload page to show updated booking (lightweight, no server rebuild)
-      window.location.reload();
     } else {
       setError(result.error || "Failed to reschedule booking");
       setLoading(false);

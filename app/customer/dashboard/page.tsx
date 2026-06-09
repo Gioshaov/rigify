@@ -3,9 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookingCard } from "./BookingCard";
 
-// Cache dashboard for 60 seconds for better performance
-// Fresh enough for upcoming/past booking split, without forcing full server rebuild
-export const revalidate = 60;
+// Force dynamic rendering to ensure 'now' is always fresh
+export const dynamic = 'force-dynamic';
 
 export default async function CustomerBookingsPage() {
   const supabase = createClient();
