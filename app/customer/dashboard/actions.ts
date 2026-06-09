@@ -124,11 +124,12 @@ export async function rescheduleBookingAction(data: {
 
   const targetStaffId = data.staffId;
 
-  // Verify selected staff exists and is active
+  // Verify selected staff exists, is active, and belongs to this business
   const { data: staffMember } = await admin
     .from("staff")
     .select("id")
     .eq("id", targetStaffId)
+    .eq("business_id", booking.business_id)
     .eq("is_active", true)
     .single();
 
@@ -137,6 +138,7 @@ export async function rescheduleBookingAction(data: {
   }
 
   // Check for overlapping bookings for the selected staff - CORRECT overlap logic
+  // TODO: Not atomic — concurrent reschedules may still create overlaps (requires DB-level constraint or serializable transaction)
   const { data: overlapping } = await admin
     .from("bookings")
     .select("id")
