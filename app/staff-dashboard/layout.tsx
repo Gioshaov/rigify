@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StaffSidebar } from "@/components/dashboard/StaffSidebar";
+import { UserMenu } from "@/components/ui/UserMenu";
 
 export default async function StaffDashboardLayout({
   children,
@@ -48,7 +49,7 @@ export default async function StaffDashboardLayout({
       <div className="flex-1 min-w-0">
         <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">
           <p className="label-mono">STAFF DASHBOARD</p>
-          <p className="label-mono text-on-surface-variant">{user.email}</p>
+          <UserMenu />
         </header>
         <main className="px-gutter md:px-margin-desktop py-stack-lg">{children}</main>
       </div>

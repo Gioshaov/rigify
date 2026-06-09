@@ -12,6 +12,12 @@ interface Service {
   price_max: number;
 }
 
+interface Staff {
+  id: string;
+  name: string;
+  specialty: string | null;
+}
+
 export default async function BookAppointmentPage({
   params,
   searchParams
@@ -45,6 +51,18 @@ export default async function BookAppointmentPage({
     console.error('Error fetching services:', servicesError);
   }
 
+  // Fetch active staff for this business
+  const { data: staff, error: staffError } = await supabase
+    .from('staff')
+    .select('id, name, specialty')
+    .eq('business_id', business.id)
+    .eq('is_active', true)
+    .order('name', { ascending: true });
+
+  if (staffError) {
+    console.error('Error fetching staff:', staffError);
+  }
+
   // Find selected service if service ID provided in URL
   const selectedServiceId = searchParams.service;
   const selectedService = services?.find(s => s.id === selectedServiceId);
@@ -61,6 +79,7 @@ export default async function BookAppointmentPage({
       <BookAppointmentContent
         business={business}
         services={services || []}
+        staff={staff || []}
         selectedService={selectedService || null}
       />
     </Suspense>

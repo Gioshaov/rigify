@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
+import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 
 interface Service {
   id: string;
@@ -13,6 +14,12 @@ interface Service {
   duration_minutes: number;
   price_min: number;
   price_max: number;
+}
+
+interface Staff {
+  id: string;
+  name: string;
+  specialty: string | null;
 }
 
 interface Business {
@@ -24,6 +31,7 @@ interface Business {
 interface BookAppointmentContentProps {
   business: Business;
   services: Service[];
+  staff: Staff[];
   selectedService: Service | null;
 }
 
@@ -74,6 +82,7 @@ function generateTimeSlots() {
 export function BookAppointmentContent({
   business,
   services,
+  staff,
   selectedService: initialSelectedService
 }: BookAppointmentContentProps) {
   const router = useRouter();
@@ -82,6 +91,7 @@ export function BookAppointmentContent({
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<string | null>(null); // null = "Any Staff"
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
@@ -117,8 +127,9 @@ export function BookAppointmentContent({
       const bookingDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
 
       try {
+        const staffParam = selectedStaff && selectedStaff !== "any" ? `&staffId=${selectedStaff}` : '';
         const response = await fetch(
-          `/api/availability?businessId=${business.id}&serviceId=${selectedService.id}&date=${bookingDate}`
+          `/api/availability?businessId=${business.id}&serviceId=${selectedService.id}&date=${bookingDate}${staffParam}`
         );
 
         if (!response.ok) {
@@ -145,7 +156,7 @@ export function BookAppointmentContent({
     };
 
     fetchAvailability();
-  }, [selectedDate, currentMonth, currentYear, selectedService, business.id]);
+  }, [selectedDate, currentMonth, currentYear, selectedService, selectedStaff, business.id]);
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
@@ -168,21 +179,6 @@ export function BookAppointmentContent({
   const formattedSummary = selectedDate && selectedTime
     ? `${monthNames[currentMonth].slice(0, 3)} ${selectedDate}, ${currentYear} at ${selectedTime}`
     : "Select date and time";
-
-  // Helper to format price
-  const formatPrice = (minGel: number, maxGel: number) => {
-    const min = minGel.toFixed(0);
-    const max = maxGel.toFixed(0);
-    return min === max ? `${min} GEL` : `${min}-${max} GEL`;
-  };
-
-  // Helper to format duration
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  };
 
   // Helper function to convert 12-hour time to 24-hour format
   const convertTo24Hour = (time12: string): string => {
@@ -222,7 +218,7 @@ export function BookAppointmentContent({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           customerEmail: customerEmail.trim() || undefined,
-          staffId: null // "Any Staff" mode
+          staffId: selectedStaff === "any" ? null : selectedStaff // "any" = auto-assign
         }),
       });
 
@@ -391,6 +387,37 @@ export function BookAppointmentContent({
                   </span>
                 </div>
               </div>
+
+              {/* Staff Selection Dropdown */}
+              {staff.length > 0 && (
+                <div className="mb-6">
+                  <label
+                    htmlFor="staff-select"
+                    className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase block mb-2"
+                  >
+                    Select Staff Member <span className="text-error">*</span>
+                  </label>
+                  <select
+                    id="staff-select"
+                    data-testid="staff-select"
+                    value={selectedStaff ?? ""}
+                    onChange={(e) => setSelectedStaff(e.target.value || null)}
+                    className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 font-mono text-[12px] tracking-[0.15em] font-medium text-primary uppercase outline-none appearance-none cursor-pointer transition-colors"
+                    required
+                  >
+                    <option value="" disabled>
+                      Choose your staff member...
+                    </option>
+                    <option value="any">Any Available Staff</option>
+                    {staff.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {isLoadingAvailability ? (
                 <div className="h-[400px] flex items-center justify-center">
                   <div className="text-center">
@@ -459,7 +486,7 @@ export function BookAppointmentContent({
                       </div>
                     </div>
                     <span className="font-hanken text-[28px] leading-[1.2] tracking-tighter font-bold text-primary">
-                      {formatPrice(selectedService.price_min, selectedService.price_max)}
+                      {formatPrice(selectedService.price_min ?? 0, selectedService.price_max)}
                     </span>
                   </div>
                 </div>
@@ -557,7 +584,7 @@ export function BookAppointmentContent({
               <button
                 data-testid="confirm-booking-btn"
                 onClick={handleConfirmBooking}
-                disabled={!selectedService || !selectedDate || !selectedTime || !customerName.trim() || !customerPhone.trim() || isBooking}
+                disabled={!selectedService || !selectedDate || !selectedTime || !customerName.trim() || !customerPhone.trim() || (staff.length > 0 && !selectedStaff) || isBooking}
                 className="w-full bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium py-4 hover:bg-primary-fixed-dim transition-all active:scale-[0.98] uppercase disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isBooking ? (

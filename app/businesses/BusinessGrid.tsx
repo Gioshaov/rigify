@@ -88,7 +88,7 @@ export function BusinessGrid({ businesses }: { businesses: Business[] }) {
                         star
                       </span>
                       <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium">
-                        {business.rating.toFixed(1)}
+                        {(business.rating ?? 0).toFixed(1)}
                       </span>
                       <span className="text-outline text-[10px]">
                         ({business.review_count})

@@ -60,7 +60,7 @@ export async function rescheduleBookingAction(data: {
   bookingId: string;
   newDate: string;
   newTime: string;
-  staffId?: string | null;
+  staffId: string | null;
 }) {
   const supabase = createClient();
 
@@ -87,8 +87,9 @@ export async function rescheduleBookingAction(data: {
     return { success: false, error: "Unauthorized" };
   }
 
-  // Only allow rescheduling confirmed or pending bookings
-  if (!["confirmed", "pending"].includes(booking.status)) {
+  // Only allow rescheduling confirmed bookings
+  // Note: Guest bookings (customer_id IS NULL) cannot be rescheduled via this action
+  if (booking.status !== "confirmed") {
     return { success: false, error: "Cannot reschedule this booking" };
   }
 
@@ -113,29 +114,31 @@ export async function rescheduleBookingAction(data: {
     return { success: false, error: "Service not found" };
   }
 
-  const endDateTime = new Date(newDateTime.getTime() + service.duration_minutes * 60000);
+  const MS_PER_MINUTE = 60_000;
+  const endDateTime = new Date(newDateTime.getTime() + service.duration_minutes * MS_PER_MINUTE);
 
   // Determine which staff to check/assign
-  // If staffId provided: use it (customer changed staff or selected "any")
-  // If staffId is null/undefined: keep original staff
-  const targetStaffId = data.staffId !== undefined ? (data.staffId === "any" ? null : data.staffId) : booking.staff_id;
+  // "any" staff is not allowed for rescheduling - customer must select a specific staff member
+  if (data.staffId === "any" || !data.staffId) {
+    return { success: false, error: "Please select a specific staff member to reschedule" };
+  }
 
-  // Check for overlapping bookings (same staff, same time) - CORRECT overlap logic
-  if (targetStaffId) {
-    const { data: overlapping } = await admin
-      .from("bookings")
-      .select("id")
-      .eq("business_id", booking.business_id)
-      .eq("staff_id", targetStaffId)
-      .neq("id", data.bookingId)
-      .neq("status", "cancelled")
-      .lt("appointment_datetime", endDateTime.toISOString())   // existing.start < newEnd
-      .gt("end_datetime", newDateTime.toISOString())           // existing.end > newStart
-      .limit(1);
+  const targetStaffId = data.staffId;
 
-    if (overlapping && overlapping.length > 0) {
-      return { success: false, error: "This time slot is not available" };
-    }
+  // Check for overlapping bookings for the selected staff - CORRECT overlap logic
+  const { data: overlapping } = await admin
+    .from("bookings")
+    .select("id")
+    .eq("business_id", booking.business_id)
+    .eq("staff_id", targetStaffId)
+    .neq("id", data.bookingId)
+    .neq("status", "cancelled")
+    .lt("appointment_datetime", endDateTime.toISOString())   // existing.start < newEnd
+    .gt("end_datetime", newDateTime.toISOString())           // existing.end > newStart
+    .limit(1);
+
+  if (overlapping && overlapping.length > 0) {
+    return { success: false, error: "This time slot is not available" };
   }
 
   // Update booking (with ownership check)

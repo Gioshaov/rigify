@@ -25,11 +25,14 @@ type Business = {
   business_categories: Array<{ category_id: string }>;
 };
 
+type SortOption = "featured" | "rating" | "name" | "reviews";
+
 export default function BrowseBusinessesPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [loading, setLoading] = useState(true);
 
   // Fetch businesses from Supabase
@@ -67,9 +70,9 @@ export default function BrowseBusinessesPage() {
     fetchBusinesses();
   }, []);
 
-  // Filter businesses
+  // Filter and sort businesses
   const filteredBusinesses = useMemo(() => {
-    return businesses.filter((business) => {
+    let filtered = businesses.filter((business) => {
       // District filter
       if (selectedDistrict !== "all") {
         if (!business.district) return false;
@@ -114,7 +117,37 @@ export default function BrowseBusinessesPage() {
 
       return true;
     });
-  }, [businesses, searchQuery, selectedDistrict, selectedCategory]);
+
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "rating":
+          return (b.rating ?? 0) - (a.rating ?? 0);
+        case "reviews":
+          return b.review_count - a.review_count;
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "featured":
+        default:
+          // Featured: Sort by rating * review_count (engagement score)
+          const scoreA = (a.rating ?? 0) * a.review_count;
+          const scoreB = (b.rating ?? 0) * b.review_count;
+          return scoreB - scoreA;
+      }
+    });
+
+    return sorted;
+  }, [businesses, searchQuery, selectedDistrict, selectedCategory, sortBy]);
+
+  // Check if any filters are active
+  const hasActiveFilters = searchQuery !== "" || selectedDistrict !== "all" || selectedCategory !== "all";
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSelectedDistrict("all");
+    setSelectedCategory("all");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -267,30 +300,123 @@ export default function BrowseBusinessesPage() {
       {/* Main Content */}
       <main className="px-4 md:px-margin-desktop py-12">
         <div className="max-w-container mx-auto">
-          {/* Results Header */}
-          <div className="flex items-center justify-between mb-8">
+          {/* Results Header with Sort */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase tracking-tight">
-                All Businesses
+                {hasActiveFilters ? "Search Results" : "All Businesses"}
               </h2>
               <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-2">
                 {loading ? "Loading..." : `Showing ${filteredBusinesses.length} of ${businesses.length}`}
               </p>
             </div>
+
+            {/* Sort Dropdown */}
+            {!loading && businesses.length > 0 && (
+              <div className="flex items-center gap-3">
+                <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
+                  Sort By
+                </label>
+                <select
+                  data-testid="browse-studios-sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  className="bg-surface-container-low border border-white/10 focus:border-primary px-4 py-2 text-on-surface outline-none appearance-none cursor-pointer font-mono text-[12px] tracking-[0.15em] uppercase"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="rating">Highest Rated</option>
+                  <option value="reviews">Most Reviewed</option>
+                  <option value="name">Name (A-Z)</option>
+                </select>
+              </div>
+            )}
           </div>
+
+          {/* Active Filters */}
+          {hasActiveFilters && !loading && (
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
+                Active Filters:
+              </span>
+
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
+                >
+                  Search: "{searchQuery}"
+                  <span className="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              )}
+
+              {selectedDistrict !== "all" && (
+                <button
+                  onClick={() => setSelectedDistrict("all")}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
+                >
+                  District: {TBILISI_DISTRICTS.find(d => d.id === selectedDistrict)?.en}
+                  <span className="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              )}
+
+              {selectedCategory !== "all" && (
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
+                >
+                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en}
+                  <span className="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              )}
+
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center gap-2 px-3 py-1.5 border border-white/10 text-on-surface-variant font-mono text-[10px] tracking-[0.15em] uppercase hover:border-error hover:text-error transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+          )}
 
           {/* Business Grid */}
           {loading ? (
-            <div className="text-center py-16">
-              <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase">
-                Loading businesses...
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-surface-container-low sharp-border animate-pulse">
+                  <div className="aspect-video bg-surface-container" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 bg-surface-container rounded w-3/4" />
+                    <div className="h-4 bg-surface-container rounded w-1/2" />
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-surface-container rounded w-16" />
+                      <div className="h-6 bg-surface-container rounded w-16" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredBusinesses.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase">
-                No businesses found matching your filters.
+            <div className="text-center py-16 bg-surface-container-low sharp-border">
+              <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
+                search_off
+              </span>
+              <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
+                No Businesses Found
+              </h3>
+              <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase mb-6">
+                {hasActiveFilters
+                  ? "Try adjusting your filters or search terms"
+                  : "No businesses available at this time"
+                }
               </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="bg-primary text-on-primary px-6 py-3 font-mono text-[12px] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors"
+                >
+                  Clear All Filters
+                </button>
+              )}
             </div>
           ) : (
             <BusinessGrid businesses={filteredBusinesses} />

@@ -52,7 +52,7 @@ export type Booking = {
   duration_minutes: number
   status: 'confirmed' | 'cancelled' | 'completed'
   price: number
-  booking_source: 'web' | 'voice' | 'instagram' | 'facebook'
+  booking_source: 'web' | 'voice' | 'instagram' | 'facebook' | 'dashboard'
   call_id: string | null
   created_at: string
 }

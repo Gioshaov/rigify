@@ -187,7 +187,7 @@ export function BookingConfirmationClient({
                 Total Price
               </span>
               <p className="font-hanken text-[48px] leading-[1.2] tracking-tighter font-bold text-primary">
-                ₾{(booking.price || service.price_min).toFixed(2)}
+                ₾{(booking.price ?? service.price_min ?? 0).toFixed(2)}
               </p>
             </div>
 

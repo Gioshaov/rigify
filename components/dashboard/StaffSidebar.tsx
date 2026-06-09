@@ -45,36 +45,28 @@ export function StaffSidebar({ staff, permissions }: StaffSidebarProps) {
   ].filter((item) => item.show);
 
   return (
-    <aside className="w-64 shrink-0 border-r border-outline-variant bg-surface min-h-screen flex flex-col justify-between">
-      <div>
-        <div className="px-gutter py-stack-lg border-b border-outline-variant">
-          <Link
-            href="/"
-            className="font-mono text-data-label uppercase tracking-[0.2em] text-primary"
-          >
-            RIGIFY
-          </Link>
-          <p className="mt-stack-md text-on-surface text-body-md">{staff.businesses.name}</p>
-          <p className="label-mono mt-1 text-on-surface-variant">{staff.role.toUpperCase()}</p>
-        </div>
-        <nav className="px-gutter py-stack-md space-y-1">
-          {navItems.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className="block font-mono text-data-label uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors"
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
+    <aside className="w-64 shrink-0 border-r border-outline-variant bg-surface min-h-screen">
+      <div className="px-gutter py-stack-lg border-b border-outline-variant">
+        <Link
+          href="/"
+          className="font-mono text-data-label uppercase tracking-[0.2em] text-primary"
+        >
+          RIGIFY
+        </Link>
+        <p className="mt-stack-md text-on-surface text-body-md">{staff.businesses.name}</p>
+        <p className="label-mono mt-1 text-on-surface-variant">{staff.role.toUpperCase()}</p>
       </div>
-
-      <form action="/logout" method="post" className="px-gutter py-stack-md border-t border-outline-variant">
-        <button type="submit" className="w-full btn-ghost !justify-start !px-3">
-          Sign out
-        </button>
-      </form>
+      <nav className="px-gutter py-stack-md space-y-1">
+        {navItems.map((n) => (
+          <Link
+            key={n.href}
+            href={n.href}
+            className="block font-mono text-data-label uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors"
+          >
+            {n.label}
+          </Link>
+        ))}
+      </nav>
     </aside>
   );
 }

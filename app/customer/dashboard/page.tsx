@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatTbilisi } from "@/lib/utils/datetime";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { BookingCard } from "./BookingCard";
+
+// Force dynamic rendering to ensure 'now' is always fresh
+export const dynamic = 'force-dynamic';
 
 export default async function CustomerBookingsPage() {
   const supabase = createClient();
@@ -20,13 +23,13 @@ export default async function CustomerBookingsPage() {
   ] = await Promise.all([
     supabase
       .from("bookings")
-      .select("id, appointment_datetime, status, business_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .select("id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
       .eq("customer_id", user.id)
       .gte("appointment_datetime", now.toISOString())
       .order("appointment_datetime", { ascending: true }),
     supabase
       .from("bookings")
-      .select("id, appointment_datetime, status, business_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .select("id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
       .eq("customer_id", user.id)
       .lt("appointment_datetime", now.toISOString())
       .order("appointment_datetime", { ascending: false })
@@ -38,6 +41,8 @@ export default async function CustomerBookingsPage() {
     appointment_datetime: string;
     status: string;
     business_id: string;
+    service_id: string;
+    staff_id: string | null;
     businesses: { name: string; address: string } | { name: string; address: string }[];
     services: { name: string } | { name: string }[];
     staff: { name: string } | { name: string }[] | null;
@@ -85,84 +90,7 @@ export default async function CustomerBookingsPage() {
         {upcoming && upcoming.length > 0 ? (
           <div className="space-y-4">
             {upcoming.map((b) => (
-              <article
-                key={b.id}
-                data-testid={`booking-card-${b.id}`}
-                className="bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-6"
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1">
-                    {/* Business Name */}
-                    <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-3">
-                      {b.businesses?.name || "—"}
-                    </h3>
-
-                    {/* Service & Staff */}
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-primary text-[16px]">
-                        cut
-                      </span>
-                      <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
-                        {b.services?.name || "Service"}
-                      </span>
-                    </div>
-
-                    {b.staff && (
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="material-symbols-outlined text-primary text-[16px]">
-                          person
-                        </span>
-                        <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
-                          {b.staff.name}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Date & Time */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="material-symbols-outlined text-primary text-[16px]">
-                        schedule
-                      </span>
-                      <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold">
-                        {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
-                      </span>
-                    </div>
-
-                    {/* Address */}
-                    {b.businesses?.address && (
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-text-secondary text-[16px]">
-                          location_on
-                        </span>
-                        <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                          {b.businesses.address}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Status & Actions */}
-                  <div className="flex flex-col items-end gap-4">
-                    <span className="px-3 py-1 bg-primary/10 border border-primary/20 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase">
-                      {b.status}
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        data-testid={`reschedule-btn-${b.id}`}
-                        className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-primary/30 hover:text-primary transition-all uppercase"
-                      >
-                        Reschedule
-                      </button>
-                      <button
-                        data-testid={`cancel-btn-${b.id}`}
-                        className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-error/30 hover:text-error transition-all uppercase"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </article>
+              <BookingCard key={b.id} booking={b} />
             ))}
           </div>
         ) : (
@@ -201,46 +129,7 @@ export default async function CustomerBookingsPage() {
         {past && past.length > 0 ? (
           <div className="space-y-4 opacity-60">
             {past.map((b) => (
-              <article
-                key={b.id}
-                data-testid={`past-booking-card-${b.id}`}
-                className="bg-surface-container-low border border-white/5 p-6"
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1">
-                    <h3 className="font-hanken text-[18px] leading-[1.6] font-normal text-on-surface mb-2">
-                      {b.businesses?.name || "—"}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-text-secondary text-[14px]">
-                        cut
-                      </span>
-                      <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                        {b.services?.name || "Service"}
-                      </span>
-                      {b.staff && (
-                        <>
-                          <span className="text-text-secondary">·</span>
-                          <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                            {b.staff.name}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-text-secondary text-[14px]">
-                        schedule
-                      </span>
-                      <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary">
-                        {formatTbilisi(b.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 border border-white/5 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
-                    {b.status}
-                  </span>
-                </div>
-              </article>
+              <BookingCard key={b.id} booking={b} isPast />
             ))}
           </div>
         ) : (

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
+import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 
 interface Service {
   id: string;
@@ -23,6 +24,8 @@ interface Business {
   city: string | null;
   phone: string | null;
   description: string | null;
+  cover_image_url: string | null;
+  logo_url: string | null;
   services: Service[];
 }
 
@@ -44,7 +47,9 @@ export default async function BusinessProfilePage({
       city,
       phone,
       description,
-      services!inner(
+      cover_image_url,
+      logo_url,
+      services!left(
         id,
         name,
         description,
@@ -56,7 +61,7 @@ export default async function BusinessProfilePage({
       )
     `)
     .eq('slug', params.slug)
-    .eq('services.is_active', true)
+    .eq('is_active', true)
     .single();
 
   if (error || !business) {
@@ -64,24 +69,10 @@ export default async function BusinessProfilePage({
   }
 
   // Format services array from the nested structure
-  const services: Service[] = (business.services as any[]).filter(
-    (s: any) => s.is_active
-  );
-
-  // Helper to format price range
-  const formatPrice = (minGel: number, maxGel: number) => {
-    const min = minGel.toFixed(0);
-    const max = maxGel.toFixed(0);
-    return min === max ? `${min} GEL` : `${min}-${max} GEL`;
-  };
-
-  // Helper to format duration
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  };
+  const allServices = business.services as any[] | null;
+  const services: Service[] = allServices
+    ? allServices.filter((s: any) => s && s.is_active)
+    : [];
 
   // Fallback values for missing data
   const displayName = business.name || "Business";
@@ -137,15 +128,35 @@ export default async function BusinessProfilePage({
       <main className="pb-24">
         {/* Hero Section */}
         <section className="relative h-[353px] md:h-[530px] w-full overflow-hidden bg-surface-variant">
-          {/* Placeholder gradient for missing cover image */}
-          <div className="absolute inset-0 bg-gradient-to-br from-surface-container via-surface to-surface-variant"></div>
+          {/* Cover Image or Placeholder */}
+          {business.cover_image_url ? (
+            <Image
+              src={business.cover_image_url}
+              alt={displayName}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-surface-container via-surface to-surface-variant"></div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
           <div className="absolute bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-base md:pb-gutter flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex items-end gap-6">
-              <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-elevated border border-white/10 p-2 relative z-10 flex items-center justify-center">
-                <span className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary select-none">
-                  {displayName.charAt(0).toUpperCase()}
-                </span>
+              {/* Logo or Initial */}
+              <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-elevated border border-white/10 p-2 relative z-10 flex items-center justify-center overflow-hidden">
+                {business.logo_url ? (
+                  <Image
+                    src={business.logo_url}
+                    alt={`${displayName} logo`}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary select-none">
+                    {displayName.charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
               <div className="mb-2">
                 <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] md:leading-[1.1] uppercase text-white">
@@ -218,7 +229,7 @@ export default async function BusinessProfilePage({
                       </div>
                       <div className="text-right">
                         <span className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
-                          {formatPrice(service.price_min, service.price_max)}
+                          {formatPrice(service.price_min ?? 0, service.price_max)}
                         </span>
                       </div>
                     </Link>

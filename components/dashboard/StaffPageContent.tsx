@@ -34,7 +34,7 @@ export function StaffPageContent({ staff }: { staff: StaffMember[] }) {
           className="bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-[16px]">person_add</span>
-          Invite Staff
+          Add A Staff Member
         </Link>
       </div>
 
@@ -56,7 +56,7 @@ export function StaffPageContent({ staff }: { staff: StaffMember[] }) {
             className="inline-flex items-center gap-2 bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all"
           >
             <span className="material-symbols-outlined text-[16px]">person_add</span>
-            Invite Your First Staff
+            Add Your First Staff Member
           </Link>
         </div>
       ) : (

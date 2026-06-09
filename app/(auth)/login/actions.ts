@@ -59,7 +59,7 @@ export async function loginAction(formData: FormData) {
   const defaultRedirects = {
     business: "/dashboard",
     staff: "/staff-dashboard",
-    customer: "/customer/dashboard"
+    customer: "/businesses" // Redirect to marketplace/browse page
   };
 
   // Check if accounts are active

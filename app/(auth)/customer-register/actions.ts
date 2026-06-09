@@ -56,6 +56,6 @@ export async function customerRegisterAction(formData: FormData) {
 
   if (insertError) return { error: `Could not create customer profile: ${insertError.message}` };
 
-  // Session is already set by signUp. Redirect to customer dashboard.
-  redirect("/customer/dashboard");
+  // Session is already set by signUp. Redirect to marketplace to browse businesses.
+  redirect("/businesses");
 }

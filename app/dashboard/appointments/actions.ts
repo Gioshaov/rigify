@@ -91,7 +91,7 @@ export async function createAppointment(data: CreateAppointmentData) {
       staff_id: data.staffId,
       appointment_datetime: appointmentDatetime.toISOString(),
       duration_minutes: service.duration_minutes,
-      price: service.price_min,
+      price: service.price_min ?? 0, // Default to 0 if null
       customer_name: data.customerName.trim(),
       customer_phone: data.customerPhone.trim(),
       customer_email: data.customerEmail?.trim() || null,
@@ -102,7 +102,10 @@ export async function createAppointment(data: CreateAppointmentData) {
 
   if (error) {
     console.error("Create appointment error:", error);
-    return { success: false, message: "Failed to create appointment" };
+    return {
+      success: false,
+      message: `Failed to create appointment: ${error.message}`
+    };
   }
 
   // Revalidate appointments page

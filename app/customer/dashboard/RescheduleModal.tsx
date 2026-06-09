@@ -94,8 +94,8 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
           return `${displayHour}:${displayMin} ${ampm}`;
         });
         setAvailableSlots(slots12h);
-      } catch (error) {
-        console.error('Error fetching availability:', error);
+      } catch (fetchError) {
+        console.error('Error fetching availability:', fetchError);
         setError('Failed to load available slots. Please try again.');
         setAvailableSlots([]);
       } finally {
@@ -197,9 +197,9 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
               value={selectedStaff ?? ""}
               onChange={(e) => setSelectedStaff(e.target.value || null)}
               className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer transition-colors font-hanken text-[14px]"
+              required
             >
               <option value="" disabled>Choose your staff member...</option>
-              <option value="any">Any Available Staff</option>
               {staff.map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.name}
@@ -218,6 +218,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
             <button
+              data-testid="calendar-prev-month-btn"
               type="button"
               onClick={handlePrevMonth}
               className="p-2 hover:bg-white/5 transition-colors"
@@ -228,6 +229,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
               {monthNames[currentMonth]} {currentYear}
             </span>
             <button
+              data-testid="calendar-next-month-btn"
               type="button"
               onClick={handleNextMonth}
               className="p-2 hover:bg-white/5 transition-colors"
@@ -248,7 +250,8 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
             ))}
             {calendarDays.map((dayObj, index) => (
               <button
-                key={index}
+                key={dayObj.day ?? `empty-${index}`}
+                data-testid={dayObj.day ? `calendar-day-${dayObj.day}` : undefined}
                 type="button"
                 disabled={!dayObj.day || dayObj.disabled}
                 onClick={() => dayObj.day && setSelectedDate(dayObj.day)}
