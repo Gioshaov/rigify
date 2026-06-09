@@ -23,7 +23,10 @@ export async function cancelBookingAction(bookingId: string) {
     .single();
 
   if (fetchError || !booking) {
-    console.error("Fetch booking error:", fetchError);
+    // PGRST116 is expected "not found" - only log real errors
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error("Fetch booking error:", fetchError);
+    }
     return { success: false, error: "Booking not found" };
   }
 
@@ -42,15 +45,20 @@ export async function cancelBookingAction(bookingId: string) {
   }
 
   // Update booking status to cancelled (with ownership check)
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("bookings")
     .update({ status: "cancelled" })
     .eq("id", bookingId)
-    .eq("customer_id", user.id);
+    .eq("customer_id", user.id)
+    .select("id");
 
   if (error) {
     console.error("Cancel booking error:", error);
     return { success: false, error: "Failed to cancel booking" };
+  }
+
+  if (!updated || updated.length === 0) {
+    return { success: false, error: "Booking could not be cancelled — it may already be cancelled" };
   }
 
   revalidatePath("/customer/dashboard");
@@ -81,7 +89,10 @@ export async function rescheduleBookingAction(data: {
     .single();
 
   if (fetchError || !booking) {
-    console.error("Fetch booking error:", fetchError);
+    // PGRST116 is expected "not found" - only log real errors
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error("Fetch booking error:", fetchError);
+    }
     return { success: false, error: "Booking not found" };
   }
 
@@ -137,7 +148,10 @@ export async function rescheduleBookingAction(data: {
     .single();
 
   if (staffError || !staffMember) {
-    console.error("Fetch staff error:", staffError);
+    // PGRST116 is expected when staff doesn't exist - only log real errors
+    if (staffError && staffError.code !== 'PGRST116') {
+      console.error("Fetch staff error:", staffError);
+    }
     return { success: false, error: "Selected staff member is no longer available" };
   }
 
