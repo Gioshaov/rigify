@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { BusinessGrid } from "./BusinessGrid";
+import { ViewModeToggle } from "./ViewModeToggle";
+import { BusinessMapView } from "./BusinessMapView";
+import { BusinessSplitView } from "./BusinessSplitView";
+import { useGeolocation, calculateDistance } from "@/lib/utils/geolocation";
 import { TBILISI_DISTRICTS } from "@/lib/constants/districts";
 import { CATEGORIES } from "@/lib/constants/categories";
 
@@ -18,20 +23,116 @@ type Business = {
   rating: number;
   review_count: number;
   is_active: boolean;
+  latitude: number | null;
+  longitude: number | null;
   business_categories: Array<{ category_id: string }>;
+  distance?: number;
 };
 
 type SortOption = "featured" | "rating" | "name" | "reviews";
+type ViewMode = 'list' | 'map' | 'split';
 
 export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: Business[] }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Geolocation (silent, no error if denied)
+  const { userLocation } = useGeolocation();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
 
+  // View mode from URL (deterministic initialization to avoid hydration mismatch)
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const urlView = searchParams.get('view') as ViewMode | null;
+    if (urlView && ['list', 'map', 'split'].includes(urlView)) {
+      return urlView;
+    }
+    return 'list'; // default (localStorage restored in effect)
+  });
+
+  // Restore view from localStorage after hydration
+  useEffect(() => {
+    const urlView = searchParams.get('view');
+    if (!urlView && typeof window !== 'undefined') {
+      const saved = localStorage.getItem('rigify-map-view') as ViewMode | null;
+      if (saved && ['list', 'map', 'split'].includes(saved)) {
+        setViewMode(saved);
+      }
+    }
+  }, []); // Run once on mount
+
+  // Sync view mode with URL changes (browser back/forward)
+  useEffect(() => {
+    const urlView = searchParams.get('view') as ViewMode | null;
+    if (urlView && ['list', 'map', 'split'].includes(urlView)) {
+      setViewMode(urlView);
+    } else if (!urlView) {
+      // URL has no view param, fallback to localStorage or default
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('rigify-map-view') as ViewMode | null;
+        if (saved && ['list', 'map', 'split'].includes(saved)) {
+          setViewMode(saved);
+        } else {
+          setViewMode('list');
+        }
+      }
+    }
+  }, [searchParams]); // Re-run when URL params change
+
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Force LIST if mobile and SPLIT selected
+  const effectiveViewMode = isMobile && viewMode === 'split' ? 'list' : viewMode;
+
+  // Handle view change
+  const handleViewChange = (mode: ViewMode) => {
+    setViewMode(mode);
+
+    // Update URL
+    const params = new URLSearchParams(searchParams);
+    params.set('view', mode);
+    router.push(`${pathname}?${params.toString()}`);
+
+    // Save to localStorage
+    localStorage.setItem('rigify-map-view', mode);
+  };
+
+  // Enrich businesses with distance if user location available
+  const businessesWithDistance = useMemo(() => {
+    if (!userLocation) return initialBusinesses;
+
+    return initialBusinesses.map((business) => {
+      // Skip businesses without coordinates
+      if (business.latitude == null || business.longitude == null) {
+        return business;
+      }
+
+      return {
+        ...business,
+        distance: calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          business.latitude,
+          business.longitude
+        ),
+      };
+    });
+  }, [initialBusinesses, userLocation]);
+
   // Filter and sort businesses
   const filteredBusinesses = useMemo(() => {
-    let filtered = initialBusinesses.filter((business) => {
+    let filtered = businessesWithDistance.filter((business) => {
       // District filter
       if (selectedDistrict !== "all") {
         if (!business.district) return false;
@@ -76,6 +177,11 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
     // Apply sorting
     const sorted = [...filtered].sort((a, b) => {
+      // If user location available and sort is default, sort by distance
+      if (userLocation && sortBy === "featured" && a.distance !== undefined && b.distance !== undefined) {
+        return a.distance - b.distance;
+      }
+
       switch (sortBy) {
         case "rating":
           return (b.rating ?? 0) - (a.rating ?? 0);
@@ -93,7 +199,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     });
 
     return sorted;
-  }, [initialBusinesses, searchQuery, selectedDistrict, selectedCategory, sortBy]);
+  }, [businessesWithDistance, searchQuery, selectedDistrict, selectedCategory, sortBy, userLocation]);
 
   // Check if any filters are active
   const hasActiveFilters = searchQuery !== "" || selectedDistrict !== "all" || selectedCategory !== "all";
@@ -183,6 +289,13 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
       {/* Main Content */}
       <main className="px-4 md:px-margin-desktop py-12">
         <div className="max-w-container mx-auto">
+          {/* View Mode Toggle */}
+          <ViewModeToggle
+            viewMode={effectiveViewMode}
+            onViewChange={handleViewChange}
+            isMobile={isMobile}
+          />
+
           {/* Results Header with Sort */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
@@ -191,6 +304,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               </h2>
               <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-2">
                 Showing {filteredBusinesses.length} of {initialBusinesses.length}
+                {userLocation && sortBy === "featured" && ' • SORTED BY DISTANCE'}
               </p>
             </div>
 
@@ -261,7 +375,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             </div>
           )}
 
-          {/* Business Grid */}
+          {/* Business Content - View-dependent */}
           {filteredBusinesses.length === 0 ? (
             <div className="text-center py-16 bg-surface-container-low sharp-border">
               <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
@@ -286,7 +400,67 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               )}
             </div>
           ) : (
-            <BusinessGrid businesses={filteredBusinesses} />
+            <>
+              {effectiveViewMode === 'list' && (
+                <BusinessGrid businesses={filteredBusinesses} />
+              )}
+
+              {effectiveViewMode === 'map' && (() => {
+                const mappableBusinesses = filteredBusinesses.filter(b => b.latitude != null && b.longitude != null);
+                return mappableBusinesses.length === 0 ? (
+                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+                    <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
+                      location_off
+                    </span>
+                    <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
+                      No Businesses With Map Coordinates
+                    </h3>
+                    <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase mb-6">
+                      {filteredBusinesses.length} {filteredBusinesses.length === 1 ? 'business' : 'businesses'} found, but {filteredBusinesses.length === 1 ? 'it has' : 'they have'} no map coordinates yet
+                    </p>
+                    <button
+                      onClick={() => handleViewChange('list')}
+                      className="bg-primary text-on-primary px-6 py-3 font-mono text-[12px] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors"
+                    >
+                      View as List
+                    </button>
+                  </div>
+                ) : (
+                  <BusinessMapView
+                    businesses={mappableBusinesses as any}
+                    userLocation={userLocation}
+                  />
+                );
+              })()}
+
+              {effectiveViewMode === 'split' && (() => {
+                const mappableBusinesses = filteredBusinesses.filter(b => b.latitude != null && b.longitude != null);
+                return mappableBusinesses.length === 0 ? (
+                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+                    <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
+                      location_off
+                    </span>
+                    <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
+                      No Businesses With Map Coordinates
+                    </h3>
+                    <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase mb-6">
+                      {filteredBusinesses.length} {filteredBusinesses.length === 1 ? 'business' : 'businesses'} found, but {filteredBusinesses.length === 1 ? 'it has' : 'they have'} no map coordinates yet
+                    </p>
+                    <button
+                      onClick={() => handleViewChange('list')}
+                      className="bg-primary text-on-primary px-6 py-3 font-mono text-[12px] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors"
+                    >
+                      View as List
+                    </button>
+                  </div>
+                ) : (
+                  <BusinessSplitView
+                    businesses={mappableBusinesses as any}
+                    userLocation={userLocation}
+                  />
+                );
+              })()}
+            </>
           )}
         </div>
       </main>

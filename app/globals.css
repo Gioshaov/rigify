@@ -60,6 +60,27 @@
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* User location marker pulse animation for map */
+@keyframes pulse-marker {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+.user-location-marker {
+  /* Ensures animation runs in Leaflet context */
+  z-index: 1000 !important;
+}
+
+.user-location-marker div > div {
+  animation: pulse-marker 2s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;

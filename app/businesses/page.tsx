@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessPageClient } from "./BusinessPageClient";
@@ -25,6 +26,8 @@ export default async function BrowseBusinessesPage() {
       rating,
       review_count,
       is_active,
+      latitude,
+      longitude,
       business_categories(category_id)
     `)
     .eq('is_active', true)
@@ -108,7 +111,9 @@ export default async function BrowseBusinessesPage() {
       </header>
 
       {/* Client-side interactive filtering/sorting */}
-      <BusinessPageClient initialBusinesses={businesses} />
+      <Suspense fallback={<div className="px-4 md:px-margin-desktop py-12"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
+        <BusinessPageClient initialBusinesses={businesses} />
+      </Suspense>
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-4 border-t border-white/10">

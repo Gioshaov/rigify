@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { formatDistance } from "@/lib/utils/geolocation";
 
 type Business = {
   id: string;
@@ -16,9 +17,24 @@ type Business = {
   rating: number;
   review_count: number;
   business_categories: Array<{ category_id: string }>;
+  distance?: number;
 };
 
-export function BusinessGrid({ businesses }: { businesses: Business[] }) {
+interface BusinessGridProps {
+  businesses: Business[];
+  selectedBusinessId?: string | null;
+  onBusinessHover?: (businessId: string | null) => void;
+  onBusinessClick?: (businessId: string) => void;
+  registerCardRef?: (businessId: string, element: HTMLElement | null) => void;
+}
+
+export function BusinessGrid({
+  businesses,
+  selectedBusinessId = null,
+  onBusinessHover,
+  onBusinessClick,
+  registerCardRef
+}: BusinessGridProps) {
   // Map category IDs to display names (same as Stitch design)
   const categoryIcons: Record<string, string> = {
     hair: 'content_cut',
@@ -37,13 +53,22 @@ export function BusinessGrid({ businesses }: { businesses: Business[] }) {
         // Get primary category for icon
         const primaryCategory = business.business_categories[0]?.category_id || 'other';
         const icon = categoryIcons[primaryCategory] || 'category';
+        const isSelected = business.id === selectedBusinessId;
+        const hasDistance = business.distance !== undefined;
 
         return (
           <Link
             key={business.id}
             href={`/businesses/${business.slug}`}
+            ref={(el) => registerCardRef?.(business.id, el)}
             data-testid={`business-card-${business.slug}`}
-            className="group bg-surface-container-low sharp-border hover:border-primary/40 transition-all duration-300 block"
+            className={`
+              group bg-surface-container-low sharp-border
+              hover:border-primary/40 transition-all duration-300 block
+              ${isSelected ? 'border-primary shadow-lg shadow-primary/20' : ''}
+            `}
+            onMouseEnter={() => onBusinessHover?.(business.id)}
+            onMouseLeave={() => onBusinessHover?.(null)}
           >
             <article>
               {/* Cover Image */}
@@ -97,12 +122,17 @@ export function BusinessGrid({ businesses }: { businesses: Business[] }) {
                   )}
                 </div>
 
-                {/* Location */}
+                {/* Location with distance */}
                 <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">
                     location_on
                   </span>
                   {business.district ? `${business.district}, ` : ''}{business.city.toUpperCase()}
+                  {hasDistance && business.distance !== undefined && (
+                    <span className="text-primary ml-2" data-testid={`business-distance-${business.slug}`}>
+                      • {formatDistance(business.distance!)}
+                    </span>
+                  )}
                 </p>
 
                 {/* Category Tags */}

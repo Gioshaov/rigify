@@ -1,6 +1,6 @@
 # Rigify Development Session Summary
 
-**Last Updated**: June 9, 2026  
+**Last Updated**: June 9, 2026 (Session 14 - Map View Implementation)  
 **Repository**: https://github.com/Gioshaov/rigify
 
 ---
@@ -1073,4 +1073,105 @@ npm run audit:testids     # Find missing test IDs
 - Consider additional optimizations (image optimization, component splitting, dynamic imports)
 
 **Status**: All performance optimizations committed and pushed to GitHub. Ready for production testing.
+
+---
+
+### Session 14 - June 9, 2026: Map View Implementation & Bug Fixes
+
+**Objective**: Implement map view for marketplace with three toggleable modes (LIST/MAP/SPLIT), run code reviews, fix critical bugs
+
+**User Request**: "I need to implement this [map view feature]" + "code review it" + "are codex comments valid? fix them"
+
+**Accomplishments**:
+
+1. **Map View Implementation** ✅
+   - **Database**: Created migration `20260610000001_add_business_coordinates.sql`
+     - Added latitude/longitude columns (NUMERIC(10,8) precision ~1mm accuracy)
+     - Added spatial index for performance
+   
+   - **New Components**:
+     - `lib/utils/geolocation.ts` - Haversine distance calculation + useGeolocation hook
+     - `app/businesses/ViewModeToggle.tsx` - Three-button toggle (LIST/MAP/SPLIT)
+     - `app/businesses/BusinessMap.tsx` - Leaflet map with custom gold markers
+     - `app/businesses/BusinessMapView.tsx` - Full-screen map view wrapper
+     - `app/businesses/BusinessSplitView.tsx` - Synchronized list + map layout
+   
+   - **Modified Components**:
+     - `app/businesses/page.tsx` - Added Suspense boundary, fetch coordinates
+     - `app/businesses/BusinessPageClient.tsx` - View mode state, geolocation, distance sorting
+     - `app/businesses/BusinessGrid.tsx` - Hover/click handlers, distance display
+     - `app/dashboard/settings/BusinessProfileForm.tsx` - Coordinate input fields
+     - `app/dashboard/settings/actions.ts` - Coordinate validation/saving
+   
+   - **Features**:
+     - Custom gold markers with category icon + business name (XSS-protected)
+     - "Near me" geolocation with distance sorting (silent failure if denied)
+     - URL params (?view=map) + localStorage persistence
+     - Synchronized hover/click interactions in split view
+     - Mobile responsive (hides SPLIT button, auto-switches to LIST)
+     - Empty state handling for businesses without coordinates
+   
+   - **Dependencies**: Installed leaflet@^1.9.4, react-leaflet@^4.2.1, @types/leaflet@^1.9.8
+
+2. **Code Reviews (2 Rounds)** ✅
+   - **Round 1: @code-reviewer (PASS)**
+     - C1: Fixed XSS vulnerability in marker HTML (added escapeHtml function)
+     - M1: Fixed NaN handling in coordinate validation (added isNaN checks)
+     - M2: Fixed FlyToMarker re-rendering (changed deps to primitives)
+     - M3: Fixed useSearchParams hydration (wrapped in Suspense)
+     - M4: Fixed falsy check excludes 0 coordinates (changed to null checks)
+   
+   - **Round 2: /codex:review (4 Issues Found)**
+     - P1: Empty mappable businesses - blank map when businesses lack coordinates
+     - P2: Hydration mismatch - localStorage read during SSR initialization
+     - P2: Browser navigation broken - back/forward doesn't update view
+     - P2: Card navigation blocked - preventDefault() in split view breaks links
+
+3. **Bug Fixes (All 4 Codex Issues)** ✅
+   - **Fix 1: Empty mappable businesses (P1)**
+     - Added empty state detection after coordinate filtering
+     - Shows "No Businesses With Map Coordinates" + "View as List" button
+     - File: `app/businesses/BusinessPageClient.tsx:388-420`
+   
+   - **Fix 2: Hydration mismatch (P2)**
+     - Removed localStorage from useState initializer
+     - Moved localStorage restoration to useEffect (client-only)
+     - File: `app/businesses/BusinessPageClient.tsx:48-75`
+   
+   - **Fix 3: Browser navigation broken (P2)**
+     - Added useEffect watching searchParams to sync state
+     - Browser back/forward now updates displayed view
+     - File: `app/businesses/BusinessPageClient.tsx:77-91`
+   
+   - **Fix 4: Card navigation blocked (P2)**
+     - Removed onClick handler with e.preventDefault()
+     - Link navigation now works normally in all views
+     - File: `app/businesses/BusinessGrid.tsx:60-71`
+
+**Files Changed**:
+- Created: 6 files (migration, 4 map components, geolocation utils)
+- Modified: 10 files (page, client, grid, form, actions, types, styles, package)
+- Migrations: 1 (business coordinates)
+- Net: ~400 lines added
+
+**Commits**: Not yet committed (changes in working tree)
+
+**Issues Fixed**: 9 total (5 from @code-reviewer, 4 from /codex:review)
+
+**Verification**:
+- ✅ TypeScript compilation clean (exit code 0)
+- ⏳ ESLint not yet tested
+- ⏳ Browser testing pending
+- ⏳ Migration not yet applied
+
+**Next Steps**:
+- Commit map view implementation
+- Test in browser (all three view modes)
+- Apply database migration (`supabase db push`)
+- Add coordinates to existing test businesses
+- Test geolocation feature
+- Test empty state handling
+- Verify hydration and browser navigation fixes
+
+**Status**: Implementation complete, all bugs fixed, ready to commit and test.
 

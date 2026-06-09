@@ -21,6 +21,8 @@ export interface Business {
   salome_enabled: boolean;
   hours?: Record<string, any>;
   business_categories?: BusinessCategory[];
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface StaffPermissions {

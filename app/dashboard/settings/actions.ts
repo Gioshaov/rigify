@@ -61,6 +61,22 @@ export async function updateBusinessProfile(formData: FormData) {
     }
   }
 
+  // Extract and validate coordinates
+  const latitude = formData.get("latitude") as string;
+  const longitude = formData.get("longitude") as string;
+
+  // Parse coordinates (required fields now, but handle empty gracefully for existing businesses)
+  const parsedLatitude = latitude && latitude.trim() !== '' ? parseFloat(latitude) : null;
+  const parsedLongitude = longitude && longitude.trim() !== '' ? parseFloat(longitude) : null;
+
+  // Validate coordinate ranges if provided
+  if (parsedLatitude !== null && (isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+    return { error: "Latitude must be a valid number between -90 and 90" };
+  }
+  if (parsedLongitude !== null && (isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+    return { error: "Longitude must be a valid number between -180 and 180" };
+  }
+
   const admin = createAdminClient();
 
   // Normalize district to ID format
@@ -81,6 +97,8 @@ export async function updateBusinessProfile(formData: FormData) {
       instagram,
       cover_image_url: coverImageUrl,
       logo_url: logoUrl,
+      latitude: parsedLatitude,
+      longitude: parsedLongitude,
     })
     .eq("id", businessId);
 

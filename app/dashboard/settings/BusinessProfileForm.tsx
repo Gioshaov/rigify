@@ -24,6 +24,8 @@ type Business = {
   cover_image_url: string | null;
   logo_url: string | null;
   hours: BusinessHours;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export function BusinessProfileForm({
@@ -294,6 +296,84 @@ export function BusinessProfileForm({
               }}
               variant="business"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Map Coordinates */}
+      <div className="mb-section-gap">
+        <h2 className="text-headline-lg mb-stack-lg border-b border-outline-variant pb-stack-md">
+          MAP COORDINATES
+        </h2>
+
+        <div className="space-y-stack-md">
+          <p className="label-mono text-on-surface-variant text-sm">
+            ADD YOUR EXACT LOCATION TO APPEAR ON THE MARKETPLACE MAP.{' '}
+            <a
+              href="https://www.google.com/maps"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              FIND COORDINATES ON GOOGLE MAPS →
+            </a>
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+            <div>
+              <label htmlFor="latitude" className="label-mono block mb-stack-sm">
+                LATITUDE *
+              </label>
+              <input
+                id="latitude"
+                name="latitude"
+                type="number"
+                step="0.00000001"
+                min="-90"
+                max="90"
+                defaultValue={business.latitude ?? ''}
+                required
+                className="input-field"
+                placeholder="41.7151377"
+                data-testid="business-settings-latitude-input"
+              />
+              <p className="text-xs text-on-surface-variant mt-1 font-mono">
+                Example: 41.7151377 (Rustaveli Avenue)
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="longitude" className="label-mono block mb-stack-sm">
+                LONGITUDE *
+              </label>
+              <input
+                id="longitude"
+                name="longitude"
+                type="number"
+                step="0.00000001"
+                min="-180"
+                max="180"
+                defaultValue={business.longitude ?? ''}
+                required
+                className="input-field"
+                placeholder="44.7831250"
+                data-testid="business-settings-longitude-input"
+              />
+              <p className="text-xs text-on-surface-variant mt-1 font-mono">
+                Example: 44.7831250 (Rustaveli Avenue)
+              </p>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-surface-container-low border border-white/10 p-gutter">
+            <p className="label-mono text-xs mb-2 text-primary">HOW TO GET COORDINATES:</p>
+            <ol className="text-sm text-on-surface-variant space-y-1 list-decimal list-inside font-mono">
+              <li>Open Google Maps and search for your business address</li>
+              <li>Right-click on your exact location on the map</li>
+              <li>Click the coordinates at the top of the menu to copy</li>
+              <li>Paste first number (latitude), then second number (longitude)</li>
+            </ol>
           </div>
         </div>
       </div>
