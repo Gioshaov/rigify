@@ -175,14 +175,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Pre-group bookings by staff_id to avoid N+1 filtering
+    const bookingsByStaff = new Map<string, typeof confirmedBookings>()
+    confirmedBookings?.forEach(booking => {
+      const staffIdKey = booking.staff_id || 'unassigned'
+      if (!bookingsByStaff.has(staffIdKey)) {
+        bookingsByStaff.set(staffIdKey, [])
+      }
+      bookingsByStaff.get(staffIdKey)!.push(booking)
+    })
+
     // If specific staff requested, check overlaps for that staff
     // If no staff requested ("Any Staff"), find an available staff member and assign them
     let hasOverlap = false
     let assignedStaffId = staffId
 
     if (staffId) {
-      // Specific staff: check only their bookings
-      const staffBookings = confirmedBookings?.filter(b => b.staff_id === staffId) || []
+      // Specific staff: check only their bookings (using pre-grouped map)
+      const staffBookings = bookingsByStaff.get(staffId) || []
       hasOverlap = staffBookings.some((booking) => {
         const bookingStart = new Date(booking.appointment_datetime)
         const bookingEnd = new Date(booking.end_datetime)
@@ -204,9 +214,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Check if at least one staff member has no conflict
+      // Check if at least one staff member has no conflict (using pre-grouped map)
       const availableStaff = allStaff.filter(staff => {
-        const staffBookings = confirmedBookings?.filter(b => b.staff_id === staff.id) || []
+        const staffBookings = bookingsByStaff.get(staff.id) || []
         const hasConflict = staffBookings.some((booking) => {
           const bookingStart = new Date(booking.appointment_datetime)
           const bookingEnd = new Date(booking.end_datetime)

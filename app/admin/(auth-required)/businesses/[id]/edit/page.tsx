@@ -6,27 +6,31 @@ export default async function EditBusinessPage({ params }: { params: { id: strin
   // Use admin client for super admin access (middleware already verified super admin status)
   const admin = createAdminClient()
 
-  const { data: business, error } = await admin
-    .from('businesses')
-    .select(`
-      *,
-      business_categories (
-        category_id
-      )
-    `)
-    .eq('id', params.id)
-    .single()
+  // Parallelize business and staff queries (both only need params.id)
+  const [
+    { data: business, error },
+    { data: staff }
+  ] = await Promise.all([
+    admin
+      .from('businesses')
+      .select(`
+        *,
+        business_categories (
+          category_id
+        )
+      `)
+      .eq('id', params.id)
+      .single(),
+    admin
+      .from('staff')
+      .select('id, name, email, role, is_active, created_at')
+      .eq('business_id', params.id)
+      .order('created_at', { ascending: false })
+  ])
 
   if (error || !business) {
     redirect('/admin')
   }
-
-  // Get staff for this business
-  const { data: staff } = await admin
-    .from('staff')
-    .select('id, name, email, role, is_active, created_at')
-    .eq('business_id', params.id)
-    .order('created_at', { ascending: false })
 
   return (
     <div className="max-w-7xl">

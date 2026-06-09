@@ -22,46 +22,48 @@ export default async function AppointmentsPage() {
     redirect('/dashboard');
   }
 
-  // Get all staff members for filters
-  const { data: staff } = await supabase
-    .from('staff')
-    .select('id, name')
-    .eq('business_id', business.id)
-    .eq('is_active', true)
-    .order('name');
-
-  // Get all active services for appointment creation
-  const { data: services } = await supabase
-    .from('services')
-    .select('id, name, duration_minutes, price_min')
-    .eq('business_id', business.id)
-    .eq('is_active', true)
-    .order('name');
-
-  // Get current month's date range (extended for calendar view)
+  // Prepare date range for bookings query
   const now = new Date();
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 2, 0, 23, 59, 59);
 
-  // Fetch all bookings for calendar view
-  const { data: bookings } = await supabase
-    .from('bookings')
-    .select(`
-      id,
-      appointment_datetime,
-      status,
-      duration_minutes,
-      price,
-      customer_name,
-      customer_phone,
-      customer_email,
-      services!inner(id, name),
-      staff!left(id, name)
-    `)
-    .eq('business_id', business.id)
-    .gte('appointment_datetime', threeMonthsAgo.toISOString())
-    .lte('appointment_datetime', threeMonthsAhead.toISOString())
-    .order('appointment_datetime', { ascending: true });
+  // Parallelize independent queries (all depend on business.id but not on each other)
+  const [
+    { data: staff },
+    { data: services },
+    { data: bookings }
+  ] = await Promise.all([
+    supabase
+      .from('staff')
+      .select('id, name')
+      .eq('business_id', business.id)
+      .eq('is_active', true)
+      .order('name'),
+    supabase
+      .from('services')
+      .select('id, name, duration_minutes, price_min')
+      .eq('business_id', business.id)
+      .eq('is_active', true)
+      .order('name'),
+    supabase
+      .from('bookings')
+      .select(`
+        id,
+        appointment_datetime,
+        status,
+        duration_minutes,
+        price,
+        customer_name,
+        customer_phone,
+        customer_email,
+        services!inner(id, name),
+        staff!left(id, name)
+      `)
+      .eq('business_id', business.id)
+      .gte('appointment_datetime', threeMonthsAgo.toISOString())
+      .lte('appointment_datetime', threeMonthsAhead.toISOString())
+      .order('appointment_datetime', { ascending: true })
+  ]);
 
   // Calculate monthly stats (using the same 'now' from above)
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);

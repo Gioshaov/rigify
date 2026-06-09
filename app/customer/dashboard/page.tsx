@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookingCard } from "./BookingCard";
 
-// Force dynamic rendering to ensure 'now' is always fresh
-export const dynamic = 'force-dynamic';
+// Revalidate every 30 seconds - fresh enough for bookings without disabling all caching
+export const revalidate = 30;
 
 export default async function CustomerBookingsPage() {
   const supabase = createClient();

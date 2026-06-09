@@ -4,40 +4,36 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Password protection layer - runs before everything else
-  // Allow access to password page (and future subroutes) and password verification API only
-  if (pathname === '/password' || pathname.startsWith('/password/')) {
-    return NextResponse.next();
-  }
-
-  if (!pathname.startsWith('/api/verify-password')) {
-    const accessCookie = request.cookies.get('rigify_access');
-
-    if (!accessCookie?.value) {
-      // Redirect to password page if no cookie
-      const url = request.nextUrl.clone();
-      url.pathname = '/password';
-      return NextResponse.redirect(url);
+  // Password protection layer - only in development/staging (skip in production)
+  if (process.env.SITE_PASSWORD && process.env.NODE_ENV !== 'production') {
+    // Allow access to password page (and future subroutes) and password verification API only
+    if (pathname === '/password' || pathname.startsWith('/password/')) {
+      return NextResponse.next();
     }
 
-    // Verify cookie signature
-    const secret = process.env.SITE_PASSWORD;
-    if (!secret) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/password';
-      return NextResponse.redirect(url);
-    }
+    if (!pathname.startsWith('/api/verify-password')) {
+      const accessCookie = request.cookies.get('rigify_access');
 
-    const expectedValue = await createCookieValue(secret);
-    if (accessCookie.value !== expectedValue) {
-      // Invalid cookie - redirect to password page
-      const url = request.nextUrl.clone();
-      url.pathname = '/password';
-      return NextResponse.redirect(url);
+      if (!accessCookie?.value) {
+        // Redirect to password page if no cookie
+        const url = request.nextUrl.clone();
+        url.pathname = '/password';
+        return NextResponse.redirect(url);
+      }
+
+      // Verify cookie signature
+      const secret = process.env.SITE_PASSWORD;
+      const expectedValue = await createCookieValue(secret);
+      if (accessCookie.value !== expectedValue) {
+        // Invalid cookie - redirect to password page
+        const url = request.nextUrl.clone();
+        url.pathname = '/password';
+        return NextResponse.redirect(url);
+      }
     }
   }
 
-  // If password is correct (or on password/verify page), continue with Supabase auth
+  // Continue with Supabase auth
   return await updateSession(request);
 }
 

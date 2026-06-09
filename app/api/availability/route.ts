@@ -103,6 +103,16 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // Pre-group bookings by staff_id to avoid N+1 filtering in slot loop
+  const bookingsByStaff = new Map<string, typeof bookings>()
+  bookings?.forEach(booking => {
+    const staffIdKey = booking.staff_id || 'unassigned'
+    if (!bookingsByStaff.has(staffIdKey)) {
+      bookingsByStaff.set(staffIdKey, [])
+    }
+    bookingsByStaff.get(staffIdKey)!.push(booking)
+  })
+
   // If "Any Staff" mode, get all active staff for this business
   let allStaff: { id: string }[] | null = null
   if (!staffId) {
@@ -147,9 +157,9 @@ export async function GET(request: NextRequest) {
 
     if (endsAfterHours) return false
 
-    // Specific staff: check only their bookings
+    // Specific staff: check only their bookings (using pre-grouped map)
     if (staffId) {
-      const staffBookings = bookings?.filter(b => b.staff_id === staffId) || []
+      const staffBookings = bookingsByStaff.get(staffId) || []
       const hasOverlap = staffBookings.some((booking) => {
         const bookingStart = new Date(booking.appointment_datetime)
         const bookingEnd = new Date(booking.end_datetime)
@@ -162,7 +172,7 @@ export async function GET(request: NextRequest) {
     if (!allStaff || allStaff.length === 0) return false
 
     const hasAvailableStaff = allStaff.some(staff => {
-      const staffBookings = bookings?.filter(b => b.staff_id === staff.id) || []
+      const staffBookings = bookingsByStaff.get(staff.id) || []
       const hasConflict = staffBookings.some((booking) => {
         const bookingStart = new Date(booking.appointment_datetime)
         const bookingEnd = new Date(booking.end_datetime)
