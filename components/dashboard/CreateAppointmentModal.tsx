@@ -206,7 +206,7 @@ export function CreateAppointmentModal({
                 {services.map((service) => (
                   <option key={service.id} value={service.id}>
                     {service.name} - {service.duration_minutes}min - ₾
-                    {service.price_min.toFixed(0)}
+                    {(service.price_min ?? 0).toFixed(0)}
                   </option>
                 ))}
               </select>
@@ -384,7 +384,7 @@ export function CreateAppointmentModal({
                   </p>
                   <p className="font-hanken text-[14px] leading-[1.5] text-on-surface">
                     <span className="text-on-surface-variant">Price:</span> ₾
-                    {selectedService.price_min.toFixed(0)}
+                    {(selectedService.price_min ?? 0).toFixed(0)}
                   </p>
                 </div>
               </div>
