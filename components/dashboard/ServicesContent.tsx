@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { DeleteServiceModal } from "@/components/dashboard/DeleteServiceModal";
+import { Toast } from "@/components/ui/Toast";
 
 type Service = {
   id: string;
@@ -23,6 +26,15 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Delete modal state
+  const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+
+  // Toast notification state
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
 
   // Read from URL or use defaults
   const filterCategory = searchParams.get('category') || 'all';
@@ -233,8 +245,10 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
                       <span className="material-symbols-outlined">edit</span>
                     </Link>
                     <button
+                      onClick={() => setServiceToDelete(service)}
                       className="p-3 border border-white/10 text-on-surface-variant hover:text-error hover:border-error transition-all active:scale-90"
                       data-testid={`delete-service-${service.id}`}
+                      title="Delete service"
                     >
                       <span className="material-symbols-outlined">delete</span>
                     </button>
@@ -252,6 +266,31 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
           Showing {filteredServices.length} of {services.length} services
         </p>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {serviceToDelete && (
+        <DeleteServiceModal
+          serviceName={serviceToDelete.name}
+          serviceId={serviceToDelete.id}
+          onClose={() => setServiceToDelete(null)}
+          onSuccess={() => {
+            setToast({
+              message: `${serviceToDelete.name} deleted successfully`,
+              type: "success",
+            });
+            router.refresh();
+          }}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
