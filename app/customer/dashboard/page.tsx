@@ -40,19 +40,20 @@ export default async function CustomerBookingsPage() {
   // Derive type from actual query result to stay in sync with Supabase schema
   type BookingRow = NonNullable<typeof upcomingData>[number];
 
-  // Supabase !inner joins return objects, not arrays - no need for Array.isArray guards
+  // Supabase !inner joins return objects at runtime, but SDK infers arrays without generated types
+  // Array.isArray guards handle the type/runtime mismatch safely
   const upcoming = (upcomingData || []).map((b: BookingRow) => ({
     ...b,
-    businesses: b.businesses as { name: string; address: string },
-    services: b.services as { name: string },
-    staff: b.staff as { name: string } | null
+    businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
+    services: Array.isArray(b.services) ? b.services[0] : b.services,
+    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
   }));
 
   const past = (pastData || []).map((b: BookingRow) => ({
     ...b,
-    businesses: b.businesses as { name: string; address: string },
-    services: b.services as { name: string },
-    staff: b.staff as { name: string } | null
+    businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
+    services: Array.isArray(b.services) ? b.services[0] : b.services,
+    staff: Array.isArray(b.staff) ? b.staff[0] : b.staff
   }));
 
   return (
