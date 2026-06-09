@@ -61,7 +61,7 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Booking could not be cancelled — it may already be cancelled" };
   }
 
-  revalidatePath("/customer/dashboard");
+  // Removed revalidatePath - using optimistic UI updates instead for better performance
   return { success: true };
 }
 
@@ -199,6 +199,6 @@ export async function rescheduleBookingAction(data: {
     return { success: false, error: "Booking could not be rescheduled — it may have been cancelled" };
   }
 
-  revalidatePath("/customer/dashboard");
+  // Removed revalidatePath - using optimistic UI updates instead for better performance
   return { success: true };
 }
