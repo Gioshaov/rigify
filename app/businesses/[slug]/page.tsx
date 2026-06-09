@@ -204,7 +204,7 @@ export default async function BusinessProfilePage({
                     <Link
                       key={service.id}
                       href={`/businesses/${business.slug}/book?service=${service.id}`}
-                      data-testid={`service-card-${service.id}`}
+                      data-testid={`book-service-btn-${service.id}`}
                       className="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
                     >
                       <div>

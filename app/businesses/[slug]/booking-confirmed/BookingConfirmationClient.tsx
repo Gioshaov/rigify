@@ -77,7 +77,7 @@ export function BookingConfirmationClient({
               check_circle
             </span>
           </div>
-          <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] md:leading-[1.1] text-primary mb-2">
+          <h1 data-testid="booking-confirmed-title" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] md:leading-[1.1] text-primary mb-2">
             BOOKING CONFIRMED
           </h1>
           <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-text-secondary uppercase">
@@ -98,7 +98,7 @@ export function BookingConfirmationClient({
                 </h2>
                 <div className="flex items-center gap-2 text-text-secondary">
                   <span className="material-symbols-outlined text-sm">storefront</span>
-                  <span className="font-hanken text-[16px] leading-[1.5] font-normal">
+                  <span data-testid="booking-confirmed-business-name" className="font-hanken text-[16px] leading-[1.5] font-normal">
                     {business.name}
                   </span>
                 </div>

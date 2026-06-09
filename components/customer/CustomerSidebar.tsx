@@ -33,7 +33,7 @@ export function CustomerSidebar({ customerName }: CustomerSidebarProps) {
       <div className="flex-1">
         {/* Logo & User Section */}
         <div className="p-8 border-b border-white/10">
-          <Link data-testid="sidebar-logo" href="/" className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase block mb-8">
+          <Link data-testid="customer-sidebar-logo" href="/" className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase block mb-8">
             RIGIFY
           </Link>
           {customerName && (

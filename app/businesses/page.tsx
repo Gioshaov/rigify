@@ -184,7 +184,7 @@ export default function BrowseBusinessesPage() {
           <span className="font-mono text-[12px] leading-[1] tracking-[0.3em] font-medium text-primary uppercase mb-4 block">
             Curated Excellence
           </span>
-          <h1 className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold md:text-[64px] text-primary uppercase max-w-2xl">
+          <h1 data-testid="browse-studios-hero-title" className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold md:text-[64px] text-primary uppercase max-w-2xl">
             Beauty & Wellness <br />
             in Tbilisi
           </h1>
@@ -204,7 +204,7 @@ export default function BrowseBusinessesPage() {
                 search
               </span>
               <input
-                data-testid="search-input"
+                data-testid="browse-studios-search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-12 py-3 text-on-surface placeholder:text-outline outline-none transition-all"
@@ -220,7 +220,7 @@ export default function BrowseBusinessesPage() {
               District
             </label>
             <select
-              data-testid="district-select"
+              data-testid="browse-studios-district-select"
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
               className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
@@ -240,7 +240,7 @@ export default function BrowseBusinessesPage() {
               Category
             </label>
             <select
-              data-testid="category-select"
+              data-testid="browse-studios-category-select"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
@@ -256,7 +256,7 @@ export default function BrowseBusinessesPage() {
 
           {/* Discover Button */}
           <button
-            data-testid="discover-btn"
+            data-testid="browse-studios-search-btn"
             className="bg-primary text-on-secondary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto"
           >
             Discover
