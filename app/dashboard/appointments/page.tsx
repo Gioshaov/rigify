@@ -30,6 +30,14 @@ export default async function AppointmentsPage() {
     .eq('is_active', true)
     .order('name');
 
+  // Get all active services for appointment creation
+  const { data: services } = await supabase
+    .from('services')
+    .select('id, name, duration_minutes, price_min')
+    .eq('business_id', business.id)
+    .eq('is_active', true)
+    .order('name');
+
   // Get current month's date range (extended for calendar view)
   const now = new Date();
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -141,6 +149,7 @@ export default async function AppointmentsPage() {
       <AppointmentsContent
         bookings={bookings || []}
         staff={staff || []}
+        services={services || []}
         businessId={business.id}
       />
     </div>

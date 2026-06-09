@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { CalendarView } from "./CalendarView";
 import { AppointmentsListView } from "./AppointmentsListView";
+import { CreateAppointmentModal } from "./CreateAppointmentModal";
 
 type Booking = {
   id: string;
@@ -22,16 +24,27 @@ type Staff = {
   name: string;
 };
 
+type Service = {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  price_min: number;
+};
+
 type AppointmentsContentProps = {
   bookings: Booking[];
   staff: Staff[];
+  services: Service[];
   businessId: string;
 };
 
-export function AppointmentsContent({ bookings, staff, businessId }: AppointmentsContentProps) {
+export function AppointmentsContent({ bookings, staff, services, businessId }: AppointmentsContentProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Read from URL or use defaults
   const viewMode = (searchParams.get('view') as 'calendar' | 'list') || 'calendar';
@@ -81,8 +94,9 @@ export function AppointmentsContent({ bookings, staff, businessId }: Appointment
     <div>
       {/* View Toggle & Filters */}
       <div className="mb-8 space-y-6">
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-4">
+        {/* View Mode Toggle & Create Button */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
           <button
             onClick={() => updateFilters({ view: 'calendar' })}
             className={`
@@ -114,6 +128,17 @@ export function AppointmentsContent({ bookings, staff, businessId }: Appointment
               <span className="material-symbols-outlined text-[18px]">list</span>
               List View
             </span>
+          </button>
+          </div>
+
+          {/* Create Appointment Button */}
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 flex items-center gap-2"
+            data-testid="create-appointment-btn"
+          >
+            <span className="material-symbols-outlined text-[16px]">add</span>
+            Create Appointment
           </button>
         </div>
 
@@ -207,6 +232,16 @@ export function AppointmentsContent({ bookings, staff, businessId }: Appointment
         <CalendarView bookings={filteredBookings} businessId={businessId} />
       ) : (
         <AppointmentsListView bookings={filteredBookings} />
+      )}
+
+      {/* Create Appointment Modal */}
+      {showCreateModal && (
+        <CreateAppointmentModal
+          businessId={businessId}
+          services={services}
+          staff={staff}
+          onClose={() => setShowCreateModal(false)}
+        />
       )}
     </div>
   );
