@@ -291,7 +291,7 @@ export function AppointmentList() {
         </span>
         <div className="font-hanken text-sm text-on-surface mb-2">No more appointments</div>
         <div className="font-hanken text-xs text-on-surface-variant">
-          You're all caught up for the selected period.
+          You&apos;re all caught up for the selected period.
         </div>
       </div>
     </div>

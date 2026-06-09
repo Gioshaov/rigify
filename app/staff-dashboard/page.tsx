@@ -65,7 +65,7 @@ export default async function StaffDashboardOverviewPage() {
         {/* Left Column */}
         <div className="flex-1">
           <h1 className="text-white font-bold text-3xl">Good morning, {staffName}.</h1>
-          <p className="text-zinc-400 text-sm mt-1">Here's your day at {businessName}.</p>
+          <p className="text-zinc-400 text-sm mt-1">Here&apos;s your day at {businessName}.</p>
 
           {/* 2x2 Stat Cards Grid */}
           <div className="grid grid-cols-2 gap-3 mt-6">
@@ -110,7 +110,7 @@ export default async function StaffDashboardOverviewPage() {
         <div className="flex items-center gap-3 mb-4">
           <div className="w-0.5 h-4 bg-amber-400" />
           <h2 className="text-amber-400 uppercase tracking-widest text-[11px] font-bold">
-            TODAY'S SCHEDULE
+            TODAY&apos;S SCHEDULE
           </h2>
         </div>
 

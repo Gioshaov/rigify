@@ -227,7 +227,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                   onClick={() => setSearchQuery("")}
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
                 >
-                  Search: "{searchQuery}"
+                  Search: &quot;{searchQuery}&quot;
                   <span className="material-symbols-outlined text-[14px]">close</span>
                 </button>
               )}

@@ -163,7 +163,7 @@ export default async function DashboardOverviewPage() {
             <div className="flex items-center gap-3">
               <div className="w-0.5 h-4 bg-amber-400" />
               <h2 className="text-amber-400 uppercase tracking-widest text-[11px] font-bold">
-                TODAY'S SCHEDULE
+                TODAY&apos;S SCHEDULE
               </h2>
             </div>
             <Link

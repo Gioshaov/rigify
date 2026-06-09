@@ -378,7 +378,7 @@ export default function StaffDirectoryPage() {
           </span>
           <h3 className="text-white font-medium text-lg mb-2">Add New Artisan</h3>
           <p className="text-zinc-400 text-sm mb-6 max-w-[200px]">
-            Expand your studio's reach with new expert staff.
+            Expand your studio&apos;s reach with new expert staff.
           </p>
           <Link
             data-testid="start-recruitment-link"
