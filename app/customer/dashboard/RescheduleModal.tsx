@@ -44,9 +44,8 @@ function generateCalendarDays(year: number, month: number) {
 }
 
 export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProps) {
-  const now = new Date();
-  const [currentMonth, setCurrentMonth] = useState(now.getMonth());
-  const [currentYear, setCurrentYear] = useState(now.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<string | null>(booking.staff_id || null);

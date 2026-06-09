@@ -117,14 +117,24 @@ export async function rescheduleBookingAction(data: {
   const MS_PER_MINUTE = 60_000;
   const endDateTime = new Date(newDateTime.getTime() + service.duration_minutes * MS_PER_MINUTE);
 
-  // Determine which staff to check/assign
-  // Specific staff member required - UI should prevent null/undefined/empty, but validate server-side
-  // Note: "any" check is defense-in-depth (UI no longer sends this value after fix)
-  if (data.staffId === "any" || !data.staffId) {
+  // Validate staff selection (defense-in-depth - UI should enforce, but verify server-side)
+  if (!data.staffId) {
     return { success: false, error: "Please select a specific staff member to reschedule" };
   }
 
   const targetStaffId = data.staffId;
+
+  // Verify selected staff exists and is active
+  const { data: staffMember } = await admin
+    .from("staff")
+    .select("id")
+    .eq("id", targetStaffId)
+    .eq("is_active", true)
+    .single();
+
+  if (!staffMember) {
+    return { success: false, error: "Selected staff member is no longer available" };
+  }
 
   // Check for overlapping bookings for the selected staff - CORRECT overlap logic
   const { data: overlapping } = await admin
