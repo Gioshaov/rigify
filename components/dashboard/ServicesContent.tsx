@@ -173,9 +173,13 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
         <div className="space-y-4">
           {filteredServices.map((service) => {
             const categoryIcon = service.category ? categoryIcons[service.category] || 'category' : 'category';
-            const priceDisplay = service.price_min === service.price_max
-              ? `₾${service.price_min.toFixed(0)}`
-              : `₾${service.price_min.toFixed(0)} - ₾${service.price_max.toFixed(0)}`;
+
+            // Handle null prices safely
+            const priceMin = service.price_min ?? 0;
+            const priceMax = service.price_max ?? service.price_min ?? 0;
+            const priceDisplay = priceMin === priceMax
+              ? `₾${priceMin.toFixed(0)}`
+              : `₾${priceMin.toFixed(0)} - ₾${priceMax.toFixed(0)}`;
 
             return (
               <div
