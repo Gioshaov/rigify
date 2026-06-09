@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Password protection layer - only in development/staging (skip in production)
-  if (process.env.SITE_PASSWORD && process.env.NODE_ENV !== 'production') {
+  // Password protection layer - only when SITE_PASSWORD is set (typically in preview/staging)
+  // Note: Use VERCEL_ENV !== 'production' if you want to disable on production even when SITE_PASSWORD exists
+  if (process.env.SITE_PASSWORD) {
     // Allow access to password page (and future subroutes) and password verification API only
     if (pathname === '/password' || pathname.startsWith('/password/')) {
       return NextResponse.next();

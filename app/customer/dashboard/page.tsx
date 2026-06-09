@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookingCard } from "./BookingCard";
 
-// Revalidate every 30 seconds - fresh enough for bookings without disabling all caching
-export const revalidate = 30;
+// Force dynamic rendering - this page displays personal booking data that must not be cached
+// Using ISR (revalidate) would risk serving one user's data to another user
+export const dynamic = 'force-dynamic';
 
 export default async function CustomerBookingsPage() {
   const supabase = createClient();

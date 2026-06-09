@@ -176,7 +176,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Pre-group bookings by staff_id to avoid N+1 filtering
-    const bookingsByStaff = new Map<string, typeof confirmedBookings>()
+    type BookingRow = NonNullable<typeof confirmedBookings>[number]
+    const bookingsByStaff = new Map<string, BookingRow[]>()
     confirmedBookings?.forEach(booking => {
       const staffIdKey = booking.staff_id || 'unassigned'
       if (!bookingsByStaff.has(staffIdKey)) {

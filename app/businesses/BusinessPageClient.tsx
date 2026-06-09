@@ -36,20 +36,17 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
       if (selectedDistrict !== "all") {
         if (!business.district) return false;
 
-        // Primary match: ID-based
-        if (business.district === selectedDistrict) return true;
-
-        // Fallback for legacy data: check name matches
+        // Check if business matches selected district (ID or legacy name match)
+        const idMatch = business.district === selectedDistrict;
         const districtInfo = TBILISI_DISTRICTS.find(d => d.id === selectedDistrict);
-        if (districtInfo) {
-          const businessDistrict = business.district.toLowerCase().trim();
-          if (businessDistrict === districtInfo.en.toLowerCase() ||
-              business.district.trim() === districtInfo.ka) {
-            return true;
-          }
-        }
+        const legacyMatch = districtInfo
+          ? business.district.toLowerCase().trim() === districtInfo.en.toLowerCase() ||
+            business.district.trim() === districtInfo.ka
+          : false;
 
-        return false;
+        // If no match, filter out this business
+        if (!idMatch && !legacyMatch) return false;
+        // If match, fall through to check category and search filters
       }
 
       // Category filter

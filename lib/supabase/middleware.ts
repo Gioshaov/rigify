@@ -4,8 +4,12 @@ import { isAdminDomain } from "@/lib/utils/domain";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // User type cache to avoid triple DB query on every navigation
+// WARNING: Module-level cache persists across requests. Known limitations:
+// - Not invalidated when user roles change (stale data window = TTL)
+// - Grows unbounded in long-running processes (not an issue on Vercel serverless)
+// - Cache is per-instance (inconsistent across edge deployments on cold start)
 const userTypeCache = new Map<string, { type: string; timestamp: number }>();
-const CACHE_TTL = 60000; // 60 seconds
+const CACHE_TTL = 10000; // 10 seconds (reduced to limit stale data window after role changes)
 
 async function getUserType(userId: string, supabase: SupabaseClient): Promise<string> {
   // Check cache first
@@ -31,8 +35,10 @@ async function getUserType(userId: string, supabase: SupabaseClient): Promise<st
   else if (staff) userType = 'staff';
   else if (customer) userType = 'customer';
 
-  // Cache result
-  userTypeCache.set(userId, { type: userType, timestamp: Date.now() });
+  // Only cache resolved types (not 'unknown') to avoid caching transient state during registration
+  if (userType !== 'unknown') {
+    userTypeCache.set(userId, { type: userType, timestamp: Date.now() });
+  }
 
   return userType;
 }
