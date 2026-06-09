@@ -73,6 +73,20 @@ export async function deleteStaff(staffId: string) {
     return { success: false, message: 'Unauthorized' }
   }
 
+  // Check if staff member has any bookings
+  const { data: bookings } = await supabase
+    .from('bookings')
+    .select('id')
+    .eq('staff_id', staffId)
+    .limit(1)
+
+  if (bookings && bookings.length > 0) {
+    return {
+      success: false,
+      message: 'Cannot remove staff member with booking history. Mark as inactive instead.'
+    }
+  }
+
   // Delete staff member
   const admin = createAdminClient()
   const { error } = await admin
