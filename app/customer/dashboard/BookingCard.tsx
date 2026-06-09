@@ -27,6 +27,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [staff, setStaff] = useState<Array<{ id: string; name: string; specialty: string | null }>>([]);
+  const [isOptimisticallyCancelled, setIsOptimisticallyCancelled] = useState(false);
 
   // Fetch staff when reschedule modal opens
   useEffect(() => {
@@ -55,13 +56,20 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
     const result = await cancelBookingAction(booking.id);
 
     if (result.success) {
+      // Optimistically hide the booking immediately
+      setIsOptimisticallyCancelled(true);
       setShowCancelModal(false);
-      // Page will auto-refresh due to revalidatePath
+      // revalidatePath in server action will update data in background
     } else {
       setError(result.error || "Failed to cancel booking");
       setLoading(false);
     }
   };
+
+  // Hide booking if optimistically cancelled
+  if (isOptimisticallyCancelled) {
+    return null;
+  }
 
   return (
     <>
@@ -71,7 +79,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
           isPast
             ? "bg-surface-container-low border border-white/5 p-6"
             : "bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-6"
-        }`}
+        } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
       >
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
