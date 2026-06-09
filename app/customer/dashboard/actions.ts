@@ -118,7 +118,8 @@ export async function rescheduleBookingAction(data: {
   const endDateTime = new Date(newDateTime.getTime() + service.duration_minutes * MS_PER_MINUTE);
 
   // Determine which staff to check/assign
-  // "any" staff is not allowed for rescheduling - customer must select a specific staff member
+  // Specific staff member required - UI should prevent null/undefined/empty, but validate server-side
+  // Note: "any" check is defense-in-depth (UI no longer sends this value after fix)
   if (data.staffId === "any" || !data.staffId) {
     return { success: false, error: "Please select a specific staff member to reschedule" };
   }

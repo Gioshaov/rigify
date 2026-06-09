@@ -44,11 +44,12 @@ function generateCalendarDays(year: number, month: number) {
 }
 
 export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const now = new Date();
+  const [currentMonth, setCurrentMonth] = useState(now.getMonth());
+  const [currentYear, setCurrentYear] = useState(now.getFullYear());
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedStaff, setSelectedStaff] = useState<string | null>(booking.staff_id || "any");
+  const [selectedStaff, setSelectedStaff] = useState<string | null>(booking.staff_id || null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,7 +76,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
       const bookingDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
 
       try {
-        const staffParam = selectedStaff && selectedStaff !== "any" ? `&staffId=${selectedStaff}` : '';
+        const staffParam = selectedStaff ? `&staffId=${selectedStaff}` : '';
         const response = await fetch(
           `/api/availability?businessId=${booking.business_id}&serviceId=${booking.service_id}&date=${bookingDate}${staffParam}`
         );
@@ -141,7 +142,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
   };
 
   const handleReschedule = async () => {
-    if (!selectedDate || !selectedTime) return;
+    if (!selectedDate || !selectedTime || !selectedStaff) return;
 
     setLoading(true);
     setError(null);
@@ -330,7 +331,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
             data-testid={`confirm-reschedule-btn-${booking.id}`}
             type="button"
             onClick={handleReschedule}
-            disabled={loading || !selectedDate || !selectedTime}
+            disabled={loading || !selectedDate || !selectedTime || !selectedStaff}
             className="flex-1 bg-primary text-background font-mono text-[12px] tracking-[0.15em] uppercase py-3 hover:bg-primary-fixed transition-colors disabled:opacity-50"
           >
             {loading ? "Rescheduling..." : "Confirm Reschedule"}

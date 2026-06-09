@@ -149,7 +149,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
             >
               {booking.status}
             </span>
-            {!isPast && (
+            {!isPast && booking.status === "confirmed" && (
               <div className="flex gap-2">
                 <button
                   data-testid={`reschedule-btn-${booking.id}`}
