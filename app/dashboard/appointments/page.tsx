@@ -98,11 +98,11 @@ export default async function AppointmentsPage() {
 
       {/* Monthly Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
+        <div data-testid="appointments-total-bookings-card" className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
             TOTAL BOOKINGS
           </p>
-          <p className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
+          <p data-testid="appointments-total-bookings-count" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
             {stats.totalBookings}
           </p>
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-1">
@@ -110,11 +110,11 @@ export default async function AppointmentsPage() {
           </p>
         </div>
 
-        <div className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
+        <div data-testid="appointments-confirmed-card" className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
             CONFIRMED
           </p>
-          <p className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
+          <p data-testid="appointments-confirmed-count" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
             {stats.confirmedBookings}
           </p>
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-1">
@@ -122,11 +122,11 @@ export default async function AppointmentsPage() {
           </p>
         </div>
 
-        <div className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
+        <div data-testid="appointments-pending-card" className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
             PENDING
           </p>
-          <p className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
+          <p data-testid="appointments-pending-count" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
             {stats.pendingBookings}
           </p>
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-1">
@@ -134,11 +134,11 @@ export default async function AppointmentsPage() {
           </p>
         </div>
 
-        <div className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
+        <div data-testid="appointments-revenue-card" className="bg-surface-container border border-white/5 p-6 hover:border-primary/30 transition-all">
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
             REVENUE
           </p>
-          <p className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
+          <p data-testid="appointments-revenue-amount" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
             ₾{((stats.revenue || 0) / 100).toFixed(0)}
           </p>
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-1">

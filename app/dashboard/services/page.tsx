@@ -30,13 +30,13 @@ export default async function ServicesPage() {
     .order('name')
 
   return (
-    <div className="max-w-7xl">
+    <div data-testid="services-page" className="max-w-7xl">
       {/* Header */}
       <div className="mb-12">
         <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase mb-2">
           MANAGEMENT PORTAL
         </p>
-        <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
+        <h1 data-testid="services-page-title" className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
           Services
         </h1>
         <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">

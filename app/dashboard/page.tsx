@@ -80,8 +80,8 @@ export default async function DashboardOverviewPage() {
     <div className="max-w-7xl mx-auto">
       {/* Top Greeting */}
       <div className="mb-6">
-        <h1 className="text-white font-bold text-3xl">Good morning, {business.name}.</h1>
-        <p className="text-zinc-400 font-mono text-sm mt-1">
+        <h1 data-testid="dashboard-greeting" className="text-white font-bold text-3xl">Good morning, {business.name}.</h1>
+        <p data-testid="dashboard-date" className="text-zinc-400 font-mono text-sm mt-1">
           {weekday}, {formattedDate} · {business.city || "Tbilisi"}
         </p>
       </div>
@@ -89,19 +89,19 @@ export default async function DashboardOverviewPage() {
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         {/* Card 1 - Appointments Today */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
+        <div data-testid="dashboard-appointments-card" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
           <span className="material-symbols-outlined absolute top-5 right-5 text-[20px] text-zinc-600">
             event
           </span>
           <p className="text-zinc-500 uppercase tracking-widest text-[10px]">APPOINTMENTS TODAY</p>
-          <p className="font-mono text-amber-400 text-3xl font-bold mt-2">{appointmentsToday}</p>
+          <p data-testid="dashboard-appointments-count" className="font-mono text-amber-400 text-3xl font-bold mt-2">{appointmentsToday}</p>
           <p className="text-zinc-500 text-xs mt-1">
             {completedToday} completed · {remainingToday} remaining
           </p>
         </div>
 
         {/* Card 2 - Salome AI */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
+        <div data-testid="dashboard-salome-card" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
           <span className="material-symbols-outlined absolute top-5 right-5 text-[20px] text-zinc-600">
             mic
           </span>
@@ -111,6 +111,7 @@ export default async function DashboardOverviewPage() {
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             )}
             <p
+              data-testid="dashboard-salome-status"
               className={`font-mono text-xl font-bold ${
                 business.salome_enabled ? "text-green-400" : "text-zinc-500"
               }`}
@@ -124,24 +125,25 @@ export default async function DashboardOverviewPage() {
         </div>
 
         {/* Card 3 - Revenue Today */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
+        <div data-testid="dashboard-revenue-card" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
           <span className="material-symbols-outlined absolute top-5 right-5 text-[20px] text-zinc-600">
             payments
           </span>
           <p className="text-zinc-500 uppercase tracking-widest text-[10px]">REVENUE TODAY</p>
-          <p className="font-mono text-amber-400 text-3xl font-bold mt-2">
+          <p data-testid="dashboard-revenue-amount" className="font-mono text-amber-400 text-3xl font-bold mt-2">
             ₾{revenueToday.toFixed(0)}
           </p>
           <p className="text-zinc-500 text-xs mt-1">From {appointmentsToday} appointments</p>
         </div>
 
         {/* Card 4 - Business Status */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
+        <div data-testid="dashboard-status-card" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5 relative">
           <span className="material-symbols-outlined absolute top-5 right-5 text-[20px] text-zinc-600">
             store
           </span>
           <p className="text-zinc-500 uppercase tracking-widest text-[10px]">BUSINESS STATUS</p>
           <p
+            data-testid="dashboard-business-status"
             className={`font-mono text-xl font-bold mt-2 ${
               business.is_active ? "text-green-400" : "text-zinc-500"
             }`}
@@ -168,6 +170,7 @@ export default async function DashboardOverviewPage() {
             </div>
             <Link
               href="/dashboard/appointments"
+              data-testid="dashboard-view-all-appointments-link"
               className="text-zinc-500 hover:text-amber-400 text-xs transition-colors"
             >
               VIEW ALL →
@@ -176,12 +179,13 @@ export default async function DashboardOverviewPage() {
 
           {/* Appointments List */}
           {todaysAppointments.length > 0 ? (
-            <div className="space-y-1.5">
+            <div data-testid="dashboard-appointments-list" className="space-y-1.5">
               {todaysAppointments.map((apt) => {
                 const isCompleted = apt.status === "completed";
                 return (
                   <div
                     key={apt.id}
+                    data-testid={`dashboard-appointment-${apt.id}`}
                     className="bg-zinc-900 border border-zinc-800 rounded-sm px-4 py-3 grid grid-cols-[70px_1fr_1fr_90px_110px] items-center relative overflow-hidden"
                   >
                     {/* Left colored bar */}
@@ -249,7 +253,7 @@ export default async function DashboardOverviewPage() {
             </div>
 
             {activeStaff.length > 0 ? (
-              <div className="space-y-1.5">
+              <div data-testid="dashboard-staff-list" className="space-y-1.5">
                 {activeStaff.map((member) => {
                   const initials = member.name
                     .split(" ")
@@ -261,6 +265,7 @@ export default async function DashboardOverviewPage() {
                   return (
                     <div
                       key={member.id}
+                      data-testid={`dashboard-staff-member-${member.id}`}
                       className="bg-zinc-900 border border-zinc-800 rounded-sm px-4 py-3 flex items-center gap-3"
                     >
                       <div className="w-8 h-8 rounded-full bg-zinc-700 text-white text-xs font-mono flex items-center justify-center">
@@ -310,6 +315,7 @@ export default async function DashboardOverviewPage() {
               {/* Add Booking */}
               <Link
                 href="/dashboard/appointments/new"
+                data-testid="dashboard-add-booking-btn"
                 className="bg-zinc-900 border border-zinc-800 hover:border-amber-400/30 rounded-sm p-4 transition-all hover:-translate-y-0.5 block"
               >
                 <span className="material-symbols-outlined text-amber-400 text-[18px] block mb-2">
@@ -326,6 +332,7 @@ export default async function DashboardOverviewPage() {
               {/* Manage Staff */}
               <Link
                 href="/dashboard/staff"
+                data-testid="dashboard-manage-staff-btn"
                 className="bg-zinc-900 border border-zinc-800 hover:border-amber-400/30 rounded-sm p-4 transition-all hover:-translate-y-0.5 block"
               >
                 <span className="material-symbols-outlined text-amber-400 text-[18px] block mb-2">
@@ -342,6 +349,7 @@ export default async function DashboardOverviewPage() {
               {/* Edit Services */}
               <Link
                 href="/dashboard/services"
+                data-testid="dashboard-edit-services-btn"
                 className="bg-zinc-900 border border-zinc-800 hover:border-amber-400/30 rounded-sm p-4 transition-all hover:-translate-y-0.5 block"
               >
                 <span className="material-symbols-outlined text-amber-400 text-[18px] block mb-2">
@@ -358,6 +366,7 @@ export default async function DashboardOverviewPage() {
               {/* Salome Settings */}
               <Link
                 href="/dashboard/salome"
+                data-testid="dashboard-salome-settings-btn"
                 className="bg-zinc-900 border border-amber-400/20 bg-amber-950/10 hover:border-amber-400/30 rounded-sm p-4 transition-all hover:-translate-y-0.5 block"
               >
                 <span className="material-symbols-outlined text-amber-400 text-[18px] block mb-2">
