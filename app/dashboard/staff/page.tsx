@@ -23,37 +23,27 @@ export default async function StaffDirectoryPage() {
     redirect('/dashboard');
   }
 
-  // Fetch staff with user information
-  const { data: staffData } = await supabase
+  // Fetch staff (including inactive to show all)
+  const { data: staffData, error: staffError } = await supabase
     .from('staff')
-    .select(`
-      id,
-      name,
-      role,
-      specialty,
-      is_active,
-      created_at,
-      user_id,
-      users:user_id (
-        email
-      )
-    `)
+    .select('id, name, role, specialty, is_active, created_at')
     .eq('business_id', business.id)
     .order('name', { ascending: true });
 
-  // Transform staff data to match UI expectations
-  const staff = (staffData || []).map((member: any) => {
-    const email = Array.isArray(member.users)
-      ? member.users[0]?.email
-      : member.users?.email;
+  console.log('Business ID:', business.id);
+  console.log('Staff query error:', staffError);
+  console.log('Fetched staff data:', staffData);
+  console.log('Staff count:', staffData?.length || 0);
 
+  // Transform staff data to match UI expectations
+  const staff = (staffData || []).map((member) => {
     return {
       id: member.id,
       name: member.name,
       role: member.specialty || (member.role === 'manager' ? 'Manager' : 'Staff'),
       status: member.is_active ? "ON SHIFT" as const : "OFF" as const,
       statusDetail: member.is_active ? "Active" : "Inactive",
-      email: email || "No email",
+      email: "staff@example.com", // TODO: Get from auth.users
       added: formatTbilisi(member.created_at, "MMM d, yyyy"),
       photoUrl: undefined,
       dbRole: member.role, // Keep original DB role for updates
