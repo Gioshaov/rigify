@@ -22,6 +22,7 @@ interface BusinessMapProps {
   viewMode?: 'list' | 'map' | 'split';
   flyToUserLocation?: boolean;
   onFlyComplete?: () => void;
+  mapRef?: React.MutableRefObject<MapRef | null>;
 }
 
 // Category icon mapping (Material Symbols)
@@ -101,9 +102,11 @@ export function BusinessMap({
   className = '',
   viewMode = 'map',
   flyToUserLocation = false,
-  onFlyComplete
+  onFlyComplete,
+  mapRef: externalMapRef
 }: BusinessMapProps) {
-  const mapRef = useRef<MapRef>(null);
+  const internalMapRef = useRef<MapRef>(null);
+  const mapRef = externalMapRef || internalMapRef;
   const [viewState, setViewState] = useState({
     longitude: 44.8271,
     latitude: 41.7151,

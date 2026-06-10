@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { BusinessGrid } from "./BusinessGrid";
 import { ViewModeToggle } from "./ViewModeToggle";
@@ -43,6 +43,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const mapRef = useRef<any>(null);
 
   // Geolocation (silent, no error if denied)
   const { userLocation } = useGeolocation();
@@ -517,6 +518,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                     userLocation={userLocation}
                     flyToUserLocation={flyToUserLocation}
                     onFlyComplete={() => setFlyToUserLocation(false)}
+                    mapRef={mapRef}
                   />
                 );
               })()}
