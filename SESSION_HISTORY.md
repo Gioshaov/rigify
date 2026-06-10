@@ -1154,24 +1154,29 @@ npm run audit:testids     # Find missing test IDs
 - Migrations: 1 (business coordinates)
 - Net: ~400 lines added
 
-**Commits**: Not yet committed (changes in working tree)
+**Commits**: 1 commit (b805aea - Implement map view with three modes and fix critical bugs)
 
 **Issues Fixed**: 9 total (5 from @code-reviewer, 4 from /codex:review)
 
 **Verification**:
 - ✅ TypeScript compilation clean (exit code 0)
+- ✅ Database migration applied (latitude/longitude columns added)
+- ✅ All changes committed
 - ⏳ ESLint not yet tested
-- ⏳ Browser testing pending
-- ⏳ Migration not yet applied
+- ⏳ Browser testing deferred to tomorrow
+- ⏳ Not yet pushed to GitHub
 
-**Next Steps**:
-- Commit map view implementation
-- Test in browser (all three view modes)
-- Apply database migration (`supabase db push`)
-- Add coordinates to existing test businesses
-- Test geolocation feature
-- Test empty state handling
-- Verify hydration and browser navigation fixes
+**Next Steps (Tomorrow)**:
+- Push to GitHub
+- Browser testing checklist:
+  - Test view mode toggle (LIST/MAP/SPLIT)
+  - Test empty state (no coordinates yet)
+  - Test persistence (localStorage + URL params)
+  - Test browser navigation (back/forward)
+  - Test geolocation (allow/deny)
+  - Add coordinates to test business via dashboard
+  - Test map markers and synchronized interactions
+  - Test mobile responsive
 
-**Status**: Implementation complete, all bugs fixed, ready to commit and test.
+**Status**: Implementation complete, committed, migration applied. Ready for browser testing and push to GitHub.
 

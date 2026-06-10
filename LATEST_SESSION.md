@@ -213,14 +213,31 @@
 
 ## What's Next
 
-### Priority 0: Run Tests at Session End ⚡ NEW
+### Priority 0: Test Map View Feature (Tomorrow) ⚡ NEW
+**Browser Testing Checklist**:
+1. Navigate to `/businesses` - Browse marketplace
+2. Test view mode toggle (LIST/MAP/SPLIT buttons)
+3. Test empty state (businesses without coordinates)
+4. Test persistence (localStorage + URL params)
+5. Test browser navigation (back/forward buttons)
+6. Test geolocation (allow/deny permission)
+7. Add coordinates to a test business via `/dashboard/settings`
+8. Verify business appears on map with correct marker
+9. Test synchronized hover/click in SPLIT view
+10. Test mobile responsive (SPLIT button hidden)
+
+**Migration Applied**: ✅ Database has latitude/longitude columns
+**Dev Server**: Ready at http://localhost:3000
+**Status**: Implementation complete, ready for manual testing
+
+### Priority 1: Run Tests at Session End ⚡
 **Before ending each session**, run regression tests:
 ```bash
 npm run test:e2e
 ```
-This catches breaking changes before they reach production. Tests currently fail due to missing test IDs on some pages - this is expected and Priority 2 will fix it.
+This catches breaking changes before they reach production. Tests currently fail due to missing test IDs on some pages - this is expected and Priority 3 will fix it.
 
-### Priority 1: Add Missing Test IDs to Existing Pages
+### Priority 2: Add Missing Test IDs to Existing Pages
 Add `data-testid` attributes so tests can pass:
 
 **High Priority** (blocking test suites):
@@ -274,21 +291,21 @@ Replace current dashboard with premium Stitch designs:
 
 **GitHub**: https://github.com/Gioshaov/rigify  
 **Branch**: `main` (all feature branches cleaned up)  
-**Status**: ⚠️ Uncommitted changes (map view implementation)
-**Latest Commit**: `0a60962` - Fix ESLint unescaped entity errors for Vercel build
+**Status**: ✅ All changes committed
+**Latest Commit**: `b805aea` - Implement map view with three modes and fix critical bugs
 
-**Build Status**: ⏳ Not yet tested (changes uncommitted)  
+**Build Status**: ⏳ Not yet tested in browser  
 **TypeScript**: ✅ No errors (exit code 0)
 **ESLint**: ⏳ Not yet tested
 **CI/CD**: ✅ GitHub Actions workflow active (runs on every push/PR)
-**Working Tree**: ⚠️ Uncommitted changes
+**Working Tree**: ✅ Clean
 
 **Session 14 Changes**:
 - Created: 6 files (migration, 4 map components, geolocation utils)
-- Modified: 10 files (page, client, grid, form, actions, types, styles, package)
-- Migrations: 1 (add business coordinates)
-- Commits: 0 (ready to commit)
-- Pushed: ❌ Not yet pushed
+- Modified: 11 files (page, client, grid, form, actions, types, styles, package, session docs)
+- Migrations: 1 (add business coordinates - ✅ applied)
+- Commits: 1 (b805aea)
+- Pushed: ❌ Ready to push
 
 **Total Stats** (All Sessions):
 - 22 migrations applied (+1)
@@ -302,4 +319,4 @@ Replace current dashboard with premium Stitch designs:
 
 **Session Started**: June 9, 2026  
 **Session Ended**: June 9, 2026  
-**Ready For**: Commit map view changes, test in browser, apply database migration, add coordinates to existing businesses
+**Ready For**: Push to GitHub, browser testing tomorrow, add coordinates to test businesses via dashboard
