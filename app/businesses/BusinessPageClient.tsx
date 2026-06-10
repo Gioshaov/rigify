@@ -65,6 +65,18 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   // Restore view from localStorage after hydration
   useEffect(() => {
     const urlView = searchParams.get('view');
+
+    // Check if force-list-view flag is set
+    if (typeof window !== 'undefined') {
+      const forceList = sessionStorage.getItem('force-list-view');
+      if (forceList === 'true') {
+        sessionStorage.removeItem('force-list-view');
+        setViewMode('list');
+        localStorage.setItem('rigify-map-view', 'list');
+        return;
+      }
+    }
+
     if (!urlView && typeof window !== 'undefined') {
       const saved = localStorage.getItem('rigify-map-view') as ViewMode | null;
       if (saved && ['list', 'map', 'split'].includes(saved)) {
@@ -90,19 +102,6 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
       }
     }
   }, [searchParams]); // Re-run when URL params change
-
-  // Listen for force-list-view event from BrowseLink
-  useEffect(() => {
-    const handleForceListView = () => {
-      setViewMode('list');
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('rigify-map-view', 'list');
-      }
-    };
-
-    window.addEventListener('force-list-view', handleForceListView);
-    return () => window.removeEventListener('force-list-view', handleForceListView);
-  }, []);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
