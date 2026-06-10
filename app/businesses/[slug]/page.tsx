@@ -112,7 +112,7 @@ export default async function BusinessProfilePage({
           </Link>
           <Link
             data-testid="nav-browse"
-            href="/businesses"
+            href="/businesses?view=list"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
           >
             Browse
