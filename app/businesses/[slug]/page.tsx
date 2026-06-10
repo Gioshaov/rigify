@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { BusinessLocationMap } from "./BusinessLocationMap";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
+import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 interface Service {
   id: string;
@@ -31,6 +32,7 @@ interface Business {
   latitude: number | null;
   longitude: number | null;
   services: Service[];
+  business_categories?: Array<{ category_id: string }>;
 }
 
 export default async function BusinessProfilePage({
@@ -55,6 +57,7 @@ export default async function BusinessProfilePage({
       logo_url,
       latitude,
       longitude,
+      business_categories(category_id),
       services!left(
         id,
         name,
@@ -97,18 +100,14 @@ export default async function BusinessProfilePage({
       <main className="pb-24">
         {/* Hero Section */}
         <section className="relative h-[353px] md:h-[530px] w-full overflow-hidden bg-surface-variant">
-          {/* Cover Image or Placeholder */}
-          {business.cover_image_url ? (
-            <Image
-              src={business.cover_image_url}
-              alt={displayName}
-              fill
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-container via-surface to-surface-variant"></div>
-          )}
+          {/* Cover Image with Unsplash Fallback */}
+          <Image
+            src={getBusinessFallbackImage(business.cover_image_url, business.business_categories)}
+            alt={displayName}
+            fill
+            className="object-cover"
+            priority
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
           <div className="absolute bottom-0 left-0 w-full px-margin-mobile md:px-margin-desktop pb-base md:pb-gutter flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex items-end gap-6">

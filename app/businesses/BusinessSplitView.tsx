@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CATEGORIES } from '@/lib/constants/categories';
+import { getBusinessFallbackImage } from '@/lib/utils/fallback-images';
 
 const BusinessMap = dynamic(
   () => import('./BusinessMap').then(mod => ({ default: mod.BusinessMap })),
@@ -183,23 +184,15 @@ export function BusinessSplitView({
                 >
                   {/* Thumbnail - 4:3 aspect ratio */}
                   <div className="relative w-full aspect-[4/3] bg-surface-container overflow-hidden group">
-                    {business.cover_image_url ? (
-                      <Image
-                        src={business.cover_image_url}
-                        alt={business.name}
-                        fill
-                        className={`
-                          object-cover transition-all
-                          ${isActive || isHovered ? 'brightness-110' : 'group-hover:brightness-110'}
-                        `}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="material-symbols-outlined text-on-surface-variant text-[36px]">
-                          business
-                        </span>
-                      </div>
-                    )}
+                    <Image
+                      src={getBusinessFallbackImage(business.cover_image_url, business.business_categories)}
+                      alt={business.name}
+                      fill
+                      className={`
+                        object-cover transition-all
+                        ${isActive || isHovered ? 'brightness-110' : 'group-hover:brightness-110'}
+                      `}
+                    />
                   </div>
 
                   {/* Info */}

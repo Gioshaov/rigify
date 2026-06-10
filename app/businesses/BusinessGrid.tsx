@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistance } from "@/lib/utils/geolocation";
+import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 type Business = {
   id: string;
@@ -73,21 +74,13 @@ export function BusinessGrid({
             <article>
               {/* Cover Image */}
               <div className="relative aspect-video overflow-hidden">
-                {business.cover_image_url ? (
-                  <Image
-                    src={business.cover_image_url}
-                    alt={business.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-surface-container flex items-center justify-center grayscale">
-                    <span className="material-symbols-outlined text-outline text-[48px]">
-                      image
-                    </span>
-                  </div>
-                )}
+                <Image
+                  src={getBusinessFallbackImage(business.cover_image_url, business.business_categories)}
+                  alt={business.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale"
+                />
 
                 {/* Icon Badge */}
                 <div className="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
