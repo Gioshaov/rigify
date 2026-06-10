@@ -74,8 +74,7 @@ export function UserMenu() {
       <button
         data-testid="user-menu-btn"
         onClick={() => setShowDropdown(!showDropdown)}
-        className="w-10 h-10 bg-surface-container-high border border-primary/20 shadow-md shadow-primary/30 flex items-center justify-center hover:border-primary hover:shadow-lg hover:shadow-primary/50 transition-all cursor-pointer animate-pulse"
-        style={{ animationDuration: '3s' }}
+        className="w-10 h-10 bg-surface-container-high border border-primary/20 shadow-md shadow-primary/30 flex items-center justify-center hover:border-primary hover:shadow-lg hover:shadow-primary/50 transition-all cursor-pointer"
       >
         <span className="material-symbols-outlined text-primary text-[20px]">person</span>
       </button>

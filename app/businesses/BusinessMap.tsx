@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
-import { Map, Marker, NavigationControl } from 'react-map-gl/mapbox';
+import { Map, Marker, NavigationControl, type MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 type Business = {
@@ -44,18 +44,19 @@ function PinMarker({ isSelected }: { isSelected: boolean }) {
       height="32"
       viewBox="0 0 24 32"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ transform: isSelected ? 'scale(1.2)' : 'scale(1)', transition: 'transform 200ms' }}
     >
       <path
         d="M12 0C6.5 0 2 4.5 2 10c0 8 10 22 10 22s10-14 10-22c0-5.5-4.5-10-10-10z"
         fill="#1a1a26"
-        stroke="#d4a843"
-        strokeWidth="2"
+        stroke={isSelected ? '#f0c040' : '#d4a843'}
+        strokeWidth={isSelected ? '3' : '2'}
       />
       <circle
         cx="12"
         cy="10"
         r="2.5"
-        fill="#d4a843"
+        fill={isSelected ? '#f0c040' : '#d4a843'}
       />
     </svg>
   );
@@ -102,7 +103,7 @@ export function BusinessMap({
   flyToUserLocation = false,
   onFlyComplete
 }: BusinessMapProps) {
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState({
     longitude: 44.8271,
     latitude: 41.7151,
@@ -119,7 +120,7 @@ export function BusinessMap({
         duration: 800
       });
     }
-  }, [selectedBusinessId, businesses]);
+  }, [selectedBusinessId]);
 
   // Fly to user location when Near Me is clicked
   useEffect(() => {
@@ -131,7 +132,7 @@ export function BusinessMap({
       });
       onFlyComplete?.();
     }
-  }, [flyToUserLocation, userLocation, onFlyComplete]);
+  }, [flyToUserLocation, userLocation]);
 
   // Apply gold road styling when map loads
   const handleMapLoad = () => {
@@ -172,6 +173,16 @@ export function BusinessMap({
       }
     });
   };
+
+  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+    return (
+      <div className={className} data-testid="marketplace-map">
+        <div className="w-full h-full bg-surface-container-low flex items-center justify-center">
+          <p className="text-error text-sm">Map unavailable: missing Mapbox token</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={className} data-testid="marketplace-map">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react';
-import { Map, Marker, NavigationControl } from 'react-map-gl/mapbox';
+import { Map, Marker, NavigationControl, type MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface BusinessLocationMapProps {
@@ -38,12 +38,12 @@ function PinMarker() {
 }
 
 export function BusinessLocationMap({ name, latitude, longitude, address }: BusinessLocationMapProps) {
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<MapRef>(null);
 
   // Georgia's geographic bounds
   const georgiaBounds: [[number, number], [number, number]] = [
-    [40.0, 41.0],   // Southwest: [longitude, latitude]
-    [46.7, 43.5]    // Northeast: [longitude, latitude]
+    [39.9, 41.0],   // Southwest: [longitude, latitude]
+    [46.7, 43.6]    // Northeast: [longitude, latitude]
   ];
 
   // Apply gold road styling when map loads
@@ -85,6 +85,14 @@ export function BusinessLocationMap({ name, latitude, longitude, address }: Busi
       }
     });
   };
+
+  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+    return (
+      <div className="w-full h-64 bg-surface-container-low flex items-center justify-center">
+        <p className="text-error text-sm">Map unavailable: missing Mapbox token</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-64 bg-surface-container-low relative overflow-hidden">
