@@ -104,7 +104,7 @@ export function BusinessSplitView({
       {/* Left Panel: 40% width */}
       <div className="w-[40%] flex flex-col border-r border-outline-variant">
         {/* Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface">
+        <div className="flex items-center justify-between px-6 py-3 border-b border-outline-variant bg-surface">
           <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant">
             Showing {filteredBusinesses.length} of {businesses.length}
           </span>
@@ -114,41 +114,77 @@ export function BusinessSplitView({
           </button>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="px-6 py-4 border-b border-outline-variant bg-surface overflow-x-auto">
-          <div className="flex gap-2 flex-nowrap">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`
-                px-4 py-2 font-mono text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all
-                ${selectedCategory === 'all'
-                  ? 'bg-primary text-on-primary'
-                  : 'bg-surface-container border border-primary text-primary hover:bg-surface-container-high'
-                }
-              `}
-            >
-              All Services
-            </button>
-            {CATEGORIES.map((category) => (
+        {/* Category Filter Pills - with gradient fade */}
+        <div className="relative border-b border-outline-variant bg-surface">
+          <div
+            className="px-6 py-3 overflow-x-auto"
+            style={{
+              msOverflowStyle: 'none',
+              scrollbarWidth: 'none',
+            }}
+          >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            <div className="flex gap-2 flex-nowrap">
               <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => setSelectedCategory('all')}
                 className={`
                   px-4 py-2 font-mono text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all
-                  ${selectedCategory === category.id
+                  ${selectedCategory === 'all'
                     ? 'bg-primary text-on-primary'
                     : 'bg-surface-container border border-primary text-primary hover:bg-surface-container-high'
                   }
                 `}
               >
-                {category.en}
+                All Services
               </button>
-            ))}
+              {CATEGORIES.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`
+                    px-4 py-2 font-mono text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all
+                    ${selectedCategory === category.id
+                      ? 'bg-primary text-on-primary'
+                      : 'bg-surface-container border border-primary text-primary hover:bg-surface-container-high'
+                    }
+                  `}
+                >
+                  {category.en}
+                </button>
+              ))}
+            </div>
           </div>
+          {/* Gradient fade hint */}
+          <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l from-surface to-transparent"></div>
         </div>
 
-        {/* Scrollable Business Cards */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Scrollable Business Cards - with custom scrollbar */}
+        <div
+          className="flex-1 overflow-y-auto"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#d4a843 transparent',
+          }}
+        >
+          <style jsx>{`
+            div::-webkit-scrollbar {
+              width: 3px;
+            }
+            div::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            div::-webkit-scrollbar-thumb {
+              background: #d4a843;
+              border-radius: 0;
+            }
+            div::-webkit-scrollbar-thumb:hover {
+              background: #e6c364;
+            }
+          `}</style>
           {filteredBusinesses.map((business) => {
             const isActive = selectedBusinessId === business.id;
             const isHovered = hoveredBusinessId === business.id;
@@ -164,7 +200,7 @@ export function BusinessSplitView({
                 onMouseLeave={() => handleBusinessHover(null)}
                 onClick={() => handleBusinessClick(business)}
                 className={`
-                  flex gap-4 p-4 border-b border-zinc-800 cursor-pointer transition-all
+                  flex gap-3 px-3 py-2 border-b border-zinc-800 cursor-pointer transition-all
                   ${isActive
                     ? 'bg-[#1e1a0e] border-l-2 border-l-primary'
                     : isHovered
@@ -173,8 +209,8 @@ export function BusinessSplitView({
                   }
                 `}
               >
-                {/* Thumbnail */}
-                <div className="relative w-20 h-20 flex-shrink-0 bg-surface-container overflow-hidden">
+                {/* Thumbnail - 72px */}
+                <div className="relative w-[72px] h-[72px] flex-shrink-0 bg-surface-container overflow-hidden">
                   {business.cover_image_url ? (
                     <Image
                       src={business.cover_image_url}
@@ -184,7 +220,7 @@ export function BusinessSplitView({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="material-symbols-outlined text-on-surface-variant text-[32px]">
+                      <span className="material-symbols-outlined text-on-surface-variant text-[28px]">
                         business
                       </span>
                     </div>
@@ -192,19 +228,19 @@ export function BusinessSplitView({
                 </div>
 
                 {/* Info */}
-                <div className="flex-1 min-w-0 flex flex-col justify-center gap-2">
+                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                   {/* Business Name */}
-                  <h3 className="font-hanken text-[14px] font-bold uppercase text-primary tracking-tight truncate">
+                  <h3 className="font-hanken text-[13px] font-bold uppercase text-primary tracking-tight truncate leading-tight">
                     {business.name}
                   </h3>
 
-                  {/* Category Tags */}
+                  {/* Category Tags - tiny pills */}
                   {categoryNames.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-1 flex-wrap">
                       {categoryNames.map((cat, i) => (
                         <span
                           key={i}
-                          className="px-2 py-1 bg-surface-container border border-outline-variant font-mono text-[9px] tracking-[0.1em] uppercase text-on-surface-variant"
+                          className="px-1.5 py-0.5 bg-surface-container border border-outline-variant font-mono text-[10px] tracking-[0.05em] uppercase text-on-surface-variant leading-none"
                         >
                           {cat}
                         </span>
@@ -212,16 +248,16 @@ export function BusinessSplitView({
                     </div>
                   )}
 
-                  {/* District & Distance */}
-                  <div className="flex items-center gap-3 font-mono text-[10px] tracking-[0.1em] text-on-surface-variant">
+                  {/* District & Distance - no bullet */}
+                  <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.05em] text-on-surface-variant">
                     {business.district && (
                       <span className="uppercase">{business.district}</span>
                     )}
+                    {business.distance !== undefined && business.district && (
+                      <span className="text-outline-variant">|</span>
+                    )}
                     {business.distance !== undefined && (
-                      <>
-                        <span>•</span>
-                        <span>{business.distance.toFixed(1)} km away</span>
-                      </>
+                      <span>{business.distance.toFixed(1)} km</span>
                     )}
                   </div>
                 </div>
