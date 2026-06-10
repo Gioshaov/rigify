@@ -105,13 +105,17 @@ export function BusinessSplitView({
       <div className="w-[40%] flex flex-col border-r border-outline-variant">
         {/* Top Bar with Category Dropdown */}
         <div className="flex items-center justify-between gap-4 px-3 py-3 border-b border-outline-variant bg-surface">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant whitespace-nowrap">
+          <span
+            data-testid="split-view-count"
+            className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant whitespace-nowrap"
+          >
             Showing {filteredBusinesses.length} of {businesses.length}
           </span>
 
           {/* Category Dropdown */}
           <div className="relative flex-1 max-w-[200px]">
             <select
+              data-testid="split-view-category-filter"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full bg-[#1a1a1a] border border-[#d4a843] text-primary font-mono text-[10px] tracking-[0.15em] uppercase px-3 py-2 pr-8 appearance-none cursor-pointer outline-none hover:border-primary-container transition-colors"
@@ -164,6 +168,7 @@ export function BusinessSplitView({
               return (
                 <div
                   key={business.id}
+                  data-testid={`split-view-business-card-${business.id}`}
                   ref={(el) => registerCardRef(business.id, el)}
                   onMouseEnter={() => handleBusinessHover(business.id)}
                   onMouseLeave={() => handleBusinessHover(null)}
@@ -222,7 +227,10 @@ export function BusinessSplitView({
           </div>
 
           {filteredBusinesses.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-64 text-center px-6 col-span-2">
+            <div
+              data-testid="split-view-empty-state"
+              className="flex flex-col items-center justify-center h-64 text-center px-6 col-span-2"
+            >
               <span className="material-symbols-outlined text-on-surface-variant text-[48px] mb-4">
                 search_off
               </span>
