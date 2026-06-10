@@ -85,7 +85,7 @@ export default function HomePage() {
               Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link data-testid="hero-browse-studios-btn" href="/businesses?view=list" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
+              <Link data-testid="hero-browse-studios-btn" href="/businesses?reset=1" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
                 Browse Studios
               </Link>
               <Link data-testid="hero-for-businesses-btn" href="/for-businesses" className="border border-white/20 text-white px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98] text-center">
@@ -118,7 +118,7 @@ export default function HomePage() {
               <p className="font-hanken text-headline-md text-white font-semibold">Categories</p>
             </div>
             <div className="hidden md:block h-[1px] flex-grow mx-12 bg-white/10"></div>
-            <Link data-testid="view-all-categories-link" href="/businesses?view=list" className="font-mono text-[10px] text-on-surface-variant hover:text-primary uppercase flex items-center gap-2 tracking-[0.2em]">
+            <Link data-testid="view-all-categories-link" href="/businesses?reset=1" className="font-mono text-[10px] text-on-surface-variant hover:text-primary uppercase flex items-center gap-2 tracking-[0.2em]">
               View All Categories <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </Link>
           </div>
@@ -165,7 +165,7 @@ export default function HomePage() {
               <p className="font-hanken text-body-md text-on-surface-variant mb-8">
                 The heart of Georgian beauty. Over 200+ premium studios and independent artisans ready for booking.
               </p>
-              <Link data-testid="explore-tbilisi-link" href="/businesses?view=list" className="flex items-center gap-2 text-primary font-mono text-data-label uppercase group cursor-pointer">
+              <Link data-testid="explore-tbilisi-link" href="/businesses?reset=1" className="flex items-center gap-2 text-primary font-mono text-data-label uppercase group cursor-pointer">
                 Explore City <span className="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-2">east</span>
               </Link>
             </div>
@@ -223,7 +223,7 @@ export default function HomePage() {
           <div>
             <h6 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h6>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
-              <li><Link data-testid="footer-browse-studios" href="/businesses?view=list" className="hover:text-primary transition-colors">Browse Studios</Link></li>
+              <li><Link data-testid="footer-browse-studios" href="/businesses?reset=1" className="hover:text-primary transition-colors">Browse Studios</Link></li>
               <li><Link data-testid="footer-special-offers" href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
               <li><Link data-testid="footer-gift-cards" href="#" className="hover:text-primary transition-colors">Gift Cards</Link></li>
               <li><Link data-testid="footer-reviews" href="#" className="hover:text-primary transition-colors">Reviews</Link></li>

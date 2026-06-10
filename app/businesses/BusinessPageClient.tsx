@@ -73,19 +73,22 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     }
   }, []); // Run once on mount
 
-  // Sync view mode with URL changes (browser back/forward)
+  // Handle reset parameter to force LIST view
   useEffect(() => {
-    // Check for force-list-view flag first
-    if (typeof window !== 'undefined') {
-      const forceList = sessionStorage.getItem('force-list-view');
-      if (forceList === 'true') {
-        sessionStorage.removeItem('force-list-view');
-        setViewMode('list');
-        localStorage.setItem('rigify-map-view', 'list');
-        return;
-      }
+    const reset = searchParams.get('reset');
+    if (reset === '1') {
+      // Force reset to list view
+      setViewMode('list');
+      localStorage.setItem('rigify-map-view', 'list');
+
+      // Remove reset param from URL
+      const params = new URLSearchParams(searchParams);
+      params.delete('reset');
+      router.replace(`${pathname}?${params.toString()}`);
+      return;
     }
 
+    // Normal view syncing
     const urlView = searchParams.get('view') as ViewMode | null;
     if (urlView && ['list', 'map', 'split'].includes(urlView)) {
       setViewMode(urlView);
@@ -100,7 +103,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
         }
       }
     }
-  }, [searchParams]); // Re-run when URL params change
+  }, [searchParams, pathname, router]); // Re-run when URL params change
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);

@@ -98,7 +98,7 @@ export default async function CustomerBookingsPage() {
             </p>
             <Link
               data-testid="browse-salons-btn"
-              href="/businesses?view=list"
+              href="/businesses?reset=1"
               className="inline-flex items-center gap-2 bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all"
             >
               Browse Salons

@@ -267,7 +267,7 @@ export function BookAppointmentContent({
             </Link>
             <Link
               data-testid="nav-browse"
-              href="/businesses?view=list"
+              href="/businesses?reset=1"
               className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200"
             >
               BROWSE
@@ -609,7 +609,7 @@ export function BookAppointmentContent({
             Home
           </span>
         </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses?view=list" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-browse" href="/businesses?reset=1" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
