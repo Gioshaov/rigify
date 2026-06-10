@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import Link from "next/link";
 import { updateStaffMember } from "./actions";
 
@@ -207,10 +207,9 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
             const showExpanderAfter = activeRow === currentRow && isLastInRow;
 
             return (
-              <>
+              <Fragment key={member.id}>
                 {/* Staff Card */}
                 <div
-                  key={member.id}
                   data-testid={`staff-card-${member.id}`}
                   className="bg-zinc-900 border border-zinc-800 overflow-hidden"
                 >
@@ -384,7 +383,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
                     </div>
                   </div>
                 )}
-              </>
+              </Fragment>
             );
           })}
 
