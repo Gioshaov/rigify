@@ -369,9 +369,6 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                     setSortBy(newSort);
                     if (newSort === 'nearme' && userLocation) {
                       setFlyToUserLocation(true);
-                      if (effectiveViewMode === 'list') {
-                        handleViewChange('map');
-                      }
                     }
                   }}
                   className="bg-surface-container-low border border-white/10 focus:border-primary px-4 py-2 text-on-surface outline-none appearance-none cursor-pointer font-mono text-[12px] tracking-[0.15em] uppercase"
