@@ -23,17 +23,16 @@ export default async function StaffDirectoryPage() {
     redirect('/dashboard');
   }
 
-  // Fetch staff (including inactive to show all)
+  // Fetch all staff (including inactive)
   const { data: staffData, error: staffError } = await supabase
     .from('staff')
     .select('id, name, role, specialty, is_active, created_at')
     .eq('business_id', business.id)
     .order('name', { ascending: true });
 
-  console.log('Business ID:', business.id);
-  console.log('Staff query error:', staffError);
-  console.log('Fetched staff data:', staffData);
-  console.log('Staff count:', staffData?.length || 0);
+  if (staffError) {
+    console.error('Error fetching staff:', staffError);
+  }
 
   // Transform staff data to match UI expectations
   const staff = (staffData || []).map((member) => {
