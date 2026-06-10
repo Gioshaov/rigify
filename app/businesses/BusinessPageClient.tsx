@@ -64,7 +64,6 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
   // Restore view from localStorage after hydration
   useEffect(() => {
-    if (searchParams.get('reset') === '1') return;
     const urlView = searchParams.get('view');
     if (!urlView && typeof window !== 'undefined') {
       const saved = localStorage.getItem('rigify-map-view') as ViewMode | null;
@@ -74,22 +73,8 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     }
   }, []); // Run once on mount
 
-  // Handle reset parameter to force LIST view
+  // Sync view mode with URL changes (browser back/forward)
   useEffect(() => {
-    const reset = searchParams.get('reset');
-    if (reset === '1') {
-      // Force reset to list view
-      setViewMode('list');
-      localStorage.setItem('rigify-map-view', 'list');
-
-      // Remove reset param from URL
-      const params = new URLSearchParams(searchParams);
-      params.delete('reset');
-      router.replace(`${pathname}?${params.toString()}`);
-      return;
-    }
-
-    // Sync view mode with URL changes (browser back/forward)
     const urlView = searchParams.get('view') as ViewMode | null;
     if (urlView && ['list', 'map', 'split'].includes(urlView)) {
       setViewMode(urlView);
@@ -104,7 +89,18 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
         }
       }
     }
-  }, [searchParams, pathname, router]); // Re-run when URL params change
+  }, [searchParams]); // Re-run when URL params change
+
+  // Listen for custom event from Browse links to reset to list view
+  useEffect(() => {
+    const handleResetToList = () => {
+      setViewMode('list');
+      localStorage.setItem('rigify-map-view', 'list');
+    };
+
+    window.addEventListener('resetToListView', handleResetToList);
+    return () => window.removeEventListener('resetToListView', handleResetToList);
+  }, []);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);

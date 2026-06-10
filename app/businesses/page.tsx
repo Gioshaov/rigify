@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/components/ui/UserMenu";
+import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessPageClient } from "./BusinessPageClient";
 
@@ -59,13 +60,12 @@ export default async function BrowseBusinessesPage() {
           >
             Home
           </Link>
-          <Link
-            data-testid="nav-browse"
-            href="/businesses"
+          <BrowseLink
+            testId="nav-browse"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary border-b border-primary pt-1"
           >
             Browse
-          </Link>
+          </BrowseLink>
           <Link
             data-testid="nav-my-bookings"
             href="/customer/dashboard"
@@ -123,14 +123,14 @@ export default async function BrowseBusinessesPage() {
             Home
           </span>
         </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             search
           </span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
           </span>
-        </Link>
+        </BrowseLink>
         <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
