@@ -30,9 +30,16 @@ type Business = {
 interface BusinessSplitViewProps {
   businesses: Business[];
   userLocation?: { lat: number; lng: number } | null;
+  flyToUserLocation?: boolean;
+  onFlyComplete?: () => void;
 }
 
-export function BusinessSplitView({ businesses, userLocation = null }: BusinessSplitViewProps) {
+export function BusinessSplitView({
+  businesses,
+  userLocation = null,
+  flyToUserLocation = false,
+  onFlyComplete
+}: BusinessSplitViewProps) {
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
   const [hoveredBusinessId, setHoveredBusinessId] = useState<string | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -91,6 +98,9 @@ export function BusinessSplitView({ businesses, userLocation = null }: BusinessS
           onMarkerClick={handleMarkerClick}
           userLocation={userLocation}
           className="w-full h-[80vh]"
+          viewMode="split"
+          flyToUserLocation={flyToUserLocation}
+          onFlyComplete={onFlyComplete}
         />
       </div>
     </div>

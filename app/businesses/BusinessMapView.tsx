@@ -31,12 +31,16 @@ interface BusinessMapViewProps {
   businesses: Business[];
   userLocation?: { lat: number; lng: number } | null;
   onBusinessSelect?: (businessId: string) => void;
+  flyToUserLocation?: boolean;
+  onFlyComplete?: () => void;
 }
 
 export function BusinessMapView({
   businesses,
   userLocation = null,
-  onBusinessSelect
+  onBusinessSelect,
+  flyToUserLocation = false,
+  onFlyComplete
 }: BusinessMapViewProps) {
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
 
@@ -53,6 +57,9 @@ export function BusinessMapView({
         onMarkerClick={handleMarkerClick}
         userLocation={userLocation}
         className="w-full h-[70vh] md:h-[80vh]"
+        viewMode="map"
+        flyToUserLocation={flyToUserLocation}
+        onFlyComplete={onFlyComplete}
       />
     </div>
   );

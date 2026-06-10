@@ -29,7 +29,7 @@ type Business = {
   distance?: number;
 };
 
-type SortOption = "featured" | "rating" | "name" | "reviews";
+type SortOption = "featured" | "rating" | "name" | "reviews" | "nearme";
 type ViewMode = 'list' | 'map' | 'split';
 
 export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: Business[] }) {
@@ -44,6 +44,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const [selectedDistrict, setSelectedDistrict] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
+  const [flyToUserLocation, setFlyToUserLocation] = useState(false);
 
   // View mode from URL (deterministic initialization to avoid hydration mismatch)
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -177,12 +178,13 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
     // Apply sorting
     const sorted = [...filtered].sort((a, b) => {
-      // If user location available and sort is default, sort by distance
-      if (userLocation && sortBy === "featured" && a.distance !== undefined && b.distance !== undefined) {
-        return a.distance - b.distance;
-      }
-
       switch (sortBy) {
+        case "nearme":
+          // Sort by distance (only works if user location available)
+          if (a.distance !== undefined && b.distance !== undefined) {
+            return a.distance - b.distance;
+          }
+          return 0;
         case "rating":
           return (b.rating ?? 0) - (a.rating ?? 0);
         case "reviews":
@@ -276,6 +278,34 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             </select>
           </div>
 
+          {/* Near Me Button */}
+          <button
+            data-testid="browse-studios-near-me-btn"
+            onClick={() => {
+              if (userLocation) {
+                setSortBy('nearme');
+                setFlyToUserLocation(true);
+                // Switch to map view if in list view
+                if (effectiveViewMode === 'list') {
+                  handleViewChange('map');
+                }
+              }
+            }}
+            disabled={!userLocation}
+            className={`flex items-center gap-2 px-6 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold transition-colors h-[50px] w-full md:w-auto ${
+              userLocation && sortBy === 'nearme' && effectiveViewMode !== 'list'
+                ? 'bg-primary text-on-primary border-2 border-primary'
+                : userLocation
+                ? 'bg-surface-container-low text-on-surface border-2 border-white/10 hover:border-primary/50'
+                : 'bg-surface-container-low text-on-surface-variant border-2 border-white/10 opacity-50 cursor-not-allowed'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {userLocation ? 'my_location' : 'location_searching'}
+            </span>
+            {userLocation && sortBy === 'nearme' && effectiveViewMode !== 'list' ? 'Showing Near Me' : 'Near Me'}
+          </button>
+
           {/* Discover Button */}
           <button
             data-testid="browse-studios-search-btn"
@@ -304,7 +334,6 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               </h2>
               <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-2">
                 Showing {filteredBusinesses.length} of {initialBusinesses.length}
-                {userLocation && sortBy === "featured" && ' • SORTED BY DISTANCE'}
               </p>
             </div>
 
@@ -317,10 +346,22 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                 <select
                   data-testid="browse-studios-sort-select"
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  onChange={(e) => {
+                    const newSort = e.target.value as SortOption;
+                    setSortBy(newSort);
+                    if (newSort === 'nearme' && userLocation) {
+                      setFlyToUserLocation(true);
+                      if (effectiveViewMode === 'list') {
+                        handleViewChange('map');
+                      }
+                    }
+                  }}
                   className="bg-surface-container-low border border-white/10 focus:border-primary px-4 py-2 text-on-surface outline-none appearance-none cursor-pointer font-mono text-[12px] tracking-[0.15em] uppercase"
                 >
                   <option value="featured">Featured</option>
+                  {userLocation && (
+                    <option value="nearme">Near Me</option>
+                  )}
                   <option value="rating">Highest Rated</option>
                   <option value="reviews">Most Reviewed</option>
                   <option value="name">Name (A-Z)</option>
@@ -429,6 +470,8 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                   <BusinessMapView
                     businesses={mappableBusinesses as any}
                     userLocation={userLocation}
+                    flyToUserLocation={flyToUserLocation}
+                    onFlyComplete={() => setFlyToUserLocation(false)}
                   />
                 );
               })()}
@@ -457,6 +500,8 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                   <BusinessSplitView
                     businesses={mappableBusinesses as any}
                     userLocation={userLocation}
+                    flyToUserLocation={flyToUserLocation}
+                    onFlyComplete={() => setFlyToUserLocation(false)}
                   />
                 );
               })()}

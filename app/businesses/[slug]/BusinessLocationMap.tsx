@@ -1,0 +1,118 @@
+'use client'
+
+import { useEffect, useRef } from 'react';
+import { Map, Marker, NavigationControl } from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+interface BusinessLocationMapProps {
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
+function PinMarker() {
+  return (
+    <svg
+      width="24"
+      height="32"
+      viewBox="0 0 24 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Teardrop pin shape */}
+      <path
+        d="M12 0C6.5 0 2 4.5 2 10c0 8 10 22 10 22s10-14 10-22c0-5.5-4.5-10-10-10z"
+        fill="#1a1a26"
+        stroke="#d4a843"
+        strokeWidth="2"
+      />
+      {/* Center gold dot */}
+      <circle
+        cx="12"
+        cy="10"
+        r="2.5"
+        fill="#d4a843"
+      />
+    </svg>
+  );
+}
+
+export function BusinessLocationMap({ name, latitude, longitude, address }: BusinessLocationMapProps) {
+  const mapRef = useRef<any>(null);
+
+  // Georgia's geographic bounds
+  const georgiaBounds: [[number, number], [number, number]] = [
+    [40.0, 41.0],   // Southwest: [longitude, latitude]
+    [46.7, 43.5]    // Northeast: [longitude, latitude]
+  ];
+
+  // Apply gold road styling when map loads
+  const handleMapLoad = () => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    // Color all road layers gold
+    const roadLayers = [
+      'road-simple',
+      'road-primary',
+      'road-secondary-tertiary',
+      'road-street',
+      'road-minor',
+      'road-motorway-trunk'
+    ];
+
+    roadLayers.forEach(layerId => {
+      try {
+        map.setPaintProperty(layerId, 'line-color', '#6b5621');
+      } catch (e) {
+        // Layer doesn't exist, skip silently
+      }
+    });
+
+    // Color road label text
+    const roadLabelLayers = [
+      'road-label',
+      'road-label-simple',
+      'road-number-shield',
+      'road-exit-shield'
+    ];
+
+    roadLabelLayers.forEach(layerId => {
+      try {
+        map.setPaintProperty(layerId, 'text-color', 'rgba(107, 86, 33, 0.7)');
+      } catch (e) {
+        // Layer doesn't exist, skip silently
+      }
+    });
+  };
+
+  return (
+    <div className="w-full h-64 bg-surface-container-low relative overflow-hidden">
+      <Map
+        ref={mapRef}
+        initialViewState={{
+          longitude,
+          latitude,
+          zoom: 15
+        }}
+        onLoad={handleMapLoad}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        style={{ width: '100%', height: '100%' }}
+        scrollZoom={true}
+        minZoom={7}
+        maxBounds={georgiaBounds}
+      >
+        <NavigationControl position="top-right" />
+
+        <Marker
+          longitude={longitude}
+          latitude={latitude}
+          anchor="bottom"
+        >
+          <PinMarker />
+        </Marker>
+      </Map>
+    </div>
+  );
+}

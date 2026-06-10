@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
+import { BusinessLocationMap } from "./BusinessLocationMap";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 
 interface Service {
@@ -26,6 +27,8 @@ interface Business {
   description: string | null;
   cover_image_url: string | null;
   logo_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
   services: Service[];
 }
 
@@ -49,6 +52,8 @@ export default async function BusinessProfilePage({
       description,
       cover_image_url,
       logo_url,
+      latitude,
+      longitude,
       services!left(
         id,
         name,
@@ -241,6 +246,23 @@ export default async function BusinessProfilePage({
 
           {/* Right Column: Sidebar */}
           <aside className="md:col-span-4 space-y-12">
+            {/* Map */}
+            {business.latitude && business.longitude && (
+              <div className="bg-surface-container border border-white/5 overflow-hidden">
+                <div className="p-4 border-b border-white/5">
+                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase">
+                    Location on Map
+                  </p>
+                </div>
+                <BusinessLocationMap
+                  name={displayName}
+                  latitude={business.latitude}
+                  longitude={business.longitude}
+                  address={displayAddress}
+                />
+              </div>
+            )}
+
             {/* Location / Info */}
             <div className="p-8 bg-surface-container border border-white/5">
               <div className="space-y-6">

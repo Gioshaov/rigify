@@ -1,9 +1,8 @@
 'use client'
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { Map, Marker, NavigationControl } from 'react-map-gl/mapbox';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 type Business = {
   id: string;
@@ -20,6 +19,9 @@ interface BusinessMapProps {
   onMarkerClick: (businessId: string) => void;
   userLocation?: { lat: number; lng: number } | null;
   className?: string;
+  viewMode?: 'list' | 'map' | 'split';
+  flyToUserLocation?: boolean;
+  onFlyComplete?: () => void;
 }
 
 // Category icon mapping (Material Symbols)
@@ -31,121 +33,63 @@ const CATEGORY_ICONS: Record<string, string> = {
   brows: 'face_retouching_natural',
   makeup: 'palette',
   barber: 'face',
+  other: 'category',
 };
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+// Teardrop pin marker (for LIST and SPLIT views)
+function PinMarker({ isSelected }: { isSelected: boolean }) {
+  return (
+    <svg
+      width="24"
+      height="32"
+      viewBox="0 0 24 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 0C6.5 0 2 4.5 2 10c0 8 10 22 10 22s10-14 10-22c0-5.5-4.5-10-10-10z"
+        fill="#1a1a26"
+        stroke="#d4a843"
+        strokeWidth="2"
+      />
+      <circle
+        cx="12"
+        cy="10"
+        r="2.5"
+        fill="#d4a843"
+      />
+    </svg>
+  );
 }
 
-function createCustomMarker(business: Business, isSelected: boolean) {
-  const primaryCategory = business.business_categories[0]?.category_id || 'other';
-  const iconName = CATEGORY_ICONS[primaryCategory] || 'location_on';
+// Category icon marker (for MAP view)
+function CategoryIconMarker({ categoryId }: { categoryId: string }) {
+  const iconName = CATEGORY_ICONS[categoryId] || CATEGORY_ICONS.other;
 
-  const iconHtml = `
-    <div style="
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    ">
-      <div style="
-        width: 48px;
-        height: 48px;
-        background: ${isSelected ? '#c9a84c' : '#e6c364'};
-        border: ${isSelected ? '3px solid #fff' : '2px solid #0a0a0f'};
-        border-radius: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: ${isSelected ? '0 4px 12px rgba(230, 195, 100, 0.6)' : '0 2px 8px rgba(0,0,0,0.3)'};
-        cursor: pointer;
-        transition: all 0.2s;
-      ">
-        <span class="material-symbols-outlined" style="
-          color: #0a0a0f;
-          font-size: 28px;
-          user-select: none;
-        ">${iconName}</span>
-      </div>
-      <div style="
-        background: #16161d;
-        border: 1px solid #e6c364;
-        padding: 4px 8px;
-        font-family: 'Hanken Grotesk', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        color: #e6c364;
-        text-transform: uppercase;
-        white-space: nowrap;
-        max-width: 120px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        letter-spacing: 0.05em;
-      ">${escapeHtml(business.name)}</div>
+  return (
+    <div
+      style={{
+        width: '36px',
+        height: '36px',
+        borderRadius: '50%',
+        backgroundColor: '#1a1a26',
+        border: '2px solid #d4a843',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <span
+        className="material-symbols-outlined"
+        style={{
+          fontSize: '20px',
+          color: '#d4a843',
+          userSelect: 'none',
+        }}
+      >
+        {iconName}
+      </span>
     </div>
-  `;
-
-  return L.divIcon({
-    html: iconHtml,
-    className: 'custom-marker',
-    iconSize: [48, 48],
-    iconAnchor: [24, 48],
-    popupAnchor: [0, -48],
-  });
-}
-
-// Fly to selected marker
-function FlyToMarker({ business }: { business: Business | null }) {
-  const map = useMap();
-  const businessId = business?.id ?? null;
-  const latitude = business?.latitude;
-  const longitude = business?.longitude;
-
-  useEffect(() => {
-    if (business && latitude && longitude) {
-      map.flyTo([latitude, longitude], 16, {
-        duration: 0.8,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, latitude, longitude, map]);
-
-  return null;
-}
-
-// "You are here" marker
-function createUserLocationMarker() {
-  const iconHtml = `
-    <div style="
-      width: 20px;
-      height: 20px;
-      background: #60a5fa;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 2px rgba(96, 165, 250, 0.3);
-      position: relative;
-    ">
-      <div style="
-        position: absolute;
-        inset: -8px;
-        border: 2px solid rgba(96, 165, 250, 0.5);
-        border-radius: 50%;
-        animation: pulse 2s ease-out infinite;
-      "></div>
-    </div>
-  `;
-
-  return L.divIcon({
-    html: iconHtml,
-    className: 'user-location-marker',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-  });
+  );
 }
 
 export function BusinessMap({
@@ -153,70 +97,142 @@ export function BusinessMap({
   selectedBusinessId,
   onMarkerClick,
   userLocation = null,
-  className = ''
+  className = '',
+  viewMode = 'map',
+  flyToUserLocation = false,
+  onFlyComplete
 }: BusinessMapProps) {
-  const selectedBusiness = businesses.find(b => b.id === selectedBusinessId);
+  const mapRef = useRef<any>(null);
+  const [viewState, setViewState] = useState({
+    longitude: 44.8271,
+    latitude: 41.7151,
+    zoom: 12
+  });
 
-  // Tbilisi city center (fallback if no user location)
-  const defaultCenter: [number, number] = [41.7151, 44.8271];
-  const defaultZoom = 12;
+  // Fly to selected business
+  useEffect(() => {
+    const selectedBusiness = businesses.find(b => b.id === selectedBusinessId);
+    if (selectedBusiness && mapRef.current) {
+      mapRef.current.flyTo({
+        center: [selectedBusiness.longitude, selectedBusiness.latitude],
+        zoom: 16,
+        duration: 800
+      });
+    }
+  }, [selectedBusinessId, businesses]);
+
+  // Fly to user location when Near Me is clicked
+  useEffect(() => {
+    if (flyToUserLocation && userLocation && mapRef.current) {
+      mapRef.current.flyTo({
+        center: [userLocation.lng, userLocation.lat],
+        zoom: 13,
+        duration: 1000
+      });
+      onFlyComplete?.();
+    }
+  }, [flyToUserLocation, userLocation, onFlyComplete]);
+
+  // Apply gold road styling when map loads
+  const handleMapLoad = () => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    // Color all road layers gold
+    const roadLayers = [
+      'road-simple',
+      'road-primary',
+      'road-secondary-tertiary',
+      'road-street',
+      'road-minor',
+      'road-motorway-trunk'
+    ];
+
+    roadLayers.forEach(layerId => {
+      try {
+        map.setPaintProperty(layerId, 'line-color', '#6b5621');
+      } catch (e) {
+        // Layer doesn't exist, skip silently
+      }
+    });
+
+    // Color road label text
+    const roadLabelLayers = [
+      'road-label',
+      'road-label-simple',
+      'road-number-shield',
+      'road-exit-shield'
+    ];
+
+    roadLabelLayers.forEach(layerId => {
+      try {
+        map.setPaintProperty(layerId, 'text-color', 'rgba(107, 86, 33, 0.7)');
+      } catch (e) {
+        // Layer doesn't exist, skip silently
+      }
+    });
+  };
 
   return (
     <div className={className} data-testid="marketplace-map">
-      <MapContainer
-        center={defaultCenter}
-        zoom={defaultZoom}
-        style={{ height: '100%', width: '100%' }}
-        className="z-0"
+      <Map
+        ref={mapRef}
+        {...viewState}
+        onMove={evt => setViewState(evt.viewState)}
+        onLoad={handleMapLoad}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        style={{ width: '100%', height: '100%' }}
       >
-        {/* OpenStreetMap tiles */}
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <NavigationControl position="top-right" />
 
-        {/* User location marker ("you are here") */}
+        {/* User location marker */}
         {userLocation && (
           <Marker
-            position={[userLocation.lat, userLocation.lng]}
-            icon={createUserLocationMarker()}
-            data-testid="user-location-marker"
+            longitude={userLocation.lng}
+            latitude={userLocation.lat}
+            anchor="center"
           >
-            <Popup>
-              <div className="font-mono text-xs">
-                <strong>You are here</strong>
-              </div>
-            </Popup>
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                background: '#60a5fa',
+                border: '3px solid #fff',
+                borderRadius: '50%',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4), 0 0 0 2px rgba(96, 165, 250, 0.3)'
+              }}
+            />
           </Marker>
         )}
 
         {/* Business markers */}
-        {businesses.map((business) => (
-          <Marker
-            key={business.id}
-            position={[business.latitude, business.longitude]}
-            icon={createCustomMarker(business, business.id === selectedBusinessId)}
-            eventHandlers={{
-              click: () => onMarkerClick(business.id),
-            }}
-          >
-            <Popup>
-              <div className="font-hanken">
-                <h3 className="font-semibold text-sm mb-1">{business.name}</h3>
-                <a
-                  href={`/businesses/${business.slug}`}
-                  className="text-xs text-primary hover:underline"
-                >
-                  View Details →
-                </a>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        {businesses.map((business) => {
+          const primaryCategory = business.business_categories[0]?.category_id || 'other';
+          const useIconMarker = viewMode === 'map';
 
-        {/* Fly to selected */}
-        <FlyToMarker business={selectedBusiness || null} />
-      </MapContainer>
+          return (
+            <Marker
+              key={business.id}
+              longitude={business.longitude}
+              latitude={business.latitude}
+              anchor={useIconMarker ? 'center' : 'bottom'}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                onMarkerClick(business.id);
+              }}
+            >
+              <div style={{ cursor: 'pointer' }}>
+                {useIconMarker ? (
+                  <CategoryIconMarker categoryId={primaryCategory} />
+                ) : (
+                  <PinMarker isSelected={business.id === selectedBusinessId} />
+                )}
+              </div>
+            </Marker>
+          );
+        })}
+      </Map>
     </div>
   );
 }
