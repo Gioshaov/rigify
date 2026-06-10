@@ -142,6 +142,11 @@ export function BusinessMap({
     const map = mapRef.current?.getMap();
     if (!map) return;
 
+    // Increase scroll zoom speed (default is 1/300, increase to 1/150 for 2x faster)
+    if (map.scrollZoom) {
+      map.scrollZoom.setWheelZoomRate(1 / 150);
+    }
+
     // Color all road layers gold
     const roadLayers = [
       'road-simple',
@@ -203,6 +208,7 @@ export function BusinessMap({
         ]}
         minZoom={8}
         maxZoom={18}
+        scrollZoom={true}
       >
         <NavigationControl position="top-right" />
 
