@@ -64,6 +64,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
   // Restore view from localStorage after hydration
   useEffect(() => {
+    if (searchParams.get('reset') === '1') return;
     const urlView = searchParams.get('view');
     if (!urlView && typeof window !== 'undefined') {
       const saved = localStorage.getItem('rigify-map-view') as ViewMode | null;
