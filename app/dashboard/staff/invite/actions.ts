@@ -57,7 +57,6 @@ export async function createArtisanAction(data: {
     business_id: business.id,
     user_id: newUser.user.id,
     name: data.fullName,
-    email: data.email,
     role: data.role === "manager" ? "manager" : "staff",
     specialty: data.title || null,
     is_active: true,
