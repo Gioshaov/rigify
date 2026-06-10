@@ -103,68 +103,35 @@ export function BusinessSplitView({
     <div className="flex h-[calc(100vh-280px)]" data-testid="marketplace-split-view">
       {/* Left Panel: 40% width */}
       <div className="w-[40%] flex flex-col border-r border-outline-variant">
-        {/* Top Bar */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-outline-variant bg-surface">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant">
+        {/* Top Bar with Category Dropdown */}
+        <div className="flex items-center justify-between gap-4 px-3 py-3 border-b border-outline-variant bg-surface">
+          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant whitespace-nowrap">
             Showing {filteredBusinesses.length} of {businesses.length}
           </span>
-          <button className="flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] uppercase text-primary hover:text-primary-container transition-colors">
-            <span className="material-symbols-outlined text-[16px]">tune</span>
-            Refine Search
-          </button>
-        </div>
 
-        {/* Category Filter Pills - with gradient fade */}
-        <div className="relative border-b border-outline-variant bg-surface">
-          <div
-            className="px-6 py-3 overflow-x-auto"
-            style={{
-              msOverflowStyle: 'none',
-              scrollbarWidth: 'none',
-            }}
-          >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-            <div className="flex gap-2 flex-nowrap">
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className={`
-                  px-4 py-2 font-mono text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all
-                  ${selectedCategory === 'all'
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-container border border-primary text-primary hover:bg-surface-container-high'
-                  }
-                `}
-              >
-                All Services
-              </button>
+          {/* Category Dropdown */}
+          <div className="relative flex-1 max-w-[200px]">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full bg-[#1a1a1a] border border-[#d4a843] text-primary font-mono text-[10px] tracking-[0.15em] uppercase px-3 py-2 pr-8 appearance-none cursor-pointer outline-none hover:border-primary-container transition-colors"
+            >
+              <option value="all">All Services</option>
               {CATEGORIES.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    px-4 py-2 font-mono text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all
-                    ${selectedCategory === category.id
-                      ? 'bg-primary text-on-primary'
-                      : 'bg-surface-container border border-primary text-primary hover:bg-surface-container-high'
-                    }
-                  `}
-                >
+                <option key={category.id} value={category.id}>
                   {category.en}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
+            <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-primary text-[16px] pointer-events-none">
+              expand_more
+            </span>
           </div>
-          {/* Gradient fade hint */}
-          <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none bg-gradient-to-l from-surface to-transparent"></div>
         </div>
 
-        {/* Scrollable Business Cards - with custom scrollbar */}
+        {/* Scrollable Business Cards Grid - with custom scrollbar */}
         <div
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto p-3"
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: '#d4a843 transparent',
@@ -185,88 +152,77 @@ export function BusinessSplitView({
               background: #e6c364;
             }
           `}</style>
-          {filteredBusinesses.map((business) => {
-            const isActive = selectedBusinessId === business.id;
-            const isHovered = hoveredBusinessId === business.id;
-            const categoryNames = business.business_categories
-              .map(cat => CATEGORIES.find(c => c.id === cat.category_id)?.en)
-              .filter(Boolean);
+          <div className="grid grid-cols-2 gap-2">
+            {filteredBusinesses.map((business) => {
+              const isActive = selectedBusinessId === business.id;
+              const isHovered = hoveredBusinessId === business.id;
+              const categoryNames = business.business_categories
+                .map(cat => CATEGORIES.find(c => c.id === cat.category_id)?.en)
+                .filter(Boolean);
+              const primaryCategory = categoryNames[0] || 'Business';
 
-            return (
-              <div
-                key={business.id}
-                ref={(el) => registerCardRef(business.id, el)}
-                onMouseEnter={() => handleBusinessHover(business.id)}
-                onMouseLeave={() => handleBusinessHover(null)}
-                onClick={() => handleBusinessClick(business)}
-                className={`
-                  flex gap-3 px-3 py-2 border-b border-zinc-800 cursor-pointer transition-all
-                  ${isActive
-                    ? 'bg-[#1e1a0e] border-l-2 border-l-primary'
-                    : isHovered
-                      ? 'bg-surface-container-low border-l-2 border-l-primary'
-                      : 'bg-[#1a1a1a] border-l border-l-transparent hover:bg-surface-container-low'
-                  }
-                `}
-              >
-                {/* Thumbnail - 72px */}
-                <div className="relative w-[72px] h-[72px] flex-shrink-0 bg-surface-container overflow-hidden">
-                  {business.cover_image_url ? (
-                    <Image
-                      src={business.cover_image_url}
-                      alt={business.name}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="material-symbols-outlined text-on-surface-variant text-[28px]">
-                        business
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-                  {/* Business Name */}
-                  <h3 className="font-hanken text-[13px] font-bold uppercase text-primary tracking-tight truncate leading-tight">
-                    {business.name}
-                  </h3>
-
-                  {/* Category Tags - tiny pills */}
-                  {categoryNames.length > 0 && (
-                    <div className="flex gap-1 flex-wrap">
-                      {categoryNames.map((cat, i) => (
-                        <span
-                          key={i}
-                          className="px-1.5 py-0.5 bg-surface-container border border-outline-variant font-mono text-[10px] tracking-[0.05em] uppercase text-on-surface-variant leading-none"
-                        >
-                          {cat}
+              return (
+                <div
+                  key={business.id}
+                  ref={(el) => registerCardRef(business.id, el)}
+                  onMouseEnter={() => handleBusinessHover(business.id)}
+                  onMouseLeave={() => handleBusinessHover(null)}
+                  onClick={() => handleBusinessClick(business)}
+                  className={`
+                    bg-[#1a1a1a] border cursor-pointer transition-all overflow-hidden
+                    ${isActive || isHovered
+                      ? 'border-primary'
+                      : 'border-zinc-800 hover:border-primary'
+                    }
+                  `}
+                >
+                  {/* Thumbnail - 4:3 aspect ratio */}
+                  <div className="relative w-full aspect-[4/3] bg-surface-container overflow-hidden group">
+                    {business.cover_image_url ? (
+                      <Image
+                        src={business.cover_image_url}
+                        alt={business.name}
+                        fill
+                        className={`
+                          object-cover transition-all
+                          ${isActive || isHovered ? 'brightness-110' : 'group-hover:brightness-110'}
+                        `}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="material-symbols-outlined text-on-surface-variant text-[36px]">
+                          business
                         </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* District & Distance - no bullet */}
-                  <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.05em] text-on-surface-variant">
-                    {business.district && (
-                      <span className="uppercase">{business.district}</span>
-                    )}
-                    {business.distance !== undefined && business.district && (
-                      <span className="text-outline-variant">|</span>
-                    )}
-                    {business.distance !== undefined && (
-                      <span>{business.distance.toFixed(1)} km</span>
+                      </div>
                     )}
                   </div>
+
+                  {/* Info */}
+                  <div className="p-2 flex flex-col gap-1">
+                    {/* Business Name */}
+                    <h3 className="font-hanken text-[11px] font-bold uppercase text-primary tracking-tight truncate leading-tight">
+                      {business.name}
+                    </h3>
+
+                    {/* Category & Distance */}
+                    <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.05em] text-on-surface-variant">
+                      <span className="truncate">{primaryCategory}</span>
+                      {business.distance !== undefined && (
+                        <>
+                          <span className="text-outline-variant">•</span>
+                          <span className="whitespace-nowrap">{business.distance.toFixed(1)} km</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+
+          </div>
 
           {filteredBusinesses.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-64 text-center px-6">
+            <div className="flex flex-col items-center justify-center h-64 text-center px-6 col-span-2">
               <span className="material-symbols-outlined text-on-surface-variant text-[48px] mb-4">
                 search_off
               </span>
