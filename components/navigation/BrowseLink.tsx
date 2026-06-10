@@ -14,24 +14,23 @@ export function BrowseLink({ className, children, testId }: BrowseLinkProps) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
-    // Always set localStorage to list before navigating
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('rigify-map-view', 'list');
-      // Set a flag that we want to force list view
-      sessionStorage.setItem('force-list-view', 'true');
-    }
-
     // If already on /businesses page, force reset
     if (pathname === '/businesses') {
       e.preventDefault();
 
-      // Use replace to force a re-render
-      router.replace('/businesses?view=list');
+      // Set localStorage and sessionStorage flag
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rigify-map-view', 'list');
+        sessionStorage.setItem('force-list-view', 'true');
+      }
 
-      // Force page refresh after a brief delay to ensure state updates
-      setTimeout(() => {
-        window.location.href = '/businesses?view=list';
-      }, 50);
+      // Navigate to list view
+      router.push('/businesses?view=list');
+    } else {
+      // Navigating from another page - just set localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rigify-map-view', 'list');
+      }
     }
   };
 
