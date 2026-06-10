@@ -303,7 +303,7 @@ export default async function BusinessProfilePage({
             Home
           </span>
         </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+        <Link data-testid="mobile-nav-browse" href="/businesses?view=list" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
