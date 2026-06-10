@@ -197,6 +197,12 @@ export function BusinessMap({
         mapStyle="mapbox://styles/mapbox/dark-v11"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         style={{ width: '100%', height: '100%' }}
+        maxBounds={[
+          [40.0, 41.0],  // Southwest [longitude, latitude]
+          [46.8, 43.6]   // Northeast [longitude, latitude]
+        ]}
+        minZoom={8}
+        maxZoom={18}
       >
         <NavigationControl position="top-right" />
 
