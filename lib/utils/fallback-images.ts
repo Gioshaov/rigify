@@ -11,17 +11,17 @@ export function getBusinessFallbackImage(
   // Get primary category
   const primaryCategory = categories?.[0]?.category_id;
 
-  // Category-based Unsplash fallbacks
+  // Category-based Picsum Photos fallbacks
   const fallbacks: Record<string, string> = {
-    hair: 'https://source.unsplash.com/400x300/?hair,salon',
-    nails: 'https://source.unsplash.com/400x300/?nails,manicure',
-    skin: 'https://source.unsplash.com/400x300/?skincare,facial',
-    massage: 'https://source.unsplash.com/400x300/?massage,spa',
-    brows: 'https://source.unsplash.com/400x300/?eyebrows,beauty',
-    makeup: 'https://source.unsplash.com/400x300/?makeup,cosmetics',
-    barber: 'https://source.unsplash.com/400x300/?barbershop,barber',
+    hair: 'https://picsum.photos/seed/hair/400/300',
+    nails: 'https://picsum.photos/seed/nails/400/300',
+    skin: 'https://picsum.photos/seed/skin/400/300',
+    massage: 'https://picsum.photos/seed/massage/400/300',
+    brows: 'https://picsum.photos/seed/brows/400/300',
+    makeup: 'https://picsum.photos/seed/makeup/400/300',
+    barber: 'https://picsum.photos/seed/barber/400/300',
   };
 
   // Return category-specific fallback or default
-  return fallbacks[primaryCategory || ''] || 'https://source.unsplash.com/400x300/?beauty,wellness';
+  return fallbacks[primaryCategory || ''] || 'https://picsum.photos/seed/beauty/400/300';
 }
