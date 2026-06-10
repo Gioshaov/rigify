@@ -91,6 +91,19 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     }
   }, [searchParams]); // Re-run when URL params change
 
+  // Listen for force-list-view event from BrowseLink
+  useEffect(() => {
+    const handleForceListView = () => {
+      setViewMode('list');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('rigify-map-view', 'list');
+      }
+    };
+
+    window.addEventListener('force-list-view', handleForceListView);
+    return () => window.removeEventListener('force-list-view', handleForceListView);
+  }, []);
+
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { UserMenu } from "@/components/ui/UserMenu";
+import { BrowseLink } from "@/components/navigation/BrowseLink";
 
 export default function HomePage() {
   const categories = [
@@ -54,9 +55,9 @@ export default function HomePage() {
           <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
             Home
           </Link>
-          <Link data-testid="nav-browse" href="/businesses?view=list" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+          <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
             Browse
-          </Link>
+          </BrowseLink>
           <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
             My Bookings
           </Link>
@@ -255,10 +256,10 @@ export default function HomePage() {
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>
         </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses?view=list" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
+        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
-        </Link>
+        </BrowseLink>
         <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">My Bookings</span>

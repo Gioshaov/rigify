@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { UserMenu } from "@/components/ui/UserMenu";
+import { TopNav } from "@/components/navigation/TopNav";
+import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { BusinessLocationMap } from "./BusinessLocationMap";
@@ -91,44 +92,7 @@ export default async function BusinessProfilePage({
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">
-            language
-          </span>
-          <Link data-testid="logo-link" href="/">
-            <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
-              RIGIFY
-            </span>
-          </Link>
-        </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <Link
-            data-testid="nav-home"
-            href="/"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary hover:text-primary transition-colors duration-200"
-          >
-            Home
-          </Link>
-          <Link
-            data-testid="nav-browse"
-            href="/businesses?view=list"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            Browse
-          </Link>
-          <Link
-            data-testid="nav-my-bookings"
-            href="/customer/dashboard"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            My Bookings
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <UserMenu />
-        </div>
-      </header>
+      <TopNav />
 
       <main className="pb-24">
         {/* Hero Section */}
@@ -303,12 +267,12 @@ export default async function BusinessProfilePage({
             Home
           </span>
         </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses?view=list" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
             Browse
           </span>
-        </Link>
+        </BrowseLink>
         <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
