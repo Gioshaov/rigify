@@ -102,3 +102,64 @@ export async function deleteStaff(staffId: string) {
 
   return { success: true, message: 'Staff member removed successfully' }
 }
+
+type UpdateStaffInput = {
+  staffId: string;
+  name: string;
+  specialty: string;
+  isActive: boolean;
+};
+
+export async function updateStaffMember(input: UpdateStaffInput) {
+  const supabase = createClient();
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, message: "Not authenticated" };
+  }
+
+  // Get business to verify ownership
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('id')
+    .eq('owner_id', user.id)
+    .single();
+
+  if (!business) {
+    return { success: false, message: "No business found" };
+  }
+
+  // Verify staff belongs to this business
+  const { data: staffCheck } = await supabase
+    .from('staff')
+    .select('id')
+    .eq('id', input.staffId)
+    .eq('business_id', business.id)
+    .single();
+
+  if (!staffCheck) {
+    return { success: false, message: "Staff member not found or access denied" };
+  }
+
+  // Update staff member using admin client
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from('staff')
+    .update({
+      name: input.name,
+      specialty: input.specialty,
+      is_active: input.isActive,
+    })
+    .eq('id', input.staffId);
+
+  if (error) {
+    console.error('Error updating staff:', error);
+    return { success: false, message: `Failed to update staff: ${error.message}` };
+  }
+
+  // Revalidate the staff page
+  revalidatePath('/dashboard/staff');
+
+  return { success: true, message: "Staff member updated successfully" };
+}
