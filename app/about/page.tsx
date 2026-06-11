@@ -14,7 +14,7 @@ export default function AboutPage() {
             The Artisan Collective
           </h1>
           <p className="font-hanken text-[18px] leading-[1.6] text-on-surface-variant max-w-2xl mx-auto">
-            Rigify is Georgia's premier beauty and wellness booking platform, connecting customers with talented artisans across Tbilisi and beyond.
+            Rigify is Georgia&apos;s premier beauty and wellness booking platform, connecting customers with talented artisans across Tbilisi and beyond.
           </p>
         </div>
 
@@ -135,7 +135,7 @@ export default function AboutPage() {
                 </h3>
               </div>
               <p className="font-hanken text-[14px] leading-[1.6] text-on-surface-variant">
-                We're building a collective where artisans support each other and customers discover hidden gems across Georgia.
+                We&apos;re building a collective where artisans support each other and customers discover hidden gems across Georgia.
               </p>
             </div>
 
@@ -159,7 +159,7 @@ export default function AboutPage() {
             Join the Rigify Community
           </h2>
           <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant mb-6">
-            Whether you're a customer looking for your next appointment or a business ready to grow, we're here for you.
+            Whether you&apos;re a customer looking for your next appointment or a business ready to grow, we&apos;re here for you.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

@@ -65,7 +65,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <a href="#children" className="font-hanken text-[14px] leading-[1.6] text-primary hover:text-primary-container transition-colors">
-                9. Children's Privacy
+                9. Children&apos;s Privacy
               </a>
             </li>
             <li>
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              Rigify ("we", "our", "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, share, and safeguard your information when you use our Platform.
+              Rigify (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, share, and safeguard your information when you use our Platform.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
               This policy applies to all users: customers (both registered and guests), business owners, and visitors.
@@ -322,7 +322,7 @@ export default function PrivacyPage() {
         {/* 9. Children */}
         <section id="children" data-testid="privacy-children" className="mb-12">
           <h2 className="font-hanken text-[28px] leading-[1.2] tracking-tighter font-bold text-white mb-4">
-            9. Children's Privacy
+            9. Children&apos;s Privacy
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
@@ -362,7 +362,7 @@ export default function PrivacyPage() {
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated "Last updated" date.
+              We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated &quot;Last updated&quot; date.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
               For significant changes, we will notify you via email or platform notification.

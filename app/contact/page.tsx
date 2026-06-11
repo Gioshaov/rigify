@@ -14,7 +14,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="font-hanken text-[18px] leading-[1.6] text-on-surface-variant max-w-2xl mx-auto">
-            Have a question, feedback, or need support? We're here to help.
+            Have a question, feedback, or need support? We&apos;re here to help.
           </p>
         </div>
 

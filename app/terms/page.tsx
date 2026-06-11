@@ -93,7 +93,7 @@ export default function TermsPage() {
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              By accessing or using Rigify ("the Platform"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
+              By accessing or using Rigify (&quot;the Platform&quot;), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
               These terms apply to all users, including customers, business owners, and visitors.
@@ -108,16 +108,16 @@ export default function TermsPage() {
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">"Platform"</strong> refers to the Rigify website, mobile applications, and all related services.
+              <strong className="text-white">&quot;Platform&quot;</strong> refers to the Rigify website, mobile applications, and all related services.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">"Customer"</strong> refers to any individual booking appointments through the Platform.
+              <strong className="text-white">&quot;Customer&quot;</strong> refers to any individual booking appointments through the Platform.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">"Business"</strong> refers to salons, spas, clinics, and independent artisans offering services through the Platform.
+              <strong className="text-white">&quot;Business&quot;</strong> refers to salons, spas, clinics, and independent artisans offering services through the Platform.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">"Salome"</strong> refers to our AI-powered voice assistant for phone bookings.
+              <strong className="text-white">&quot;Salome&quot;</strong> refers to our AI-powered voice assistant for phone bookings.
             </p>
           </div>
         </section>
@@ -269,10 +269,10 @@ export default function TermsPage() {
               <strong className="text-white">Business Responsibility:</strong> All services are provided by independent businesses. Disputes, injuries, damages, or dissatisfaction must be resolved directly with the business.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">No Warranties:</strong> The Platform is provided "as is" without warranties of any kind. We do not guarantee uninterrupted access, error-free operation, or accuracy of listings.
+              <strong className="text-white">No Warranties:</strong> The Platform is provided &quot;as is&quot; without warranties of any kind. We do not guarantee uninterrupted access, error-free operation, or accuracy of listings.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              <strong className="text-white">Maximum Liability:</strong> To the fullest extent permitted by law, Rigify's liability is limited to the amount you paid to us in the past 12 months (if any).
+              <strong className="text-white">Maximum Liability:</strong> To the fullest extent permitted by law, Rigify&apos;s liability is limited to the amount you paid to us in the past 12 months (if any).
             </p>
           </div>
         </section>
@@ -302,7 +302,7 @@ export default function TermsPage() {
           </h2>
           <div className="bg-surface-container border border-white/10 p-6 space-y-4">
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-              Rigify reserves the right to modify these Terms of Service at any time. Changes will be posted on this page with an updated "Last updated" date.
+              Rigify reserves the right to modify these Terms of Service at any time. Changes will be posted on this page with an updated &quot;Last updated&quot; date.
             </p>
             <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
               Continued use of the Platform after changes constitutes acceptance of the new terms.

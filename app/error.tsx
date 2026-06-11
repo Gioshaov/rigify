@@ -32,7 +32,7 @@ export default function Error({
           Something Went Wrong
         </h1>
         <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant mb-8">
-          We encountered an unexpected error. This has been logged and we'll look into it.
+          We encountered an unexpected error. This has been logged and we&apos;ll look into it.
         </p>
 
         {/* Error Details (Development) */}

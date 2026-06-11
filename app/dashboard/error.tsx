@@ -27,7 +27,7 @@ export default function DashboardError({
           Dashboard Error
         </h2>
         <p className="font-hanken text-[14px] leading-[1.6] text-on-surface-variant mb-6">
-          We couldn't load this dashboard section. Please try again or go back to the main dashboard.
+          We couldn&apos;t load this dashboard section. Please try again or go back to the main dashboard.
         </p>
 
         {process.env.NODE_ENV === "development" && (
