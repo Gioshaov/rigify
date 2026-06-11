@@ -1256,3 +1256,108 @@ npm run audit:testids     # Find missing test IDs
 
 **Status**: All bugs fixed, code quality improved, ready to commit and push.
 
+---
+
+### Session 18 - June 11, 2026: ESLint Fixes & Documentation
+
+**Objective**: Fix Vercel deployment blocking issues and prevent future ESLint errors
+
+**Context**: Vercel build failing with 31 ESLint errors - `react/no-unescaped-entities` blocking deployment. Apostrophes and quotes in JSX text not properly escaped.
+
+**Problem**:
+- Vercel deployment failed with 31 ESLint errors across 7 files
+- `react/no-unescaped-entities` rule blocking build
+- Apostrophes (don't, we're, it's) and quotes ("Platform", "as is") in JSX text not escaped
+
+**ESLint Fixes** (31 errors resolved):
+
+1. **app/contact/page.tsx** (1 error)
+   - `We're here to help` → `We&apos;re here to help`
+
+2. **app/about/page.tsx** (3 errors)
+   - `Georgia's premier` → `Georgia&apos;s premier`
+   - `We're building` → `We&apos;re building`
+   - `you're a customer`, `we're here` → `you&apos;re`, `we&apos;re`
+
+3. **app/not-found.tsx** (2 errors)
+   - `you're looking`, `doesn't exist` → `you&apos;re`, `doesn&apos;t`
+
+4. **app/error.tsx** (1 error)
+   - `we'll look into it` → `we&apos;ll`
+
+5. **app/dashboard/error.tsx** (1 error)
+   - `couldn't load` → `couldn&apos;t`
+
+6. **app/privacy/page.tsx** (11 errors)
+   - `Children's Privacy` → `Children&apos;s Privacy` (2 instances)
+   - `("we", "our", "us")` → `(&quot;we&quot;, &quot;our&quot;, &quot;us&quot;)`
+   - `"Last updated" date` → `&quot;Last updated&quot; date`
+
+7. **app/terms/page.tsx** (13 errors)
+   - `("the Platform")` → `(&quot;the Platform&quot;)`
+   - `"Platform"`, `"Customer"`, `"Business"`, `"Salome"` → all escaped with `&quot;`
+   - `"as is"` → `&quot;as is&quot;`
+   - `Rigify's liability` → `Rigify&apos;s`
+   - `"Last updated"` → `&quot;Last updated&quot;`
+
+**Documentation Updates**:
+
+1. **CLAUDE.md** - Added critical section:
+   - Title: "⚠️ CRITICAL: JSX Text Content Rules"
+   - Rule: Always escape apostrophes with `&apos;` and quotes with `&quot;`
+   - Why: Prevents `react/no-unescaped-entities` ESLint errors that block Vercel builds
+   - When: All user-facing text in JSX elements
+
+2. **code-reviewer.md** - Added to "React/JSX specific" section:
+   - Marked as CRITICAL (blocks Vercel build)
+   - Will flag unescaped apostrophes and quotes in future reviews
+   - Checks all `<p>`, `<h1>-<h6>`, `<span>`, `<li>` text content
+
+**Cleanup**:
+- Deleted `Gemini_Generated_Image_9n58kp9n58kp9n58.png` (unused asset)
+
+**Code Reviews**:
+- **Codex review**: Clean - only deleted image file, no broken functionality
+
+**Files Modified**:
+- `app/about/page.tsx` (3 fixes)
+- `app/contact/page.tsx` (1 fix)
+- `app/dashboard/error.tsx` (1 fix)
+- `app/error.tsx` (1 fix)
+- `app/not-found.tsx` (2 fixes)
+- `app/privacy/page.tsx` (11 fixes)
+- `app/terms/page.tsx` (13 fixes)
+- `CLAUDE.md` (added JSX rules)
+- `.claude/agents/code-reviewer.md` (added JSX validation)
+
+**Files Deleted**:
+- `Gemini_Generated_Image_9n58kp9n58kp9n58.png`
+
+**Commits**:
+1. `2e61966` - Fix ESLint errors: escape quotes and apostrophes in JSX
+2. `fb9fae8` - Add JSX text content rules to CLAUDE.md
+3. `1fddefb` - Add JSX text content rules to code-reviewer
+
+**Impact**:
+- ✅ Vercel build now passing (only warnings remain, non-blocking)
+- ✅ Deployment unblocked
+- ✅ Future prevention: CLAUDE.md ensures rule is followed
+- ✅ Future detection: code-reviewer.md catches violations
+
+**Key Learnings**:
+1. **JSX text must be escaped** - Apostrophes use `&apos;`, quotes use `&quot;`
+2. **Document in multiple places** - CLAUDE.md (prevention) + code-reviewer.md (detection)
+3. **Local vs CI/CD** - Local build may pass with warnings, but Vercel treats them as errors
+
+**Verification**:
+- ✅ TypeScript compilation clean
+- ✅ Build passes (warnings only)
+- ✅ All changes committed and pushed to GitHub
+- ✅ Vercel deployment successful
+
+**Next Steps**:
+- Continue with Priority 1: Customer Dashboard (Stitch designs)
+- Or Priority 2: Complete Business Dashboard features
+
+**Status**: Build fixed, documentation updated, all changes pushed. Deployment successful.
+
