@@ -71,6 +71,36 @@ See "Testing & Test Automation" section below for full requirements.
 
 ---
 
+## ⚠️ CRITICAL: JSX Text Content Rules
+
+**ALWAYS escape apostrophes and quotes in JSX text content to prevent ESLint errors and Vercel build failures.**
+
+### Rules
+
+- **Apostrophes in contractions** → Use `&apos;`
+  - ❌ WRONG: `We're here to help`
+  - ✅ CORRECT: `We&apos;re here to help`
+  - Examples: don't → don&apos;t, it's → it&apos;s, Georgia's → Georgia&apos;s
+
+- **Double quotes in text** → Use `&quot;`
+  - ❌ WRONG: `Rigify ("we", "our", "us")`
+  - ✅ CORRECT: `Rigify (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;)`
+  - Examples: "Platform" → &quot;Platform&quot;, "as is" → &quot;as is&quot;
+
+### Why This Matters
+
+- ESLint rule `react/no-unescaped-entities` will fail the build on Vercel if not escaped
+- Prevents deployment failures and CI/CD issues
+- Required for all user-facing text content in JSX
+
+### When to Apply
+
+- **Always** when writing user-facing text in JSX elements
+- Marketing pages, error messages, help text, descriptions
+- Any `<p>`, `<h1>-<h6>`, `<span>`, `<li>` text content with apostrophes or quotes
+
+---
+
 ## Project Overview
 
 **Rigify** is a Georgian beauty & wellness booking marketplace (like Booksy/Fresha for Georgia) with:
