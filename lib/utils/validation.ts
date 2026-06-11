@@ -40,3 +40,129 @@ export function validateEmail(email: string): boolean {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return regex.test(email)
 }
+
+/**
+ * Comprehensive validation utilities
+ * Use validators object for consistent validation across all forms
+ */
+export const validators = {
+  email: validateEmail,
+  phone: validateGeorgianPhone,
+  name: validateName,
+
+  /**
+   * Check minimum length
+   */
+  minLength: (value: string, min: number): boolean => {
+    return value.trim().length >= min;
+  },
+
+  /**
+   * Check maximum length
+   */
+  maxLength: (value: string, max: number): boolean => {
+    return value.trim().length <= max;
+  },
+
+  /**
+   * Check if field is required and not empty
+   */
+  required: (value: string | null | undefined): boolean => {
+    return value != null && value.trim().length > 0;
+  },
+
+  /**
+   * Validate password strength
+   * Returns detailed breakdown for showing indicators
+   */
+  passwordStrength: (value: string) => {
+    return {
+      isValid: value.length >= 8,
+      length: value.length,
+      hasUpper: /[A-Z]/.test(value),
+      hasLower: /[a-z]/.test(value),
+      hasNumber: /[0-9]/.test(value),
+      hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+    };
+  },
+
+  /**
+   * Validate price (positive number, max 2 decimals)
+   */
+  price: (value: string): boolean => {
+    const num = parseFloat(value);
+    return !isNaN(num) && num >= 0 && /^\d+(\.\d{1,2})?$/.test(value);
+  },
+
+  /**
+   * Validate duration (positive integer, no decimals)
+   */
+  duration: (value: string): boolean => {
+    const trimmed = value.trim();
+    return /^\d+$/.test(trimmed) && parseInt(trimmed, 10) > 0;
+  },
+
+  /**
+   * Validate URL format (http/https only)
+   * Rejects javascript:, file://, and other dangerous protocols
+   */
+  url: (value: string): boolean => {
+    try {
+      const url = new URL(value);
+      return ['http:', 'https:'].includes(url.protocol);
+    } catch {
+      return false;
+    }
+  },
+};
+
+/**
+ * Standard error messages
+ * Use these for consistency across the app
+ */
+export const errorMessages = {
+  required: "This field is required",
+  email: "Please enter a valid email address",
+  phone: "Please enter a valid phone number (e.g., +995 555 123 456)",
+  name: "Name must be at least 2 characters and contain no numbers",
+  minLength: (min: number) => `Must be at least ${min} characters`,
+  maxLength: (max: number) => `Must be no more than ${max} characters`,
+  passwordWeak: "Password must be at least 8 characters long",
+  passwordMismatch: "Passwords do not match",
+  price: "Please enter a valid price (e.g., 50 or 50.99)",
+  duration: "Please enter a valid duration in minutes",
+  url: "Please enter a valid URL (e.g., https://example.com)",
+  generic: "Please check your input and try again",
+};
+
+/**
+ * Get password strength label and color
+ */
+export function getPasswordStrength(password: string): {
+  label: string;
+  color: string;
+  score: number;
+} {
+  const strength = validators.passwordStrength(password);
+
+  if (password.length === 0) {
+    return { label: "", color: "", score: 0 };
+  }
+
+  let score = 0;
+  if (strength.length >= 8) score++;
+  if (strength.length >= 12) score++;
+  if (strength.hasUpper && strength.hasLower) score++;
+  if (strength.hasNumber) score++;
+  if (strength.hasSpecial) score++;
+
+  if (score <= 2) {
+    return { label: "Weak", color: "text-error", score };
+  } else if (score <= 3) {
+    return { label: "Fair", color: "text-amber-400", score };
+  } else if (score <= 4) {
+    return { label: "Good", color: "text-primary", score };
+  } else {
+    return { label: "Strong", color: "text-green-400", score };
+  }
+}

@@ -8,6 +8,7 @@ import { UserMenu } from "@/components/ui/UserMenu";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 import { generateCalendarDays, MONTH_NAMES } from "@/lib/utils/calendar";
 import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/time-format";
+import { validators, errorMessages } from "@/lib/utils/validation";
 
 interface Service {
   id: string;
@@ -75,6 +76,11 @@ export function BookAppointmentContent({
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+
+  // Field-level validation errors
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // Use the service from props
   const selectedService = initialSelectedService;
@@ -146,8 +152,46 @@ export function BookAppointmentContent({
   const handleConfirmBooking = async () => {
     if (!selectedService || !selectedDate || !selectedTime) return;
 
-    setIsBooking(true);
+    // Clear previous errors
     setBookingError(null);
+    setNameError(null);
+    setPhoneError(null);
+    setEmailError(null);
+
+    // Validate customer details
+    const name = customerName.trim();
+    const phone = customerPhone.trim();
+    const email = customerEmail.trim();
+
+    let hasError = false;
+
+    if (!validators.required(name)) {
+      setNameError(errorMessages.required);
+      hasError = true;
+    } else if (!validators.name(name)) {
+      setNameError(errorMessages.name);
+      hasError = true;
+    }
+
+    if (!validators.required(phone)) {
+      setPhoneError(errorMessages.required);
+      hasError = true;
+    } else if (!validators.phone(phone)) {
+      setPhoneError(errorMessages.phone);
+      hasError = true;
+    }
+
+    if (email && !validators.email(email)) {
+      setEmailError(errorMessages.email);
+      hasError = true;
+    }
+
+    if (hasError) {
+      setBookingError("Please fix the errors above and try again.");
+      return;
+    }
+
+    setIsBooking(true);
 
     const bookingDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
     const time24 = convertTo24Hour(selectedTime);
@@ -482,11 +526,21 @@ export function BookAppointmentContent({
                       data-testid="customer-name-input"
                       type="text"
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        setNameError(null);
+                      }}
                       placeholder="Enter your name"
-                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                      className={`w-full bg-surface border px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors ${
+                        nameError ? "border-error" : "border-white/10"
+                      }`}
                       required
                     />
+                    {nameError && (
+                      <p className="mt-1 text-error font-mono text-[10px] tracking-[0.15em] uppercase">
+                        {nameError}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
@@ -496,11 +550,21 @@ export function BookAppointmentContent({
                       data-testid="customer-phone-input"
                       type="tel"
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      placeholder="5XX XXX XXX"
-                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                      onChange={(e) => {
+                        setCustomerPhone(e.target.value);
+                        setPhoneError(null);
+                      }}
+                      placeholder="+995 555 123 456"
+                      className={`w-full bg-surface border px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors ${
+                        phoneError ? "border-error" : "border-white/10"
+                      }`}
                       required
                     />
+                    {phoneError && (
+                      <p className="mt-1 text-error font-mono text-[10px] tracking-[0.15em] uppercase">
+                        {phoneError}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
@@ -510,10 +574,20 @@ export function BookAppointmentContent({
                       data-testid="customer-email-input"
                       type="email"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerEmail(e.target.value);
+                        setEmailError(null);
+                      }}
                       placeholder="your@email.com"
-                      className="w-full bg-surface border border-white/10 px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors"
+                      className={`w-full bg-surface border px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors ${
+                        emailError ? "border-error" : "border-white/10"
+                      }`}
                     />
+                    {emailError && (
+                      <p className="mt-1 text-error font-mono text-[10px] tracking-[0.15em] uppercase">
+                        {emailError}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

@@ -2,6 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "@/lib/hooks/useTranslations";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { FormError } from "@/components/ui/FormError";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 
 type Action = (formData: FormData) => Promise<{ error: string } | void>;
 
@@ -30,6 +33,7 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
         <input
           type="email"
           name="email"
+          data-testid="login-email-input"
           required
           autoComplete="email"
           className="input-field mt-stack-sm"
@@ -39,9 +43,10 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
 
       <label className="block">
         <span className="label-mono">{tr.auth.login.password[lang]}</span>
-        <input
-          type="password"
+        <PasswordInput
           name="password"
+          id="login-password"
+          testId="login-password-input"
           required
           autoComplete="current-password"
           className="input-field mt-stack-sm"
@@ -49,15 +54,17 @@ export function LoginForm({ action, redirectTo }: { action: Action; redirectTo?:
         />
       </label>
 
-      {error && (
-        <p className="font-mono text-data-label text-error" role="alert">
-          {error}
-        </p>
-      )}
+      <FormError message={error} testId="login-error" mode="banner" />
 
-      <button type="submit" disabled={isPending} className="btn-primary w-full">
-        {isPending ? tr.auth.login.signingIn[lang] : tr.common.signIn[lang]}
-      </button>
+      <LoadingButton
+        type="submit"
+        isLoading={isPending}
+        loadingText={tr.auth.login.signingIn[lang]}
+        className="btn-primary w-full"
+        testId="login-submit-btn"
+      >
+        {tr.common.signIn[lang]}
+      </LoadingButton>
     </form>
   );
 }
