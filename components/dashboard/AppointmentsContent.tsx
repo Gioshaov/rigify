@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { CalendarView } from "./CalendarView";
 import { AppointmentsListView } from "./AppointmentsListView";
-import { CreateAppointmentModal } from "./CreateAppointmentModal";
 
 type Booking = {
   id: string;
@@ -42,9 +41,6 @@ export function AppointmentsContent({ bookings, staff, services, businessId }: A
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  // Modal state
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Read from URL or use defaults
   const viewMode = (searchParams.get('view') as 'calendar' | 'list') || 'calendar';
@@ -132,14 +128,14 @@ export function AppointmentsContent({ bookings, staff, services, businessId }: A
           </div>
 
           {/* Create Appointment Button */}
-          <button
-            onClick={() => setShowCreateModal(true)}
+          <Link
+            href="/dashboard/appointments/new"
             className="bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 flex items-center gap-2"
             data-testid="create-appointment-btn"
           >
             <span className="material-symbols-outlined text-[16px]">add</span>
             Create Appointment
-          </button>
+          </Link>
         </div>
 
         {/* Filters Row */}
@@ -232,16 +228,6 @@ export function AppointmentsContent({ bookings, staff, services, businessId }: A
         <CalendarView bookings={filteredBookings} businessId={businessId} />
       ) : (
         <AppointmentsListView bookings={filteredBookings} />
-      )}
-
-      {/* Create Appointment Modal */}
-      {showCreateModal && (
-        <CreateAppointmentModal
-          businessId={businessId}
-          services={services}
-          staff={staff}
-          onClose={() => setShowCreateModal(false)}
-        />
       )}
     </div>
   );
