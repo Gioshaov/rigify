@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createAppointment } from "../actions";
-import { generateCalendarDays, MONTH_NAMES } from "@/lib/utils/calendar";
+import { MONTH_NAMES } from "@/lib/utils/calendar";
 import { generateTimeSlotTestId } from "@/lib/utils/time-format";
 
 type Service = {
@@ -51,10 +51,55 @@ export function CreateAppointmentClient({
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   // Generate calendar days
-  const calendarDays = useMemo(
-    () => generateCalendarDays(currentYear, currentMonth),
-    [currentYear, currentMonth]
-  );
+  const calendarDays = useMemo(() => {
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const days = [];
+
+    // Previous month placeholders
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      days.push({
+        day: prevMonthLastDay - i,
+        isCurrentMonth: false,
+        date: new Date(currentYear, currentMonth - 1, prevMonthLastDay - i),
+        isDisabled: true,
+      });
+    }
+
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(currentYear, currentMonth, i);
+      date.setHours(0, 0, 0, 0);
+      const isPast = date < today;
+      days.push({
+        day: i,
+        isCurrentMonth: true,
+        date: date,
+        isToday: date.getTime() === today.getTime(),
+        isDisabled: isPast,
+      });
+    }
+
+    // Next month placeholders
+    const remainingDays = 42 - days.length; // 6 rows x 7 days
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push({
+        day: i,
+        isCurrentMonth: false,
+        date: new Date(currentYear, currentMonth + 1, i),
+        isDisabled: true,
+      });
+    }
+
+    return days;
+  }, [currentYear, currentMonth]);
 
   // Generate time slots (9 AM to 9 PM, 30-minute intervals)
   const timeSlots = useMemo(() => {
