@@ -35,8 +35,7 @@ interface BusinessSplitViewProps {
   userLocation?: { lat: number; lng: number } | null;
   flyToUserLocation?: boolean;
   onFlyComplete?: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mapRef?: React.MutableRefObject<any>;
+  mapRef?: React.MutableRefObject<mapboxgl.Map | null>;
 }
 
 export function BusinessSplitView({

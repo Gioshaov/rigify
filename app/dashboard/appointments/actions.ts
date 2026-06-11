@@ -2,9 +2,8 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { hasOverlap } from "@/lib/utils/availability";
-import { TBILISI_TZ } from "@/lib/utils/datetime";
+import { combineLocalDateTime } from "@/lib/utils/datetime";
 
 interface CreateAppointmentData {
   businessId: string;
@@ -93,14 +92,10 @@ export async function createAppointment(data: CreateAppointmentData) {
   }
 
   // Convert Tbilisi time to UTC for storage
-  const appointmentDatetime = zonedTimeToUtc(
-    `${data.date}T${data.startTime}:00`,
-    TBILISI_TZ
-  );
+  const appointmentDatetime = combineLocalDateTime(data.date, data.startTime);
 
-  // Check if appointment is in the past (in Tbilisi timezone)
-  const nowTbilisi = zonedTimeToUtc(new Date(), TBILISI_TZ);
-  if (appointmentDatetime < nowTbilisi) {
+  // Check if appointment is in the past
+  if (appointmentDatetime < new Date()) {
     return { success: false, message: "Cannot create appointments in the past" };
   }
 
