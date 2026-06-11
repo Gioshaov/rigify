@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { ManageBookingClient } from "./ManageBookingClient";
 
 export const dynamic = 'force-dynamic';
@@ -18,9 +18,8 @@ export default async function ManageBookingPage({
   }
 
   // Fetch booking with business, service, and staff details
-  // Use admin client to bypass RLS for guest bookings
-  const admin = createAdminClient();
-  const { data: booking, error } = await admin
+  // RLS automatically filters to bookings owned by current user
+  const { data: booking, error } = await supabase
     .from('bookings')
     .select(`
       id,
@@ -59,11 +58,6 @@ export default async function ManageBookingPage({
 
   if (error || !booking) {
     console.error('[ManageBookingPage] Error fetching booking:', error?.message);
-    notFound();
-  }
-
-  // Security: Verify this booking belongs to the current user
-  if (booking.customer_id !== user.id) {
     notFound();
   }
 

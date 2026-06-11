@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { RescheduleBookingClient } from "./RescheduleBookingClient";
 
 export const dynamic = 'force-dynamic';
@@ -17,9 +17,8 @@ export default async function RescheduleBookingPage({
     redirect('/login');
   }
 
-  // Use admin client to bypass RLS for guest bookings
-  const admin = createAdminClient();
-  const { data: booking, error } = await admin
+  // RLS automatically filters to bookings owned by current user
+  const { data: booking, error } = await supabase
     .from('bookings')
     .select(`
       id,
@@ -47,18 +46,13 @@ export default async function RescheduleBookingPage({
     notFound();
   }
 
-  // Security: Verify this booking belongs to the current user
-  if (booking.customer_id !== user.id) {
-    notFound();
-  }
-
   // Only allow rescheduling confirmed bookings
   if (booking.status !== 'confirmed') {
     redirect(`/customer/bookings/${params.id}`);
   }
 
   // Fetch available staff for this business
-  const { data: staff } = await admin
+  const { data: staff } = await supabase
     .from('staff')
     .select('id, name, specialty')
     .eq('business_id', booking.business_id)
