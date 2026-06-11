@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { AppointmentsContent } from "@/components/dashboard/AppointmentsContent";
 
 export default async function AppointmentsPage() {
@@ -84,16 +85,26 @@ export default async function AppointmentsPage() {
   return (
     <div className="max-w-7xl">
       {/* Header */}
-      <div className="mb-12">
-        <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase mb-2">
-          MANAGEMENT PORTAL
-        </p>
-        <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
-          Appointments
-        </h1>
-        <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-          Manage your bookings and schedule
-        </p>
+      <div className="mb-12 flex items-start justify-between">
+        <div>
+          <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase mb-2">
+            MANAGEMENT PORTAL
+          </p>
+          <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
+            Appointments
+          </h1>
+          <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+            Manage your bookings and schedule
+          </p>
+        </div>
+        <Link
+          data-testid="new-appointment-btn"
+          href="/dashboard/appointments/new"
+          className="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container transition-colors"
+        >
+          <span className="material-symbols-outlined text-[20px]">add</span>
+          New Appointment
+        </Link>
       </div>
 
       {/* Monthly Stats */}

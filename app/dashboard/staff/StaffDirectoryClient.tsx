@@ -2,7 +2,8 @@
 
 import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
-import { updateStaffMember } from "./actions";
+import { useRouter } from "next/navigation";
+import { updateStaffMember, deleteStaff } from "./actions";
 import { AddArtisanForm } from "@/components/dashboard/staff/AddArtisanForm";
 import { Modal } from "@/components/ui/Modal";
 
@@ -25,6 +26,7 @@ type StaffDirectoryClientProps = {
 };
 
 export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirectoryClientProps) {
+  const router = useRouter();
   const [staff, setStaff] = useState(initialStaff);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeExpander, setActiveExpander] = useState<string | null>(null);
@@ -40,6 +42,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
     status: "Active",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   // Sync local state when initialStaff changes (e.g., after router.refresh())
@@ -112,6 +115,31 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
   const handleCancel = () => {
     setActiveExpander(null);
     setSaveError(null);
+  };
+
+  const handleDelete = async () => {
+    if (!activeExpander) return;
+
+    const member = staff.find((s) => s.id === activeExpander);
+    if (!member) return;
+
+    if (!confirm(`Are you sure you want to delete ${member.name}? This action cannot be undone.`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setSaveError(null);
+
+    const result = await deleteStaff(activeExpander);
+
+    if (result.success) {
+      setActiveExpander(null);
+      router.refresh();
+    } else {
+      setSaveError(result.message || "Failed to delete staff member");
+    }
+
+    setIsDeleting(false);
   };
 
   const filteredStaff = staff.filter(
@@ -376,7 +404,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
                       <button
                         data-testid="staff-edit-save-btn"
                         onClick={handleSave}
-                        disabled={isSaving}
+                        disabled={isSaving || isDeleting}
                         className="bg-amber-400 hover:bg-amber-300 text-black text-xs uppercase tracking-widest px-4 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isSaving ? "SAVING..." : "SAVE CHANGES"}
@@ -384,10 +412,18 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
                       <button
                         data-testid="staff-edit-cancel-btn"
                         onClick={handleCancel}
-                        disabled={isSaving}
+                        disabled={isSaving || isDeleting}
                         className="bg-transparent border border-zinc-700 hover:border-zinc-500 text-white text-xs uppercase tracking-widest px-4 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         CANCEL
+                      </button>
+                      <button
+                        data-testid="staff-delete-btn"
+                        onClick={handleDelete}
+                        disabled={isSaving || isDeleting}
+                        className="ml-auto bg-transparent border border-red-900/50 hover:border-red-500 hover:bg-red-900/20 text-red-400 text-xs uppercase tracking-widest px-4 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isDeleting ? "DELETING..." : "DELETE STAFF"}
                       </button>
                     </div>
                   </div>
