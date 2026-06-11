@@ -73,15 +73,19 @@ export const validators = {
 
   /**
    * Validate password strength
+   * Requirements: 8+ characters AND contains at least one number
    * Returns detailed breakdown for showing indicators
    */
   passwordStrength: (value: string) => {
+    const hasNumber = /[0-9]/.test(value);
+    const isValid = value.length >= 8 && hasNumber;
+
     return {
-      isValid: value.length >= 8,
+      isValid,
       length: value.length,
       hasUpper: /[A-Z]/.test(value),
       hasLower: /[a-z]/.test(value),
-      hasNumber: /[0-9]/.test(value),
+      hasNumber,
       hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     };
   },
@@ -127,7 +131,7 @@ export const errorMessages = {
   name: "Name must be at least 2 characters and contain no numbers",
   minLength: (min: number) => `Must be at least ${min} characters`,
   maxLength: (max: number) => `Must be no more than ${max} characters`,
-  passwordWeak: "Password must be at least 8 characters long",
+  passwordWeak: "Password must be at least 8 characters and contain numbers",
   passwordMismatch: "Passwords do not match",
   price: "Please enter a valid price (e.g., 50 or 50.99)",
   duration: "Please enter a valid duration in minutes",
