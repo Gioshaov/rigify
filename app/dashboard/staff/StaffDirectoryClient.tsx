@@ -44,6 +44,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Sync local state when initialStaff changes (e.g., after router.refresh())
   useEffect(() => {
@@ -117,16 +118,14 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
     setSaveError(null);
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!activeExpander) return;
 
-    const member = staff.find((s) => s.id === activeExpander);
-    if (!member) return;
-
-    if (!confirm(`Are you sure you want to delete ${member.name}? This action cannot be undone.`)) {
-      return;
-    }
-
+    setShowDeleteConfirm(false);
     setIsDeleting(true);
     setSaveError(null);
 
@@ -137,9 +136,8 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
       router.refresh();
     } else {
       setSaveError(result.message || "Failed to delete staff member");
+      setIsDeleting(false);
     }
-
-    setIsDeleting(false);
   };
 
   const filteredStaff = staff.filter(
@@ -419,7 +417,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
                       </button>
                       <button
                         data-testid="staff-delete-btn"
-                        onClick={handleDelete}
+                        onClick={handleDeleteClick}
                         disabled={isSaving || isDeleting}
                         className="ml-auto bg-transparent border border-red-900/50 hover:border-red-500 hover:bg-red-900/20 text-red-400 text-xs uppercase tracking-widest px-4 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -579,6 +577,41 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
         closeButtonTestId="invite-modal-close-btn"
       >
         <AddArtisanForm onClose={() => setShowInviteModal(false)} />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        closeButtonTestId="delete-confirm-modal-close-btn"
+      >
+        <div className="bg-zinc-900 p-8 max-w-md">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="material-symbols-outlined text-red-400 text-[32px]">
+              warning
+            </span>
+            <h2 className="text-white font-bold text-xl">Delete Staff Member?</h2>
+          </div>
+          <p className="text-zinc-300 mb-6">
+            Are you sure you want to delete {activeStaffMember?.name}? This action cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button
+              data-testid="delete-confirm-btn"
+              onClick={handleDeleteConfirm}
+              className="flex-1 bg-red-600 hover:bg-red-500 text-white text-xs uppercase tracking-widest px-4 py-3 transition-colors"
+            >
+              Delete
+            </button>
+            <button
+              data-testid="delete-cancel-btn"
+              onClick={() => setShowDeleteConfirm(false)}
+              className="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-white text-xs uppercase tracking-widest px-4 py-3 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

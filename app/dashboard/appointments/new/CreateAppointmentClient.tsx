@@ -318,13 +318,13 @@ export function CreateAppointmentClient({
             <div className="mt-4 p-4 bg-background border border-white/5">
               <p className="font-hanken text-[14px] leading-[1.5] text-on-surface-variant">
                 Duration: <span className="text-white">{selectedService.duration_minutes} minutes</span>
-                {(selectedService.price_min || selectedService.price_max) && (
+                {(selectedService.price_min !== null || selectedService.price_max !== null) && (
                   <>
                     {" • "}
                     Price: <span className="text-white">
                       {selectedService.price_min === selectedService.price_max
-                        ? `₾${selectedService.price_min}`
-                        : `₾${selectedService.price_min} - ₾${selectedService.price_max}`}
+                        ? `₾${(selectedService.price_min ?? 0).toFixed(0)}`
+                        : `₾${(selectedService.price_min ?? 0).toFixed(0)} - ₾${(selectedService.price_max ?? 0).toFixed(0)}`}
                     </span>
                   </>
                 )}
@@ -378,12 +378,12 @@ export function CreateAppointmentClient({
 
             {/* Calendar Days */}
             <div className="grid grid-cols-7 gap-2">
-              {calendarDays.map((dayObj, index) => {
+              {calendarDays.map((dayObj) => {
                 const isSelected = selectedDate?.getTime() === dayObj.date.getTime();
                 return (
                   <button
                     type="button"
-                    key={index}
+                    key={dayObj.date.toISOString()}
                     data-testid={`calendar-day-${dayObj.day}`}
                     onClick={() => handleDateClick(dayObj.date, dayObj.isCurrentMonth, dayObj.isDisabled)}
                     disabled={!dayObj.isCurrentMonth || dayObj.isDisabled}
