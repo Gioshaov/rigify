@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import type { MapRef } from 'react-map-gl/mapbox';
 import { CATEGORIES } from '@/lib/constants/categories';
 import { getBusinessFallbackImage } from '@/lib/utils/fallback-images';
 
@@ -35,7 +36,7 @@ interface BusinessSplitViewProps {
   userLocation?: { lat: number; lng: number } | null;
   flyToUserLocation?: boolean;
   onFlyComplete?: () => void;
-  mapRef?: React.MutableRefObject<mapboxgl.Map | null>;
+  mapRef?: React.MutableRefObject<MapRef | null>;
 }
 
 export function BusinessSplitView({
