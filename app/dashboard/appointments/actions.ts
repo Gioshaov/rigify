@@ -2,6 +2,9 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { zonedTimeToUtc } from "date-fns-tz";
+import { hasOverlap } from "@/lib/utils/availability";
+import { TBILISI_TZ } from "@/lib/utils/datetime";
 
 interface CreateAppointmentData {
   businessId: string;
@@ -65,20 +68,67 @@ export async function createAppointment(data: CreateAppointmentData) {
   }
 
   // Validate customer data
-  if (!data.customerName.trim()) {
+  const trimmedName = data.customerName.trim();
+  const trimmedPhone = data.customerPhone.trim();
+  const trimmedEmail = data.customerEmail?.trim();
+
+  if (!trimmedName) {
     return { success: false, message: "Customer name is required" };
   }
 
-  if (!data.customerPhone.trim()) {
+  if (trimmedName.length > 100) {
+    return { success: false, message: "Customer name must be 100 characters or less" };
+  }
+
+  if (!trimmedPhone) {
     return { success: false, message: "Customer phone is required" };
   }
 
-  // Combine date and time into appointment_datetime
-  const appointmentDatetime = new Date(`${data.date}T${data.startTime}:00`);
+  if (trimmedPhone.length < 5 || trimmedPhone.length > 20) {
+    return { success: false, message: "Customer phone must be between 5 and 20 characters" };
+  }
 
-  // Check if appointment is in the past
-  if (appointmentDatetime < new Date()) {
+  if (trimmedEmail && trimmedEmail.length > 255) {
+    return { success: false, message: "Customer email must be 255 characters or less" };
+  }
+
+  // Convert Tbilisi time to UTC for storage
+  const appointmentDatetime = zonedTimeToUtc(
+    `${data.date}T${data.startTime}:00`,
+    TBILISI_TZ
+  );
+
+  // Check if appointment is in the past (in Tbilisi timezone)
+  const nowTbilisi = zonedTimeToUtc(new Date(), TBILISI_TZ);
+  if (appointmentDatetime < nowTbilisi) {
     return { success: false, message: "Cannot create appointments in the past" };
+  }
+
+  // Check for double-booking if staff is assigned
+  if (data.staffId) {
+    const appointmentEnd = new Date(appointmentDatetime.getTime() + service.duration_minutes * 60000);
+
+    const { data: existingBookings } = await supabase
+      .from("bookings")
+      .select("appointment_datetime, duration_minutes")
+      .eq("staff_id", data.staffId)
+      .eq("status", "confirmed")
+      .gte("appointment_datetime", new Date(appointmentDatetime.getTime() - 24 * 60 * 60 * 1000).toISOString())
+      .lte("appointment_datetime", new Date(appointmentDatetime.getTime() + 24 * 60 * 60 * 1000).toISOString());
+
+    if (existingBookings) {
+      for (const booking of existingBookings) {
+        const existingStart = new Date(booking.appointment_datetime);
+        const existingEnd = new Date(existingStart.getTime() + booking.duration_minutes * 60000);
+
+        if (hasOverlap(existingStart, existingEnd, appointmentDatetime, appointmentEnd)) {
+          return {
+            success: false,
+            message: "This time slot is already booked. Please choose a different time."
+          };
+        }
+      }
+    }
   }
 
   // Create booking
@@ -91,10 +141,10 @@ export async function createAppointment(data: CreateAppointmentData) {
       staff_id: data.staffId,
       appointment_datetime: appointmentDatetime.toISOString(),
       duration_minutes: service.duration_minutes,
-      price: service.price_min ?? 0, // Default to 0 if null
-      customer_name: data.customerName.trim(),
-      customer_phone: data.customerPhone.trim(),
-      customer_email: data.customerEmail?.trim() || null,
+      price: service.price_min ?? 0,
+      customer_name: trimmedName,
+      customer_phone: trimmedPhone,
+      customer_email: trimmedEmail || null,
       notes: data.notes?.trim() || null,
       status: "confirmed",
       booking_source: "dashboard",
@@ -104,7 +154,7 @@ export async function createAppointment(data: CreateAppointmentData) {
     console.error("Create appointment error:", error);
     return {
       success: false,
-      message: `Failed to create appointment: ${error.message}`
+      message: "Failed to create appointment. Please try again."
     };
   }
 

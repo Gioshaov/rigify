@@ -18,7 +18,22 @@ export async function deleteStaff(staffId: string) {
     .eq('id', staffId)
     .single()
 
-  if (!staff || (staff.businesses as any).owner_id !== user.id) {
+  // Type guard for business ownership check
+  type StaffWithBusiness = {
+    business_id: string;
+    businesses: { owner_id: string } | { owner_id: string }[];
+  };
+
+  if (!staff) {
+    return { success: false, message: 'Unauthorized' }
+  }
+
+  const typedStaff = staff as StaffWithBusiness;
+  const business = Array.isArray(typedStaff.businesses)
+    ? typedStaff.businesses[0]
+    : typedStaff.businesses;
+
+  if (!business || business.owner_id !== user.id) {
     return { success: false, message: 'Unauthorized' }
   }
 
@@ -36,15 +51,17 @@ export async function deleteStaff(staffId: string) {
     }
   }
 
-  // Delete staff member
+  // Delete staff member with defense-in-depth business_id filter
   const admin = createAdminClient()
   const { error } = await admin
     .from('staff')
     .delete()
     .eq('id', staffId)
+    .eq('business_id', typedStaff.business_id)
 
   if (error) {
-    return { success: false, message: `Failed to remove staff: ${error.message}` }
+    console.error('Delete staff error:', error);
+    return { success: false, message: 'Failed to remove staff member. Please try again.' }
   }
 
   revalidatePath('/dashboard/staff')
