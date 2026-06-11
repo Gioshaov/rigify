@@ -143,7 +143,7 @@ export function BookingConfirmationClient({
                 </h2>
                 <div className="flex items-center gap-2 text-text-secondary">
                   <span className="material-symbols-outlined text-sm">storefront</span>
-                  <span className="font-hanken text-[16px] leading-[1.5]">{business.name}</span>
+                  <span data-testid="business-name" className="font-hanken text-[16px] leading-[1.5]">{business.name}</span>
                 </div>
               </div>
             </div>
