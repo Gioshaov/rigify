@@ -64,13 +64,12 @@ export default function ContactPage() {
               <p className="font-hanken text-[14px] leading-[1.6] text-on-surface-variant mb-2">
                 Monday - Friday, 9:00 AM - 6:00 PM (GMT+4)
               </p>
-              <a
+              <p
                 data-testid="contact-phone-link"
-                href="tel:+995XXXXXXXXX"
-                className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-primary hover:text-primary-container transition-colors uppercase"
+                className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase"
               >
-                +995 XXX XXX XXX
-              </a>
+                +995 XXX XXX XXX (Coming Soon)
+              </p>
             </div>
 
             {/* Social Media */}
@@ -90,18 +89,20 @@ export default function ContactPage() {
                   href="https://instagram.com/rigify.ge"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Instagram"
                   className="text-on-surface-variant hover:text-primary transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[32px]">photo_camera</span>
+                  <span aria-hidden="true" className="material-symbols-outlined text-[32px]">photo_camera</span>
                 </a>
                 <a
                   data-testid="contact-facebook-link"
                   href="https://facebook.com/rigify.ge"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Facebook"
                   className="text-on-surface-variant hover:text-primary transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[32px]">public</span>
+                  <span aria-hidden="true" className="material-symbols-outlined text-[32px]">public</span>
                 </a>
               </div>
             </div>

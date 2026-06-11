@@ -171,10 +171,10 @@ export default function AboutPage() {
             </Link>
             <Link
               data-testid="about-business-cta"
-              href="/for-businesses"
+              href="/register"
               className="border border-white/10 text-white px-8 py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-white/5 transition-colors"
             >
-              For Businesses
+              Get Started
             </Link>
           </div>
         </div>

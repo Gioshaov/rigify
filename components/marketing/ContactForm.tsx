@@ -5,12 +5,15 @@ import { useState } from "react";
 export function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    // Simulate form submission
+    // TODO: Wire up real submission to server action/API endpoint
+    // Placeholder: simulate success for now
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     setSubmitted(true);
@@ -19,15 +22,15 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <div data-testid="contact-success" className="bg-surface-container border border-primary p-8 text-center">
-        <span className="material-symbols-outlined text-primary text-[48px] mb-4 block">
-          check_circle
+      <div data-testid="contact-success" className="bg-surface-container border border-amber-400/30 p-8 text-center">
+        <span className="material-symbols-outlined text-amber-400 text-[48px] mb-4 block">
+          info
         </span>
         <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-3">
-          Message Sent!
+          Form Submitted (Demo)
         </h3>
         <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-          Thank you for contacting us. We'll get back to you within 24 hours.
+          This is a placeholder UI. Contact form backend is not yet implemented. Please email us directly at support@rigify.ge for now.
         </p>
       </div>
     );
@@ -105,6 +108,13 @@ export function ContactForm() {
         />
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div data-testid="contact-error" className="bg-red-950/50 border border-red-500/50 p-4">
+          <p className="font-hanken text-[14px] leading-[1.6] text-red-200">{error}</p>
+        </div>
+      )}
+
       {/* Submit */}
       <button
         data-testid="contact-submit-btn"
@@ -112,7 +122,7 @@ export function ContactForm() {
         disabled={loading}
         className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Sending..." : "Send Message"}
+        {loading ? "Sending..." : "Send Message (Demo)"}
       </button>
     </form>
   );

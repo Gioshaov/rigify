@@ -23,12 +23,14 @@ export function FAQAccordion({ items, category }: FAQAccordionProps) {
 
         return (
           <div
-            key={index}
+            key={item.question}
             className="bg-surface-container border border-white/10 overflow-hidden"
           >
             <button
               data-testid={`${testId}-question`}
               onClick={() => setOpenIndex(isOpen ? null : index)}
+              aria-expanded={isOpen}
+              aria-controls={`${testId}-answer`}
               className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
             >
               <span className="font-hanken text-[16px] leading-[1.5] font-semibold text-white pr-4">
@@ -38,13 +40,19 @@ export function FAQAccordion({ items, category }: FAQAccordionProps) {
                 expand_more
               </span>
             </button>
-            {isOpen && (
-              <div data-testid={`${testId}-answer`} className="px-6 pb-6 pt-2">
-                <p className="font-hanken text-[14px] leading-[1.6] text-on-surface-variant">
-                  {item.answer}
-                </p>
-              </div>
-            )}
+            <div
+              id={`${testId}-answer`}
+              data-testid={`${testId}-answer`}
+              className="px-6 pt-2 overflow-hidden transition-all duration-300"
+              style={{
+                maxHeight: isOpen ? '500px' : '0',
+                paddingBottom: isOpen ? '1.5rem' : '0'
+              }}
+            >
+              <p className="font-hanken text-[14px] leading-[1.6] text-on-surface-variant">
+                {item.answer}
+              </p>
+            </div>
           </div>
         );
       })}
