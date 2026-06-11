@@ -109,6 +109,18 @@ One sentence. State clearly whether this code is acceptable as-is.
 - Functions that do different things based on argument type (implicit overloading)
 - Missing input validation on public interfaces
 
+### React/JSX specific
+- **Unescaped apostrophes and quotes in JSX text** (CRITICAL — blocks Vercel build)
+  - Apostrophes (don't, we're, it's) must use `&apos;` not plain `'`
+  - Double quotes ("Platform", "as is") must use `&quot;` not plain `"`
+  - Triggers `react/no-unescaped-entities` ESLint error that fails CI/CD
+  - Check all `<p>`, `<h1>-<h6>`, `<span>`, `<li>` text content
+- Missing `key` props on mapped elements
+- State updates that don't account for async batching
+- useEffect dependencies that trigger infinite loops or stale closures
+- Props drilling that should be context or composition
+- Unnecessary re-renders from object/array literals in JSX
+
 ### Testing
 - Happy path tested but error cases are not
 - Tests that assert the wrong thing (test passes but wouldn't catch a real regression)
