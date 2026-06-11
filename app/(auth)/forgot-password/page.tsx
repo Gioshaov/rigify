@@ -52,12 +52,12 @@ export default function ForgotPasswordPage() {
         <Link data-testid="logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
           RIGIFY
         </Link>
-        <Link data-testid="support-link" href="#" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+        <a data-testid="support-link" href="mailto:support@rigify.ge" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
           <span className="material-symbols-outlined text-[16px]">help</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase">
             Support
           </span>
-        </Link>
+        </a>
       </div>
 
       {/* Reset Card */}

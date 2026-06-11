@@ -1,26 +1,34 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import { rescheduleBookingAction } from "./actions";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { formatTbilisi } from "@/lib/utils/datetime";
-import { generateCalendarDays, groupTimeSlots, MONTH_NAMES } from "@/lib/utils/calendar";
+import { rescheduleBookingAction } from "@/app/customer/dashboard/actions";
+import { generateCalendarDays, groupTimeSlots, MONTH_NAMES, WEEKDAY_NAMES } from "@/lib/utils/calendar";
 import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/time-format";
 
-type RescheduleModalProps = {
+type RescheduleBookingClientProps = {
   booking: {
     id: string;
     appointment_datetime: string;
     business_id: string;
     service_id: string;
     staff_id: string | null;
-    businesses: { name: string };
-    services: { name: string };
+    businesses: {
+      name: string;
+      address: string;
+      city: string;
+    };
+    services: {
+      name: string;
+      duration_minutes: number;
+    };
   };
   staff: Array<{ id: string; name: string; specialty: string | null }>;
-  onClose: () => void;
 };
 
-export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProps) {
+export function RescheduleBookingClient({ booking, staff }: RescheduleBookingClientProps) {
+  const router = useRouter();
   const now = new Date();
   const [currentMonth, setCurrentMonth] = useState(() => now.getMonth());
   const [currentYear, setCurrentYear] = useState(() => now.getFullYear());
@@ -31,45 +39,6 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const modalRef = useRef<HTMLDivElement>(null);
-  const firstFocusableRef = useRef<HTMLButtonElement>(null);
-
-  // Focus trap and keyboard handling
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !loading) onClose();
-    };
-
-    const handleTab = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !modalRef.current) return;
-
-      const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (e.shiftKey && document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement?.focus();
-      } else if (!e.shiftKey && document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement?.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    document.addEventListener('keydown', handleTab);
-
-    // Focus first focusable element on mount
-    setTimeout(() => firstFocusableRef.current?.focus(), 0);
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.removeEventListener('keydown', handleTab);
-    };
-  }, [loading, onClose]);
 
   const calendarDays = useMemo(() => generateCalendarDays(currentYear, currentMonth), [currentYear, currentMonth]);
 
@@ -159,7 +128,8 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
     });
 
     if (result.success) {
-      onClose();
+      // Redirect back to booking details page
+      router.push(`/customer/bookings/${booking.id}`);
     } else {
       setError(result.error || "Failed to reschedule booking");
       setLoading(false);
@@ -168,68 +138,80 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
 
   const groupedSlots = useMemo(() => groupTimeSlots(availableSlots), [availableSlots]);
 
-  // Format current appointment date/time
-  const currentDateTime = formatTbilisi(booking.appointment_datetime, "EEEE, MMM d 'at' h:mm a");
+  // Pre-calculate formatted dates for render (efficiency)
+  const formattedDate = useMemo(() =>
+    formatTbilisi(booking.appointment_datetime, "EEEE, MMM d"),
+    [booking.appointment_datetime]
+  );
+
+  const formattedStartTime = useMemo(() =>
+    formatTbilisi(booking.appointment_datetime, "HH:mm"),
+    [booking.appointment_datetime]
+  );
+
+  const formattedEndTime = useMemo(() => {
+    const endDateTime = new Date(new Date(booking.appointment_datetime).getTime() + booking.services.duration_minutes * 60000);
+    return formatTbilisi(endDateTime.toISOString(), "HH:mm");
+  }, [booking.appointment_datetime, booking.services.duration_minutes]);
 
   return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-8 overflow-y-auto"
-      onClick={() => !loading && onClose()}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="reschedule-modal-title"
-    >
-      {/* Stitch Design: reschedule_booking_rigify */}
-      <div
-        ref={modalRef}
-        className="bg-surface border border-white/10 max-w-5xl w-full my-8"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+    <>
+      {/* Stitch Design: design-assets/stitch_rigify/reschedule_booking_rigify/ */}
+      <div className="min-h-screen bg-background flex flex-col">
+        {/* Top Navigation */}
+        <header
+          data-testid="reschedule-booking-header"
+          className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10"
+        >
           <button
-            ref={firstFocusableRef}
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="flex items-center text-primary hover:opacity-80 transition-opacity"
-            aria-label="Close"
+            data-testid="back-btn"
+            onClick={() => router.back()}
+            className="flex items-center justify-center p-2 hover:bg-white/5 active:scale-95 transition-all"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
           </button>
-          <h1 id="reschedule-modal-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary tracking-tight">
+          <h1 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary tracking-tight">
             Reschedule Booking
           </h1>
-          <div className="w-6"></div> {/* Spacer for centering */}
-        </div>
+          <div className="w-10"></div> {/* Spacer for symmetry */}
+        </header>
 
-        {/* Content */}
-        <div className="p-6 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <main className="flex-1 max-w-container mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 pb-32">
           {/* Current Booking Context */}
-          <div className="p-6 bg-surface-container-low border border-white/10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-2">
-              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] text-muted-gold uppercase bg-surface-container-highest px-2 py-1">
-                Current Appointment
-              </span>
-            </div>
-            <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-2">
-              {booking.services.name}
-            </h2>
-            <div className="flex items-center gap-2 text-on-surface-variant mb-4">
-              <span className="material-symbols-outlined text-sm">storefront</span>
-              <span className="font-hanken text-[16px] leading-[1.5]">{booking.businesses.name}</span>
-            </div>
-            <div className="flex flex-wrap gap-4 pt-4 border-t border-white/5">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[20px]">schedule</span>
-                <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase">{currentDateTime}</span>
+          <section className="mb-10">
+            <div className="p-6 bg-surface-container-low border border-white/10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2">
+                <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] text-muted-gold uppercase bg-surface-container-highest px-2 py-1">
+                  Current Appointment
+                </span>
+              </div>
+              <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-2">
+                {booking.services.name}
+              </h2>
+              <div className="flex items-center gap-2 text-on-surface-variant mb-4">
+                <span className="material-symbols-outlined text-sm">storefront</span>
+                <span className="font-hanken text-[16px] leading-[1.5]">{booking.businesses.name}</span>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+                  <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase">
+                    {formattedDate}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-[20px]">schedule</span>
+                  <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase">
+                    {formattedStartTime} — {formattedEndTime}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Staff Selection */}
-          {staff.length > 0 && (
-            <div>
+          {/* Staff Selection (if multiple staff available) */}
+          {staff.length > 1 && (
+            <section className="mb-10">
               <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase block mb-3">
                 Select Staff Member
               </label>
@@ -243,17 +225,17 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                 <option value="" disabled>Choose your staff member...</option>
                 {staff.map((member) => (
                   <option key={member.id} value={member.id}>
-                    {member.name}
+                    {member.name} {member.specialty && `— ${member.specialty}`}
                   </option>
                 ))}
               </select>
-            </div>
+            </section>
           )}
 
           {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Calendar Section */}
-            <div className="space-y-6">
+            <section className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase text-primary flex items-center gap-2">
                   <span className="w-4 h-px bg-primary"></span>
@@ -261,6 +243,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                 </h3>
                 <div className="flex items-center gap-4">
                   <button
+                    data-testid="prev-month-btn"
                     type="button"
                     onClick={prevMonth}
                     className="p-1 text-on-surface-variant hover:text-primary transition-colors"
@@ -272,6 +255,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                     {MONTH_NAMES[currentMonth]} {currentYear}
                   </span>
                   <button
+                    data-testid="next-month-btn"
                     type="button"
                     onClick={nextMonth}
                     className="p-1 text-on-surface-variant hover:text-primary transition-colors"
@@ -285,7 +269,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
               <div className="bg-surface-container border border-white/5 p-4">
                 {/* Day Headers */}
                 <div className="grid grid-cols-7 text-center mb-4">
-                  {["MO", "TU", "WE", "TH", "FR", "SA", "SU"].map((day, idx) => (
+                  {WEEKDAY_NAMES.map((day, idx) => (
                     <div
                       key={day}
                       className={`font-mono text-[10px] leading-[1] tracking-[0.2em] pb-2 ${
@@ -319,10 +303,10 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                   ))}
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Time Slot Picker */}
-            <div className="space-y-6">
+            <section className="space-y-6">
               <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase text-primary flex items-center gap-2">
                 <span className="w-4 h-px bg-primary"></span>
                 Available Slots
@@ -335,7 +319,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                 </div>
               ) : isLoadingAvailability ? (
                 <div className="text-center py-12">
-                  <div className="w-8 h-8 border-2 border-primary border-t-transparent animate-spin mx-auto mb-4"></div>
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                   <p className="font-hanken text-[14px] leading-[1.5] text-on-surface-variant">Loading available slots...</p>
                 </div>
               ) : availableSlots.length === 0 ? (
@@ -355,6 +339,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                         {groupedSlots.morning.map((slot) => (
                           <button
                             key={slot}
+                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                             type="button"
                             onClick={() => setSelectedTime(slot)}
                             className={`h-12 font-mono text-[12px] transition-all ${
@@ -362,7 +347,6 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                                 ? "border border-primary bg-primary/10 text-primary font-bold"
                                 : "border border-white/10 text-on-surface hover:border-primary hover:text-primary"
                             }`}
-                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                           >
                             {slot}
                           </button>
@@ -381,6 +365,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                         {groupedSlots.afternoon.map((slot) => (
                           <button
                             key={slot}
+                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                             type="button"
                             onClick={() => setSelectedTime(slot)}
                             className={`h-12 font-mono text-[12px] transition-all ${
@@ -388,7 +373,6 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                                 ? "border border-primary bg-primary/10 text-primary font-bold"
                                 : "border border-white/10 text-on-surface hover:border-primary hover:text-primary"
                             }`}
-                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                           >
                             {slot}
                           </button>
@@ -407,6 +391,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                         {groupedSlots.evening.map((slot) => (
                           <button
                             key={slot}
+                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                             type="button"
                             onClick={() => setSelectedTime(slot)}
                             className={`h-12 font-mono text-[12px] transition-all ${
@@ -414,7 +399,6 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                                 ? "border border-primary bg-primary/10 text-primary font-bold"
                                 : "border border-white/10 text-on-surface hover:border-primary hover:text-primary"
                             }`}
-                            data-testid={`time-slot-${generateTimeSlotTestId(slot)}`}
                           >
                             {slot}
                           </button>
@@ -424,60 +408,79 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
                   )}
                 </div>
               )}
-            </div>
+            </section>
           </div>
+
+          {/* Detail Section */}
+          <section className="mt-16 border-t border-white/10 pt-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <h4 className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase text-primary">
+                  Why reschedule?
+                </h4>
+                <p className="text-on-surface-variant font-hanken text-[18px] leading-[1.6]">
+                  We understand that plans change. Our rescheduling policy allows you to modify your booking up to 12 hours before the service at no additional cost.
+                </p>
+                <div className="flex items-center gap-4 text-primary">
+                  <span className="material-symbols-outlined">info</span>
+                  <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase">Booking Policy applies</span>
+                </div>
+              </div>
+              <div className="space-y-3 bg-surface-container border border-white/10 p-6">
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-primary text-xl">location_on</span>
+                  <div>
+                    <p className="font-hanken text-[16px] leading-[1.5] text-on-surface">
+                      {booking.businesses.address}
+                    </p>
+                    <p className="font-hanken text-[14px] leading-[1.5] text-on-surface-variant">
+                      {booking.businesses.city}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Error Message */}
           {error && (
-            <div className="p-4 bg-error/10 border border-error/30 text-error font-mono text-[12px] tracking-[0.15em]">
+            <div className="mt-8 p-4 bg-error/10 border border-error/30 text-error font-mono text-[12px] tracking-[0.15em]">
               {error}
             </div>
           )}
-        </div>
+        </main>
 
-        {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-white/10 bg-surface-container">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        {/* Fixed Footer Action Bar */}
+        <footer className="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile z-50">
+          <div className="max-w-container mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="hidden md:block">
               {selectedDate && selectedTime ? (
-                <div>
+                <>
                   <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] text-on-surface-variant uppercase">
                     New Appointment Selection
                   </p>
                   <p className="font-hanken text-[16px] leading-[1.5] text-primary font-bold">
                     {MONTH_NAMES[currentMonth]} {selectedDate}, {currentYear} @ {selectedTime}
                   </p>
-                </div>
+                </>
               ) : (
                 <p className="font-mono text-[12px] text-on-surface-variant">
                   Select a date and time to continue
                 </p>
               )}
             </div>
-
-            <div className="flex gap-3 w-full md:w-auto">
-              <button
-                data-testid={`reschedule-cancel-btn-${booking.id}`}
-                type="button"
-                onClick={onClose}
-                disabled={loading}
-                className="flex-1 md:flex-none border border-white/10 text-on-surface font-mono text-[12px] tracking-[0.15em] uppercase py-3 px-8 hover:border-white/30 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                data-testid={`confirm-reschedule-btn-${booking.id}`}
-                type="button"
-                onClick={handleReschedule}
-                disabled={loading || !selectedDate || !selectedTime || !selectedStaff}
-                className="flex-1 md:flex-none bg-primary text-on-primary font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight px-12 py-3 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(230,195,100,0.15)]"
-              >
-                {loading ? "Confirming..." : "Confirm New Time"}
-              </button>
-            </div>
+            <button
+              data-testid="confirm-reschedule-btn"
+              type="button"
+              onClick={handleReschedule}
+              disabled={loading || !selectedDate || !selectedTime || !selectedStaff}
+              className="w-full md:w-auto px-12 py-5 bg-primary text-on-primary font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(230,195,100,0.15)]"
+            >
+              {loading ? "Confirming..." : "Confirm New Time"}
+            </button>
           </div>
-        </div>
+        </footer>
       </div>
-    </div>
+    </>
   );
 }

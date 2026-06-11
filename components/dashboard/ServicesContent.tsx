@@ -5,6 +5,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { DeleteServiceModal } from "@/components/dashboard/DeleteServiceModal";
 import { Toast } from "@/components/ui/Toast";
+import { NewServiceForm } from "@/app/dashboard/services/new/NewServiceForm";
+import { Modal } from "@/components/ui/Modal";
 
 type Service = {
   id: string;
@@ -27,8 +29,9 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
   const router = useRouter();
   const pathname = usePathname();
 
-  // Delete modal state
+  // Modal states
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Toast notification state
   const [toast, setToast] = useState<{
@@ -140,8 +143,8 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
         </div>
 
         {/* Add Service Button */}
-        <Link
-          href="/dashboard/services/new"
+        <button
+          onClick={() => setShowAddModal(true)}
           className="bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95"
           data-testid="add-service-btn"
         >
@@ -149,7 +152,7 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
             <span className="material-symbols-outlined text-[18px]">add</span>
             Add Service
           </span>
-        </Link>
+        </button>
       </div>
 
       {/* Services List */}
@@ -161,13 +164,13 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
           <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-6">
             No services found
           </p>
-          <Link
-            href="/dashboard/services/new"
+          <button
+            onClick={() => setShowAddModal(true)}
             className="inline-flex items-center gap-2 bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all"
           >
             <span className="material-symbols-outlined text-[16px]">add</span>
             Add Your First Service
-          </Link>
+          </button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -295,6 +298,29 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* Add Service Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        closeButtonTestId="add-service-modal-close-btn"
+      >
+        {/* Modal Header */}
+        <div className="mb-12">
+          <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase mb-2">
+            MANAGEMENT PORTAL
+          </p>
+          <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
+            Add New Service
+          </h1>
+          <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
+            Create a new service for your business
+          </p>
+        </div>
+
+        {/* Form */}
+        <NewServiceForm businessId={businessId} onClose={() => setShowAddModal(false)} />
+      </Modal>
     </div>
   );
 }

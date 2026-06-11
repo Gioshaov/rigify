@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
+import { generateCalendarDays, MONTH_NAMES } from "@/lib/utils/calendar";
+import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/time-format";
 
 interface Service {
   id: string;
@@ -35,34 +37,6 @@ interface BookAppointmentContentProps {
   selectedService: Service | null;
 }
 
-// Generate calendar days for current month
-function generateCalendarDays(year: number, month: number) {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const daysInMonth = lastDay.getDate();
-  const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday = 0
-
-  // Get today at midnight for comparison
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const days = [];
-
-  // Previous month placeholders
-  for (let i = 0; i < startingDayOfWeek; i++) {
-    days.push({ day: null, disabled: true });
-  }
-
-  // Current month days - disable past dates
-  for (let i = 1; i <= daysInMonth; i++) {
-    const date = new Date(year, month, i);
-    date.setHours(0, 0, 0, 0);
-    const isPast = date < today;
-    days.push({ day: i, disabled: isPast });
-  }
-
-  return days;
-}
 
 // Generate time slots from 9 AM to 9 PM in 15-minute intervals
 function generateTimeSlots() {
@@ -108,11 +82,6 @@ export function BookAppointmentContent({
   const calendarDays = generateCalendarDays(currentYear, currentMonth);
   const timeSlots = generateTimeSlots();
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
   // Fetch available slots when date or service changes
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -138,13 +107,7 @@ export function BookAppointmentContent({
 
         const data = await response.json();
         // Convert 24-hour slots to 12-hour format to match UI
-        const slots12h = data.slots.map((slot24: string) => {
-          const [hours, minutes] = slot24.split(':').map(Number);
-          const ampm = hours >= 12 ? "PM" : "AM";
-          const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-          const displayMin = minutes === 0 ? "00" : minutes;
-          return `${displayHour}:${displayMin} ${ampm}`;
-        });
+        const slots12h = data.slots.map(convertTo12Hour);
         setAvailableSlots(slots12h);
       } catch (error) {
         console.error('Error fetching availability:', error);
@@ -177,22 +140,8 @@ export function BookAppointmentContent({
   };
 
   const formattedSummary = selectedDate && selectedTime
-    ? `${monthNames[currentMonth].slice(0, 3)} ${selectedDate}, ${currentYear} at ${selectedTime}`
+    ? `${MONTH_NAMES[currentMonth].slice(0, 3)} ${selectedDate}, ${currentYear} at ${selectedTime}`
     : "Select date and time";
-
-  // Helper function to convert 12-hour time to 24-hour format
-  const convertTo24Hour = (time12: string): string => {
-    const [time, period] = time12.split(' ');
-    let [hours, minutes] = time.split(':');
-
-    if (period === 'PM' && hours !== '12') {
-      hours = String(Number(hours) + 12);
-    } else if (period === 'AM' && hours === '12') {
-      hours = '00';
-    }
-
-    return `${hours.padStart(2, '0')}:${minutes}`;
-  };
 
   const handleConfirmBooking = async () => {
     if (!selectedService || !selectedDate || !selectedTime) return;
@@ -311,7 +260,7 @@ export function BookAppointmentContent({
           <section className="lg:col-span-7 bg-surface-container-low p-6 md:p-8 border border-white/10">
             <div className="flex justify-between items-center mb-8">
               <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-pure-white">
-                {monthNames[currentMonth]} {currentYear}
+                {MONTH_NAMES[currentMonth]} {currentYear}
               </h2>
               <div className="flex gap-4">
                 <button
@@ -383,7 +332,7 @@ export function BookAppointmentContent({
                     schedule
                   </span>
                   <span className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface">
-                    {selectedDate || "—"} {monthNames[currentMonth].slice(0, 3).toUpperCase()}
+                    {selectedDate || "—"} {MONTH_NAMES[currentMonth].slice(0, 3).toUpperCase()}
                   </span>
                 </div>
               </div>

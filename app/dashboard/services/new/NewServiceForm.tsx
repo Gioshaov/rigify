@@ -2,12 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createService } from "../actions";
 import { Toast } from "@/components/ui/Toast";
+import { CancelButton } from "@/components/ui/CancelButton";
 
 interface NewServiceFormProps {
   businessId: string;
+  onClose?: () => void;
 }
 
 const CATEGORIES = [
@@ -23,7 +24,7 @@ const DURATION_OPTIONS = [
   15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 210, 240,
 ];
 
-export function NewServiceForm({ businessId }: NewServiceFormProps) {
+export function NewServiceForm({ businessId, onClose }: NewServiceFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -91,9 +92,14 @@ export function NewServiceForm({ businessId }: NewServiceFormProps) {
           message: result.message,
           type: "success",
         });
-        // Redirect after short delay to show toast
+        // Close modal or redirect after short delay
         setTimeout(() => {
-          router.push("/dashboard/services");
+          if (onClose) {
+            onClose();
+            router.refresh(); // Refresh to show new service
+          } else {
+            router.push("/dashboard/services");
+          }
         }, 1500);
       } else {
         setError(result.message);
@@ -278,13 +284,11 @@ export function NewServiceForm({ businessId }: NewServiceFormProps) {
 
         {/* Actions */}
         <div className="flex flex-col md:flex-row gap-4 pt-8 border-t border-white/10">
-          <Link
-            href="/dashboard/services"
-            className="flex-1 py-3 border border-white/10 text-on-surface hover:bg-surface-container-low transition-all text-center font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-medium"
-            data-testid="cancel-create-service-btn"
-          >
-            Cancel
-          </Link>
+          <CancelButton
+            onClose={onClose}
+            fallbackHref="/dashboard/services"
+            testId="cancel-create-service-btn"
+          />
           <button
             type="submit"
             disabled={isPending}

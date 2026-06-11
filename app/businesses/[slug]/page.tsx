@@ -6,7 +6,7 @@ import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { BusinessLocationMap } from "./BusinessLocationMap";
-import { formatPrice, formatDuration } from "@/lib/utils/formatting";
+import { ServicesList } from "./ServicesList";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 interface Service {
@@ -17,6 +17,16 @@ interface Service {
   price_min: number;
   price_max: number;
   category: string | null;
+  is_active: boolean;
+}
+
+interface Staff {
+  id: string;
+  name: string;
+  specialty: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  is_active: boolean;
 }
 
 interface Business {
@@ -32,6 +42,7 @@ interface Business {
   latitude: number | null;
   longitude: number | null;
   services: Service[];
+  staff: Staff[];
   business_categories?: Array<{ category_id: string }>;
 }
 
@@ -40,9 +51,14 @@ export default async function BusinessProfilePage({
 }: {
   params: { slug: string }
 }) {
+  // Validate slug to prevent excessive database load and invalid characters
+  if (!params.slug || params.slug.length > 100 || !/^[a-z0-9-]+$/.test(params.slug)) {
+    notFound();
+  }
+
   const supabase = createClient();
 
-  // Fetch business with active services
+  // Fetch business with active services and staff
   const { data: business, error } = await supabase
     .from('businesses')
     .select(`
@@ -67,20 +83,35 @@ export default async function BusinessProfilePage({
         price_max,
         category,
         is_active
+      ),
+      staff!left(
+        id,
+        name,
+        specialty,
+        bio,
+        avatar_url,
+        is_active
       )
     `)
     .eq('slug', params.slug)
     .eq('is_active', true)
     .single();
 
+  if (error) {
+    console.error('[BusinessProfilePage] Supabase error:', error.message);
+  }
   if (error || !business) {
     notFound();
   }
 
   // Format services array from the nested structure
-  const allServices = business.services as any[] | null;
-  const services: Service[] = allServices
-    ? allServices.filter((s: any) => s && s.is_active)
+  const services: Service[] = Array.isArray(business.services)
+    ? business.services.filter((s): s is Service => s !== null && s.is_active === true)
+    : [];
+
+  // Format staff array from the nested structure
+  const staff: Staff[] = Array.isArray(business.staff)
+    ? business.staff.filter((s): s is Staff => s !== null && s.is_active === true)
     : [];
 
   // Fallback values for missing data
@@ -171,40 +202,11 @@ export default async function BusinessProfilePage({
                   AVAILABLE NOW
                 </span>
               </div>
-              {services.length === 0 ? (
-                <div className="p-8 bg-surface-container border border-white/5 text-center">
-                  <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface-variant uppercase">
-                    No services available at this time
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4">
-                  {services.map((service) => (
-                    <Link
-                      key={service.id}
-                      href={`/businesses/${business.slug}/book?service=${service.id}`}
-                      data-testid={`book-service-btn-${service.id}`}
-                      className="group flex items-center justify-between p-6 bg-surface-container border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
-                    >
-                      <div>
-                        <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white group-hover:text-primary transition-colors">
-                          {service.name}
-                        </h3>
-                        <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface-variant uppercase mt-1">
-                          {formatDuration(service.duration_minutes)}
-                          {service.description && ` — ${service.description}`}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary">
-                          {formatPrice(service.price_min ?? 0, service.price_max)}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <ServicesList services={services} businessSlug={business.slug} />
             </section>
+
+            {/* Portfolio section removed until portfolio_images table is implemented */}
+            {/* TODO: Add Portfolio section back when real data exists - see design-assets/stitch_rigify/stern_barber_shop/ for design */}
           </div>
 
           {/* Right Column: Sidebar */}
@@ -249,6 +251,58 @@ export default async function BusinessProfilePage({
                 )}
               </div>
             </div>
+
+            {/* Artisans - Stitch Design: design-assets/stitch_rigify/stern_barber_shop/ */}
+            {staff.length > 0 && (
+              <div className="p-8 bg-surface-container-high border border-white/10" data-testid="business-profile-artisans-section">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-1 h-6 bg-primary"></div>
+                  <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold uppercase tracking-tight">
+                    Artisans
+                  </h2>
+                </div>
+                <div className="space-y-6">
+                  {staff.map((member) => (
+                    <div
+                      key={member.id}
+                      data-testid={`artisan-card-${member.id}`}
+                      className="flex items-center gap-4"
+                    >
+                      {/* Avatar */}
+                      <div className="w-16 h-16 border border-white/10 grayscale overflow-hidden">
+                        {member.avatar_url ? (
+                          <Image
+                            src={member.avatar_url}
+                            alt={member.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-surface flex items-center justify-center">
+                            <span className="font-hanken text-[28px] leading-[1] font-bold text-primary select-none">
+                              {member.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div>
+                        <p className="font-hanken text-[18px] leading-[1.4] font-semibold text-white">
+                          {member.name}
+                        </p>
+                        {member.specialty && (
+                          <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
+                            {member.specialty}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </aside>
         </div>
       </main>

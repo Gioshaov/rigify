@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookingCard } from "./BookingCard";
+import { BookingsTabs } from "./BookingsTabs";
 
 // Force dynamic rendering - this page displays personal booking data that must not be cached
 // Using ISR (revalidate) would risk serving one user's data to another user
@@ -10,32 +11,57 @@ export const dynamic = 'force-dynamic';
 export default async function CustomerBookingsPage() {
   const supabase = createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     redirect('/login');
   }
 
   const now = new Date();
+  const nowISO = now.toISOString();
+
+  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url)";
 
   const [
-    { data: upcomingData },
-    { data: pastData }
+    { data: upcomingData, error: upcomingError },
+    { data: pastData, error: pastError }
   ] = await Promise.all([
     supabase
       .from("bookings")
-      .select("id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .select(BOOKING_SELECT)
       .eq("customer_id", user.id)
-      .gte("appointment_datetime", now.toISOString())
+      .gte("appointment_datetime", nowISO)
       .order("appointment_datetime", { ascending: true }),
     supabase
       .from("bookings")
-      .select("id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name)")
+      .select(BOOKING_SELECT)
       .eq("customer_id", user.id)
-      .lt("appointment_datetime", now.toISOString())
+      .lt("appointment_datetime", nowISO)
       .order("appointment_datetime", { ascending: false })
       .limit(10)
   ]);
+
+  // Handle query errors
+  if (upcomingError || pastError) {
+    return (
+      <div className="max-w-[1280px]" data-testid="customer-bookings-page">
+        <div className="relative mb-12">
+          <h1 className="font-hanken text-[48px] leading-[1.1] tracking-[-0.02em] font-bold text-primary mb-2">
+            My Bookings
+          </h1>
+        </div>
+        <div className="bg-error/10 border border-error/30 p-8 text-center">
+          <span className="material-symbols-outlined text-error text-[48px] mb-4 block">error</span>
+          <p className="font-hanken text-[18px] leading-[1.5] font-normal text-error mb-2">
+            Failed to load bookings
+          </p>
+          <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant">
+            {upcomingError?.message || pastError?.message || "Unknown error occurred"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Derive type from actual query result to stay in sync with Supabase schema
   type BookingRow = NonNullable<typeof upcomingData>[number];
@@ -58,83 +84,23 @@ export default async function CustomerBookingsPage() {
   }));
 
   return (
-    <div className="max-w-5xl">
-      {/* Header */}
-      <div className="mb-12">
-        <h1 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-3">
+    <div className="max-w-[1280px]" data-testid="customer-bookings-page">
+      {/* Header with Background Glow - Stitch Design */}
+      <div className="relative mb-12">
+        <div className="absolute -left-10 top-0 w-64 h-64 bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+        <h1 className="font-hanken text-[48px] leading-[1.1] tracking-[-0.02em] font-bold text-primary relative z-10 mb-2">
           My Bookings
         </h1>
-        <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-          View and manage your upcoming and past appointments
+        <p className="font-hanken text-[18px] leading-[1.6] font-normal text-on-surface-variant max-w-lg">
+          Manage your upcoming appointments and review your past grooming sessions.
         </p>
       </div>
 
-      {/* Upcoming Bookings */}
-      <section className="mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold uppercase">
-            Upcoming Appointments
-          </h2>
-          {upcoming && upcoming.length > 0 && (
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
-              {upcoming.length} {upcoming.length === 1 ? 'Booking' : 'Bookings'}
-            </span>
-          )}
-        </div>
-
-        {upcoming && upcoming.length > 0 ? (
-          <div className="space-y-4">
-            {upcoming.map((b) => (
-              <BookingCard key={b.id} booking={b} />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-surface-container border border-white/5 p-12 text-center">
-            <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
-              <span className="material-symbols-outlined text-primary text-[32px]">event_busy</span>
-            </div>
-            <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-6">
-              No upcoming bookings
-            </p>
-            <Link
-              data-testid="browse-salons-btn"
-              href="/businesses?reset=1"
-              className="inline-flex items-center gap-2 bg-primary text-background px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all"
-            >
-              Browse Salons
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* Past Bookings */}
-      <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-text-secondary uppercase">
-            Past Appointments
-          </h2>
-          {past && past.length > 0 && (
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase">
-              Last {past.length}
-            </span>
-          )}
-        </div>
-
-        {past && past.length > 0 ? (
-          <div className="space-y-4 opacity-60">
-            {past.map((b) => (
-              <BookingCard key={b.id} booking={b} isPast />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-surface-container-low border border-white/5 p-8 text-center">
-            <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-              No past bookings
-            </p>
-          </div>
-        )}
-      </section>
+      {/* Tabs Navigation & Content - Stitch Design */}
+      <BookingsTabs
+        upcomingBookings={upcoming}
+        pastBookings={past}
+      />
     </div>
   );
 }

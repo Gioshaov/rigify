@@ -26,7 +26,7 @@ export default async function StaffDirectoryPage() {
   // Fetch all staff (including inactive)
   const { data: staffData, error: staffError } = await supabase
     .from('staff')
-    .select('id, name, role, specialty, is_active, created_at')
+    .select('id, name, role, specialty, is_active, created_at, email')
     .eq('business_id', business.id)
     .order('name', { ascending: true });
 
@@ -42,7 +42,7 @@ export default async function StaffDirectoryPage() {
       role: member.specialty || (member.role === 'manager' ? 'Manager' : 'Staff'),
       status: member.is_active ? "ON SHIFT" as const : "OFF" as const,
       statusDetail: member.is_active ? "Active" : "Inactive",
-      email: "staff@example.com", // TODO: Get from auth.users
+      email: member.email || "",
       added: formatTbilisi(member.created_at, "MMM d, yyyy"),
       photoUrl: undefined,
       dbRole: member.role, // Keep original DB role for updates

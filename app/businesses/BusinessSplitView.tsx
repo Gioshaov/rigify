@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import Link from 'next/link';
 import { CATEGORIES } from '@/lib/constants/categories';
 import { getBusinessFallbackImage } from '@/lib/utils/fallback-images';
 
@@ -35,6 +35,7 @@ interface BusinessSplitViewProps {
   userLocation?: { lat: number; lng: number } | null;
   flyToUserLocation?: boolean;
   onFlyComplete?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mapRef?: React.MutableRefObject<any>;
 }
 
@@ -49,6 +50,7 @@ export function BusinessSplitView({
   const [hoveredBusinessId, setHoveredBusinessId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const router = useRouter();
 
   // Filter businesses by category
   const filteredBusinesses = selectedCategory === 'all'
@@ -77,18 +79,8 @@ export function BusinessSplitView({
     setHoveredBusinessId(businessId);
   };
 
-  const handleBusinessClick = (business: Business) => {
-    setSelectedBusinessId(business.id);
-
-    // Fly to business location on map
-    if (mapRef?.current && business.latitude && business.longitude) {
-      mapRef.current.flyTo({
-        center: [business.longitude, business.latitude],
-        zoom: 14,
-        duration: 1000,
-        essential: true
-      });
-    }
+  const handleBusinessClick = (slug: string) => {
+    router.push(`/businesses/${slug}`);
   };
 
   // Register card refs
@@ -136,27 +128,8 @@ export function BusinessSplitView({
 
         {/* Scrollable Business Cards Grid - with custom scrollbar */}
         <div
-          className="flex-1 overflow-y-auto p-3"
-          style={{
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#d4a843 transparent',
-          }}
+          className="flex-1 overflow-y-auto p-3 [scrollbar-width:thin] [scrollbar-color:#d4a843_transparent] [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-thumb:hover]:bg-primary-container"
         >
-          <style jsx>{`
-            div::-webkit-scrollbar {
-              width: 3px;
-            }
-            div::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            div::-webkit-scrollbar-thumb {
-              background: #d4a843;
-              border-radius: 0;
-            }
-            div::-webkit-scrollbar-thumb:hover {
-              background: #e6c364;
-            }
-          `}</style>
           <div className="grid grid-cols-2 gap-2">
             {filteredBusinesses.map((business) => {
               const isActive = selectedBusinessId === business.id;
@@ -173,7 +146,7 @@ export function BusinessSplitView({
                   ref={(el) => registerCardRef(business.id, el)}
                   onMouseEnter={() => handleBusinessHover(business.id)}
                   onMouseLeave={() => handleBusinessHover(null)}
-                  onClick={() => handleBusinessClick(business)}
+                  onClick={() => handleBusinessClick(business.slug)}
                   className={`
                     bg-[#1a1a1a] border cursor-pointer transition-all overflow-hidden
                     ${isActive || isHovered

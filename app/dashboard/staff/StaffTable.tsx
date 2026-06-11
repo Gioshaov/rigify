@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateStaff, deleteStaff } from "./actions";
+import { deleteStaff } from "./actions";
+
+// NOTE: This component is legacy and not currently used.
+// The active implementation is StaffDirectoryClient.tsx which uses updateStaffMember.
 
 type StaffMember = {
   id: string;
@@ -20,18 +23,7 @@ export function StaffTable({ staff }: { staff: StaffMember[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ name: string; email: string; role: string; is_active: boolean } | null>(null);
 
-  // Warn about unsaved changes when editing
-  useEffect(() => {
-    if (!editingId) return;
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [editingId]);
+  // Navigation blocking removed - was preventing sidebar navigation
 
   function startEditing(member: StaffMember) {
     setEditingId(member.id);
@@ -55,24 +47,10 @@ export function StaffTable({ staff }: { staff: StaffMember[] }) {
     setLoading(true);
     setResult(null);
 
-    const formData = new FormData();
-    formData.append("name", editForm.name);
-    formData.append("role", editForm.role);
-    formData.append("is_active", editForm.is_active ? "on" : "");
-
-    const response = await updateStaff(staffId, formData);
-
+    // Legacy function removed - this component is not used
+    // Use StaffDirectoryClient.tsx and updateStaffMember instead
+    setResult({ success: false, message: "This component is deprecated" });
     setLoading(false);
-    setResult(response);
-
-    if (response.success) {
-      setTimeout(() => {
-        setEditingId(null);
-        setEditForm(null);
-        setResult(null);
-        router.refresh();
-      }, 1000);
-    }
   }
 
   async function handleDelete(staffId: string, staffName: string) {

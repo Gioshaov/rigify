@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { updateStaffMember } from "./actions";
+import { AddArtisanForm } from "@/components/dashboard/staff/AddArtisanForm";
+import { Modal } from "@/components/ui/Modal";
 
 type StaffMember = {
   id: string;
@@ -27,6 +29,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
   const [searchQuery, setSearchQuery] = useState("");
   const [activeExpander, setActiveExpander] = useState<string | null>(null);
   const [profileModalId, setProfileModalId] = useState<string | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [editForm, setEditForm] = useState<{
     name: string;
     role: string;
@@ -38,6 +41,11 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Sync local state when initialStaff changes (e.g., after router.refresh())
+  useEffect(() => {
+    setStaff(initialStaff);
+  }, [initialStaff]);
 
   const selectedProfile = profileModalId
     ? staff.find((m) => m.id === profileModalId)
@@ -106,17 +114,17 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
     setSaveError(null);
   };
 
-  // Determine which row the active card is in
-  const getRowForCard = (index: number) => Math.floor(index / 3);
-  const activeCardIndex = staff.findIndex((s) => s.id === activeExpander);
-  const activeRow = activeCardIndex >= 0 ? getRowForCard(activeCardIndex) : -1;
-
   const filteredStaff = staff.filter(
     (member) =>
       searchQuery === "" ||
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Determine which row the active card is in (use filteredStaff, not staff)
+  const getRowForCard = (index: number) => Math.floor(index / 3);
+  const activeCardIndex = filteredStaff.findIndex((s) => s.id === activeExpander);
+  const activeRow = activeCardIndex >= 0 ? getRowForCard(activeCardIndex) : -1;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -129,13 +137,13 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
           <h1 className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-white">
             Staff Directory
           </h1>
-          <Link
+          <button
             data-testid="add-staff-btn"
-            href="/dashboard/staff/invite"
+            onClick={() => setShowInviteModal(true)}
             className="bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs uppercase tracking-widest px-6 py-3 transition-colors"
           >
             + ADD STAFF
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -178,12 +186,13 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
           </span>
           <h2 className="text-white text-xl font-semibold mb-2">No Staff Members Yet</h2>
           <p className="text-zinc-400 mb-6">Add your first staff member to get started.</p>
-          <Link
-            href="/dashboard/staff/invite"
+          <button
+            data-testid="empty-state-add-staff-link"
+            onClick={() => setShowInviteModal(true)}
             className="inline-block bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs uppercase tracking-widest px-6 py-3 transition-colors"
           >
             + ADD STAFF
-          </Link>
+          </button>
         </div>
       )}
 
@@ -399,13 +408,13 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
             <p className="text-zinc-400 text-sm mb-6 max-w-[200px]">
               Expand your studio&apos;s reach with new expert staff.
             </p>
-            <Link
+            <button
               data-testid="start-recruitment-link"
-              href="/dashboard/staff/invite"
-              className="text-amber-400 hover:text-amber-300 uppercase tracking-widest text-xs transition-colors"
+              onClick={() => setShowInviteModal(true)}
+              className="text-amber-400 hover:text-amber-300 uppercase tracking-widest text-xs transition-colors bg-transparent border-none p-0"
             >
               START RECRUITMENT
-            </Link>
+            </button>
           </div>
         </div>
       )}
@@ -516,6 +525,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
             {/* Modal Footer */}
             <div className="border-t border-zinc-800 p-6 flex gap-3">
               <button
+                data-testid="profile-modal-close-footer-btn"
                 onClick={() => setProfileModalId(null)}
                 className="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-white text-xs uppercase tracking-widest px-4 py-2 transition-colors"
               >
@@ -525,6 +535,15 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
           </div>
         </div>
       )}
+
+      {/* Invite Staff Modal */}
+      <Modal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        closeButtonTestId="invite-modal-close-btn"
+      >
+        <AddArtisanForm onClose={() => setShowInviteModal(false)} />
+      </Modal>
     </div>
   );
 }

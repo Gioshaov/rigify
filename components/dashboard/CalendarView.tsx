@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { TBILISI_TZ } from "@/lib/utils/datetime";
+import { MONTH_NAMES } from "@/lib/utils/calendar";
 import { DayAppointments } from "./DayAppointments";
 
 type Booking = {
@@ -24,11 +25,6 @@ export function CalendarView({ bookings, businessId }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
 
   const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
@@ -128,7 +124,7 @@ export function CalendarView({ bookings, businessId }: CalendarViewProps) {
           {/* Calendar Header */}
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase">
-              {monthNames[currentMonth]} {currentYear}
+              {MONTH_NAMES[currentMonth]} {currentYear}
             </h2>
             <div className="flex items-center gap-2">
               <button

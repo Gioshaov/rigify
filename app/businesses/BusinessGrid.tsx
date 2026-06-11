@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistance } from "@/lib/utils/geolocation";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
+import { CATEGORIES } from "@/lib/constants/categories";
 
 type Business = {
   id: string;
@@ -29,6 +30,18 @@ interface BusinessGridProps {
   registerCardRef?: (businessId: string, element: HTMLElement | null) => void;
 }
 
+// Map category IDs to Material Icons (matches canonical CATEGORIES)
+const categoryIcons: Record<string, string> = {
+  hair: 'content_cut',
+  nails: 'brush',
+  skin: 'face',
+  massage: 'spa',
+  brows: 'draw',
+  makeup: 'palette',
+  barber: 'face_retouching_natural',
+  other: 'category',
+};
+
 export function BusinessGrid({
   businesses,
   selectedBusinessId = null,
@@ -36,17 +49,6 @@ export function BusinessGrid({
   onBusinessClick,
   registerCardRef
 }: BusinessGridProps) {
-  // Map category IDs to display names (same as Stitch design)
-  const categoryIcons: Record<string, string> = {
-    hair: 'content_cut',
-    beard: 'face_retouching_natural',
-    spa: 'spa',
-    massage: 'spa',
-    nails: 'brush',
-    skincare: 'face',
-    barbershop: 'face',
-    other: 'category',
-  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -130,14 +132,18 @@ export function BusinessGrid({
 
                 {/* Category Tags */}
                 <div className="flex flex-wrap gap-2">
-                  {business.business_categories.slice(0, 3).map((bc, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 border border-white/5 bg-white/5 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase"
-                    >
-                      {bc.category_id}
-                    </span>
-                  ))}
+                  {business.business_categories.slice(0, 3).map((bc) => {
+                    const category = CATEGORIES.find(c => c.id === bc.category_id);
+                    const displayName = category?.en.toUpperCase() || bc.category_id.toUpperCase();
+                    return (
+                      <span
+                        key={bc.category_id}
+                        className="px-2 py-1 border border-white/5 bg-white/5 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase"
+                      >
+                        {displayName}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </article>

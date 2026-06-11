@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createArtisanAction } from "@/app/dashboard/staff/invite/actions";
+import { CancelButton } from "@/components/ui/CancelButton";
 
 const DAYS = [
-  { short: "M", full: "Monday" },
-  { short: "T", full: "Tuesday" },
-  { short: "W", full: "Wednesday" },
-  { short: "T", full: "Thursday" },
-  { short: "F", full: "Friday" },
-  { short: "S", full: "Saturday" },
-  { short: "S", full: "Sunday" },
+  { short: "Mo", full: "Monday" },
+  { short: "Tu", full: "Tuesday" },
+  { short: "We", full: "Wednesday" },
+  { short: "Th", full: "Thursday" },
+  { short: "Fr", full: "Friday" },
+  { short: "Sa", full: "Saturday" },
+  { short: "Su", full: "Sunday" },
 ];
 
 const TIME_SLOTS = [
@@ -21,7 +22,11 @@ const TIME_SLOTS = [
   "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM",
 ];
 
-export function AddArtisanForm() {
+type AddArtisanFormProps = {
+  onClose?: () => void;
+};
+
+export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
   const router = useRouter();
 
   // Form state
@@ -92,17 +97,6 @@ export function AddArtisanForm() {
         return;
       }
 
-      // Log for debugging
-      console.log("✅ Artisan Profile Created:", {
-        fullName,
-        email,
-        role,
-        title,
-        startTime,
-        endTime,
-        workDays: workDays.map((active, i) => ({ day: DAYS[i].full, active })),
-      });
-
       // Show success screen
       setShowSuccess(true);
     } catch (error) {
@@ -113,7 +107,11 @@ export function AddArtisanForm() {
   };
 
   const handleCancel = () => {
-    router.back();
+    if (onClose) {
+      onClose();
+    } else {
+      router.back();
+    }
   };
 
   // Success Screen
@@ -141,7 +139,14 @@ export function AddArtisanForm() {
             <button
               type="button"
               data-testid="view-team-btn"
-              onClick={() => router.push("/dashboard/staff")}
+              onClick={() => {
+                if (onClose) {
+                  onClose();
+                  router.refresh();
+                } else {
+                  router.push("/dashboard/staff");
+                }
+              }}
               className="flex-1 bg-primary text-background font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold py-4 hover:bg-primary-fixed transition-colors"
             >
               View Team

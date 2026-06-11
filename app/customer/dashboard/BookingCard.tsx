@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { cancelBookingAction } from "./actions";
-import { RescheduleModal } from "./RescheduleModal";
-import { createClient } from "@/lib/supabase/client";
 
 type BookingCardProps = {
   booking: {
@@ -16,38 +16,58 @@ type BookingCardProps = {
     staff_id: string | null;
     businesses: { name: string; address: string };
     services: { name: string };
-    staff: { name: string } | null;
+    staff: { name: string; avatar_url?: string | null } | null;
   };
   isPast?: boolean;
 };
 
 export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [staff, setStaff] = useState<Array<{ id: string; name: string; specialty: string | null }>>([]);
   const [isOptimisticallyCancelled, setIsOptimisticallyCancelled] = useState(false);
 
-  // Fetch staff when reschedule modal opens
-  useEffect(() => {
-    if (showRescheduleModal && staff.length === 0) {
-      const fetchStaff = async () => {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from('staff')
-          .select('id, name, specialty')
-          .eq('business_id', booking.business_id)
-          .eq('is_active', true)
-          .order('name', { ascending: true });
+  const cancelModalRef = useRef<HTMLDivElement>(null);
+  const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
 
-        if (data) {
-          setStaff(data);
-        }
-      };
-      fetchStaff();
-    }
-  }, [showRescheduleModal, booking.business_id, staff.length]);
+  // Focus trap for cancel modal
+  useEffect(() => {
+    if (!showCancelModal) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) setShowCancelModal(false);
+    };
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !cancelModalRef.current) return;
+
+      const focusableElements = cancelModalRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement?.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleTab);
+
+    // Focus first button on mount
+    setTimeout(() => keepBookingBtnRef.current?.focus(), 0);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleTab);
+    };
+  }, [showCancelModal, loading]);
+
 
   const handleCancel = async () => {
     setLoading(true);
@@ -57,6 +77,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
 
     if (result.success) {
       // Optimistically hide the booking immediately
+      setLoading(false);
       setIsOptimisticallyCancelled(true);
       setShowCancelModal(false);
       // revalidatePath in server action will update data in background
@@ -73,109 +94,109 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
 
   return (
     <>
+      {/* Stitch Design: Booking card */}
       <article
         data-testid={isPast ? `past-booking-card-${booking.id}` : `booking-card-${booking.id}`}
-        className={`${
+        className={`relative ${
           isPast
-            ? "bg-surface-container-low border border-white/5 p-6"
-            : "bg-surface-container border border-white/5 hover:border-primary/30 transition-all p-6"
-        } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
+            ? "bg-surface-container-low border border-white/5"
+            : "bg-surface-container border border-white/10 hover:bg-surface-container-high transition-all"
+        } p-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}
       >
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex-1">
-            {/* Business Name */}
-            <h3
-              className={`font-hanken ${
-                isPast ? "text-[18px] leading-[1.6] font-normal" : "text-[20px] leading-[1.4] font-semibold"
-              } ${isPast ? "text-on-surface" : "text-primary"} mb-${isPast ? "2" : "3"}`}
-            >
-              {booking.businesses?.name || "—"}
-            </h3>
+        {/* Content */}
+        <div className="flex flex-col justify-between">
+          <div>
+            {/* Header: Business Name, Service Name, Status */}
+            <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
+              <div>
+                <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary mb-1 uppercase">
+                  {booking.businesses?.name || "Business"}
+                </h3>
+                <h4 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white">
+                  {booking.services?.name || "Service"}
+                </h4>
+              </div>
+              <span
+                className={`px-3 py-1 ${
+                  isPast
+                    ? "border border-white/5 text-on-surface-variant"
+                    : "bg-primary/10 border border-primary/20 text-primary"
+                } font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase`}
+              >
+                {booking.status}
+              </span>
+            </div>
 
-            {/* Service & Staff */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`material-symbols-outlined ${isPast ? "text-text-secondary text-[14px]" : "text-primary text-[16px]"}`}>
-                cut
-              </span>
-              <span className={`font-hanken text-[14px] leading-[1.5] font-normal ${isPast ? "text-text-secondary" : "text-on-surface"}`}>
-                {booking.services?.name || "Service"}
-              </span>
-              {booking.staff && isPast && (
-                <>
-                  <span className="text-text-secondary">·</span>
-                  <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                    {booking.staff.name}
-                  </span>
-                </>
+            {/* Details Grid - Stitch Design */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12 mt-6">
+              {/* Date & Time */}
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-muted-gold text-xl">calendar_today</span>
+                <div>
+                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
+                    Date & Time
+                  </p>
+                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface">
+                    {formatTbilisi(booking.appointment_datetime, "MMM d, yyyy 'at' h:mm a")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Staff Member */}
+              {booking.staff && (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/30 flex-shrink-0">
+                    {booking.staff.avatar_url ? (
+                      <Image
+                        src={booking.staff.avatar_url}
+                        alt={booking.staff.name}
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-cover grayscale"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-surface flex items-center justify-center">
+                        <span className="font-hanken text-[14px] font-bold text-primary select-none">
+                          {booking.staff.name?.charAt(0)?.toUpperCase() || '?'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
+                      Staff Member
+                    </p>
+                    <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface">
+                      {booking.staff.name}
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
+          </div>
 
-            {booking.staff && !isPast && (
-              <div className="flex items-center gap-2 mb-2">
-                <span className="material-symbols-outlined text-primary text-[16px]">
-                  person
-                </span>
-                <span className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface">
-                  {booking.staff.name}
-                </span>
-              </div>
-            )}
-
-            {/* Date & Time */}
-            <div className={`flex items-center gap-2 ${isPast ? "" : "mb-3"}`}>
-              <span className={`material-symbols-outlined ${isPast ? "text-text-secondary text-[14px]" : "text-primary text-[16px]"}`}>
-                schedule
-              </span>
-              <span className={`font-mono ${isPast ? "text-[10px]" : "text-[12px]"} leading-[1] tracking-[0.${isPast ? "2" : "15"}em] font-medium ${isPast ? "text-text-secondary" : "text-muted-gold"}`}>
-                {formatTbilisi(booking.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}
-              </span>
+          {/* Actions - Stitch Design */}
+          {!isPast && booking.status === "confirmed" && (
+            <div className="mt-8 flex gap-4">
+              <Link
+                data-testid={`manage-btn-${booking.id}`}
+                href={`/customer/bookings/${booking.id}`}
+                className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all inline-block text-center"
+              >
+                Manage
+              </Link>
+              <button
+                data-testid={`cancel-btn-${booking.id}`}
+                onClick={() => {
+                  setError(null);
+                  setShowCancelModal(true);
+                }}
+                className="border border-white/20 text-on-surface px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:border-error hover:text-error transition-all"
+              >
+                Cancel
+              </button>
             </div>
-
-            {/* Address */}
-            {!isPast && booking.businesses?.address && (
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-text-secondary text-[16px]">
-                  location_on
-                </span>
-                <span className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                  {booking.businesses.address}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Status & Actions */}
-          <div className="flex flex-col items-end gap-4">
-            <span
-              className={`px-3 py-1 ${
-                isPast
-                  ? "border border-white/5"
-                  : "bg-primary/10 border border-primary/20"
-              } font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium ${
-                isPast ? "text-text-secondary" : "text-primary"
-              } uppercase`}
-            >
-              {booking.status}
-            </span>
-            {!isPast && booking.status === "confirmed" && (
-              <div className="flex gap-2">
-                <button
-                  data-testid={`reschedule-btn-${booking.id}`}
-                  onClick={() => setShowRescheduleModal(true)}
-                  className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-primary/30 hover:text-primary transition-all uppercase"
-                >
-                  Reschedule
-                </button>
-                <button
-                  data-testid={`cancel-btn-${booking.id}`}
-                  onClick={() => setShowCancelModal(true)}
-                  className="px-4 py-2 border border-white/10 font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface hover:border-error/30 hover:text-error transition-all uppercase"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </article>
 
@@ -184,12 +205,16 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4"
           onClick={() => !loading && setShowCancelModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-modal-title"
         >
           <div
+            ref={cancelModalRef}
             className="bg-surface border border-white/10 max-w-md w-full p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-4">
+            <h3 id="cancel-modal-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-4">
               Cancel Booking?
             </h3>
             <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant mb-6">
@@ -206,6 +231,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
 
             <div className="flex gap-3">
               <button
+                ref={keepBookingBtnRef}
                 data-testid={`keep-booking-btn-${booking.id}`}
                 onClick={() => setShowCancelModal(false)}
                 disabled={loading}
@@ -224,23 +250,6 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Reschedule Modal */}
-      {showRescheduleModal && (
-        <RescheduleModal
-          booking={{
-            id: booking.id,
-            appointment_datetime: booking.appointment_datetime,
-            business_id: booking.business_id,
-            service_id: booking.service_id,
-            staff_id: booking.staff_id,
-            businesses: booking.businesses,
-            services: booking.services,
-          }}
-          staff={staff}
-          onClose={() => setShowRescheduleModal(false)}
-        />
       )}
     </>
   );
