@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createAppointment } from "../actions";
 import { MONTH_NAMES } from "@/lib/utils/calendar";
-import { generateTimeSlotTestId } from "@/lib/utils/time-format";
 
 type Service = {
   id: string;
@@ -410,36 +409,27 @@ export function CreateAppointmentClient({
             </div>
           </div>
 
-          {/* Time Slots */}
+          {/* Time Slot Dropdown */}
           {selectedDate && (
             <div>
-              <h3 className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-3">
-                Select Time
-              </h3>
-              <div className="grid grid-cols-6 gap-2">
-                {timeSlots.map((time) => {
-                  const isSelected = selectedTime === time;
-                  const displayTime = `${time.split(':')[0]}:${time.split(':')[1]}`;
-                  return (
-                    <button
-                      type="button"
-                      key={time}
-                      data-testid={`time-slot-${generateTimeSlotTestId(displayTime)}`}
-                      onClick={() => setSelectedTime(time)}
-                      className={`
-                        py-3 px-2 border transition-all font-hanken text-[14px] leading-[1.5]
-                        ${
-                          isSelected
-                            ? "bg-primary text-on-primary border-primary"
-                            : "bg-background text-on-surface border-white/10 hover:border-primary/30"
-                        }
-                      `}
-                    >
-                      {displayTime}
-                    </button>
-                  );
-                })}
-              </div>
+              <label htmlFor="timeSlot" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+                Select Time *
+              </label>
+              <select
+                data-testid="time-slot-select"
+                id="timeSlot"
+                required
+                value={selectedTime || ""}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full bg-background border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none transition-colors font-hanken text-[14px] leading-[1.5]"
+              >
+                <option value="">Select a time</option>
+                {timeSlots.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
         </div>
