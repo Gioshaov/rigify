@@ -1,0 +1,23 @@
+{
+  "name": "Rigify — Premium Salon Marketplace",
+  "short_name": "Rigify",
+  "description": "Discover and book Georgia's best beauty and wellness professionals",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#C9A961",
+  "background_color": "#0A0A0A",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
