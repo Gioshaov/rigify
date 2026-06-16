@@ -11,8 +11,8 @@ export async function middleware(request: NextRequest) {
   if (isAdminSubdomain) {
     // Admin password protection layer - only when ADMIN_PREVIEW_PASSWORD is set
     if (process.env.ADMIN_PREVIEW_PASSWORD) {
-      // Allow access to admin password page and verification API
-      if (pathname === '/admin/password' || pathname.startsWith('/api/admin/verify-password')) {
+      // Allow access to admin password page, verification API, and logout API
+      if (pathname === '/admin/password' || pathname === '/api/admin/verify-password' || pathname === '/api/admin/logout') {
         return NextResponse.next();
       }
 

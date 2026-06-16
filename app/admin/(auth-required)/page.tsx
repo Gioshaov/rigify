@@ -12,6 +12,7 @@ import {
   Plus,
   Calendar,
   Shield,
+  LogOut,
 } from 'lucide-react';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { BusinessRowActions } from './BusinessRowActions';
@@ -159,6 +160,16 @@ export default async function SuperAdminDashboard() {
             <button data-testid="notifications-btn" className="text-[#888888] hover:text-white transition-colors">
               <Bell className="w-[18px] h-[18px]" />
             </button>
+            <form action="/api/admin/logout" method="POST">
+              <button
+                type="submit"
+                data-testid="btn-logout"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] uppercase tracking-widest text-[#666666] border border-[#252525] rounded hover:border-[#444444] hover:text-[#888888] transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Logout
+              </button>
+            </form>
             <Link
               href="/admin/onboard"
               data-testid="new-business-btn"
