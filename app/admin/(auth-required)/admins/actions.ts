@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { createAuditLog } from '@/lib/utils/audit-log';
 import { headers } from 'next/headers';
+import { randomInt } from 'crypto';
 
 /**
  * Create a new super admin user
@@ -53,7 +54,7 @@ export async function createSuperAdmin(email: string) {
     resourceType: 'admin',
     resourceId: newUser.user.id,
     resourceName: email,
-    details: { tempPassword }, // Store in audit for security team access if needed
+    details: { action: 'create_super_admin' },
     ipAddress,
     userAgent,
   });
@@ -66,7 +67,7 @@ export async function createSuperAdmin(email: string) {
 }
 
 /**
- * Revoke super admin access (doesn&apos;t delete user)
+ * Revoke super admin access (doesn't delete user)
  */
 export async function revokeSuperAdmin(adminId: string, adminEmail: string) {
   const supabase = createClient();
@@ -113,25 +114,31 @@ export async function revokeSuperAdmin(adminId: string, adminEmail: string) {
 }
 
 /**
- * Generate secure temporary password
+ * Generate cryptographically secure temporary password
  * 16 characters with uppercase, lowercase, numbers, and symbols
  */
 function generateSecurePassword(): string {
-  const length = 16;
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-  let password = '';
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+  const symbols = '!@#$%^&*';
+  const all = upper + lower + digits + symbols;
 
-  // Ensure at least one of each type
-  password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]; // uppercase
-  password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)]; // lowercase
-  password += '0123456789'[Math.floor(Math.random() * 10)]; // number
-  password += '!@#$%^&*'[Math.floor(Math.random() * 8)]; // symbol
+  // Start with one character from each required category
+  const chars = [
+    upper[randomInt(upper.length)],
+    lower[randomInt(lower.length)],
+    digits[randomInt(digits.length)],
+    symbols[randomInt(symbols.length)],
+    // Fill remaining 12 characters randomly from all categories
+    ...Array.from({ length: 12 }, () => all[randomInt(all.length)]),
+  ];
 
-  // Fill the rest randomly
-  for (let i = password.length; i < length; i++) {
-    password += charset[Math.floor(Math.random() * charset.length)];
+  // Fisher-Yates shuffle with cryptographically secure random
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
   }
 
-  // Shuffle the password
-  return password.split('').sort(() => Math.random() - 0.5).join('');
+  return chars.join('');
 }
