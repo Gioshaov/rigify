@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { isAdminDomain } from "@/lib/utils/domain";
+import { createAuditLog } from "@/lib/utils/audit-log";
 
 export async function adminLoginAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -43,6 +44,21 @@ export async function adminLoginAction(formData: FormData) {
       error: "Access denied. This page is for super administrators only."
     };
   }
+
+  // Log successful admin login
+  const forwardedFor = headersList.get('x-forwarded-for');
+  const ipAddress = forwardedFor?.split(',')[0].trim() || headersList.get('x-real-ip') || undefined;
+  const userAgent = headersList.get('user-agent') || undefined;
+
+  await createAuditLog({
+    adminUserId: user.id,
+    adminEmail: user.email!,
+    action: 'login',
+    resourceType: 'admin',
+    resourceName: user.email!,
+    ipAddress,
+    userAgent,
+  });
 
   // Success - return success, client will handle redirect
   return { success: true };
