@@ -80,6 +80,15 @@ export default async function SuperAdminDashboard() {
           </Link>
 
           <Link
+            href="/admin/customers"
+            data-testid="nav-customers"
+            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
+          >
+            <Users className="w-4 h-4" />
+            Customers
+          </Link>
+
+          <Link
             href="/admin/audit-logs"
             data-testid="nav-audit-logs"
             className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
