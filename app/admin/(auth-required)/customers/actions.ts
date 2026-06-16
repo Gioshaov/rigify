@@ -16,8 +16,24 @@ export async function suspendCustomer(customerId: string, customerName: string) 
     return { error: 'Unauthorized' };
   }
 
-  // Use admin client to update customer
+  // Use admin client to fetch current status and update
   const admin = createAdminClient();
+
+  // Get current status
+  const { data: currentCustomer } = await admin
+    .from('customers')
+    .select('status')
+    .eq('id', customerId)
+    .single();
+
+  if (!currentCustomer) {
+    return { error: 'Customer not found' };
+  }
+
+  if (currentCustomer.status === 'suspended') {
+    return { error: 'Customer is already suspended' };
+  }
+
   const { error } = await admin
     .from('customers')
     .update({ status: 'suspended' })
@@ -40,7 +56,7 @@ export async function suspendCustomer(customerId: string, customerName: string) 
     resourceType: 'customer',
     resourceId: customerId,
     resourceName: customerName,
-    details: { previousStatus: 'active', newStatus: 'suspended' },
+    details: { previousStatus: currentCustomer.status, newStatus: 'suspended' },
     ipAddress,
     userAgent,
   });
@@ -59,8 +75,24 @@ export async function activateCustomer(customerId: string, customerName: string)
     return { error: 'Unauthorized' };
   }
 
-  // Use admin client to update customer
+  // Use admin client to fetch current status and update
   const admin = createAdminClient();
+
+  // Get current status
+  const { data: currentCustomer } = await admin
+    .from('customers')
+    .select('status')
+    .eq('id', customerId)
+    .single();
+
+  if (!currentCustomer) {
+    return { error: 'Customer not found' };
+  }
+
+  if (currentCustomer.status === 'active') {
+    return { error: 'Customer is already active' };
+  }
+
   const { error } = await admin
     .from('customers')
     .update({ status: 'active' })
@@ -83,7 +115,7 @@ export async function activateCustomer(customerId: string, customerName: string)
     resourceType: 'customer',
     resourceId: customerId,
     resourceName: customerName,
-    details: { previousStatus: 'suspended', newStatus: 'active' },
+    details: { previousStatus: currentCustomer.status, newStatus: 'active' },
     ipAddress,
     userAgent,
   });
@@ -108,7 +140,7 @@ export async function deleteCustomer(customerId: string, customerName: string) {
   // First get customer details for audit log
   const { data: customer } = await admin
     .from('customers')
-    .select('*')
+    .select('name, email, phone, status')
     .eq('id', customerId)
     .single();
 

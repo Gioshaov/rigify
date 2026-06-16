@@ -2,9 +2,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatTbilisi } from '@/lib/utils/datetime';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { suspendCustomer, activateCustomer, deleteCustomer } from './actions';
-import { Ban, CheckCircle, Trash2, Eye } from 'lucide-react';
+import { Ban, CheckCircle, Trash2 } from 'lucide-react';
 
 type Customer = {
   id: string;
@@ -38,6 +38,7 @@ export function CustomersTable({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -126,8 +127,10 @@ export function CustomersTable({
             data-testid="customers-search-input"
             onChange={(e) => {
               const value = e.target.value;
-              const timer = setTimeout(() => updateFilter('search', value), 500);
-              return () => clearTimeout(timer);
+              if (searchTimerRef.current) {
+                clearTimeout(searchTimerRef.current);
+              }
+              searchTimerRef.current = setTimeout(() => updateFilter('search', value), 500);
             }}
             className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-4 py-2 text-white text-sm"
           />

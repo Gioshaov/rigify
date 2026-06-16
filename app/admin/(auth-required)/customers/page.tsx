@@ -21,6 +21,9 @@ export default async function CustomersPage({
   const pageSize = 50;
   const offset = (page - 1) * pageSize;
 
+  // Guard against excessively long search strings
+  const searchQuery = searchParams.search?.slice(0, 200);
+
   // Build query for customers with booking stats
   let query = supabase
     .from('customers')
@@ -30,14 +33,15 @@ export default async function CustomersPage({
       email,
       phone,
       status,
-      created_at
+      created_at,
+      bookings:bookings(count)
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + pageSize - 1);
 
   // Filters
-  if (searchParams.search) {
-    const search = `%${searchParams.search}%`;
+  if (searchQuery) {
+    const search = `%${searchQuery}%`;
     query = query.or(`name.ilike.${search},email.ilike.${search},phone.ilike.${search}`);
   }
 
@@ -51,29 +55,33 @@ export default async function CustomersPage({
     console.error('Failed to fetch customers:', error);
   }
 
-  // Fetch booking counts for each customer
-  const customersWithStats = await Promise.all(
-    (customers || []).map(async (customer) => {
-      const { count: bookingCount } = await supabase
-        .from('bookings')
-        .select('*', { count: 'exact', head: true })
-        .eq('customer_id', customer.id);
+  // Get last booking for each customer (single query with IN clause)
+  const customerIds = (customers || []).map(c => c.id);
+  const { data: lastBookings } = await supabase
+    .from('bookings')
+    .select('customer_id, appointment_datetime')
+    .in('customer_id', customerIds)
+    .order('appointment_datetime', { ascending: false });
 
-      const { data: lastBooking } = await supabase
-        .from('bookings')
-        .select('appointment_datetime')
-        .eq('customer_id', customer.id)
-        .order('appointment_datetime', { ascending: false })
-        .limit(1)
-        .single();
+  // Group last bookings by customer_id
+  const lastBookingMap = new Map<string, string>();
+  lastBookings?.forEach((booking) => {
+    if (!lastBookingMap.has(booking.customer_id)) {
+      lastBookingMap.set(booking.customer_id, booking.appointment_datetime);
+    }
+  });
 
-      return {
-        ...customer,
-        bookingCount: bookingCount || 0,
-        lastBooking: lastBooking?.appointment_datetime || null,
-      };
-    })
-  );
+  // Combine data
+  const customersWithStats = (customers || []).map((customer: any) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    phone: customer.phone,
+    status: customer.status,
+    created_at: customer.created_at,
+    bookingCount: customer.bookings?.[0]?.count || 0,
+    lastBooking: lastBookingMap.get(customer.id) || null,
+  }));
 
   const totalPages = count ? Math.ceil(count / pageSize) : 1;
 
