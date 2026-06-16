@@ -72,6 +72,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
             placeholder="Name or subdomain..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            data-testid="admin-business-search-input"
             className="w-full bg-white/10 border border-white/10 rounded px-3 py-2 text-white text-sm"
           />
         </div>
@@ -90,6 +91,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
                 setSelectedDistrict('all')
               }
             }}
+            data-testid="admin-business-city-filter"
             className="w-full bg-white/10 border border-white/10 rounded px-3 py-2 text-white text-sm"
           >
             <option value="all">All Cities</option>
@@ -110,6 +112,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
             id="district"
             value={selectedDistrict}
             onChange={(e) => setSelectedDistrict(e.target.value)}
+            data-testid="admin-business-district-filter"
             className="w-full bg-white/10 border border-white/10 rounded px-3 py-2 text-white text-sm disabled:opacity-50"
             disabled={selectedCity !== 'tbilisi' && selectedCity !== 'all'}
           >
@@ -131,6 +134,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
             id="status"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
+            data-testid="admin-business-status-filter"
             className="w-full bg-white/10 border border-white/10 rounded px-3 py-2 text-white text-sm"
           >
             <option value="all">All Status</option>
@@ -148,6 +152,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
               setSelectedStatus('all')
               setSearchQuery('')
             }}
+            data-testid="admin-business-clear-filters-btn"
             className="w-full bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded text-sm"
           >
             Clear Filters
@@ -196,6 +201,7 @@ export function AdminBusinessTable({ businesses }: { businesses: Business[] }) {
                 <td className="py-3 pr-4">
                   <a
                     href={`/admin/businesses/${b.id}/edit`}
+                    data-testid={`admin-business-edit-${b.id}`}
                     className="text-violet-400 hover:text-violet-300 text-sm"
                   >
                     Edit
