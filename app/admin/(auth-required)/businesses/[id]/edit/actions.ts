@@ -32,6 +32,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
   const city = formData.get('city') as string
   const district = (formData.get('district') as string)?.trim() || null
   const status = formData.get('status') as string
+  const hours = (formData.get('hours') as string)?.trim() || null
   const coverImageUrl = (formData.get('cover_image_url') as string)?.trim() || null
   const logoUrl = (formData.get('logo_url') as string)?.trim() || null
   const categories = formData.getAll('categories') as string[]
@@ -101,6 +102,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
       district,
       status,
       is_active: status === 'active',
+      hours,
       cover_image_url: coverImageUrl,
       logo_url: logoUrl,
     })
