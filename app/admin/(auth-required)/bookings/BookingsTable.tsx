@@ -50,6 +50,7 @@ const STATUSES = [
 const SOURCES = [
   { value: 'all', label: 'All Sources' },
   { value: 'web', label: 'Web' },
+  { value: 'dashboard', label: 'Dashboard' },
   { value: 'voice', label: 'Voice (Salome)' },
   { value: 'instagram', label: 'Instagram' },
   { value: 'facebook', label: 'Facebook' },
@@ -99,11 +100,7 @@ export function BookingsTable({
 
     setActionInProgress(bookingId);
     startTransition(async () => {
-      const result = await cancelBooking(bookingId, {
-        customerName: booking.customerName,
-        businessName: booking.businessName,
-        appointmentTime,
-      });
+      const result = await cancelBooking(bookingId);
       setActionInProgress(null);
 
       if (result.error) {
@@ -122,11 +119,7 @@ export function BookingsTable({
 
     setActionInProgress(bookingId);
     startTransition(async () => {
-      const result = await markNoShow(bookingId, {
-        customerName: booking.customerName,
-        businessName: booking.businessName,
-        appointmentTime,
-      });
+      const result = await markNoShow(bookingId);
       setActionInProgress(null);
 
       if (result.error) {
@@ -156,6 +149,8 @@ export function BookingsTable({
     switch (source) {
       case 'web':
         return 'bg-[rgba(168,85,247,0.1)] border-[rgba(168,85,247,0.3)] text-[#a855f7]';
+      case 'dashboard':
+        return 'bg-[rgba(34,197,94,0.1)] border-[rgba(34,197,94,0.3)] text-[#22c55e]';
       case 'voice':
         return 'bg-[rgba(212,168,67,0.1)] border-[rgba(212,168,67,0.3)] text-[#d4a843]';
       case 'instagram':

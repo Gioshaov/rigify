@@ -57,9 +57,11 @@ export default async function BookingsPage({
     .range(offset, offset + pageSize - 1);
 
   // Filters
+  // Note: Cannot search by business name in .or() due to PostgREST limitation with joined tables
+  // Use the business filter dropdown for business-specific filtering
   if (searchQuery) {
     const search = `%${searchQuery}%`;
-    query = query.or(`customer_name.ilike.${search},customer_phone.ilike.${search},customer_email.ilike.${search},businesses.name.ilike.${search}`);
+    query = query.or(`customer_name.ilike.${search},customer_phone.ilike.${search},customer_email.ilike.${search}`);
   }
 
   if (searchParams.status && searchParams.status !== 'all') {
