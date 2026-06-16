@@ -10,6 +10,10 @@ import {
   Settings,
   Bell,
   Plus,
+  Pencil,
+  Eye,
+  EyeOff,
+  Trash2,
 } from 'lucide-react';
 import { formatTbilisi } from '@/lib/utils/datetime';
 
@@ -206,6 +210,9 @@ export default async function SuperAdminDashboard() {
               <div className="w-[140px] text-[#888888] text-[11px] uppercase tracking-widest font-medium">
                 Created
               </div>
+              <div className="w-[100px] text-[#888888] text-[11px] uppercase tracking-widest font-medium text-right">
+                Actions
+              </div>
             </div>
 
             {/* Table Rows */}
@@ -249,6 +256,44 @@ export default async function SuperAdminDashboard() {
 
                   <div className="w-[140px] text-[#888888] text-[13px] font-mono">
                     {formatTbilisi(business.created_at, 'yyyy-MM-dd')}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="w-[100px] flex items-center justify-end gap-4">
+                    <Link
+                      href={`/admin/businesses/${business.id}/edit`}
+                      data-testid={`edit-btn-${business.id}`}
+                      className="text-[#555555] hover:text-[#d4a843] transition-colors"
+                      title="Edit business"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/businesses/${business.subdomain}`}
+                      target="_blank"
+                      data-testid={`view-btn-${business.id}`}
+                      className="text-[#555555] hover:text-white transition-colors"
+                      title="View business page"
+                    >
+                      {business.status === 'active' ? (
+                        <Eye className="w-4 h-4" />
+                      ) : (
+                        <EyeOff className="w-4 h-4" />
+                      )}
+                    </Link>
+                    <button
+                      data-testid={`delete-btn-${business.id}`}
+                      className="text-[#555555] hover:text-[#ef4444] transition-colors"
+                      title="Delete business"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to delete ${business.name}?`)) {
+                          // TODO: Implement delete functionality
+                          alert('Delete functionality coming soon');
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))
