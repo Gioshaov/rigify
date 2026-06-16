@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Users, Calendar, LayoutGrid } from 'lucide-react';
+import { Users, Calendar, LayoutGrid, Shield } from 'lucide-react';
 import { CustomersTable } from './CustomersTable';
 
 export default async function CustomersPage({
@@ -124,6 +124,15 @@ export default async function CustomersPage({
           >
             <Calendar className="w-4 h-4" />
             Bookings
+          </Link>
+
+          <Link
+            href="/admin/admins"
+            data-testid="nav-admins"
+            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
+          >
+            <Shield className="w-4 h-4" />
+            Admins
           </Link>
 
           <Link

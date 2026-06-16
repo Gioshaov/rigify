@@ -11,6 +11,7 @@ import {
   Bell,
   Plus,
   Calendar,
+  Shield,
 } from 'lucide-react';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { BusinessRowActions } from './BusinessRowActions';
@@ -96,6 +97,15 @@ export default async function SuperAdminDashboard() {
           >
             <Calendar className="w-4 h-4" />
             Bookings
+          </Link>
+
+          <Link
+            href="/admin/admins"
+            data-testid="nav-admins"
+            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
+          >
+            <Shield className="w-4 h-4" />
+            Admins
           </Link>
 
           <Link
