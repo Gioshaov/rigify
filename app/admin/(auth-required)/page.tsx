@@ -262,29 +262,39 @@ export default async function SuperAdminDashboard() {
                   <div className="w-[100px] flex items-center justify-end gap-4">
                     <Link
                       href={`/admin/businesses/${business.id}/edit`}
-                      data-testid={`edit-btn-${business.id}`}
+                      data-testid={`admin-business-edit-${business.id}`}
                       className="text-[#555555] hover:text-[#d4a843] transition-colors"
                       title="Edit business"
+                      aria-label={`Edit ${business.name}`}
                     >
                       <Pencil className="w-4 h-4" />
                     </Link>
-                    <Link
-                      href={`/businesses/${business.subdomain}`}
-                      target="_blank"
-                      data-testid={`view-btn-${business.id}`}
-                      className="text-[#555555] hover:text-white transition-colors"
-                      title="View business page"
-                    >
-                      {business.status === 'active' ? (
-                        <Eye className="w-4 h-4" />
-                      ) : (
+                    {business.subdomain ? (
+                      <Link
+                        href={`/businesses/${business.subdomain}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid={`admin-business-view-${business.id}`}
+                        className="text-[#555555] hover:text-white transition-colors"
+                        title="View business page"
+                        aria-label={`View ${business.name} page`}
+                      >
+                        {business.status === 'active' ? (
+                          <Eye className="w-4 h-4" />
+                        ) : (
+                          <EyeOff className="w-4 h-4" />
+                        )}
+                      </Link>
+                    ) : (
+                      <span className="text-[#333333] cursor-not-allowed" title="No subdomain set">
                         <EyeOff className="w-4 h-4" />
-                      )}
-                    </Link>
+                      </span>
+                    )}
                     <button
-                      data-testid={`delete-btn-${business.id}`}
+                      data-testid={`admin-business-delete-${business.id}`}
                       className="text-[#555555] hover:text-[#ef4444] transition-colors"
                       title="Delete business"
+                      aria-label={`Delete ${business.name}`}
                       onClick={() => {
                         if (confirm(`Are you sure you want to delete ${business.name}?`)) {
                           // TODO: Implement delete functionality
