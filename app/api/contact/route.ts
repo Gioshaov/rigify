@@ -1,28 +1,50 @@
+/**
+ * Contact Form API Route
+ *
+ * Rate Limiting Setup (Production):
+ * 1. In Vercel Dashboard → Project → Storage → Create Database
+ * 2. Choose "Upstash Redis" (KV storage)
+ * 3. Environment variables are auto-set: KV_REST_API_URL, KV_REST_API_TOKEN, etc.
+ * 4. Redeploy to apply changes
+ *
+ * For local development without Redis:
+ * - Rate limiting gracefully fails open (allows requests)
+ * - Check console for "Rate limit check failed" errors
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
+import { kv } from '@vercel/kv'
 
-// TODO: In-memory rate limiter is NOT EFFECTIVE in serverless (Vercel)
-// Each cold start gets a fresh Map. Replace with Upstash Redis or Vercel KV
-// for production. Current implementation provides minimal protection.
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT = 5
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
+const RATE_LIMIT_WINDOW = 15 * 60 // 15 minutes in seconds
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(ip)
+async function checkRateLimit(ip: string): Promise<boolean> {
+  try {
+    const key = `rate-limit:contact:${ip}`
 
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    // Get current count
+    const count = await kv.get<number>(key)
+
+    if (count === null) {
+      // First request - set count to 1 with expiry
+      await kv.set(key, 1, { ex: RATE_LIMIT_WINDOW })
+      return true
+    }
+
+    if (count >= RATE_LIMIT) {
+      return false
+    }
+
+    // Increment count
+    await kv.incr(key)
+    return true
+  } catch (error) {
+    // If Redis is unavailable, log error and allow request
+    // Better to allow legitimate traffic than block everyone on Redis failure
+    console.error('Rate limit check failed:', error)
     return true
   }
-
-  if (record.count >= RATE_LIMIT) {
-    return false
-  }
-
-  record.count++
-  return true
 }
 
 export async function POST(request: NextRequest) {
@@ -31,7 +53,7 @@ export async function POST(request: NextRequest) {
              request.headers.get('x-real-ip') ||
              'unknown'
 
-  if (!checkRateLimit(ip)) {
+  if (!(await checkRateLimit(ip))) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },
       { status: 429 }
