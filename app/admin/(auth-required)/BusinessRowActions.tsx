@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Pencil, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { deleteBusiness } from './businesses/actions';
 
 interface BusinessRowActionsProps {
   business: {
@@ -13,10 +16,22 @@ interface BusinessRowActionsProps {
 }
 
 export function BusinessRowActions({ business }: BusinessRowActionsProps) {
-  const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete ${business.name}?`)) {
-      // TODO: Implement delete functionality
-      alert('Delete functionality coming soon');
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${business.name}? This will permanently delete all associated staff, services, bookings, and reviews. This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeleting(true);
+    const result = await deleteBusiness(business.id, business.name);
+
+    if (result.error) {
+      alert(`Failed to delete business: ${result.error}`);
+      setDeleting(false);
+    } else {
+      router.refresh();
     }
   };
 
@@ -54,10 +69,11 @@ export function BusinessRowActions({ business }: BusinessRowActionsProps) {
       )}
       <button
         data-testid={`admin-business-delete-${business.id}`}
-        className="text-[#555555] hover:text-[#ef4444] transition-colors"
+        className="text-[#555555] hover:text-[#ef4444] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title="Delete business"
         aria-label={`Delete ${business.name}`}
         onClick={handleDelete}
+        disabled={deleting}
       >
         <Trash2 className="w-4 h-4" />
       </button>

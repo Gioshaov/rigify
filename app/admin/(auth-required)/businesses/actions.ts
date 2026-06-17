@@ -28,3 +28,29 @@ export async function toggleBusinessStatus(businessId: string, currentStatus: st
 
   return { success: true, newStatus };
 }
+
+export async function deleteBusiness(businessId: string, businessName: string) {
+  // Verify super admin access
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || user.app_metadata?.is_super_admin !== true) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
+  // Use admin client to delete business
+  // Cascade deletes will automatically remove related staff, services, bookings, reviews
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from('businesses')
+    .delete()
+    .eq('id', businessId);
+
+  if (error) {
+    console.error('Failed to delete business:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
