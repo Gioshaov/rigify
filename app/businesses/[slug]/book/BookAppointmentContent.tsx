@@ -551,7 +551,12 @@ export function BookAppointmentContent({
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => {
-                        setCustomerPhone(e.target.value);
+                        let value = e.target.value;
+                        // Auto-add + prefix if user starts typing a number
+                        if (value && !value.startsWith('+')) {
+                          value = '+' + value;
+                        }
+                        setCustomerPhone(value);
                         setPhoneError(null);
                       }}
                       placeholder="+995 555 123 456"
