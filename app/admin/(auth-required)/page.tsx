@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Plus } from 'lucide-react';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { BusinessRowActions } from './BusinessRowActions';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
@@ -47,7 +48,16 @@ export default async function SuperAdminDashboard() {
         {/* TOP BAR */}
         <AdminTopBar
           title="Dashboard Overview"
-          showNewBusinessButton={true}
+          action={
+            <Link
+              href="/admin/onboard"
+              data-testid="new-business-btn"
+              className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-xs px-5 py-2.5 rounded hover:brightness-110 transition-all flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              New Business
+            </Link>
+          }
         />
 
         {/* STAT CARDS */}

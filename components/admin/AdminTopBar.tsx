@@ -1,13 +1,13 @@
-import { Bell, Plus, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { Bell, LogOut } from 'lucide-react';
+import { ReactNode } from 'react';
 
 type AdminTopBarProps = {
   title: string;
   subtitle?: string;
-  showNewBusinessButton?: boolean;
+  action?: ReactNode;
 };
 
-export function AdminTopBar({ title, subtitle, showNewBusinessButton = false }: AdminTopBarProps) {
+export function AdminTopBar({ title, subtitle, action }: AdminTopBarProps) {
   return (
     <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
       <div className="flex items-center gap-4">
@@ -18,7 +18,11 @@ export function AdminTopBar({ title, subtitle, showNewBusinessButton = false }: 
       </div>
 
       <div className="flex items-center gap-4">
-        <button data-testid="notifications-btn" className="text-[#888888] hover:text-white transition-colors">
+        <button
+          data-testid="notifications-btn"
+          className="text-[#888888] hover:text-white transition-colors"
+          aria-label="Notifications"
+        >
           <Bell className="w-[18px] h-[18px]" />
         </button>
         <form action="/api/admin/logout" method="POST">
@@ -31,16 +35,7 @@ export function AdminTopBar({ title, subtitle, showNewBusinessButton = false }: 
             Logout
           </button>
         </form>
-        {showNewBusinessButton && (
-          <Link
-            href="/admin/onboard"
-            data-testid="new-business-btn"
-            className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-xs px-5 py-2.5 rounded hover:brightness-110 transition-all flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            New Business
-          </Link>
-        )}
+        {action}
       </div>
     </header>
   );

@@ -11,6 +11,7 @@ import {
   Tag,
   Image as ImageIcon,
   Settings,
+  ClipboardList,
 } from 'lucide-react';
 
 export function AdminSidebar() {
@@ -27,6 +28,10 @@ export function AdminSidebar() {
     return isActive(path)
       ? "w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors bg-[#1a1a1a] text-white border-l-2 border-[#d4a843]"
       : "w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent";
+  };
+
+  const getAriaCurrent = (path: string) => {
+    return isActive(path) ? ('page' as const) : undefined;
   };
 
   return (
@@ -47,6 +52,7 @@ export function AdminSidebar() {
           href="/admin"
           data-testid="nav-dashboard"
           className={navLinkClass('/admin')}
+          aria-current={getAriaCurrent('/admin')}
         >
           <LayoutGrid className="w-4 h-4" />
           Dashboard
@@ -56,6 +62,7 @@ export function AdminSidebar() {
           href="/admin/businesses"
           data-testid="nav-businesses"
           className={navLinkClass('/admin/businesses')}
+          aria-current={getAriaCurrent('/admin/businesses')}
         >
           <Building2 className="w-4 h-4" />
           Businesses
@@ -65,6 +72,7 @@ export function AdminSidebar() {
           href="/admin/customers"
           data-testid="nav-customers"
           className={navLinkClass('/admin/customers')}
+          aria-current={getAriaCurrent('/admin/customers')}
         >
           <Users className="w-4 h-4" />
           Customers
@@ -74,6 +82,7 @@ export function AdminSidebar() {
           href="/admin/bookings"
           data-testid="nav-bookings"
           className={navLinkClass('/admin/bookings')}
+          aria-current={getAriaCurrent('/admin/bookings')}
         >
           <Calendar className="w-4 h-4" />
           Bookings
@@ -83,6 +92,7 @@ export function AdminSidebar() {
           href="/admin/admins"
           data-testid="nav-admins"
           className={navLinkClass('/admin/admins')}
+          aria-current={getAriaCurrent('/admin/admins')}
         >
           <Shield className="w-4 h-4" />
           Admins
@@ -92,8 +102,9 @@ export function AdminSidebar() {
           href="/admin/audit-logs"
           data-testid="nav-audit-logs"
           className={navLinkClass('/admin/audit-logs')}
+          aria-current={getAriaCurrent('/admin/audit-logs')}
         >
-          <Users className="w-4 h-4" />
+          <ClipboardList className="w-4 h-4" />
           Audit Logs
         </Link>
 

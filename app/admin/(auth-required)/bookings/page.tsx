@@ -101,25 +101,52 @@ export default async function BookingsPage({
 
   const totalPages = count ? Math.ceil(count / pageSize) : 1;
 
+  // Type for booking row with joined data (Supabase returns arrays for joins)
+  type BookingRow = {
+    id: string;
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string | null;
+    appointment_datetime: string;
+    duration_minutes: number;
+    status: string;
+    booking_source: string;
+    notes: string | null;
+    price: number;
+    created_at: string;
+    business_id: string;
+    businesses: { name: string; subdomain: string | null } | { name: string; subdomain: string | null }[] | null;
+    services: { name: string } | { name: string }[] | null;
+    staff: { name: string } | { name: string }[] | null;
+    customers: { name: string } | { name: string }[] | null;
+  };
+
   // Format bookings data for the table
-  const formattedBookings = (bookings || []).map((booking: any) => ({
-    id: booking.id,
-    customerName: booking.customers?.name || booking.customer_name,
-    customerPhone: booking.customer_phone,
-    customerEmail: booking.customer_email,
-    appointmentDatetime: booking.appointment_datetime,
-    durationMinutes: booking.duration_minutes,
-    status: booking.status,
-    bookingSource: booking.booking_source,
-    notes: booking.notes,
-    price: booking.price,
-    createdAt: booking.created_at,
-    businessName: booking.businesses?.name || 'Unknown Business',
-    businessSubdomain: booking.businesses?.subdomain,
-    serviceName: booking.services?.name,
-    staffName: booking.staff?.name,
-    isGuest: !booking.customers,
-  }));
+  const formattedBookings = (bookings || []).map((booking: BookingRow) => {
+    const business = Array.isArray(booking.businesses) ? booking.businesses[0] : booking.businesses;
+    const service = Array.isArray(booking.services) ? booking.services[0] : booking.services;
+    const staff = Array.isArray(booking.staff) ? booking.staff[0] : booking.staff;
+    const customer = Array.isArray(booking.customers) ? booking.customers[0] : booking.customers;
+
+    return {
+      id: booking.id,
+      customerName: customer?.name || booking.customer_name,
+      customerPhone: booking.customer_phone,
+      customerEmail: booking.customer_email,
+      appointmentDatetime: booking.appointment_datetime,
+      durationMinutes: booking.duration_minutes,
+      status: booking.status,
+      bookingSource: booking.booking_source,
+      notes: booking.notes,
+      price: booking.price,
+      createdAt: booking.created_at,
+      businessName: business?.name || 'Unknown Business',
+      businessSubdomain: business?.subdomain ?? null,
+      serviceName: service?.name ?? null,
+      staffName: staff?.name ?? null,
+      isGuest: !customer,
+    };
+  });
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
