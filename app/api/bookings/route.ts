@@ -276,6 +276,16 @@ export async function POST(request: NextRequest) {
 
     if (bookingError) {
       console.error('Booking creation error:', bookingError)
+
+      // Check for exclusion constraint violation (23P01)
+      // This happens when a concurrent request creates an overlap
+      if (bookingError.code === '23P01' || bookingError.message?.includes('bookings_no_staff_overlap')) {
+        return NextResponse.json(
+          { error: 'This time slot was just booked by another customer. Please choose a different time.' },
+          { status: 409 }
+        )
+      }
+
       return NextResponse.json(
         { error: 'Failed to create booking. Please try again or contact support.' },
         { status: 500 }

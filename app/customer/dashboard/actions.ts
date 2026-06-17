@@ -156,7 +156,8 @@ export async function rescheduleBookingAction(data: {
   }
 
   // Check for overlapping bookings for the selected staff - CORRECT overlap logic
-  // TODO: Not atomic — concurrent reschedules may still create overlaps (requires DB-level constraint or serializable transaction)
+  // Note: DB-level exclusion constraint now prevents race conditions
+  // This check provides early feedback before attempting the update
   const { data: overlapping, error: overlapError } = await admin
     .from("bookings")
     .select("id")
@@ -179,6 +180,7 @@ export async function rescheduleBookingAction(data: {
   }
 
   // Update booking (with ownership check and status guard)
+  // DB constraint ensures no overlap even if concurrent request passes the check above
   const { data: updated, error } = await supabase
     .from("bookings")
     .update({
@@ -192,6 +194,13 @@ export async function rescheduleBookingAction(data: {
 
   if (error) {
     console.error("Reschedule booking error:", error);
+
+    // Check for exclusion constraint violation (23P01)
+    // This happens when a concurrent request creates an overlap
+    if (error.code === '23P01' || error.message?.includes('bookings_no_staff_overlap')) {
+      return { success: false, error: "This time slot was just booked by another customer. Please choose a different time." };
+    }
+
     return { success: false, error: "Failed to reschedule booking" };
   }
 
