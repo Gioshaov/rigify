@@ -99,29 +99,47 @@ export async function createAppointment(data: CreateAppointmentData) {
     return { success: false, message: "Cannot create appointments in the past" };
   }
 
-  // Check for double-booking if staff is assigned
-  if (data.staffId) {
-    const appointmentEnd = new Date(appointmentDatetime.getTime() + service.duration_minutes * 60000);
+  // Auto-assign staff if "Any Staff" (null) was selected
+  // Required because staff_id has NOT NULL constraint
+  let assignedStaffId = data.staffId;
+  if (!assignedStaffId) {
+    const { data: availableStaff } = await supabase
+      .from("staff")
+      .select("id")
+      .eq("business_id", data.businessId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .single();
 
-    const { data: existingBookings } = await supabase
-      .from("bookings")
-      .select("appointment_datetime, duration_minutes")
-      .eq("staff_id", data.staffId)
-      .eq("status", "confirmed")
-      .gte("appointment_datetime", new Date(appointmentDatetime.getTime() - 24 * 60 * 60 * 1000).toISOString())
-      .lte("appointment_datetime", new Date(appointmentDatetime.getTime() + 24 * 60 * 60 * 1000).toISOString());
+    if (!availableStaff) {
+      return { success: false, message: "No active staff members available" };
+    }
 
-    if (existingBookings) {
-      for (const booking of existingBookings) {
-        const existingStart = new Date(booking.appointment_datetime);
-        const existingEnd = new Date(existingStart.getTime() + booking.duration_minutes * 60000);
+    assignedStaffId = availableStaff.id;
+  }
 
-        if (hasOverlap(existingStart, existingEnd, appointmentDatetime, appointmentEnd)) {
-          return {
-            success: false,
-            message: "This time slot is already booked. Please choose a different time."
-          };
-        }
+  // Check for double-booking
+  const appointmentEnd = new Date(appointmentDatetime.getTime() + service.duration_minutes * 60000);
+
+  const { data: existingBookings } = await supabase
+    .from("bookings")
+    .select("appointment_datetime, duration_minutes")
+    .eq("staff_id", assignedStaffId)
+    .eq("status", "confirmed")
+    .gte("appointment_datetime", new Date(appointmentDatetime.getTime() - 24 * 60 * 60 * 1000).toISOString())
+    .lte("appointment_datetime", new Date(appointmentDatetime.getTime() + 24 * 60 * 60 * 1000).toISOString());
+
+  if (existingBookings) {
+    for (const booking of existingBookings) {
+      const existingStart = new Date(booking.appointment_datetime);
+      const existingEnd = new Date(existingStart.getTime() + booking.duration_minutes * 60000);
+
+      if (hasOverlap(existingStart, existingEnd, appointmentDatetime, appointmentEnd)) {
+        return {
+          success: false,
+          message: "This time slot is already booked. Please choose a different time."
+        };
       }
     }
   }
@@ -133,7 +151,7 @@ export async function createAppointment(data: CreateAppointmentData) {
     .insert({
       business_id: data.businessId,
       service_id: data.serviceId,
-      staff_id: data.staffId,
+      staff_id: assignedStaffId,
       appointment_datetime: appointmentDatetime.toISOString(),
       duration_minutes: service.duration_minutes,
       price: service.price_min ?? 0,

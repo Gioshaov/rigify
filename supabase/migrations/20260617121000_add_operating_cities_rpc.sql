@@ -7,6 +7,7 @@ returns bigint
 language sql
 stable
 security definer
+set search_path = public
 as $$
   select count(distinct city)
   from public.businesses

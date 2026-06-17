@@ -1,6 +1,6 @@
 'use server';
 
-import { createAdminClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 export async function submitContactMessage(formData: FormData) {
   const name = formData.get('name') as string;
@@ -27,9 +27,9 @@ export async function submitContactMessage(formData: FormData) {
     return { success: false, error: 'Invalid email address' };
   }
 
-  // Insert into database using admin client (bypasses RLS)
-  const admin = createAdminClient();
-  const { error } = await admin.from('contact_messages').insert({
+  // Insert into database (respects RLS - anon insert policy allows this)
+  const supabase = createClient();
+  const { error } = await supabase.from('contact_messages').insert({
     name: name.trim(),
     email: email.trim().toLowerCase(),
     subject: subject.trim(),

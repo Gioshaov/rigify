@@ -40,7 +40,7 @@ export async function deleteBusiness(businessId: string) {
 
   const admin = createAdminClient();
 
-  // Fetch owner_id before deleting business (need it to delete auth user)
+  // Fetch owner_id before deleting (need it to delete auth user)
   const { data: business, error: fetchError } = await admin
     .from('businesses')
     .select('owner_id')
@@ -52,7 +52,18 @@ export async function deleteBusiness(businessId: string) {
     return { success: false, error: 'Business not found' };
   }
 
-  // Delete business first (cascade deletes staff, services, bookings, reviews)
+  // Delete auth user FIRST if business has an owner (prevents orphaned credentials)
+  // Some test/seed businesses may have NULL owner_id, skip auth deletion for those
+  if (business.owner_id) {
+    const { error: authDeleteError } = await admin.auth.admin.deleteUser(business.owner_id);
+
+    if (authDeleteError) {
+      console.error('Failed to delete auth user:', authDeleteError);
+      return { success: false, error: 'Failed to delete business account' };
+    }
+  }
+
+  // Delete business (cascade deletes staff, services, bookings, reviews)
   const { error: deleteError } = await admin
     .from('businesses')
     .delete()
@@ -60,15 +71,10 @@ export async function deleteBusiness(businessId: string) {
 
   if (deleteError) {
     console.error('Failed to delete business:', deleteError);
-    return { success: false, error: deleteError.message };
-  }
-
-  // Delete the auth user (prevents orphaned login credentials)
-  const { error: authDeleteError } = await admin.auth.admin.deleteUser(business.owner_id);
-
-  if (authDeleteError) {
-    console.error('Failed to delete auth user after business deletion:', authDeleteError);
-    // Business is already deleted, so don't return error - just log it
+    return { success: false, error: business.owner_id
+      ? 'Account deleted but business data removal failed. Contact support.'
+      : 'Failed to delete business data'
+    };
   }
 
   return { success: true };

@@ -187,6 +187,7 @@ export async function rescheduleBookingAction(data: {
 
   // Update booking (with ownership check and status guard)
   // DB constraint ensures no overlap even if concurrent request passes the check above
+  // Atomic reschedule limit enforcement: prevents concurrent requests from bypassing limit
   const { data: updated, error } = await supabase
     .from("bookings")
     .update({
@@ -197,6 +198,7 @@ export async function rescheduleBookingAction(data: {
     .eq("id", data.bookingId)
     .eq("customer_id", user.id)
     .eq("status", "confirmed")  // prevent rescheduling if concurrently cancelled
+    .lt("reschedule_count", 3)  // atomic limit check (prevents race condition)
     .select("id");
 
   if (error) {

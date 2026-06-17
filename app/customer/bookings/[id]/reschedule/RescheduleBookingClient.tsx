@@ -39,6 +39,7 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const calendarDays = useMemo(() => generateCalendarDays(currentYear, currentMonth), [currentYear, currentMonth]);
 
@@ -128,8 +129,9 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
     });
 
     if (result.success) {
-      // Redirect back to booking details page
-      router.push(`/customer/bookings/${booking.id}`);
+      setSuccess(true);
+      setLoading(false);
+      // Success state shows inline — user manually navigates back
     } else {
       setError(result.error || "Failed to reschedule booking");
       setLoading(false);
@@ -176,6 +178,72 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
           <div className="w-10"></div> {/* Spacer for symmetry */}
         </header>
 
+        {success ? (
+          /* Success View - replaces entire page content */
+          <>
+            <style>{`
+              @keyframes drawLine {
+                from { transform: scaleX(0); }
+                to { transform: scaleX(1); }
+              }
+              @keyframes fadeScaleIn {
+                from { opacity: 0; transform: scale(0.8); }
+                to { opacity: 1; transform: scale(1); }
+              }
+            `}</style>
+            <main className="flex-1 flex flex-col">
+              {/* Animated gold line */}
+              <div className="h-[2px] bg-[#d4a843] origin-left"
+                   style={{ animation: 'drawLine 600ms ease-out forwards', transformOrigin: 'left' }}>
+              </div>
+
+              {/* Success content */}
+              <div className="flex-1 flex flex-col items-center justify-center px-8 py-16 space-y-8" data-testid="reschedule-success-view">
+                {/* Large checkmark */}
+                <div className="text-[120px] leading-none text-[#d4a843]"
+                     style={{ animation: 'fadeScaleIn 300ms ease-out forwards' }}>
+                  ✓
+                </div>
+
+                {/* Heading */}
+                <h2 className="font-hanken text-[32px] leading-[1.2] font-bold text-white text-center">
+                  Appointment Rescheduled
+                </h2>
+
+                {/* Data rows */}
+                <div className="space-y-4 text-center">
+                  <div className="space-y-1">
+                    <div className="font-mono text-[12px] tracking-wider uppercase text-[#6b6880]">
+                      New Date
+                    </div>
+                    <div className="font-mono text-[14px] text-white">
+                      {selectedDate && selectedTime ?
+                        `${MONTH_NAMES[currentMonth]} ${selectedDate}, ${currentYear} at ${selectedTime}`
+                        : '—'}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-mono text-[12px] tracking-wider uppercase text-[#6b6880]">
+                      Booking ID
+                    </div>
+                    <div className="font-mono text-[14px] text-white">
+                      {booking.id.slice(0, 8).toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Done button */}
+                <button
+                  data-testid="reschedule-done-btn"
+                  onClick={() => router.push(`/customer/bookings/${booking.id}`)}
+                  className="w-full max-w-md h-[44px] bg-[#d4a843] text-black font-mono text-[12px] tracking-[0.15em] uppercase font-bold hover:brightness-110 active:scale-[0.98] transition-all"
+                >
+                  Done
+                </button>
+              </div>
+            </main>
+          </>
+        ) : (
         <main className="flex-1 max-w-container mx-auto w-full px-margin-mobile md:px-margin-desktop py-8 pb-32">
           {/* Current Booking Context */}
           <section className="mb-10">
@@ -449,8 +517,10 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
             </div>
           )}
         </main>
+        )}
 
-        {/* Fixed Footer Action Bar */}
+        {/* Fixed Footer Action Bar - only show when not in success state */}
+        {!success && (
         <footer className="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile z-50">
           <div className="max-w-container mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="hidden md:block">
@@ -480,6 +550,7 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
             </button>
           </div>
         </footer>
+        )}
       </div>
     </>
   );

@@ -60,7 +60,7 @@ export default async function SuperAdminDashboard() {
 
         {/* STAT CARDS */}
         <div className="grid grid-cols-5 gap-4 mt-6 px-8">
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+          <div data-testid="admin-stat-total-businesses" className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Total Businesses
             </p>
@@ -68,7 +68,7 @@ export default async function SuperAdminDashboard() {
               {totalBusinesses || 0}
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+          <div data-testid="admin-stat-active-businesses" className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Active Businesses
             </p>
@@ -76,7 +76,7 @@ export default async function SuperAdminDashboard() {
               {activeBusinesses || 0}
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+          <div data-testid="admin-stat-operating-cities" className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Operating Cities
             </p>
@@ -84,7 +84,7 @@ export default async function SuperAdminDashboard() {
               {operatingCities || 0}
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+          <div data-testid="admin-stat-total-customers" className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Total Customers
             </p>
@@ -92,7 +92,7 @@ export default async function SuperAdminDashboard() {
               {totalCustomers || 0}
             </p>
           </div>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+          <div data-testid="admin-stat-today-bookings" className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Today&apos;s Bookings
             </p>

@@ -47,6 +47,8 @@ async function checkRateLimit(ip: string): Promise<boolean> {
 
 export async function POST(request: NextRequest) {
   // Rate limiting by IP
+  // Note: x-forwarded-for is set correctly by Vercel's edge network (trusted reverse proxy)
+  // First IP in the list is the client's real IP; subsequent IPs are intermediate proxies
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
              request.headers.get('x-real-ip') ||
              'unknown'
