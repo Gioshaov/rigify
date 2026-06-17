@@ -24,8 +24,8 @@ export default async function BookingsPage({
     redirect('/admin/login');
   }
 
-  // Pagination
-  const page = parseInt(searchParams.page || '1', 10);
+  // Pagination (guard against NaN)
+  const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
   const pageSize = 50;
   const offset = (page - 1) * pageSize;
 

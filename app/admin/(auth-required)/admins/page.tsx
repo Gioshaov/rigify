@@ -12,9 +12,12 @@ export default async function AdminsPage() {
     redirect('/admin/login');
   }
 
-  // Fetch all super admin users
+  // Fetch all super admin users (up to 1000)
   const admin = createAdminClient();
-  const { data: { users }, error } = await admin.auth.admin.listUsers();
+  const { data: { users }, error } = await admin.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000 // Hard cap - loop through pages if more needed
+  });
 
   if (error) {
     console.error('Failed to fetch users:', error);

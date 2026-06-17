@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 11, 2026  
-**Session**: Session 18 - ESLint Fixes & Documentation
+**Last Updated**: June 16, 2026  
+**Session**: Session 20 - Admin Panel Styling & Secure Logout
 
 ---
 
@@ -77,6 +77,7 @@
 - ✅ **Modal components** - Reusable Modal and CancelButton components
 - ✅ **Loading buttons** - Reusable LoadingButton with spinner
 - ✅ **Password input** - Reusable PasswordInput with visibility toggle
+- ✅ **Favicon & PWA support** - Optimized favicons (ICO, PNG), Apple touch icons, Android icons, PWA manifest
 
 **Database** (Complete):
 - ✅ 22 migrations applied (all idempotent)
@@ -110,136 +111,146 @@
 
 ---
 
-## Latest Session Work (Session 18 - June 11, 2026)
+## Latest Session Work (Session 20 - June 16, 2026)
 
-**Objective**: Fix Vercel deployment blocking issues and prevent future ESLint errors
+**Objective**: Fix admin panel styling issue and implement secure logout functionality
 
-### Phase 1: Vercel Build Failure Investigation
+### Phase 1: Admin Panel Styling Fix
 
-**Problem**: Vercel deployment failing with 31 ESLint errors:
-- `react/no-unescaped-entities` errors blocking build
-- Apostrophes and quotes in JSX text not escaped
-- Affected 7 files: about, contact, dashboard/error, error, not-found, privacy, terms
+**Problem**: Admin panel at `/admin` rendering completely unstyled (white screen, no Tailwind classes)
 
-**Error Examples**:
-```
-app/contact/page.tsx:17 - "We're here to help" (unescaped apostrophe)
-app/privacy/page.tsx:96 - "we", "our", "us" (unescaped quotes)
-app/terms/page.tsx:275 - "Rigify's liability" (unescaped apostrophe)
-```
+**Root Cause**: Missing `app/admin/layout.tsx` file
+- Next.js couldn't properly process route without layout wrapper
+- Tailwind classes weren't being applied without proper route structure
 
-### Phase 2: ESLint Error Fixes
+**Solution**: Created `app/admin/layout.tsx`
+- Simple passthrough layout (`<>{children}</>`)
+- Allows Next.js to properly process Tailwind classes
+- Inherits fonts and providers from root layout
+- **Result**: Admin panel now renders with full dark theme styling
 
-**Fixed 31 errors across 7 files**:
+### Phase 2: Secure Logout Implementation
 
-1. **app/contact/page.tsx** (1 error)
-   - `We're` → `We&apos;re`
+**Requirements**:
+- Terminate both Supabase session AND preview password cookie
+- Use hardcoded redirect URLs (prevent open redirect)
+- CSRF protection with POST-only endpoint
+- Match cookie options from verify-password route
 
-2. **app/about/page.tsx** (3 errors)
-   - `Georgia's` → `Georgia&apos;s`
-   - `We're` → `We&apos;re`  
-   - `you're`, `we're` → `you&apos;re`, `we&apos;re`
+**Implementation**: Created `/api/admin/logout` route
+- Calls `supabase.auth.signOut()` to terminate JWT session
+- Clears `rigify_admin_access` cookie with `maxAge: 0`
+- Redirects to hardcoded URL (no Host header usage)
+- Added logout button to admin dashboard with LogOut icon
 
-3. **app/not-found.tsx** (2 errors)
-   - `you're`, `doesn't` → `you&apos;re`, `doesn&apos;t`
+**Files Created**:
+- `app/api/admin/logout/route.ts` (secure logout endpoint)
+- `app/admin/layout.tsx` (admin route wrapper)
 
-4. **app/error.tsx** (1 error)
-   - `we'll` → `we&apos;ll`
+**Files Modified**:
+- `app/admin/(auth-required)/page.tsx` (added logout button)
+- `middleware.ts` (added exact `/api/admin/logout` allowlist)
+- `app/admin/(auth-required)/layout.tsx` (removed unused import)
 
-5. **app/dashboard/error.tsx** (1 error)
-   - `couldn't` → `couldn&apos;t`
+**Files Deleted**:
+- `app/admin/(auth-required)/AdminSignOutButton.tsx` (duplicate mechanism)
+- `app/admin/(auth-required)/logout-action.ts` (duplicate server action)
 
-6. **app/privacy/page.tsx** (11 errors)
-   - `Children's` → `Children&apos;s` (2 instances)
-   - `("we", "our", "us")` → `(&quot;we&quot;, &quot;our&quot;, &quot;us&quot;)`
-   - `"Last updated"` → `&quot;Last updated&quot;`
+### Phase 3: Security Fixes
 
-7. **app/terms/page.tsx** (13 errors)
-   - `"the Platform"` → `&quot;the Platform&quot;`
-   - `"Platform"`, `"Customer"`, `"Business"`, `"Salome"` → escaped with `&quot;`
-   - `"as is"` → `&quot;as is&quot;`
-   - `Rigify's` → `Rigify&apos;s`
-   - `"Last updated"` → `&quot;Last updated&quot;`
+**Code Review Verdict**: Initial FAIL → Fixed → PASS
 
-**Result**: 
-- ✅ Build now passes (only warnings remain, non-blocking)
-- ✅ Vercel deployment successful
-- ✅ All JSX text properly escaped
+**Critical Security Issues Fixed**:
 
-### Phase 3: Documentation Updates
+1. **[C1] Missing Supabase signOut call**
+   - **Problem**: Logout only cleared preview cookie, Supabase JWT remained valid
+   - **Impact**: User could still access protected routes after "logout"
+   - **Fix**: Added `await supabase.auth.signOut()` call before cookie deletion
 
-**Created permanent guidelines to prevent recurrence**:
+2. **[C2] Path Traversal Vulnerability**
+   - **Problem**: Middleware used `pathname.startsWith('/api/admin/logout')`
+   - **Impact**: Allowed bypassing password protection via `/api/admin/logout/../secret`
+   - **Fix**: Changed to exact match `pathname === '/api/admin/logout'`
 
-1. **CLAUDE.md** - Added critical section:
-   ```markdown
-   ## ⚠️ CRITICAL: JSX Text Content Rules
-   
-   **ALWAYS escape apostrophes and quotes in JSX text content**
-   
-   - Apostrophes → Use &apos; (don't → don&apos;t)
-   - Double quotes → Use &quot; ("Platform" → &quot;Platform&quot;)
-   
-   Why: react/no-unescaped-entities fails Vercel build
-   ```
+3. **[M2] Open Redirect Vulnerability**
+   - **Problem**: Redirect URL derived from request origin (spoofable via Host header)
+   - **Impact**: Could redirect users to attacker-controlled domain
+   - **Fix**: Hardcoded redirect URLs based on NODE_ENV
 
-2. **code-reviewer.md** - Added to "React/JSX specific" section:
-   ```markdown
-   - **Unescaped apostrophes and quotes in JSX text** (CRITICAL)
-     - Triggers react/no-unescaped-entities ESLint error
-     - Blocks CI/CD and Vercel deployment
-     - Check all <p>, <h1>-<h6>, <span>, <li> text content
-   ```
+### Phase 4: Code Cleanup
 
-**Impact**:
-- Future sessions will follow the rule (CLAUDE.md loaded in context)
-- Code reviewer will flag violations before push
-- Prevents deployment failures
+**Removed Duplicate Logout Mechanisms**:
+- Deleted `AdminSignOutButton.tsx` (client component, never rendered)
+- Deleted `logout-action.ts` (server action, unused)
+- Unified to single API route approach
+- **Result**: No more duplicate sign-in requests
 
-### Phase 4: Cleanup
+### Phase 5: Codex Review & Additional Fixes
 
-**Deleted unused asset**:
-- `Gemini_Generated_Image_9n58kp9n58kp9n58.png` (unused image file)
+**Codex Review Findings**: 3 Priority issues in EditBusinessForm.tsx
 
-### Phase 5: Code Review
+**Issues Fixed**:
 
-**Codex Review**: Clean
-- Only change was the deleted image file
-- No functionality broken
+1. **[P1] Preserve existing image URLs on save**
+   - **Problem**: Form didn't submit cover_image_url/logo_url, causing them to become null
+   - **Fix**: Added hidden inputs to preserve existing URLs when no new file uploaded
+   - **Impact**: Unrelated edits no longer clear saved images
+
+2. **[P2] Restore editable business status**
+   - **Problem**: Status was hidden field, couldn't be changed
+   - **Fix**: Changed to select dropdown (active/inactive/draft)
+   - **Impact**: Super admins can now change business status from edit page
+
+3. **[P2] Wire opening hours to persisted field**
+   - **Problem**: Form submitted "opening_hours" but action/database use "hours"
+   - **Fix**: Changed field name to "hours", added to action's formData reading and DB update
+   - **Impact**: Opening hours changes now persist correctly
 
 ---
 
 ## Session Summary
 
-**Focus**: Build fix and preventive documentation
+**Focus**: Admin panel styling and secure logout implementation
+
+**Files Created**:
+- `app/admin/layout.tsx` (fixes styling)
+- `app/api/admin/logout/route.ts` (secure logout)
 
 **Files Modified**:
-- `app/about/page.tsx` (3 fixes)
-- `app/contact/page.tsx` (1 fix)
-- `app/dashboard/error.tsx` (1 fix)
-- `app/error.tsx` (1 fix)
-- `app/not-found.tsx` (2 fixes)
-- `app/privacy/page.tsx` (11 fixes)
-- `app/terms/page.tsx` (13 fixes)
-- `CLAUDE.md` (added JSX rules)
-- `.claude/agents/code-reviewer.md` (added JSX validation)
+- `app/admin/(auth-required)/page.tsx` (logout button)
+- `app/admin/(auth-required)/layout.tsx` (cleanup)
+- `middleware.ts` (exact path matching)
+- `app/admin/(auth-required)/businesses/[id]/edit/EditBusinessForm.tsx` (Codex fixes)
+- `app/admin/(auth-required)/businesses/[id]/edit/actions.ts` (hours field handling)
 
 **Files Deleted**:
-- `Gemini_Generated_Image_9n58kp9n58kp9n58.png`
+- `app/admin/(auth-required)/AdminSignOutButton.tsx`
+- `app/admin/(auth-required)/logout-action.ts`
 
-**Bugs Fixed**:
-- ✅ All 31 ESLint errors resolved
-- ✅ Vercel build passing
-- ✅ Deployment unblocked
+**Security Issues Fixed**:
+- ✅ Missing Supabase session termination
+- ✅ Path traversal vulnerability (startsWith → exact match)
+- ✅ Open redirect vulnerability (hardcoded URLs)
+
+**Functional Regressions Fixed**:
+- ✅ Image URLs preserved on save
+- ✅ Business status editable again
+- ✅ Opening hours persist correctly
 
 **Commits**:
-1. `2e61966` - Fix ESLint errors: escape quotes and apostrophes in JSX
-2. `fb9fae8` - Add JSX text content rules to CLAUDE.md
-3. `1fddefb` - Add JSX text content rules to code-reviewer
-4. `c5d965b` - Update session summaries
+1. `25b8d36` - Fix admin panel styling and implement secure logout
+2. `3d00581` - Fix 3 critical issues in admin business edit form
 
 **TypeScript**: ✅ Clean compilation (no errors)
-**Build**: ✅ Passes (warnings only, non-blocking)
-**Deployment**: ✅ Vercel deployment successful
+**Build**: ✅ Passes
+**Testing**: ✅ Logout verified with curl (307 redirect, cookie cleared)
+**Production**: ✅ Pushed to GitHub
+
+**Key Learnings**:
+- Always call `supabase.auth.signOut()` when logging out (not just cookie deletion)
+- Use exact path matching in middleware for security endpoints
+- Hardcode redirect URLs to prevent open redirect vulnerabilities
+- Remove duplicate mechanisms to prevent confusion
 
 ---
 
@@ -316,43 +327,43 @@ These are **visual upgrades** only - functionality already works:
 
 ## Key Learnings This Session
 
-### 1. JSX Text Content Must Be Escaped
-**Rule**: Always use HTML entities in JSX text:
-- Apostrophes: `&apos;` not `'`
-- Quotes: `&quot;` not `"`
+### 1. Next.js 14 Metadata API Changes
+**Lesson**: `themeColor` moved from `Metadata` to `Viewport` export
 
 **Why it matters**:
-- ESLint `react/no-unescaped-entities` blocks Vercel builds
-- Not a warning - it's a build-failing error
-- Affects all user-facing text content
+- Using `themeColor` in `metadata` is deprecated in Next.js 14
+- Causes build warnings on every page
+- Will stop working in future versions
 
-**Prevention**:
-- Added to CLAUDE.md (will be followed automatically)
-- Added to code-reviewer.md (will flag violations)
+**Solution**: Use separate `export const viewport: Viewport = { themeColor: "..." }`
 
-### 2. Document Critical Rules in Multiple Places
-**Strategy**: Add rules where they'll be enforced
-- CLAUDE.md → I follow during development
-- code-reviewer.md → Catches violations before push
+### 2. Favicon File Placement in Next.js 14 App Router
+**Best practice**:
+- `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` → Auto-generated metadata
+- `public/*.png` → For manifest-referenced assets (Android icons)
+- `app/manifest.json` → Auto-served with correct Content-Type
 
-**Result**: Two-layer prevention system
+**Why**: Next.js 14 App Router conventions handle metadata generation automatically
 
-### 3. Build Errors Don't Always Show Locally
-**Lesson**: Local `npm run build` passed with warnings, but Vercel failed
+### 3. Android Adaptive Icons Need Maskable Purpose
+**Lesson**: 512×512 icons should include `"purpose": "maskable"` in manifest
 
-**Why**: Different ESLint configurations or stricter Vercel settings
+**Why**: Without it, Android adds padding and icon appears tiny in adaptive shapes
 
-**Solution**: Always test exactly as CI/CD will test, or assume all ESLint errors will block deployment
+**Requirement**: Icon must have safe zone (center 80%) for maskable to work correctly
 
-### 4. Verify Completion Status Accurately
-**Lesson**: Initial assessment claimed 2% remaining, but actual review showed 95%+ complete
+### 4. Code Review Before Push Catches Issues Early
+**Workflow**: Commit → Review → Fix → Push
 
-**Why**: Need to check actual files, not just assumptions
+**Value**:
+- Critical issues found: Deprecated API usage
+- Major issues found: Missing metadata, invalid attributes
+- All fixed before deployment
 
-**Solution**: Always verify by listing and reading actual implementation files
+**Impact**: Cleaner git history, no broken builds in CI/CD
 
 ---
 
-**Session Started**: June 11, 2026  
-**Session Ended**: June 11, 2026  
-**Status**: Platform 95%+ complete - Only quick wins and optional polish remain
+**Session Started**: June 16, 2026  
+**Session Ended**: June 16, 2026  
+**Status**: Admin panel styling fixed, secure logout implemented - All security vulnerabilities resolved

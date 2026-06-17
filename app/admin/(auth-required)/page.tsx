@@ -21,7 +21,6 @@ export default async function SuperAdminDashboard() {
     { count: totalCustomers },
     { count: todayBookings },
     { data: recentBusinesses },
-    { data: cities },
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status', 'active'),
@@ -32,10 +31,11 @@ export default async function SuperAdminDashboard() {
       .select('id, name, subdomain, status, city, created_at')
       .order('created_at', { ascending: false })
       .limit(5),
-    supabase.from('businesses').select('city'),
   ]);
 
-  const operatingCities = new Set(cities?.map(b => b.city).filter(Boolean)).size;
+  // TODO: Replace with SELECT DISTINCT city via RPC or remove until scalable
+  // Temporary: Removed unbounded full-table scan for operating cities count
+  const operatingCities = 0; // Placeholder - shows as "0" until proper implementation
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
@@ -91,7 +91,7 @@ export default async function SuperAdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-bold text-lg">Recent Businesses</h3>
             <Link
-              href="/admin/onboard"
+              href="/admin/businesses"
               className="text-[#d4a843] text-sm hover:text-[#d4a843]/80 transition-colors"
             >
               View All →

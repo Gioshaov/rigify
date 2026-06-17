@@ -24,7 +24,8 @@
       "PowerShell(Get-Process *)",
       "Bash(tsx *)",
       "Bash(echo \"Exit code: $?\")",
-      "Bash(git grep *)"
+      "Bash(git grep *)",
+      "Bash(grep -E \"\\\\.md$\")"
     ]
   }
 }

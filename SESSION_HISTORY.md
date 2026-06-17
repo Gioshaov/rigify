@@ -1361,3 +1361,257 @@ npm run audit:testids     # Find missing test IDs
 
 **Status**: Build fixed, documentation updated, all changes pushed. Deployment successful.
 
+
+---
+
+### Session 19 - June 13, 2026: Favicon Implementation & PWA Support
+
+**Objective**: Add optimized favicon implementation with full PWA support
+
+**Context**: Platform needed favicons and PWA manifest for production deployment. User created optimized favicon files online (transparent background, multiple sizes).
+
+**Phase 1: Favicon Setup**
+
+Added optimized favicon files:
+- `app/icon.png` (32×32, 2.6KB) - Transparent background, gold "R" logo
+- `app/apple-icon.png` (180×180, 57KB) - iOS home screen icon
+- `app/favicon.ico` (16KB) - Standard favicon for browsers
+- `public/android-chrome-192x192.png` (63KB) - Android icon
+- `public/android-chrome-512x512.png` (404KB) - Android high-res icon
+
+Created PWA manifest (`app/manifest.json`):
+- App name: "Rigify — Premium Salon Marketplace"
+- Theme color: `#C9A961` (gold brand color)
+- Background color: `#0A0A0A` (dark)
+- Display mode: `standalone` (PWA-ready)
+- Icon references for Android Chrome
+
+Initial metadata configuration in `app/layout.tsx`:
+- Added icons metadata with sizes and formats
+- Configured Apple Web App settings
+- Added manifest reference
+- Set theme color
+
+**Phase 2: Code Review & Fixes**
+
+Code Review (code-reviewer agent): **CONDITIONAL PASS**
+- 1 Critical issue
+- 3 Major issues
+
+**Critical Issue Fixed** [C1]:
+- **Problem**: `themeColor` in `metadata` export is deprecated in Next.js 14
+- **Symptom**: Build warnings on every single page
+- **Fix**: Moved to separate `export const viewport: Viewport = { themeColor: "#C9A961" }`
+- **Impact**: Eliminated all deprecation warnings
+
+**Major Issues Fixed**:
+
+1. [M1] Missing `favicon.ico` in icons metadata
+   - Added `{ url: "/favicon.ico" }` as first icon entry
+   - ICO file was being served but not declared in `<head>`
+
+2. [M2] Android 512×512 icon missing maskable purpose
+   - Added `"purpose": "maskable"` to manifest
+   - Prevents icon from appearing tiny in adaptive shapes on Android
+
+3. [M3] Invalid `rel="android-chrome"` entries
+   - Removed entire `icons.other` array
+   - Android discovers icons via manifest, not `<link>` tags
+
+**Phase 3: Documentation Update**
+
+Updated `.claude/agents/code-reviewer.md`:
+- Clarified rule #1 about verdict language
+- Changed: "Never say 'looks good overall' if there are Critical or Major issues"
+- To: "Never say 'looks good overall' when issuing a CONDITIONAL PASS or FAIL. Reserve positive language for genuine PASS verdicts only."
+- **Impact**: Clearer distinction between PASS/CONDITIONAL PASS/FAIL
+
+**Files Created**:
+- `app/icon.png` (32×32 favicon)
+- `app/apple-icon.png` (180×180 iOS icon)
+- `app/favicon.ico` (16KB standard favicon)
+- `app/manifest.json` (PWA manifest)
+- `public/android-chrome-192x192.png` (Android icon)
+- `public/android-chrome-512x512.png` (Android high-res icon)
+
+**Files Modified**:
+- `app/layout.tsx` (viewport export, icon metadata)
+- `.claude/agents/code-reviewer.md` (clarified verdict rule)
+
+**Issues Fixed**:
+- ✅ Next.js 14 `themeColor` deprecation warnings
+- ✅ Missing favicon.ico in metadata
+- ✅ Android maskable icon configuration
+- ✅ Invalid `rel="android-chrome"` entries
+
+**Commits**:
+1. `6de1d38` - Add optimized favicon implementation with PWA support
+
+**Verification**:
+- ✅ TypeScript compilation clean
+- ✅ Build passes with no favicon warnings
+- ✅ All changes committed and pushed to GitHub
+- ✅ Favicon appears in browser tabs
+- ✅ PWA manifest properly configured
+
+**Key Learnings**:
+
+1. **Next.js 14 Metadata API Changes**
+   - `themeColor` moved from `Metadata` to `Viewport` export
+   - Using deprecated API causes warnings on every page
+   - Separate viewport export is the correct approach
+
+2. **Favicon File Placement in App Router**
+   - `app/*.png|ico` → Auto-detected by Next.js for metadata
+   - `public/*.png` → For manifest-referenced assets
+   - `app/manifest.json` → Auto-served with correct Content-Type
+
+3. **Android Adaptive Icons**
+   - 512×512 icons should include `"purpose": "maskable"`
+   - Without it, icon appears tiny in adaptive shapes
+   - Requires safe zone (center 80%) for proper display
+
+4. **Code Review Workflow Value**
+   - Commit → Review → Fix → Push prevents broken builds
+   - Found 1 Critical + 3 Major issues before deployment
+   - All fixed before push = cleaner git history
+
+**Next Steps**:
+- Continue with Priority 1: Customer Dashboard (Stitch designs)
+- Or Priority 2: Complete Business Dashboard features
+- Or Priority 3: Add missing test IDs for E2E coverage
+
+**Status**: Favicon and PWA support complete. Platform production-ready with optimized assets.
+
+**Phase 4: Production Deployment Issue & Fix**
+
+After initial deployment, discovered production site (rigify.ge) showed favicon with white background even in incognito mode.
+
+**Root cause**:
+- User regenerated favicon files at 02:33 (after initial commit at 02:05)
+- Production deployment had old files from first commit
+- New files with proper transparent backgrounds weren't deployed yet
+
+**Solution**:
+1. Replaced favicon files with newer versions from `design-assets/favicon_io/`
+2. Verified transparent backgrounds working on localhost (incognito test passed)
+3. Committed updated files: `984d8f8` - "Update favicon files with proper transparent backgrounds"
+4. Pushed to trigger new Vercel deployment
+5. Production now serving correct transparent background favicons
+
+**Design Feedback Noted**:
+- Current favicon appears small compared to sites like Gmail
+- Issue: Thin outline design with lots of transparent space doesn't read well at 16×16 or 32×32
+- Recommendation: Create bolder, filled version for better visibility
+- User will optimize design later (non-blocking, purely visual preference)
+
+**Additional Commit**:
+- `984d8f8` - Update favicon files with proper transparent backgrounds
+
+**Final Status**: 
+- ✅ Favicon technically complete (all formats, transparent backgrounds, PWA-ready)
+- ✅ Production deployed successfully
+- ⚠️ Design optimization (bolder version) deferred to future session
+
+**Total commits this session**: 2
+1. `6de1d38` - Add optimized favicon implementation with PWA support
+2. `984d8f8` - Update favicon files with proper transparent backgrounds
+
+---
+
+### Session 20 - June 16, 2026: Admin Panel Styling & Secure Logout
+
+**Objective**: Fix admin panel white screen issue and implement secure logout with proper session termination
+
+**Context**: Admin panel at `/admin` was rendering completely unstyled (white screen, no Tailwind classes). Also needed proper logout functionality that terminates both Supabase session and preview password cookie.
+
+**Accomplished**:
+
+1. **Fixed Admin Panel Styling** ✅
+   - **Problem**: `/admin` route showing white screen, no Tailwind classes applied
+   - **Root Cause**: Missing `app/admin/layout.tsx` - Next.js couldn't process route properly
+   - **Solution**: Created simple passthrough layout (`<>{children}</>`)
+   - **Result**: Admin panel now renders with full dark theme styling
+
+2. **Implemented Secure Logout** ✅
+   - Created `/api/admin/logout` POST endpoint
+   - Calls `supabase.auth.signOut()` to terminate JWT session
+   - Clears `rigify_admin_access` cookie with `maxAge: 0`
+   - Redirects to hardcoded URLs (prevents open redirect)
+   - Added logout button to admin dashboard with LogOut icon
+
+3. **Fixed 3 Critical Security Vulnerabilities** ✅
+   - **C1**: Missing `supabase.auth.signOut()` call - JWT remained valid after logout
+   - **C2**: Path traversal vulnerability - changed `startsWith()` to exact `===` match
+   - **M2**: Open redirect vulnerability - hardcoded redirect URLs, no Host header usage
+
+4. **Removed Duplicate Logout Mechanisms** ✅
+   - Deleted `AdminSignOutButton.tsx` (client component, never rendered)
+   - Deleted `logout-action.ts` (server action, unused)
+   - Unified to single API route approach
+   - Fixed "two sign-in requests" issue user reported
+
+5. **Codex Review & Additional Fixes** ✅
+   - Ran `/codex:review` for second opinion (as per protocol)
+   - Found 3 Priority issues in EditBusinessForm.tsx (functional regressions)
+   - **P1**: Form didn't preserve existing image URLs → added hidden inputs
+   - **P2**: Status field not editable → changed to select dropdown
+   - **P2**: Opening hours field name mismatch → changed to "hours", wired to action
+   - All issues fixed and verified with TypeScript
+
+**Files Changed**:
+- **Created**: 2 files (app/admin/layout.tsx, app/api/admin/logout/route.ts)
+- **Modified**: 5 files (page.tsx, middleware.ts, auth-required layout.tsx, EditBusinessForm.tsx, actions.ts)
+- **Deleted**: 2 files (AdminSignOutButton.tsx, logout-action.ts)
+
+**Commits**:
+- `25b8d36` - Fix admin panel styling and implement secure logout
+- `3d00581` - Fix 3 critical issues in admin business edit form
+
+**Code Reviews**:
+- Initial review found 3 critical security issues
+- All issues fixed before push
+- Final verification: logout tested with curl, TypeScript clean
+
+**Verification**:
+- ✅ TypeScript compilation clean (exit code 0)
+- ✅ Logout works correctly (307 redirect, cookie cleared)
+- ✅ Admin panel renders with full styling
+- ✅ All security vulnerabilities resolved
+- ✅ No duplicate logout mechanisms
+- ✅ All changes pushed to GitHub
+
+**Key Learnings**:
+
+1. **Next.js Route Structure**
+   - Route groups need explicit layout files for proper processing
+   - Missing layout can prevent Tailwind classes from applying
+   - Simple passthrough layout (`<>{children}</>`) is sufficient
+
+2. **Complete Logout Requires Both**
+   - `supabase.auth.signOut()` - Terminates server-side JWT session
+   - Cookie deletion - Clears client-side access token
+   - Missing either one leaves security holes
+
+3. **Middleware Path Matching**
+   - `startsWith()` allows path traversal attacks
+   - Use exact `===` match for security endpoints
+   - Example: `/api/admin/logout/../secret` would bypass protection
+
+4. **Open Redirect Prevention**
+   - Never derive redirect URLs from request headers (Host, Origin)
+   - Always use hardcoded URLs based on NODE_ENV
+   - User-controlled redirects = attacker-controlled destination
+
+5. **Codex Review Catches Functional Regressions**
+   - @code-reviewer caught security issues
+   - Codex caught functional regressions (data loss, broken features)
+   - Both reviews are valuable: security + correctness
+   - Protocol working as designed: commit → review → fix → push
+
+**Next Steps**:
+- Continue with Priority 1: Customer Dashboard (Stitch designs)
+- Or Priority 2: Complete Business Dashboard features
+- Or Priority 3: Add missing test IDs for E2E coverage
+
+**Status**: Admin panel styling fixed, secure logout implemented, all security issues resolved. Ready for production.
