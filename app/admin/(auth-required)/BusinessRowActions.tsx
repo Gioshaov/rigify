@@ -20,12 +20,12 @@ export function BusinessRowActions({ business }: BusinessRowActionsProps) {
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${business.name}? This will permanently delete all associated staff, services, bookings, and reviews. This action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete ${business.name}? This will permanently delete the business owner's account, all staff, services, bookings, and reviews. This action cannot be undone.`)) {
       return;
     }
 
     setDeleting(true);
-    const result = await deleteBusiness(business.id, business.name);
+    const result = await deleteBusiness(business.id);
 
     if (result.error) {
       alert(`Failed to delete business: ${result.error}`);

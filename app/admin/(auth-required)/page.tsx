@@ -59,7 +59,7 @@ export default async function SuperAdminDashboard() {
         />
 
         {/* STAT CARDS */}
-        <div className="grid grid-cols-4 gap-4 mt-6 px-8">
+        <div className="grid grid-cols-5 gap-4 mt-6 px-8">
           <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
             <p className="text-[#888888] text-[11px] uppercase tracking-widest">
               Total Businesses
@@ -74,6 +74,14 @@ export default async function SuperAdminDashboard() {
             </p>
             <p className="text-[#d4a843] text-5xl font-bold font-mono mt-2 leading-none">
               {activeBusinesses || 0}
+            </p>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">
+            <p className="text-[#888888] text-[11px] uppercase tracking-widest">
+              Operating Cities
+            </p>
+            <p className="text-[#d4a843] text-5xl font-bold font-mono mt-2 leading-none">
+              {operatingCities || 0}
             </p>
           </div>
           <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded p-5">

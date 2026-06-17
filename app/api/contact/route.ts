@@ -23,21 +23,19 @@ async function checkRateLimit(ip: string): Promise<boolean> {
   try {
     const key = `rate-limit:contact:${ip}`
 
-    // Get current count
-    const count = await kv.get<number>(key)
+    // Increment atomically (avoids race condition with concurrent requests)
+    const count = await kv.incr(key)
 
-    if (count === null) {
-      // First request - set count to 1 with expiry
-      await kv.set(key, 1, { ex: RATE_LIMIT_WINDOW })
-      return true
+    // Set expiry on first increment (when count === 1)
+    if (count === 1) {
+      await kv.expire(key, RATE_LIMIT_WINDOW)
     }
 
-    if (count >= RATE_LIMIT) {
+    // Check if over limit
+    if (count > RATE_LIMIT) {
       return false
     }
 
-    // Increment count
-    await kv.incr(key)
     return true
   } catch (error) {
     // If Redis is unavailable, log error and allow request
