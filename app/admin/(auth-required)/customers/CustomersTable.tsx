@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatTbilisi } from '@/lib/utils/datetime';
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { suspendCustomer, activateCustomer, deleteCustomer } from './actions';
 import { Ban, CheckCircle, Trash2 } from 'lucide-react';
 
@@ -40,6 +40,14 @@ export function CustomersTable({
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
+
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (!value || value === 'all') {
@@ -47,7 +55,7 @@ export function CustomersTable({
     } else {
       params.set(key, value);
     }
-    params.delete('page'); // Reset to page 1 on filter change
+    params.delete('page');
     router.push(`/admin/customers?${params.toString()}`);
   };
 
@@ -113,174 +121,184 @@ export function CustomersTable({
 
   return (
     <div>
-      {/* Filters */}
-      <div className="mb-6 flex items-center gap-4">
-        <div className="flex-1">
-          <label htmlFor="search-input" className="block text-xs font-medium text-[#888888] mb-2 uppercase tracking-wide">
-            Search
-          </label>
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Search by name, email, or phone..."
-            defaultValue={searchQuery}
-            data-testid="customers-search-input"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (searchTimerRef.current) {
-                clearTimeout(searchTimerRef.current);
-              }
-              searchTimerRef.current = setTimeout(() => updateFilter('search', value), 500);
-            }}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-4 py-2 text-white text-sm"
-          />
-        </div>
+      {/* Filter Bar */}
+      <div className="border-b border-[rgba(255,255,255,0.06)] px-8 py-4 bg-[#111111]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Search Input */}
+            <div className="w-80">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                defaultValue={searchQuery}
+                data-testid="customers-search-input"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (searchTimerRef.current) {
+                    clearTimeout(searchTimerRef.current);
+                  }
+                  searchTimerRef.current = setTimeout(() => updateFilter('search', value), 500);
+                }}
+                className="w-full h-9 px-4 bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs rounded-none placeholder:text-[#6b6880] focus:outline-none focus:border-[#d4a843] transition-colors"
+              />
+            </div>
 
-        <div>
-          <label htmlFor="status-filter" className="block text-xs font-medium text-[#888888] mb-2 uppercase tracking-wide">
-            Status
-          </label>
-          <select
-            id="status-filter"
-            value={selectedStatus}
-            onChange={(e) => updateFilter('status', e.target.value)}
-            data-testid="customers-status-filter"
-            className="bg-[#1a1a1a] border border-[#2a2a2a] rounded px-4 py-2 text-white text-sm"
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="suspended">Suspended</option>
-          </select>
-        </div>
+            {/* Status Filter */}
+            <select
+              id="status-filter"
+              value={selectedStatus}
+              onChange={(e) => updateFilter('status', e.target.value)}
+              data-testid="customers-status-filter"
+              className="h-9 px-4 bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs uppercase rounded-none appearance-none cursor-pointer hover:border-[rgba(255,255,255,0.2)] transition-colors"
+              style={{ paddingRight: '2rem', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%236b6880\' d=\'M6 8L2 4h8z\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center' }}
+            >
+              <option value="all">STATUS: ALL</option>
+              <option value="active">STATUS: ACTIVE</option>
+              <option value="suspended">STATUS: SUSPENDED</option>
+            </select>
+          </div>
 
-        <div className="ml-auto text-[#888888] text-sm self-end pb-2">
-          Showing {customers.length} of {totalCount} customers
+          {/* Results Count */}
+          <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+            Showing {customers.length} of {totalCount} customers
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#2a2a2a]">
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Name
-                </th>
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Contact
-                </th>
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Status
-                </th>
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Bookings
-                </th>
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Last Booking
-                </th>
-                <th className="text-left py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Joined
-                </th>
-                <th className="text-right py-3 px-4 text-[#888888] text-[11px] uppercase tracking-widest font-medium">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-8 text-[#888888]">
-                    No customers found
-                  </td>
-                </tr>
-              ) : (
-                customers.map((customer) => (
-                  <tr
-                    key={customer.id}
-                    data-testid={`customer-row-${customer.id}`}
-                    className="border-b border-[#222222] hover:bg-[#222222]"
-                  >
-                    <td className="py-3 px-4 text-[#cccccc] font-medium">
-                      {customer.name}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="text-[#cccccc] text-xs">
-                        <div>{customer.email}</div>
-                        <div className="text-[#888888] mt-0.5">{customer.phone}</div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      {customer.status === 'active' ? (
-                        <span className="inline-block bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] text-[#22c55e] text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-sm">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-block bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-[#ef4444] text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-sm">
-                          Suspended
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-[#cccccc] font-mono">
-                      {customer.bookingCount}
-                    </td>
-                    <td className="py-3 px-4 text-[#888888] text-xs font-mono">
-                      {customer.lastBooking
-                        ? formatTbilisi(customer.lastBooking, 'yyyy-MM-dd')
-                        : '—'}
-                    </td>
-                    <td className="py-3 px-4 text-[#888888] text-xs font-mono">
-                      {formatTbilisi(customer.created_at, 'yyyy-MM-dd')}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-end gap-3">
-                        {customer.status === 'active' ? (
-                          <button
-                            onClick={() => handleSuspend(customer.id, customer.name)}
-                            disabled={actionInProgress === customer.id || isPending}
-                            data-testid={`customer-suspend-${customer.id}`}
-                            className="text-[#555555] hover:text-[#ef4444] transition-colors disabled:opacity-50"
-                            title="Suspend customer"
-                            aria-label={`Suspend ${customer.name}`}
-                          >
-                            <Ban className="w-4 h-4" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleActivate(customer.id, customer.name)}
-                            disabled={actionInProgress === customer.id || isPending}
-                            data-testid={`customer-activate-${customer.id}`}
-                            className="text-[#555555] hover:text-[#22c55e] transition-colors disabled:opacity-50"
-                            title="Activate customer"
-                            aria-label={`Activate ${customer.name}`}
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(customer.id, customer.name)}
-                          disabled={actionInProgress === customer.id || isPending}
-                          data-testid={`customer-delete-${customer.id}`}
-                          className="text-[#555555] hover:text-[#ef4444] transition-colors disabled:opacity-50"
-                          title="Delete customer"
-                          aria-label={`Delete ${customer.name}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Column Headers */}
+      <div className="px-8 py-3 border-b border-[rgba(255,255,255,0.06)] grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_120px] gap-4">
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Name
         </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Contact
+        </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Status
+        </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Bookings
+        </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Last Booking
+        </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Joined
+        </div>
+        <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider text-right">
+          Actions
+        </div>
+      </div>
+
+      {/* Customer Rows */}
+      <div>
+        {customers.length === 0 ? (
+          <div className="px-8 py-12 text-center text-[#6b6880] font-mono text-sm">
+            No customers found
+          </div>
+        ) : (
+          customers.map((customer) => (
+            <div
+              key={customer.id}
+              data-testid={`customer-row-${customer.id}`}
+              className="relative px-8 py-4 bg-[#111111] border-b border-[rgba(255,255,255,0.06)] hover:bg-[#1a1a1a] hover:border-l-[1px] hover:border-l-[#d4a843] transition-all grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center min-h-[64px]"
+            >
+              {/* Name */}
+              <div>
+                <div className="text-white text-[15px] font-medium">
+                  {customer.name}
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div>
+                <div className="text-white font-mono text-[11px]">
+                  {customer.email}
+                </div>
+                <div className="text-[#6b6880] font-mono text-[11px] mt-1">
+                  {customer.phone}
+                </div>
+              </div>
+
+              {/* Status */}
+              <div>
+                <div className="flex items-center gap-2" data-testid={`customer-status-${customer.id}`}>
+                  <div
+                    className={`w-[5px] h-[5px] rounded-full ${
+                      customer.status === 'active' ? 'bg-[#22c55e]' : 'bg-[#ef4444]'
+                    }`}
+                  />
+                  <span className={`font-mono text-[11px] uppercase tracking-wider ${
+                    customer.status === 'active' ? 'text-white' : 'text-[#ef4444]'
+                  }`}>
+                    {customer.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Bookings */}
+              <div className="text-white font-mono text-[11px]">
+                {customer.bookingCount}
+              </div>
+
+              {/* Last Booking */}
+              <div className="text-[#6b6880] font-mono text-[11px]">
+                {customer.lastBooking ? formatTbilisi(customer.lastBooking, 'yyyy-MM-dd') : '—'}
+              </div>
+
+              {/* Joined */}
+              <div className="text-[#6b6880] font-mono text-[11px]">
+                {formatTbilisi(customer.created_at, 'yyyy-MM-dd')}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2">
+                {customer.status === 'active' ? (
+                  <button
+                    onClick={() => handleSuspend(customer.id, customer.name)}
+                    disabled={actionInProgress === customer.id || isPending}
+                    data-testid={`customer-suspend-${customer.id}`}
+                    className="h-7 px-3 border border-[rgba(255,255,255,0.12)] text-[#6b6880] hover:text-[#ef4444] hover:border-[#ef4444] font-mono text-[11px] uppercase rounded-none transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Suspend customer"
+                    aria-label={`Suspend ${customer.name}`}
+                  >
+                    <Ban className="w-3 h-3" />
+                    Suspend
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleActivate(customer.id, customer.name)}
+                    disabled={actionInProgress === customer.id || isPending}
+                    data-testid={`customer-activate-${customer.id}`}
+                    className="h-7 px-3 border border-[rgba(255,255,255,0.12)] text-[#6b6880] hover:text-[#22c55e] hover:border-[#22c55e] font-mono text-[11px] uppercase rounded-none transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Activate customer"
+                    aria-label={`Activate ${customer.name}`}
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                    Activate
+                  </button>
+                )}
+                <button
+                  onClick={() => handleDelete(customer.id, customer.name)}
+                  disabled={actionInProgress === customer.id || isPending}
+                  data-testid={`customer-delete-${customer.id}`}
+                  className="w-7 h-7 flex items-center justify-center text-[#6b6880] hover:text-[#ef4444] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete customer"
+                  aria-label={`Delete ${customer.name}`}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <div className="text-[#888888] text-sm">
+        <div className="mt-6 px-8 flex items-center justify-between">
+          <div className="text-[#6b6880] font-mono text-[11px]">
             Page {currentPage} of {totalPages}
           </div>
           <div className="flex items-center gap-2">
@@ -288,17 +306,17 @@ export function CustomersTable({
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
               data-testid="customers-prev-page"
-              className="px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#222222]"
+              className="h-9 px-4 border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs uppercase rounded-none hover:border-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              ← Previous
             </button>
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
               data-testid="customers-next-page"
-              className="px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#222222]"
+              className="h-9 px-4 border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs uppercase rounded-none hover:border-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              Next →
             </button>
           </div>
         </div>
