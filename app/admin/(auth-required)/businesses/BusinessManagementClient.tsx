@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { toggleBusinessStatus } from './actions';
 
 type Business = {
   id: string;
@@ -20,10 +22,13 @@ type BusinessManagementClientProps = {
 };
 
 export function BusinessManagementClient({ businesses, totalCount }: BusinessManagementClientProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
+  const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
   // Filter businesses
   const filteredBusinesses = useMemo(() => {
@@ -52,9 +57,37 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const handlePopoverAction = (action: string, businessId: string) => {
-    console.log(`Action: ${action}, Business ID: ${businessId}`);
+  const handlePopoverAction = async (action: string, businessId: string, business: Business) => {
     setOpenPopoverId(null);
+
+    if (action === 'edit') {
+      router.push(`/admin/businesses/${businessId}/edit`);
+    } else if (action === 'view-profile') {
+      if (business.subdomain) {
+        window.open(`https://${business.subdomain}.rigify.ge`, '_blank');
+      } else {
+        alert('This business does not have a subdomain configured.');
+      }
+    } else if (action === 'manage-staff') {
+      router.push(`/admin/businesses/${businessId}/edit#staff`);
+    } else if (action === 'deactivate') {
+      const actionText = business.status === 'active' ? 'deactivate' : 'activate';
+      if (!confirm(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} "${business.name}"?`)) {
+        return;
+      }
+
+      setActionInProgress(businessId);
+      startTransition(async () => {
+        const result = await toggleBusinessStatus(businessId, business.status);
+        setActionInProgress(null);
+
+        if (result.error) {
+          alert(`Failed to ${actionText} business: ${result.error}`);
+        } else {
+          router.refresh();
+        }
+      });
+    }
   };
 
   // Get unique cities and districts for filters
@@ -270,31 +303,37 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                     <div>
                       <button
                         data-testid={`popover-edit-${business.id}`}
-                        onClick={() => handlePopoverAction('edit', business.id)}
-                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)]"
+                        onClick={() => handlePopoverAction('edit', business.id, business)}
+                        disabled={actionInProgress === business.id || isPending}
+                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Edit details
                       </button>
                       <button
                         data-testid={`popover-view-profile-${business.id}`}
-                        onClick={() => handlePopoverAction('view-profile', business.id)}
-                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)]"
+                        onClick={() => handlePopoverAction('view-profile', business.id, business)}
+                        disabled={actionInProgress === business.id || isPending}
+                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         View profile
                       </button>
                       <button
                         data-testid={`popover-manage-staff-${business.id}`}
-                        onClick={() => handlePopoverAction('manage-staff', business.id)}
-                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)]"
+                        onClick={() => handlePopoverAction('manage-staff', business.id, business)}
+                        disabled={actionInProgress === business.id || isPending}
+                        className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Manage staff
                       </button>
                       <button
                         data-testid={`popover-deactivate-${business.id}`}
-                        onClick={() => handlePopoverAction('deactivate', business.id)}
-                        className="w-full h-9 px-4 text-left text-[#ff6b6b] font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                        onClick={() => handlePopoverAction('deactivate', business.id, business)}
+                        disabled={actionInProgress === business.id || isPending}
+                        className={`w-full h-9 px-4 text-left font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          business.status === 'active' ? 'text-[#ff6b6b]' : 'text-[#22c55e]'
+                        }`}
                       >
-                        DEACTIVATE
+                        {business.status === 'active' ? 'DEACTIVATE' : 'ACTIVATE'}
                       </button>
                     </div>
                   </div>
