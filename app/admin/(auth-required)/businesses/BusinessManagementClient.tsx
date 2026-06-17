@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useTransition } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
@@ -23,12 +23,12 @@ type BusinessManagementClientProps = {
 
 export function BusinessManagementClient({ businesses, totalCount }: BusinessManagementClientProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const [optimisticStatus, setOptimisticStatus] = useState<Record<string, string>>({});
 
   // Filter businesses
   const filteredBusinesses = useMemo(() => {
@@ -71,22 +71,25 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
     } else if (action === 'manage-staff') {
       router.push(`/admin/businesses/${businessId}/edit#staff`);
     } else if (action === 'deactivate') {
-      const actionText = business.status === 'active' ? 'deactivate' : 'activate';
+      const currentStatus = optimisticStatus[businessId] || business.status;
+      const actionText = currentStatus === 'active' ? 'deactivate' : 'activate';
       if (!confirm(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} "${business.name}"?`)) {
         return;
       }
 
       setActionInProgress(businessId);
-      startTransition(async () => {
-        const result = await toggleBusinessStatus(businessId, business.status);
-        setActionInProgress(null);
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
-        if (result.error) {
-          alert(`Failed to ${actionText} business: ${result.error}`);
-        } else {
-          router.refresh();
-        }
-      });
+      const result = await toggleBusinessStatus(businessId, currentStatus);
+      setActionInProgress(null);
+
+      if (result.error) {
+        alert(`Failed to ${actionText} business: ${result.error}`);
+      } else {
+        // Set optimistic status immediately
+        setOptimisticStatus(prev => ({ ...prev, [businessId]: newStatus }));
+        router.refresh();
+      }
     }
   };
 
@@ -304,7 +307,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                       <button
                         data-testid={`popover-edit-${business.id}`}
                         onClick={() => handlePopoverAction('edit', business.id, business)}
-                        disabled={actionInProgress === business.id || isPending}
+                        disabled={actionInProgress === business.id}
                         className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Edit details
@@ -312,7 +315,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                       <button
                         data-testid={`popover-view-profile-${business.id}`}
                         onClick={() => handlePopoverAction('view-profile', business.id, business)}
-                        disabled={actionInProgress === business.id || isPending}
+                        disabled={actionInProgress === business.id}
                         className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         View profile
@@ -320,7 +323,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                       <button
                         data-testid={`popover-manage-staff-${business.id}`}
                         onClick={() => handlePopoverAction('manage-staff', business.id, business)}
-                        disabled={actionInProgress === business.id || isPending}
+                        disabled={actionInProgress === business.id}
                         className="w-full h-9 px-4 text-left text-white font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors border-b border-[rgba(255,255,255,0.06)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Manage staff
@@ -328,12 +331,12 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                       <button
                         data-testid={`popover-deactivate-${business.id}`}
                         onClick={() => handlePopoverAction('deactivate', business.id, business)}
-                        disabled={actionInProgress === business.id || isPending}
+                        disabled={actionInProgress === business.id}
                         className={`w-full h-9 px-4 text-left font-mono text-xs hover:bg-[rgba(255,255,255,0.04)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                          business.status === 'active' ? 'text-[#ff6b6b]' : 'text-[#22c55e]'
+                          (optimisticStatus[business.id] || business.status) === 'active' ? 'text-[#ff6b6b]' : 'text-[#22c55e]'
                         }`}
                       >
-                        {business.status === 'active' ? 'DEACTIVATE' : 'ACTIVATE'}
+                        {(optimisticStatus[business.id] || business.status) === 'active' ? 'DEACTIVATE' : 'ACTIVATE'}
                       </button>
                     </div>
                   </div>
