@@ -1,21 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import {
-  LayoutGrid,
-  Building2,
-  Users,
-  Tag,
-  Image as ImageIcon,
-  Settings,
-  Bell,
-  Plus,
-  Calendar,
-  Shield,
-  LogOut,
-} from 'lucide-react';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { BusinessRowActions } from './BusinessRowActions';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminTopBar } from '@/components/admin/AdminTopBar';
 
 export default async function SuperAdminDashboard() {
   const supabase = createClient();
@@ -51,135 +40,15 @@ export default async function SuperAdminDashboard() {
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
       {/* SIDEBAR */}
-      <aside className="w-60 bg-[#111111] flex-shrink-0 fixed h-screen">
-        {/* Logo */}
-        <div className="pt-8 pb-8 px-5">
-          <h1 className="text-[#d4a843] text-xl font-bold uppercase tracking-widest">
-            RIGIFY
-          </h1>
-          <p className="text-[#888888] text-[11px] uppercase tracking-widest mt-1">
-            SUPER ADMIN
-          </p>
-        </div>
-
-        {/* Navigation */}
-        <nav className="space-y-1">
-          <Link
-            href="/admin"
-            data-testid="nav-dashboard"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors bg-[#1a1a1a] text-white border-l-2 border-[#d4a843]"
-          >
-            <LayoutGrid className="w-4 h-4" />
-            Dashboard
-          </Link>
-
-          <Link
-            href="/admin"
-            data-testid="nav-businesses"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
-          >
-            <Building2 className="w-4 h-4" />
-            Businesses
-          </Link>
-
-          <Link
-            href="/admin/customers"
-            data-testid="nav-customers"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
-          >
-            <Users className="w-4 h-4" />
-            Customers
-          </Link>
-
-          <Link
-            href="/admin/bookings"
-            data-testid="nav-bookings"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
-          >
-            <Calendar className="w-4 h-4" />
-            Bookings
-          </Link>
-
-          <Link
-            href="/admin/admins"
-            data-testid="nav-admins"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
-          >
-            <Shield className="w-4 h-4" />
-            Admins
-          </Link>
-
-          <Link
-            href="/admin/audit-logs"
-            data-testid="nav-audit-logs"
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider transition-colors text-[#888888] hover:bg-[#1a1a1a] hover:text-white border-l-2 border-transparent"
-          >
-            <Users className="w-4 h-4" />
-            Audit Logs
-          </Link>
-
-          <div className="px-5 py-3 text-[#555555] text-xs uppercase tracking-widest">
-            Coming Soon
-          </div>
-
-          <button
-            disabled
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider text-[#555555] cursor-not-allowed border-l-2 border-transparent opacity-50"
-          >
-            <Tag className="w-4 h-4" />
-            Categories
-          </button>
-
-          <button
-            disabled
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider text-[#555555] cursor-not-allowed border-l-2 border-transparent opacity-50"
-          >
-            <ImageIcon className="w-4 h-4" />
-            Media
-          </button>
-
-          <button
-            disabled
-            className="w-full flex items-center gap-3 px-5 py-3 text-sm uppercase tracking-wider text-[#555555] cursor-not-allowed border-l-2 border-transparent opacity-50"
-          >
-            <Settings className="w-4 h-4" />
-            Settings
-          </button>
-        </nav>
-      </aside>
+      <AdminSidebar />
 
       {/* MAIN CONTENT */}
       <main className="flex-1 ml-60 overflow-y-auto">
         {/* TOP BAR */}
-        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold text-white">Dashboard Overview</h2>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button data-testid="notifications-btn" className="text-[#888888] hover:text-white transition-colors">
-              <Bell className="w-[18px] h-[18px]" />
-            </button>
-            <form action="/api/admin/logout" method="POST">
-              <button
-                type="submit"
-                data-testid="btn-logout"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] uppercase tracking-widest text-[#666666] border border-[#252525] rounded hover:border-[#444444] hover:text-[#888888] transition-colors"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                Logout
-              </button>
-            </form>
-            <Link
-              href="/admin/onboard"
-              data-testid="new-business-btn"
-              className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-xs px-5 py-2.5 rounded hover:brightness-110 transition-all flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              New Business
-            </Link>
-          </div>
-        </header>
+        <AdminTopBar
+          title="Dashboard Overview"
+          showNewBusinessButton={true}
+        />
 
         {/* STAT CARDS */}
         <div className="grid grid-cols-4 gap-4 mt-6 px-8">

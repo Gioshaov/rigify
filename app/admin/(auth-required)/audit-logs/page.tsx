@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AuditLogsTable } from './AuditLogsTable';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminTopBar } from '@/components/admin/AdminTopBar';
 
 export default async function AuditLogsPage({
   searchParams,
@@ -43,22 +45,36 @@ export default async function AuditLogsPage({
   const totalPages = count ? Math.ceil(count / pageSize) : 1;
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">Audit Logs</h1>
-        <p className="text-[#888888] text-sm">
-          Immutable record of all admin actions for security and compliance
-        </p>
-      </div>
+    <div className="min-h-screen flex bg-[#0a0a0a]">
+      {/* SIDEBAR */}
+      <AdminSidebar />
 
-      <AuditLogsTable
-        logs={logs || []}
-        currentPage={page}
-        totalPages={totalPages}
-        totalCount={count || 0}
-        selectedAction={searchParams.action || 'all'}
-        selectedResource={searchParams.resource || 'all'}
-      />
+      {/* MAIN CONTENT */}
+      <main className="flex-1 ml-60 overflow-y-auto">
+        {/* TOP BAR */}
+        <AdminTopBar
+          title="Audit Logs"
+          subtitle={`${count || 0} total entries`}
+        />
+
+        {/* CONTENT */}
+        <div className="p-8">
+          <div className="mb-6">
+            <p className="text-[#888888] text-sm">
+              Immutable record of all admin actions for security and compliance
+            </p>
+          </div>
+
+          <AuditLogsTable
+            logs={logs || []}
+            currentPage={page}
+            totalPages={totalPages}
+            totalCount={count || 0}
+            selectedAction={searchParams.action || 'all'}
+            selectedResource={searchParams.resource || 'all'}
+          />
+        </div>
+      </main>
     </div>
   );
 }
