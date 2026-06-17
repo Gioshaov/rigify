@@ -162,10 +162,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
     if (result.success) {
       setSuccess(true);
       setLoading(false);
-      // Auto-close after 2 seconds to show success message
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      // Success state stays open — user dismisses manually
     } else {
       setError(result.error || "Failed to reschedule booking");
       setLoading(false);
@@ -210,25 +207,75 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto">
-          {/* Success Message */}
-          {success && (
-            <div className="flex flex-col items-center justify-center py-12" data-testid="reschedule-success">
-              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-                <span className="material-symbols-outlined text-green-500 text-[48px]">check_circle</span>
+        {success ? (
+          /* Success View - replaces entire modal content */
+          <>
+            <style>{`
+              @keyframes drawLine {
+                from { transform: scaleX(0); }
+                to { transform: scaleX(1); }
+              }
+              @keyframes fadeScaleIn {
+                from { opacity: 0; transform: scale(0.8); }
+                to { opacity: 1; transform: scale(1); }
+              }
+            `}</style>
+            <div data-testid="reschedule-success-view" className="flex flex-col h-full">
+              {/* Animated gold line */}
+              <div className="h-[2px] bg-[#d4a843] origin-left"
+                   style={{ animation: 'drawLine 600ms ease-out forwards', transformOrigin: 'left' }}>
               </div>
-              <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
-                Booking Rescheduled Successfully
-              </h2>
-              <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant text-center max-w-md">
-                Your appointment has been rescheduled. Check your bookings for the updated details.
-              </p>
-            </div>
-          )}
 
-          {/* Booking Form (hidden when success) */}
-          {!success && (
-            <>
+              {/* Success content */}
+              <div className="flex-1 flex flex-col items-center justify-center px-8 py-16 space-y-8">
+                {/* Large checkmark */}
+                <div className="text-[120px] leading-none text-[#d4a843]"
+                     style={{ animation: 'fadeScaleIn 300ms ease-out forwards' }}>
+                  ✓
+                </div>
+
+              {/* Heading */}
+              <h2 className="font-hanken text-[32px] leading-[1.2] font-bold text-white text-center">
+                Appointment Rescheduled
+              </h2>
+
+              {/* Data rows */}
+              <div className="space-y-4 text-center">
+                <div className="space-y-1">
+                  <div className="font-mono text-[12px] tracking-wider uppercase text-[#6b6880]">
+                    New Date
+                  </div>
+                  <div className="font-mono text-[14px] text-white">
+                    {selectedDate && selectedTime ?
+                      `${MONTH_NAMES[currentMonth]} ${selectedDate}, ${currentYear} at ${selectedTime}`
+                      : '—'}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="font-mono text-[12px] tracking-wider uppercase text-[#6b6880]">
+                    Booking ID
+                  </div>
+                  <div className="font-mono text-[14px] text-white">
+                    {booking.id.slice(0, 8).toUpperCase()}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Done button */}
+            <div className="px-6 pb-6">
+              <button
+                data-testid="reschedule-done-btn"
+                onClick={onClose}
+                className="w-full h-[44px] bg-[#d4a843] text-black font-mono text-[12px] tracking-[0.15em] uppercase font-bold hover:brightness-110 active:scale-[0.98] transition-all"
+              >
+                Done
+              </button>
+            </div>
+            </div>
+          </>
+        ) : (
+          <div className="p-6 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto">
           {/* Current Booking Context */}
           <div className="p-6 bg-surface-container-low border border-white/10 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-2">
@@ -457,11 +504,10 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
               {error}
             </div>
           )}
-          </>
-          )}
         </div>
+        )}
 
-        {/* Footer Actions */}
+        {/* Footer Actions - only show when not in success state */}
         {!success && (
         <div className="px-6 py-4 border-t border-white/10 bg-surface-container">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
