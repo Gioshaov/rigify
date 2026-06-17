@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import { submitContactMessage } from "@/app/contact/actions";
 
 export function ContactForm() {
   const [loading, setLoading] = useState(false);
@@ -12,25 +13,29 @@ export function ContactForm() {
     setLoading(true);
     setError(null);
 
-    // TODO: Wire up real submission to server action/API endpoint
-    // Placeholder: simulate success for now
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const formData = new FormData(e.currentTarget);
+    const result = await submitContactMessage(formData);
 
-    setSubmitted(true);
+    if (result.success) {
+      setSubmitted(true);
+    } else {
+      setError(result.error || 'Failed to send message. Please try again.');
+    }
+
     setLoading(false);
   }
 
   if (submitted) {
     return (
-      <div data-testid="contact-success" className="bg-surface-container border border-amber-400/30 p-8 text-center">
-        <span className="material-symbols-outlined text-amber-400 text-[48px] mb-4 block">
-          info
+      <div data-testid="contact-success" className="bg-surface-container border border-green-500/30 p-8 text-center">
+        <span className="material-symbols-outlined text-green-400 text-[48px] mb-4 block">
+          check_circle
         </span>
         <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-3">
-          Form Submitted (Demo)
+          Message Sent Successfully
         </h3>
         <p className="font-hanken text-[16px] leading-[1.6] text-on-surface-variant">
-          This is a placeholder UI. Contact form backend is not yet implemented. Please email us directly at support@rigify.ge for now.
+          Thank you for contacting us! We&apos;ve received your message and will get back to you as soon as possible.
         </p>
       </div>
     );
@@ -122,7 +127,7 @@ export function ContactForm() {
         disabled={loading}
         className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Sending..." : "Send Message (Demo)"}
+        {loading ? "Sending..." : "Send Message"}
       </button>
     </form>
   );
