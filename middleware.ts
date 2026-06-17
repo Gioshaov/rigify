@@ -55,8 +55,7 @@ export async function middleware(request: NextRequest) {
     if (pathname.startsWith('/admin')) {
       const url = request.nextUrl.clone();
       url.hostname = `admin.${hostname}`;
-      // Keep /admin prefix - admin subdomain still uses /admin routes
-      url.pathname = pathname === '/admin' ? '/' : pathname;
+      url.pathname = pathname === '/admin' ? '/' : pathname.replace('/admin', '');
       return NextResponse.redirect(url);
     }
   }
