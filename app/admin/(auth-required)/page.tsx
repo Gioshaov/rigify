@@ -22,6 +22,7 @@ export default async function SuperAdminDashboard() {
     { count: totalCustomers },
     { count: todayBookings },
     { data: recentBusinesses },
+    { data: operatingCities },
   ] = await Promise.all([
     supabase.from('businesses').select('*', { count: 'exact', head: true }),
     supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status', 'active'),
@@ -32,11 +33,8 @@ export default async function SuperAdminDashboard() {
       .select('id, name, subdomain, status, city, created_at')
       .order('created_at', { ascending: false })
       .limit(5),
+    supabase.rpc('get_operating_cities_count'),
   ]);
-
-  // TODO: Replace with SELECT DISTINCT city via RPC or remove until scalable
-  // Temporary: Removed unbounded full-table scan for operating cities count
-  const operatingCities = 0; // Placeholder - shows as "0" until proper implementation
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
