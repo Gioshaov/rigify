@@ -6,7 +6,9 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
 
   // Subdomain routing - admin.rigify.ge or admin.localhost
-  const isAdminSubdomain = hostname.startsWith('admin.');
+  // Disabled in development to allow direct /admin access
+  const isDevelopment = process.env.NODE_ENV === 'development' || hostname.includes('localhost');
+  const isAdminSubdomain = !isDevelopment && hostname.startsWith('admin.');
 
   if (isAdminSubdomain) {
     // Admin password protection layer - only when ADMIN_PREVIEW_PASSWORD is set
