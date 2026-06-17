@@ -84,7 +84,7 @@ export async function rescheduleBookingAction(data: {
   // Verify booking belongs to user
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .select("id, customer_id, business_id, service_id, staff_id, status")
+    .select("id, customer_id, business_id, service_id, staff_id, status, reschedule_count")
     .eq("id", data.bookingId)
     .single();
 
@@ -104,6 +104,12 @@ export async function rescheduleBookingAction(data: {
   // Note: Guest bookings (customer_id IS NULL) cannot be rescheduled via this action
   if (booking.status !== "confirmed") {
     return { success: false, error: "Cannot reschedule this booking" };
+  }
+
+  // Check reschedule limit (maximum 3 reschedules per booking)
+  const rescheduleCount = booking.reschedule_count || 0;
+  if (rescheduleCount >= 3) {
+    return { success: false, error: "Maximum reschedule limit reached (3 times). Please cancel and create a new booking if needed." };
   }
 
   // Parse new date and time using Tbilisi timezone
@@ -186,6 +192,7 @@ export async function rescheduleBookingAction(data: {
     .update({
       appointment_datetime: newDateTime.toISOString(),
       staff_id: targetStaffId,
+      reschedule_count: rescheduleCount + 1,
     })
     .eq("id", data.bookingId)
     .eq("customer_id", user.id)
