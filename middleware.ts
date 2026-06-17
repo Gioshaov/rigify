@@ -6,8 +6,7 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
 
   // Subdomain routing - admin.rigify.ge or admin.localhost
-  // TEMPORARILY DISABLED: Subdomain routing conflicts with /admin route structure
-  const isAdminSubdomain = false; // hostname.startsWith('admin.');
+  const isAdminSubdomain = hostname.startsWith('admin.');
 
   if (isAdminSubdomain) {
     // Admin password protection layer - only when ADMIN_PREVIEW_PASSWORD is set
@@ -53,13 +52,12 @@ export async function middleware(request: NextRequest) {
     }
   } else {
     // On main domain - redirect /admin to admin subdomain
-    // TEMPORARILY DISABLED: Let /admin routes work on main domain
-    // if (pathname.startsWith('/admin')) {
-    //   const url = request.nextUrl.clone();
-    //   url.hostname = `admin.${hostname}`;
-    //   url.pathname = pathname === '/admin' ? '/' : pathname.replace('/admin', '');
-    //   return NextResponse.redirect(url);
-    // }
+    if (pathname.startsWith('/admin')) {
+      const url = request.nextUrl.clone();
+      url.hostname = `admin.${hostname}`;
+      url.pathname = pathname === '/admin' ? '/' : pathname.replace('/admin', '');
+      return NextResponse.redirect(url);
+    }
   }
 
   // Password protection layer - only when SITE_PASSWORD is set
