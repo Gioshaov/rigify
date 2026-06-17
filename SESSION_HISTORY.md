@@ -1615,3 +1615,140 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 - Or Priority 3: Add missing test IDs for E2E coverage
 
 **Status**: Admin panel styling fixed, secure logout implemented, all security issues resolved. Ready for production.
+
+---
+
+### Session 21 - June 17, 2026: Security Fixes & Reschedule Improvements
+
+**Objective**: Fix critical security vulnerabilities identified in code review and add reschedule improvements with inline success states
+
+**Context**: Multiple security issues needed fixing (race conditions, SQL injection, RLS gaps, orphaned auth users), plus user requested reschedule limit and inline success UX
+
+**Accomplished**:
+
+1. **Critical Security Fixes (9 issues resolved)** ✅
+
+   **Race Conditions**:
+   - Rate limiting: Changed from get+check+incr to atomic incr+check pattern with Vercel KV
+   - Booking overlap: Added PostgreSQL exclusion constraint with btree_gist + tstzrange
+   - Reschedule limit: Added database-level `.lt('reschedule_count', 3)` guard for atomic enforcement
+
+   **SQL Injection & RLS**:
+   - Operating cities RPC: Added `set search_path = public` to prevent search_path injection
+   - Contact form: Added `authenticated` role to insert policy (anon-only blocked logged-in users)
+   - Contact form privilege: Changed from `createAdminClient()` to `createClient()` (respects RLS)
+
+   **Data Integrity**:
+   - Delete business: Reversed order (auth user first, then business) + NULL owner_id handling
+   - Staff_id constraint: Added NOT NULL constraint with backfill migration (fixes exclusion constraint bypass)
+   - Dashboard appointments: Added auto-assignment when staffId is NULL (fixes NOT NULL constraint breakage)
+
+   **Documentation**:
+   - Rate limiting: Added comment explaining Vercel's trusted x-forwarded-for header
+
+2. **Reschedule Features** ✅
+   - **3-reschedule limit per booking**: Migration added `reschedule_count` column, action enforces limit with clear error
+   - **Inline success states** (both modal and page flows):
+     - Animated gold line (600ms draw, CSS keyframes)
+     - Large checkmark with fade+scale entrance (300ms)
+     - Data rows: NEW DATE and BOOKING ID
+     - DONE button for manual dismissal (no auto-close, no redirect)
+   - **Auto "+" prefix**: Phone input automatically prepends "+" if missing
+
+3. **Quick Wins Completed** ✅
+   - Contact form backend with validation
+   - Operating cities stat card (admin dashboard)
+   - Language persistence via cookies + SSR
+   - Delete business with auth cleanup
+
+4. **Code Reviews (2 rounds)** ✅
+   - **@code-reviewer**: Found 1 Critical + 5 Major issues → All fixed → PASS
+   - **Codex review**: Found 3 Priority runtime failures → All fixed → PASS
+   - Total: 9 issues identified and resolved before push
+
+5. **Test IDs Added** ✅
+   - Reschedule success views: `reschedule-success-view`, `reschedule-done-btn`
+   - Admin stat cards: 5 new test IDs following naming convention
+
+**Migrations Created** (6 total):
+1. `20260617120000_create_contact_messages.sql` - Contact form table
+2. `20260617121000_add_operating_cities_rpc.sql` - Operating cities RPC with pinned search_path
+3. `20260617122000_fix_contact_messages_rls.sql` - RLS policies for both anon and authenticated
+4. `20260617123000_prevent_booking_overlap.sql` - Exclusion constraint with btree_gist
+5. `20260617124000_add_reschedule_limit.sql` - Reschedule count column
+6. `20260617125000_bookings_staff_id_not_null.sql` - NOT NULL constraint with backfill
+
+**Files Modified** (10 files):
+- `app/admin/(auth-required)/businesses/actions.ts` (delete with NULL owner_id handling)
+- `app/admin/(auth-required)/page.tsx` (operating cities stat, test IDs)
+- `app/api/contact/route.ts` (atomic rate limiting, IP documentation)
+- `app/contact/actions.ts` (use regular client, respect RLS)
+- `app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx` (inline success)
+- `app/customer/dashboard/actions.ts` (atomic reschedule limit, increment counter)
+- `app/customer/dashboard/RescheduleModal.tsx` (inline success, read earlier in session)
+- `app/dashboard/appointments/actions.ts` (auto-assign staff for "Any Staff")
+- `supabase/migrations/20260617121000_add_operating_cities_rpc.sql` (search_path)
+- `supabase/migrations/20260617122000_fix_contact_messages_rls.sql` (authenticated policy)
+
+**Security Issues Fixed**:
+- ✅ C1: Rate limiting race condition (atomic Redis operations)
+- ✅ C1: Booking overlap race condition (PostgreSQL exclusion constraint)
+- ✅ C1: NULL staff_id constraint bypass (NOT NULL with backfill)
+- ✅ M1: SQL injection risk (pinned search_path)
+- ✅ M2: Orphaned auth users (delete order + NULL handling)
+- ✅ M3: Reschedule limit bypass (database-level atomic check)
+- ✅ M4: Overprivileged contact form (respects RLS)
+- ✅ P1: Dashboard "Any Staff" broken (auto-assignment)
+- ✅ P2: Contact form for authenticated users (added policy)
+
+**Features Delivered**:
+- ✅ Reschedule limit (3x max) with atomic enforcement
+- ✅ Inline success states with animations (no redirect)
+- ✅ Operating cities stat card
+- ✅ Auto "+" prefix on phone input
+- ✅ Language persistence (cookies + SSR)
+- ✅ Contact form with validation
+
+**Commits**:
+- `0503f22` - Fix critical security issues and add reschedule improvements
+
+**Verification**:
+- ✅ TypeScript compilation clean
+- ✅ 6 migrations applied successfully
+- ✅ @code-reviewer PASS
+- ✅ Codex review PASS
+- ✅ All changes pushed to GitHub
+
+**Key Learnings**:
+
+1. **PostgreSQL NULL = NULL Returns NULL, Not TRUE**
+   - Exclusion constraints don't work with NULL values
+   - Solution: Use NOT NULL constraints when relying on equality checks
+   - Impact: NULL staff_id bookings were bypassing overlap prevention
+
+2. **Atomic Operations for Distributed Systems**
+   - Redis: incr+check (not get+check+incr) prevents race conditions
+   - Database: WHERE clauses in UPDATE prevent concurrent bypass
+   - Impact: Reschedule limit and rate limiting now race-condition-proof
+
+3. **security definer Functions Need Pinned search_path**
+   - Without it, attackers can create malicious schema objects
+   - Always add `set search_path = public` (or empty string)
+   - Impact: Prevents search_path injection attacks
+
+4. **Delete Order Matters for Data Integrity**
+   - Delete auth users BEFORE business data (reversible if second step fails)
+   - Handle NULL foreign keys explicitly (test/seed data)
+   - Impact: Prevents orphaned credentials, supports full data lifecycle
+
+5. **RLS Policies Need Both anon AND authenticated Roles**
+   - Public forms need to work for both logged-out and logged-in users
+   - Don't assume "public" = "anon only"
+   - Impact: Contact form now works for everyone
+
+**Next Steps**:
+- Continue with Priority 1: Customer Dashboard (Stitch designs)
+- Or Priority 2: Complete Business Dashboard features (delete service, delete staff, edit staff)
+- Or Priority 3: Add missing test IDs for E2E coverage
+
+**Status**: 9 security issues resolved, reschedule improvements deployed, 6 migrations applied. All changes tested, reviewed, and pushed to production.

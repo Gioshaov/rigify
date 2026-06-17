@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 16, 2026  
-**Session**: Session 20 - Admin Panel Styling & Secure Logout
+**Last Updated**: June 17, 2026  
+**Session**: Session 21 - Security Fixes & Reschedule Improvements
 
 ---
 
@@ -111,146 +111,200 @@
 
 ---
 
-## Latest Session Work (Session 20 - June 16, 2026)
+## Latest Session Work (Session 21 - June 17, 2026)
 
-**Objective**: Fix admin panel styling issue and implement secure logout functionality
+**Objective**: Fix critical security vulnerabilities and add reschedule improvements with inline success states
 
-### Phase 1: Admin Panel Styling Fix
+### Phase 1: Critical Security Fixes (Code Review Issues)
 
-**Problem**: Admin panel at `/admin` rendering completely unstyled (white screen, no Tailwind classes)
+**@code-reviewer Findings**: 1 Critical, 5 Major issues requiring fixes
 
-**Root Cause**: Missing `app/admin/layout.tsx` file
-- Next.js couldn't properly process route without layout wrapper
-- Tailwind classes weren't being applied without proper route structure
+**Critical Issues Fixed**:
 
-**Solution**: Created `app/admin/layout.tsx`
-- Simple passthrough layout (`<>{children}</>`)
-- Allows Next.js to properly process Tailwind classes
-- Inherits fonts and providers from root layout
-- **Result**: Admin panel now renders with full dark theme styling
+1. **[C1] Booking overlap constraint bypassed by NULL staff_id**
+   - **Problem**: PostgreSQL `NULL = NULL` returns `NULL`, not `TRUE`, so exclusion constraint didn't prevent overlaps when `staff_id IS NULL`
+   - **Fix**: Created migration `20260617125000_bookings_staff_id_not_null.sql`
+     - Backfilled NULL values with active staff members
+     - Cancelled bookings with no staff available
+     - Deleted orphaned bookings (businesses with no staff)
+     - Added `NOT NULL` constraint
+   - **Impact**: Exclusion constraint now works correctly for all bookings
 
-### Phase 2: Secure Logout Implementation
+**Major Issues Fixed**:
 
-**Requirements**:
-- Terminate both Supabase session AND preview password cookie
-- Use hardcoded redirect URLs (prevent open redirect)
-- CSRF protection with POST-only endpoint
-- Match cookie options from verify-password route
+2. **[M1] SQL injection risk in operating cities RPC**
+   - **Problem**: `security definer` function without `set search_path` vulnerable to search_path injection
+   - **Fix**: Added `set search_path = public` to function definition
+   - **Impact**: Prevents attacker from creating malicious schema objects
 
-**Implementation**: Created `/api/admin/logout` route
-- Calls `supabase.auth.signOut()` to terminate JWT session
-- Clears `rigify_admin_access` cookie with `maxAge: 0`
-- Redirects to hardcoded URL (no Host header usage)
-- Added logout button to admin dashboard with LogOut icon
+3. **[M2] Delete business leaves orphaned auth users on failure**
+   - **Problem**: Deletes business first, then auth user - if second step fails, user can log in with no business
+   - **Fix**: Reversed order - delete auth user first, then business (with NULL owner_id handling)
+   - **Impact**: Prevents orphaned credentials, supports test/seed businesses with NULL owner_id
 
-**Files Created**:
-- `app/api/admin/logout/route.ts` (secure logout endpoint)
-- `app/admin/layout.tsx` (admin route wrapper)
+4. **[M3] Reschedule limit race condition**
+   - **Problem**: Limit (3x max) only enforced in app code - concurrent requests can both pass the check
+   - **Fix**: Added `.lt('reschedule_count', 3)` to update query for atomic database-level enforcement
+   - **Impact**: Prevents race condition where users reschedule more than 3 times
 
-**Files Modified**:
-- `app/admin/(auth-required)/page.tsx` (added logout button)
-- `middleware.ts` (added exact `/api/admin/logout` allowlist)
-- `app/admin/(auth-required)/layout.tsx` (removed unused import)
+5. **[M4] Contact form uses overprivileged admin client**
+   - **Problem**: `submitContactMessage` bypassed RLS with service_role, but `anon` insert policy exists
+   - **Fix**: Changed from `createAdminClient()` to `createClient()` to respect RLS policy
+   - **Impact**: Reduces unnecessary privilege, follows principle of least privilege
 
-**Files Deleted**:
-- `app/admin/(auth-required)/AdminSignOutButton.tsx` (duplicate mechanism)
-- `app/admin/(auth-required)/logout-action.ts` (duplicate server action)
+6. **[M5] Rate limit IP spoofing undocumented**
+   - **Problem**: `x-forwarded-for` header extraction not validated (spoofable if not behind trusted proxy)
+   - **Fix**: Added comment explaining Vercel sets this correctly
+   - **Impact**: Documents trusted reverse proxy assumption
 
-### Phase 3: Security Fixes
+### Phase 2: Codex Review & Additional Fixes
 
-**Code Review Verdict**: Initial FAIL → Fixed → PASS
-
-**Critical Security Issues Fixed**:
-
-1. **[C1] Missing Supabase signOut call**
-   - **Problem**: Logout only cleared preview cookie, Supabase JWT remained valid
-   - **Impact**: User could still access protected routes after "logout"
-   - **Fix**: Added `await supabase.auth.signOut()` call before cookie deletion
-
-2. **[C2] Path Traversal Vulnerability**
-   - **Problem**: Middleware used `pathname.startsWith('/api/admin/logout')`
-   - **Impact**: Allowed bypassing password protection via `/api/admin/logout/../secret`
-   - **Fix**: Changed to exact match `pathname === '/api/admin/logout'`
-
-3. **[M2] Open Redirect Vulnerability**
-   - **Problem**: Redirect URL derived from request origin (spoofable via Host header)
-   - **Impact**: Could redirect users to attacker-controlled domain
-   - **Fix**: Hardcoded redirect URLs based on NODE_ENV
-
-### Phase 4: Code Cleanup
-
-**Removed Duplicate Logout Mechanisms**:
-- Deleted `AdminSignOutButton.tsx` (client component, never rendered)
-- Deleted `logout-action.ts` (server action, unused)
-- Unified to single API route approach
-- **Result**: No more duplicate sign-in requests
-
-### Phase 5: Codex Review & Additional Fixes
-
-**Codex Review Findings**: 3 Priority issues in EditBusinessForm.tsx
+**Codex Findings**: 3 Priority runtime failures in existing flows
 
 **Issues Fixed**:
 
-1. **[P1] Preserve existing image URLs on save**
-   - **Problem**: Form didn't submit cover_image_url/logo_url, causing them to become null
-   - **Fix**: Added hidden inputs to preserve existing URLs when no new file uploaded
-   - **Impact**: Unrelated edits no longer clear saved images
+1. **[P1] Dashboard "Any Staff" appointments broken after NOT NULL migration**
+   - **Problem**: `app/dashboard/appointments/actions.ts` still allowed `staffId: null` but constraint now enforces NOT NULL
+   - **Fix**: Added auto-assignment logic - queries first active staff member when staffId is NULL
+   - **Impact**: Dashboard appointment creation with "Any Staff" now works correctly
 
-2. **[P2] Restore editable business status**
-   - **Problem**: Status was hidden field, couldn't be changed
-   - **Fix**: Changed to select dropdown (active/inactive/draft)
-   - **Impact**: Super admins can now change business status from edit page
+2. **[P2] Delete business fails for ownerless businesses**
+   - **Problem**: Reversed delete order broke for businesses with `owner_id IS NULL` (test/seed data)
+   - **Fix**: Added NULL check - only attempts `deleteUser()` when `owner_id` exists
+   - **Impact**: Test/seed businesses can be deleted, supports full business lifecycle
 
-3. **[P2] Wire opening hours to persisted field**
-   - **Problem**: Form submitted "opening_hours" but action/database use "hours"
-   - **Fix**: Changed field name to "hours", added to action's formData reading and DB update
-   - **Impact**: Opening hours changes now persist correctly
+3. **[P2] Contact form fails for authenticated users**
+   - **Problem**: RLS policy only allowed `anon` role, but logged-in users insert as `authenticated` role
+   - **Fix**: Added `contact_messages_authenticated_insert` policy to migration
+   - **Impact**: Contact form now works for both anonymous visitors AND logged-in users
+
+### Phase 3: Reschedule Improvements
+
+**Features Added**:
+
+1. **Reschedule limit (3 times max per booking)**
+   - Migration: Added `reschedule_count` column with default 0 and check constraint
+   - Server action: Enforces limit with clear error message
+   - Atomic increment on successful reschedule
+   - Database-level enforcement with `.lt('reschedule_count', 3)` guard
+
+2. **Inline success states (no redirect, manual dismiss)**
+   - **Modal flow** (`app/customer/dashboard/RescheduleModal.tsx`):
+     - Animated gold line (600ms draw, CSS keyframes)
+     - Large checkmark with fade+scale entrance (300ms)
+     - Data rows: NEW DATE and BOOKING ID
+     - DONE button for manual dismissal
+   - **Page flow** (`app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx`):
+     - Identical success view pattern
+     - Replaces entire page content (not just modal)
+     - Fixed TypeScript ternary structure error
+
+3. **Auto "+" prefix on phone input**
+   - `app/businesses/[slug]/book/BookAppointmentContent.tsx`
+   - Automatically prepends "+" if user forgets
+   - Improves UX for international phone format
+
+### Phase 4: Quick Wins Completed
+
+**Contact Form Implementation**:
+- Created `app/contact/actions.ts` server action with validation
+- Created `supabase/migrations/20260617120000_create_contact_messages.sql`
+- Fixed RLS policies for both anon and authenticated users
+
+**Rate Limiting Fix**:
+- `app/api/contact/route.ts` - Atomic Redis operations with Vercel KV
+- Changed from get+check+incr to incr+check pattern
+- Prevents race condition in rate limiting
+
+**Language Persistence**:
+- `lib/contexts/LanguageContext.tsx` - Added cookie storage
+- `lib/utils/server-translations.ts` - Reads from cookies for SSR
+- Fixes language preference flash on page load
+
+**Operating Cities Feature**:
+- `supabase/migrations/20260617121000_add_operating_cities_rpc.sql`
+- `app/admin/(auth-required)/page.tsx` - Added 5th stat card
+- Shows geographic reach of platform
+
+**Delete Business with Auth Cleanup**:
+- `app/admin/(auth-required)/businesses/actions.ts` - deleteBusiness function
+- Deletes auth user to prevent orphaned credentials
+- Handles NULL owner_id for test/seed businesses
+
+**Booking Overlap Prevention**:
+- `supabase/migrations/20260617123000_prevent_booking_overlap.sql`
+- PostgreSQL exclusion constraint with btree_gist
+- Database-level atomic overlap prevention
+- Error handling in booking actions for constraint violations
+
+### Phase 5: Test IDs & Quality
+
+**Test IDs Added**:
+- Reschedule success views: `reschedule-success-view`, `reschedule-done-btn`
+- Admin stat cards: `admin-stat-total-businesses`, `admin-stat-active-businesses`, `admin-stat-operating-cities`, `admin-stat-total-customers`, `admin-stat-today-bookings`
+- All new UI elements have proper test IDs following naming convention
 
 ---
 
 ## Session Summary
 
-**Focus**: Admin panel styling and secure logout implementation
+**Focus**: Security vulnerabilities, reschedule improvements, and quick wins
 
-**Files Created**:
-- `app/admin/layout.tsx` (fixes styling)
-- `app/api/admin/logout/route.ts` (secure logout)
+**Migrations Created**:
+1. `20260617120000_create_contact_messages.sql` - Contact form table
+2. `20260617121000_add_operating_cities_rpc.sql` - Operating cities RPC function
+3. `20260617122000_fix_contact_messages_rls.sql` - RLS policies for contact form
+4. `20260617123000_prevent_booking_overlap.sql` - Exclusion constraint for bookings
+5. `20260617124000_add_reschedule_limit.sql` - Reschedule count column
+6. `20260617125000_bookings_staff_id_not_null.sql` - NOT NULL constraint with backfill
 
 **Files Modified**:
-- `app/admin/(auth-required)/page.tsx` (logout button)
-- `app/admin/(auth-required)/layout.tsx` (cleanup)
-- `middleware.ts` (exact path matching)
-- `app/admin/(auth-required)/businesses/[id]/edit/EditBusinessForm.tsx` (Codex fixes)
-- `app/admin/(auth-required)/businesses/[id]/edit/actions.ts` (hours field handling)
+- `app/admin/(auth-required)/businesses/actions.ts` (delete business with NULL handling)
+- `app/admin/(auth-required)/page.tsx` (operating cities stat, test IDs)
+- `app/api/contact/route.ts` (atomic rate limiting, IP documentation)
+- `app/contact/actions.ts` (use regular client, respect RLS)
+- `app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx` (inline success state)
+- `app/customer/dashboard/actions.ts` (atomic reschedule limit, reschedule count increment)
+- `app/dashboard/appointments/actions.ts` (auto-assign staff for "Any Staff")
 
-**Files Deleted**:
-- `app/admin/(auth-required)/AdminSignOutButton.tsx`
-- `app/admin/(auth-required)/logout-action.ts`
+**Security Issues Fixed (9 total)**:
+- ✅ Rate limiting race condition → Atomic Redis operations
+- ✅ Booking overlap race condition → PostgreSQL exclusion constraint
+- ✅ SQL injection risk → Pinned search_path in RPC
+- ✅ Orphaned auth users → Delete order corrected + NULL handling
+- ✅ Reschedule limit bypass → Database-level atomic check
+- ✅ RLS policy gaps → Contact form supports authenticated users
+- ✅ NULL staff_id constraint bypass → NOT NULL with backfill migration
+- ✅ Dashboard "Any Staff" broken → Auto-assignment logic
+- ✅ Contact form overprivileged → Uses regular client (respects RLS)
 
-**Security Issues Fixed**:
-- ✅ Missing Supabase session termination
-- ✅ Path traversal vulnerability (startsWith → exact match)
-- ✅ Open redirect vulnerability (hardcoded URLs)
+**Features Delivered**:
+- ✅ 3-reschedule limit per booking (tracked in DB)
+- ✅ Inline success states (animated, manual dismiss)
+- ✅ Operating cities stat card
+- ✅ Auto "+" prefix on phone input
+- ✅ Language persistence via cookies + SSR
+- ✅ Contact form backend (with validation)
+- ✅ Delete business with auth cleanup
 
-**Functional Regressions Fixed**:
-- ✅ Image URLs preserved on save
-- ✅ Business status editable again
-- ✅ Opening hours persist correctly
+**Code Reviews**:
+- @code-reviewer: CONDITIONAL PASS → All issues fixed → PASS
+- Codex: 3 runtime failures found → All fixed → PASS
 
-**Commits**:
-1. `25b8d36` - Fix admin panel styling and implement secure logout
-2. `3d00581` - Fix 3 critical issues in admin business edit form
+**Commit**:
+- `0503f22` - Fix critical security issues and add reschedule improvements
 
 **TypeScript**: ✅ Clean compilation (no errors)
 **Build**: ✅ Passes
-**Testing**: ✅ Logout verified with curl (307 redirect, cookie cleared)
+**Migrations**: ✅ 6 applied successfully
 **Production**: ✅ Pushed to GitHub
 
 **Key Learnings**:
-- Always call `supabase.auth.signOut()` when logging out (not just cookie deletion)
-- Use exact path matching in middleware for security endpoints
-- Hardcode redirect URLs to prevent open redirect vulnerabilities
-- Remove duplicate mechanisms to prevent confusion
+- PostgreSQL `NULL = NULL` returns `NULL`, not `TRUE` - use NOT NULL constraints for exclusion constraints to work
+- Always use atomic operations for distributed systems (Redis incr+check, database WHERE clauses)
+- `security definer` functions must pin search_path to prevent injection
+- Delete auth users before business data when cleaning up accounts (unless owner_id is NULL)
+- RLS policies need both `anon` AND `authenticated` roles for public forms that logged-in users might access
 
 ---
 
@@ -269,6 +323,8 @@
 3. **Edit Staff** - Add edit modal to staff directory
    - File: `app/dashboard/staff/page.tsx`
    - Modal component already exists
+
+**Note**: Contact form, language persistence, operating cities, and delete business were completed in Session 21.
 
 ### Visual Polish (Optional - Stitch Designs):
 
@@ -364,6 +420,6 @@ These are **visual upgrades** only - functionality already works:
 
 ---
 
-**Session Started**: June 16, 2026  
-**Session Ended**: June 16, 2026  
-**Status**: Admin panel styling fixed, secure logout implemented - All security vulnerabilities resolved
+**Session Started**: June 17, 2026  
+**Session Ended**: June 17, 2026  
+**Status**: Critical security fixes complete, reschedule improvements deployed - 9 security issues resolved, 3 runtime failures fixed
