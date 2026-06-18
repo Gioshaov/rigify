@@ -32,7 +32,12 @@ export async function sendBookingConfirmationToCustomer(params: {
   bookingId: string;
 }): Promise<SendEmailResult> {
   try {
+    console.log('[Email] Attempting to send booking confirmation to:', params.customerEmail);
+    console.log('[Email] FROM_EMAIL:', FROM_EMAIL);
+
     const emailContent = generateBookingConfirmationCustomerEmail(params);
+    console.log('[Email] Template generated successfully. Subject:', emailContent.subject);
+    console.log('[Email] HTML length:', emailContent.html.length);
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -42,14 +47,14 @@ export async function sendBookingConfirmationToCustomer(params: {
     });
 
     if (error) {
-      console.error('[Email] Failed to send booking confirmation to customer:', error);
+      console.error('[Email] Resend API error:', JSON.stringify(error, null, 2));
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Booking confirmation sent to customer:', data?.id);
+    console.log('[Email] ✅ Booking confirmation sent successfully! Email ID:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
-    console.error('[Email] Unexpected error sending booking confirmation to customer:', error);
+    console.error('[Email] Unexpected error:', error);
     return { success: false, error: 'Failed to send email' };
   }
 }
