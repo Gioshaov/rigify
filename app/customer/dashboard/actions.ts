@@ -57,8 +57,8 @@ export async function cancelBookingAction(bookingId: string) {
         if (!bookingData) return;
 
         const confirmationId = `RG-${bookingId.slice(0, 8).toUpperCase()}`;
-        const business = Array.isArray(bookingData.businesses) ? bookingData.businesses[0] : bookingData.businesses;
-        const service = Array.isArray(bookingData.services) ? bookingData.services[0] : bookingData.services;
+        const business = bookingData.businesses as any;
+        const service = bookingData.services as any;
 
         if (!business || !service) return;
 
@@ -264,9 +264,9 @@ export async function rescheduleBookingAction(data: {
         if (!bookingData) return;
 
         const confirmationId = `RG-${data.bookingId.slice(0, 8).toUpperCase()}`;
-        const business = Array.isArray(bookingData.businesses) ? bookingData.businesses[0] : bookingData.businesses;
-        const service = Array.isArray(bookingData.services) ? bookingData.services[0] : bookingData.services;
-        const staff = Array.isArray(bookingData.staff) ? bookingData.staff[0] : bookingData.staff;
+        const business = bookingData.businesses as any;
+        const service = bookingData.services as any;
+        const staff = bookingData.staff as any;
 
         if (!business || !service) return;
 

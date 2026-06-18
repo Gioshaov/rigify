@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,6 +50,9 @@ export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageB
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const cancelModalRef = useRef<HTMLDivElement>(null);
+  const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
+
   const confirmationId = `RG-${booking.id.slice(0, 8).toUpperCase()}`;
   const canManage = booking.status === "confirmed";
 
@@ -64,6 +67,44 @@ export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageB
   // Can cancel if: (1) >= 24h away, OR (2) <24h but emergency cancel not used yet
   const canCancel = !isWithin24Hours || !hasUsedEmergencyCancel;
   const isEmergencyCancel = isWithin24Hours && !hasUsedEmergencyCancel;
+
+  // Focus trap for cancel modal
+  useEffect(() => {
+    if (!showCancelModal) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) setShowCancelModal(false);
+    };
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !cancelModalRef.current) return;
+
+      const focusableElements = cancelModalRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement?.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleTab);
+
+    // Focus first button on mount
+    setTimeout(() => keepBookingBtnRef.current?.focus(), 0);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleTab);
+    };
+  }, [showCancelModal, loading]);
 
   const handleCancel = async () => {
     // Re-check 24h policy at action time (not just page load) to prevent stale checks
@@ -362,6 +403,7 @@ export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageB
           aria-labelledby="cancel-modal-title"
         >
           <div
+            ref={cancelModalRef}
             className="bg-surface border border-white/10 max-w-md w-full p-8"
             onClick={(e) => e.stopPropagation()}
           >
@@ -388,6 +430,7 @@ export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageB
 
             <div className="flex gap-3">
               <button
+                ref={keepBookingBtnRef}
                 data-testid="keep-booking-btn"
                 onClick={() => setShowCancelModal(false)}
                 disabled={loading}

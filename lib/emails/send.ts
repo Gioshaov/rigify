@@ -32,12 +32,7 @@ export async function sendBookingConfirmationToCustomer(params: {
   bookingId: string;
 }): Promise<SendEmailResult> {
   try {
-    console.log('[Email] Attempting to send booking confirmation to:', params.customerEmail);
-    console.log('[Email] FROM_EMAIL:', FROM_EMAIL);
-
     const emailContent = generateBookingConfirmationCustomerEmail(params);
-    console.log('[Email] Template generated successfully. Subject:', emailContent.subject);
-    console.log('[Email] HTML length:', emailContent.html.length);
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -51,7 +46,6 @@ export async function sendBookingConfirmationToCustomer(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] ✅ Booking confirmation sent successfully! Email ID:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error:', error);
@@ -91,7 +85,6 @@ export async function sendBookingConfirmationToBusiness(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Booking confirmation sent to business:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error sending booking confirmation to business:', error);
@@ -134,7 +127,6 @@ export async function sendCancellationToCustomer(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Cancellation notice sent to customer:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error sending cancellation notice to customer:', error);
@@ -178,7 +170,6 @@ export async function sendCancellationToBusiness(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Cancellation notice sent to business:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error sending cancellation notice to business:', error);
@@ -227,7 +218,6 @@ export async function sendRescheduleToCustomer(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Reschedule notice sent to customer:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error sending reschedule notice to customer:', error);
@@ -277,7 +267,6 @@ export async function sendRescheduleToBusiness(params: {
       return { success: false, error: error.message };
     }
 
-    console.log('[Email] Reschedule notice sent to business:', data?.id);
     return { success: true, emailId: data?.id };
   } catch (error) {
     console.error('[Email] Unexpected error sending reschedule notice to business:', error);

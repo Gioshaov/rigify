@@ -72,8 +72,9 @@ export type Database = {
           id: string
           notes: string | null
           price: number | null
+          reschedule_count: number | null
           service_id: string | null
-          staff_id: string | null
+          staff_id: string
           status: string | null
           updated_at: string | null
         }
@@ -92,8 +93,9 @@ export type Database = {
           id?: string
           notes?: string | null
           price?: number | null
+          reschedule_count?: number | null
           service_id?: string | null
-          staff_id?: string | null
+          staff_id: string
           status?: string | null
           updated_at?: string | null
         }
@@ -112,8 +114,9 @@ export type Database = {
           id?: string
           notes?: string | null
           price?: number | null
+          reschedule_count?: number | null
           service_id?: string | null
-          staff_id?: string | null
+          staff_id?: string
           status?: string | null
           updated_at?: string | null
         }
@@ -328,6 +331,7 @@ export type Database = {
         Row: {
           created_at: string | null
           email: string
+          has_used_emergency_cancel: boolean
           id: string
           name: string
           phone: string
@@ -338,6 +342,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email: string
+          has_used_emergency_cancel?: boolean
           id: string
           name: string
           phone: string
@@ -348,6 +353,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           email?: string
+          has_used_emergency_cancel?: boolean
           id?: string
           name?: string
           phone?: string
@@ -685,10 +691,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_booking_with_emergency_check: {
+        Args: { p_booking_id: string; p_customer_id: string }
+        Returns: {
+          error_code: string
+          error_message: string
+          success: boolean
+        }[]
+      }
       get_business_id_from_storage_path: {
         Args: { path: string }
         Returns: string
       }
+      get_operating_cities_count: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
