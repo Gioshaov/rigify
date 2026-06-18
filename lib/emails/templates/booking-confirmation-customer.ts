@@ -1,5 +1,19 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
 
+// Move constant to top to avoid TDZ error
+const SUPPORT_EMAIL = 'support@rigify.ge';
+
+// HTML escape helper to prevent XSS
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 type BookingConfirmationCustomerProps = {
   customerName: string;
   confirmationId: string;
@@ -57,7 +71,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
                     <span style="font-size: 13px; font-weight: 700; color: #d4a843; letter-spacing: 0.2em;">RIGIFY</span>
                   </td>
                   <td style="text-align: right;" class="mobile-header-stack mobile-confirmation">
-                    <span style="font-size: 10px; color: #555555; letter-spacing: 0.1em; font-family: 'Courier New', monospace;">CONFIRMATION #${props.confirmationId}</span>
+                    <span style="font-size: 10px; color: #555555; letter-spacing: 0.1em; font-family: 'Courier New', monospace;">CONFIRMATION #${escapeHtml(props.confirmationId)}</span>
                   </td>
                 </tr>
               </table>
@@ -68,7 +82,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
           <tr>
             <td style="padding: 32px 32px 24px;" class="mobile-padding">
               <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #e8e6f0; letter-spacing: 0.08em;" class="mobile-hero-title">BOOKING CONFIRMED</h1>
-              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${props.customerName}, your appointment has been confirmed. Please find the transaction details below.</p>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.customerName)}, your appointment has been confirmed. Please find the transaction details below.</p>
             </td>
           </tr>
 
@@ -83,8 +97,8 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
                     <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">SERVICE</span>
                   </td>
                   <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
-                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500; margin-bottom: 4px;">${props.serviceName}</div>
-                    <div style="font-size: 11px; color: #555555;">${props.businessName}</div>
+                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500; margin-bottom: 4px;">${escapeHtml(props.serviceName)}</div>
+                    <div style="font-size: 11px; color: #555555;">${escapeHtml(props.businessName)}</div>
                   </td>
                 </tr>
 
@@ -115,7 +129,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
                     <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">ARTISAN</span>
                   </td>
                   <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
-                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${props.staffName}</span>
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${escapeHtml(props.staffName)}</span>
                   </td>
                 </tr>
                 ` : ''}
@@ -136,8 +150,8 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
                     <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">LOCATION</span>
                   </td>
                   <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
-                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500; margin-bottom: 4px;">${props.businessAddress}, ${props.businessCity}</div>
-                    ${props.businessPhone ? `<div style="font-size: 11px; color: #555555;">${props.businessPhone}</div>` : ''}
+                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500; margin-bottom: 4px;">${escapeHtml(props.businessAddress)}, ${escapeHtml(props.businessCity)}</div>
+                    ${props.businessPhone ? `<div style="font-size: 11px; color: #555555;">${escapeHtml(props.businessPhone)}</div>` : ''}
                   </td>
                 </tr>
 
@@ -178,5 +192,3 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
     `.trim(),
   };
 }
-
-const SUPPORT_EMAIL = 'support@rigify.ge';

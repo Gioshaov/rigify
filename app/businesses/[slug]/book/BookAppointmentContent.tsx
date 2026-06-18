@@ -90,6 +90,11 @@ export function BookAppointmentContent({
   const calendarDays = generateCalendarDays(currentYear, currentMonth);
   const timeSlots = generateTimeSlots();
 
+  // Combine country code + phone number whenever either changes
+  useEffect(() => {
+    setCustomerPhone(phoneNumber ? `${countryCode} ${phoneNumber}` : '');
+  }, [countryCode, phoneNumber]);
+
   // Fetch available slots when date or service changes
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -554,7 +559,6 @@ export function BookAppointmentContent({
                         value={countryCode}
                         onChange={(e) => {
                           setCountryCode(e.target.value);
-                          setCustomerPhone(e.target.value + ' ' + phoneNumber);
                           setPhoneError(null);
                         }}
                         className={`bg-surface border px-3 py-3 text-on-surface outline-none focus:border-primary transition-colors ${
@@ -685,7 +689,6 @@ export function BookAppointmentContent({
                         onChange={(e) => {
                           const value = e.target.value.replace(/[^0-9\s]/g, ''); // Only numbers and spaces
                           setPhoneNumber(value);
-                          setCustomerPhone(countryCode + ' ' + value);
                           setPhoneError(null);
                         }}
                         placeholder="555 123 456"

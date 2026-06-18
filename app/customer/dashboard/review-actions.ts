@@ -9,7 +9,6 @@ export async function submitReviewAction(data: {
   comment: string;
 }) {
   const supabase = createClient();
-  const admin = createAdminClient();
 
   const {
     data: { user },
@@ -18,6 +17,9 @@ export async function submitReviewAction(data: {
   if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
+
+  // Only create admin client after auth check
+  const admin = createAdminClient();
 
   // Validate rating
   if (!data.rating || data.rating < 1 || data.rating > 5) {
@@ -40,7 +42,8 @@ export async function submitReviewAction(data: {
     return { success: false, error: 'Booking not found' };
   }
 
-  if (booking.customer_id !== user.id) {
+  // Reject guest bookings (customer_id is null) and bookings belonging to other users
+  if (!booking.customer_id || booking.customer_id !== user.id) {
     return { success: false, error: 'Unauthorized' };
   }
 
