@@ -1,8 +1,8 @@
 -- Atomic emergency cancellation function
 -- Prevents double-spend: ensures only ONE booking can use emergency cancel per customer
-
--- Drop existing function if it exists (for idempotency)
-drop function if exists public.cancel_booking_with_emergency_check(uuid, uuid);
+--
+-- LOCK ORDER: customers first, then bookings
+-- All functions touching both tables MUST follow this order to prevent deadlocks
 
 -- Create function that performs atomic emergency cancel check + booking update + flag set
 create or replace function public.cancel_booking_with_emergency_check(
@@ -23,24 +23,24 @@ declare
   v_hours_until_appointment numeric;
   v_is_within_24h boolean;
 begin
-  -- Lock the customer row to prevent concurrent modifications
+  -- Lock the customer row to prevent concurrent modifications (LOCK ORDER: customers first)
   select has_used_emergency_cancel
   into v_customer
   from public.customers
   where id = p_customer_id
-  for update; -- Advisory lock on customer row
+  for update; -- Row-level lock on customer row
 
   if not found then
     return query select false, 'CUSTOMER_NOT_FOUND'::text, 'Customer profile not found'::text;
     return;
   end if;
 
-  -- Fetch and lock the booking
+  -- Fetch and lock the booking (LOCK ORDER: after customers)
   select id, customer_id, appointment_datetime, status
   into v_booking
   from public.bookings
   where id = p_booking_id
-  for update; -- Advisory lock on booking row
+  for update; -- Row-level lock on booking row
 
   if not found then
     return query select false, 'BOOKING_NOT_FOUND'::text, 'Booking not found'::text;

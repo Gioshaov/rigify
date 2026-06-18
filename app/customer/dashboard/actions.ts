@@ -23,8 +23,8 @@ export async function cancelBookingAction(bookingId: string) {
 
   // Call atomic Postgres function that handles all checks + updates in a single transaction
   // This prevents race conditions where concurrent tabs could both use emergency cancel
-  const admin = createAdminClient();
-  const { data, error } = await admin.rpc('cancel_booking_with_emergency_check', {
+  // Use authenticated client (not admin) so Supabase RLS verifies caller is authenticated
+  const { data, error } = await supabase.rpc('cancel_booking_with_emergency_check', {
     p_booking_id: bookingId,
     p_customer_id: user.id
   });
@@ -43,9 +43,10 @@ export async function cancelBookingAction(bookingId: string) {
   }
 
   revalidatePath("/customer/dashboard");
-  revalidatePath("/customer/bookings", "layout"); // Revalidate booking detail pages
 
   // Send cancellation emails (non-blocking)
+  // Use admin client for email query (bypasses RLS to fetch related data)
+  const admin = createAdminClient();
   Promise.all([
     admin
       .from("bookings")
