@@ -53,12 +53,23 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
   const canManage = booking.status === "confirmed";
 
   // Calculate hours until appointment for 24h cancellation policy
+  // Note: Supabase returns timestamptz as ISO 8601 strings with UTC offset (e.g., "2026-06-20T14:00:00+00:00")
+  // new Date() correctly parses these as UTC timestamps
   const appointmentDate = new Date(booking.appointment_datetime);
   const now = new Date();
   const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
   const canCancel = hoursUntilAppointment >= 24;
 
   const handleCancel = async () => {
+    // Re-check 24h policy at action time (not just page load) to prevent stale checks
+    const now = new Date();
+    const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursUntilAppointment < 24) {
+      setError("Cannot cancel within 24 hours of appointment. Please contact the business directly if you need to cancel.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -231,7 +242,7 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
                   </Link>
                   <button
                     data-testid="cancel-booking-btn"
-                    onClick={() => canCancel && setShowCancelModal(true)}
+                    onClick={() => setShowCancelModal(true)}
                     disabled={!canCancel}
                     title={!canCancel ? "Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel." : ""}
                     className={`w-full border font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase py-4 transition-all ${
@@ -243,7 +254,11 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
                     Cancel Booking
                   </button>
                   {!canCancel && (
-                    <p className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant pt-2 border-t border-white/5">
+                    <p
+                      className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant pt-2 border-t border-white/5"
+                      role="status"
+                      aria-live="polite"
+                    >
                       Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel.
                     </p>
                   )}
@@ -324,12 +339,13 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
           onClick={() => !loading && setShowCancelModal(false)}
           role="dialog"
           aria-modal="true"
+          aria-labelledby="cancel-modal-title"
         >
           <div
             className="bg-surface border border-white/10 max-w-md w-full p-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-4">
+            <h3 id="cancel-modal-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-4">
               Cancel Booking?
             </h3>
             <p className="font-hanken text-[16px] leading-[1.5] text-on-surface-variant mb-6">

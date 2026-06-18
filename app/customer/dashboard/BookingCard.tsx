@@ -35,6 +35,8 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
 
   // Calculate hours until appointment for 24h cancellation policy
+  // Note: Supabase returns timestamptz as ISO 8601 strings with UTC offset (e.g., "2026-06-20T14:00:00+00:00")
+  // new Date() correctly parses these as UTC timestamps
   const appointmentDate = new Date(booking.appointment_datetime);
   const now = new Date();
   const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -80,6 +82,15 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
 
 
   const handleCancel = async () => {
+    // Re-check 24h policy at action time (not just page load) to prevent stale checks
+    const now = new Date();
+    const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursUntilAppointment < 24) {
+      setError("Cannot cancel within 24 hours of appointment. Please contact the business directly if you need to cancel.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -199,7 +210,6 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
                 <button
                   data-testid={`cancel-btn-${booking.id}`}
                   onClick={() => {
-                    if (!canCancel) return;
                     setError(null);
                     setShowCancelModal(true);
                   }}
@@ -215,7 +225,11 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
                 </button>
               </div>
               {!canCancel && (
-                <p className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant">
+                <p
+                  className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant"
+                  role="status"
+                  aria-live="polite"
+                >
                   Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel.
                 </p>
               )}
