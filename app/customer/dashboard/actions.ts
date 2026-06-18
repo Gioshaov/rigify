@@ -56,9 +56,11 @@ export async function cancelBookingAction(bookingId: string) {
   const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
   const isWithin24Hours = hoursUntilAppointment < 24;
 
+  // Create admin client once (reused for customer check and email query)
+  const admin = createAdminClient();
+
   if (isWithin24Hours) {
     // Check customer's emergency cancellation status from customers table
-    const admin = createAdminClient();
     const { data: customer } = await admin
       .from("customers")
       .select("has_used_emergency_cancel")
@@ -66,22 +68,6 @@ export async function cancelBookingAction(bookingId: string) {
       .single();
 
     if (customer?.has_used_emergency_cancel) {
-      return {
-        success: false,
-        error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
-      };
-    }
-
-    // Mark emergency cancel as used (atomic check to prevent race condition)
-    const { data: customerUpdate, error: customerError } = await admin
-      .from("customers")
-      .update({ has_used_emergency_cancel: true })
-      .eq("id", user.id)
-      .eq("has_used_emergency_cancel", false) // Atomic: only update if still false
-      .select("id");
-
-    if (customerError || !customerUpdate || customerUpdate.length === 0) {
-      // Someone else (concurrent tab) already used the emergency cancel
       return {
         success: false,
         error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
@@ -106,10 +92,25 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Booking could not be cancelled — it may already be cancelled" };
   }
 
+  // AFTER booking cancel succeeds: mark emergency cancel as used (prevents flag burn on booking failure)
+  if (isWithin24Hours) {
+    const { data: customerUpdate, error: customerError } = await admin
+      .from("customers")
+      .update({ has_used_emergency_cancel: true })
+      .eq("id", user.id)
+      .eq("has_used_emergency_cancel", false) // Atomic: only update if still false
+      .select("id");
+
+    if (customerError || !customerUpdate || customerUpdate.length === 0) {
+      // Concurrent tab already used emergency cancel - booking is cancelled but flag wasn't set
+      // This is acceptable: booking is cancelled (success), flag race lost (logged)
+      console.warn(`[Cancel] Emergency flag race condition for user ${user.id} - booking cancelled but flag already set by concurrent request`);
+    }
+  }
+
   revalidatePath("/customer/dashboard");
 
   // Send cancellation emails (non-blocking)
-  const admin = createAdminClient();
   Promise.all([
     admin
       .from("bookings")
