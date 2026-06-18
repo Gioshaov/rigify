@@ -21,8 +21,9 @@ export const resend = {
   }
 };
 
-// Default sender email (rigify.ge verified in Resend dashboard)
-export const FROM_EMAIL = 'Rigify <noreply@rigify.ge>';
+// Default sender email
+// TODO: Switch back to rigify.ge after domain verification
+export const FROM_EMAIL = 'Rigify <onboarding@resend.dev>';
 
 // Support email for replies
 export const SUPPORT_EMAIL = 'support@rigify.ge';

@@ -19,9 +19,10 @@ export function validateGeorgianPhone(phone: string): boolean {
     // Valid mobile operators: 551-599 (excluding some gaps)
     const mobileRegex = /^\+995(5[0-9]{2})\d{6}$/
 
-    // Georgian landline: +995 [2|3|4]X XXX XXX (9 digits after +995)
-    // 2XX - Tbilisi, 3XX - Western Georgia, 4XX - Eastern Georgia
-    const landlineRegex = /^\+995[234]\d{8}$/
+    // Georgian landline: +995 [2|3|4]X XXX XXX (8 digits after +995)
+    // First digit: region (2=Tbilisi, 3=Western, 4=Eastern)
+    // Remaining 7 digits: city code + local number
+    const landlineRegex = /^\+995[234]\d{7}$/
 
     return mobileRegex.test(cleaned) || landlineRegex.test(cleaned)
   }
