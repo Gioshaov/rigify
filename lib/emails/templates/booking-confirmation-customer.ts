@@ -148,7 +148,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
           <!-- 4. CTA -->
           <tr>
             <td style="padding: 28px 32px;" class="mobile-padding">
-              <a href="${process.env.NEXT_PUBLIC_APP_URL}/customer/dashboard" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW BOOKING</a>
+              <a href="https://rigify.ge/customer/dashboard" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW BOOKING</a>
             </td>
           </tr>
 
