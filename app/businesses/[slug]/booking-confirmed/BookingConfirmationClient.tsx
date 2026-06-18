@@ -262,15 +262,15 @@ export function BookingConfirmationClient({
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] uppercase mt-1">Home</span>
         </Link>
-        <Link href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] uppercase mt-1">Browse</span>
         </Link>
-        <Link href="/customer/dashboard" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
+        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
           <span className="material-symbols-outlined">event_available</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] uppercase mt-1">My Bookings</span>
         </Link>

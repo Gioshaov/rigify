@@ -45,7 +45,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div>
-              <Link href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase mb-3 inline-block">
+              <Link data-testid="footer-brand-logo" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase mb-3 inline-block">
                 RIGIFY
               </Link>
               <p className="font-hanken text-[14px] leading-[1.5] text-on-surface-variant">
