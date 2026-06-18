@@ -21,10 +21,10 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Not authenticated" };
   }
 
-  // Verify booking belongs to user
+  // Verify booking belongs to user and get emergency cancel status
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .select("id, customer_id, appointment_datetime, status")
+    .select("id, customer_id, appointment_datetime, status, has_used_emergency_cancel")
     .eq("id", bookingId)
     .single();
 
@@ -52,19 +52,30 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Cannot cancel past bookings" };
   }
 
-  // 24-hour cancellation policy: cannot cancel within 24 hours of appointment
+  // 24-hour cancellation policy with one-time emergency exception
   const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-  if (hoursUntilAppointment < 24) {
-    return {
-      success: false,
-      error: "Cannot cancel within 24 hours of appointment. Please contact the business directly if you need to cancel."
-    };
+  const isWithin24Hours = hoursUntilAppointment < 24;
+
+  if (isWithin24Hours) {
+    // Check if customer has already used their emergency cancellation
+    if (booking.has_used_emergency_cancel) {
+      return {
+        success: false,
+        error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
+      };
+    }
+    // Allow this one emergency cancellation but mark the flag
+    // (will be set in the update query below)
   }
 
   // Update booking status to cancelled (with ownership check)
+  // If cancelling within 24h, mark emergency cancel flag as used
   const { data: updated, error } = await supabase
     .from("bookings")
-    .update({ status: "cancelled" })
+    .update({
+      status: "cancelled",
+      ...(isWithin24Hours && { has_used_emergency_cancel: true })
+    })
     .eq("id", bookingId)
     .eq("customer_id", user.id)
     .select("id");

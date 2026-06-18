@@ -32,6 +32,7 @@ export default async function ManageBookingPage({
       business_id,
       service_id,
       staff_id,
+      has_used_emergency_cancel,
       businesses!inner(
         name,
         slug,

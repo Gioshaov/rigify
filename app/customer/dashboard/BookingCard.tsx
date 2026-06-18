@@ -15,6 +15,7 @@ type BookingCardProps = {
     business_id: string;
     service_id: string;
     staff_id: string | null;
+    has_used_emergency_cancel: boolean;
     businesses: { name: string; address: string };
     services: { name: string };
     staff: { name: string; avatar_url?: string | null } | null;
@@ -34,13 +35,17 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const cancelModalRef = useRef<HTMLDivElement>(null);
   const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Calculate hours until appointment for 24h cancellation policy
+  // Calculate hours until appointment for 24h cancellation policy with emergency exception
   // Note: Supabase returns timestamptz as ISO 8601 strings with UTC offset (e.g., "2026-06-20T14:00:00+00:00")
   // new Date() correctly parses these as UTC timestamps
   const appointmentDate = new Date(booking.appointment_datetime);
   const now = new Date();
   const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-  const canCancel = hoursUntilAppointment >= 24;
+  const isWithin24Hours = hoursUntilAppointment < 24;
+
+  // Can cancel if: (1) >= 24h away, OR (2) <24h but emergency cancel not used yet
+  const canCancel = !isWithin24Hours || !booking.has_used_emergency_cancel;
+  const isEmergencyCancel = isWithin24Hours && !booking.has_used_emergency_cancel;
 
   // Focus trap for cancel modal
   useEffect(() => {
@@ -85,9 +90,10 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
     // Re-check 24h policy at action time (not just page load) to prevent stale checks
     const now = new Date();
     const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const isCurrentlyWithin24Hours = hoursUntilAppointment < 24;
 
-    if (hoursUntilAppointment < 24) {
-      setError("Cannot cancel within 24 hours of appointment. Please contact the business directly if you need to cancel.");
+    if (isCurrentlyWithin24Hours && booking.has_used_emergency_cancel) {
+      setError("Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel.");
       return;
     }
 
@@ -214,23 +220,37 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
                     setShowCancelModal(true);
                   }}
                   disabled={!canCancel}
-                  title={!canCancel ? "Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel." : ""}
+                  title={
+                    !canCancel
+                      ? "You have already used your one-time emergency cancellation. Please contact the business directly."
+                      : isEmergencyCancel
+                      ? "Emergency cancellation available - this is your one-time exception"
+                      : ""
+                  }
                   className={`border px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase transition-all ${
                     canCancel
-                      ? "border-white/20 text-on-surface hover:border-error hover:text-error cursor-pointer"
+                      ? isEmergencyCancel
+                        ? "border-primary/30 text-primary hover:border-primary hover:text-primary cursor-pointer"
+                        : "border-white/20 text-on-surface hover:border-error hover:text-error cursor-pointer"
                       : "border-white/5 text-on-surface-variant opacity-50 cursor-not-allowed"
                   }`}
                 >
                   Cancel
                 </button>
               </div>
-              {!canCancel && (
+              {isWithin24Hours && (
                 <p
                   className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant"
                   role="status"
                   aria-live="polite"
                 >
-                  Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel.
+                  {isEmergencyCancel ? (
+                    <span className="text-primary">
+                      ⚠️ Emergency cancellation available. This is your one-time exception to the 24-hour policy. After using it, you won&apos;t be able to cancel within 24 hours again.
+                    </span>
+                  ) : (
+                    "Cancellation requires 24-hour notice. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
+                  )}
                 </p>
               )}
             </div>
@@ -266,13 +286,19 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 id="cancel-modal-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-4">
-              Cancel Booking?
+              {isEmergencyCancel ? "Emergency Cancellation" : "Cancel Booking?"}
             </h3>
             <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant mb-6">
               Are you sure you want to cancel your appointment at{" "}
               <span className="text-primary font-semibold">{booking.businesses?.name}</span> on{" "}
               {formatTbilisi(booking.appointment_datetime, "MMM d, yyyy 'at' HH:mm")}?
             </p>
+
+            {isEmergencyCancel && (
+              <div className="mb-4 p-3 bg-primary/10 border border-primary/30 text-primary font-mono text-[11px] leading-[1.5] tracking-[0.1em]">
+                ⚠️ This is your one-time emergency cancellation. After using it, you won&apos;t be able to cancel within 24 hours of future appointments.
+              </div>
+            )}
 
             {error && (
               <div className="mb-4 p-3 bg-error/10 border border-error/30 text-error font-mono text-[12px] tracking-[0.15em]">
