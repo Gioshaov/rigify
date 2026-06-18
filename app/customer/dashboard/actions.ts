@@ -21,10 +21,10 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Not authenticated" };
   }
 
-  // Verify booking belongs to user and get emergency cancel status
+  // Verify booking belongs to user
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .select("id, customer_id, appointment_datetime, status, has_used_emergency_cancel")
+    .select("id, customer_id, appointment_datetime, status")
     .eq("id", bookingId)
     .single();
 
@@ -57,25 +57,42 @@ export async function cancelBookingAction(bookingId: string) {
   const isWithin24Hours = hoursUntilAppointment < 24;
 
   if (isWithin24Hours) {
-    // Check if customer has already used their emergency cancellation
-    if (booking.has_used_emergency_cancel) {
+    // Check customer's emergency cancellation status from customers table
+    const admin = createAdminClient();
+    const { data: customer } = await admin
+      .from("customers")
+      .select("has_used_emergency_cancel")
+      .eq("id", user.id)
+      .single();
+
+    if (customer?.has_used_emergency_cancel) {
       return {
         success: false,
         error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
       };
     }
-    // Allow this one emergency cancellation but mark the flag
-    // (will be set in the update query below)
+
+    // Mark emergency cancel as used (atomic check to prevent race condition)
+    const { data: customerUpdate, error: customerError } = await admin
+      .from("customers")
+      .update({ has_used_emergency_cancel: true })
+      .eq("id", user.id)
+      .eq("has_used_emergency_cancel", false) // Atomic: only update if still false
+      .select("id");
+
+    if (customerError || !customerUpdate || customerUpdate.length === 0) {
+      // Someone else (concurrent tab) already used the emergency cancel
+      return {
+        success: false,
+        error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
+      };
+    }
   }
 
   // Update booking status to cancelled (with ownership check)
-  // If cancelling within 24h, mark emergency cancel flag as used
   const { data: updated, error } = await supabase
     .from("bookings")
-    .update({
-      status: "cancelled",
-      ...(isWithin24Hours && { has_used_emergency_cancel: true })
-    })
+    .update({ status: "cancelled" })
     .eq("id", bookingId)
     .eq("customer_id", user.id)
     .select("id");

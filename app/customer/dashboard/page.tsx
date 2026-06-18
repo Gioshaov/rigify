@@ -20,7 +20,16 @@ export default async function CustomerBookingsPage() {
   const now = new Date();
   const nowISO = now.toISOString();
 
-  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, has_used_emergency_cancel, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url), reviews!left(id)";
+  // Fetch customer's emergency cancel status (one per customer, not per booking)
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("has_used_emergency_cancel")
+    .eq("id", user.id)
+    .single();
+
+  const hasUsedEmergencyCancel = customer?.has_used_emergency_cancel ?? false;
+
+  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url), reviews!left(id)";
 
   const [
     { data: upcomingData, error: upcomingError },
@@ -102,6 +111,7 @@ export default async function CustomerBookingsPage() {
       <BookingsTabs
         upcomingBookings={upcoming}
         pastBookings={past}
+        hasUsedEmergencyCancel={hasUsedEmergencyCancel}
       />
     </div>
   );

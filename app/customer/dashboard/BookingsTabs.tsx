@@ -19,9 +19,10 @@ type Booking = {
 interface BookingsTabsProps {
   upcomingBookings: Booking[];
   pastBookings: Booking[];
+  hasUsedEmergencyCancel: boolean;
 }
 
-export function BookingsTabs({ upcomingBookings, pastBookings }: BookingsTabsProps) {
+export function BookingsTabs({ upcomingBookings, pastBookings, hasUsedEmergencyCancel }: BookingsTabsProps) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
 
   return (
@@ -63,7 +64,7 @@ export function BookingsTabs({ upcomingBookings, pastBookings }: BookingsTabsPro
         <div className="space-y-6" data-testid="upcoming-bookings-content" role="tabpanel" id="upcoming-bookings-content" aria-labelledby="tab-upcoming">
           {upcomingBookings.length > 0 ? (
             upcomingBookings.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} />
+              <BookingCard key={booking.id} booking={booking} hasUsedEmergencyCancel={hasUsedEmergencyCancel} />
             ))
           ) : (
             <div className="bg-surface-container border border-white/10 p-12 text-center">
@@ -90,7 +91,7 @@ export function BookingsTabs({ upcomingBookings, pastBookings }: BookingsTabsPro
         <div className="space-y-6" data-testid="past-bookings-content" role="tabpanel" id="past-bookings-content" aria-labelledby="tab-past">
           {pastBookings.length > 0 ? (
             pastBookings.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} isPast />
+              <BookingCard key={booking.id} booking={booking} isPast hasUsedEmergencyCancel={hasUsedEmergencyCancel} />
             ))
           ) : (
             <div className="bg-surface-container-low border border-white/5 p-8 text-center">

@@ -17,6 +17,15 @@ export default async function ManageBookingPage({
     redirect('/login');
   }
 
+  // Fetch customer's emergency cancel status (one per customer, not per booking)
+  const { data: customer } = await supabase
+    .from('customers')
+    .select('has_used_emergency_cancel')
+    .eq('id', user.id)
+    .single();
+
+  const hasUsedEmergencyCancel = customer?.has_used_emergency_cancel ?? false;
+
   // Fetch booking with business, service, and staff details
   // RLS automatically filters to bookings owned by current user
   const { data: booking, error } = await supabase
@@ -32,7 +41,6 @@ export default async function ManageBookingPage({
       business_id,
       service_id,
       staff_id,
-      has_used_emergency_cancel,
       businesses!inner(
         name,
         slug,
@@ -70,5 +78,5 @@ export default async function ManageBookingPage({
     staff: Array.isArray(booking.staff) ? (booking.staff.length > 0 ? booking.staff[0] : null) : booking.staff
   };
 
-  return <ManageBookingClient booking={normalizedBooking} />;
+  return <ManageBookingClient booking={normalizedBooking} hasUsedEmergencyCancel={hasUsedEmergencyCancel} />;
 }

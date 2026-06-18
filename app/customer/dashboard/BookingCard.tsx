@@ -15,16 +15,16 @@ type BookingCardProps = {
     business_id: string;
     service_id: string;
     staff_id: string | null;
-    has_used_emergency_cancel: boolean;
     businesses: { name: string; address: string };
     services: { name: string };
     staff: { name: string; avatar_url?: string | null } | null;
     hasReview?: boolean;
   };
+  hasUsedEmergencyCancel: boolean;
   isPast?: boolean;
 };
 
-export function BookingCard({ booking, isPast = false }: BookingCardProps) {
+export function BookingCard({ booking, hasUsedEmergencyCancel, isPast = false }: BookingCardProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,8 +44,8 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const isWithin24Hours = hoursUntilAppointment < 24;
 
   // Can cancel if: (1) >= 24h away, OR (2) <24h but emergency cancel not used yet
-  const canCancel = !isWithin24Hours || !booking.has_used_emergency_cancel;
-  const isEmergencyCancel = isWithin24Hours && !booking.has_used_emergency_cancel;
+  const canCancel = !isWithin24Hours || !hasUsedEmergencyCancel;
+  const isEmergencyCancel = isWithin24Hours && !hasUsedEmergencyCancel;
 
   // Focus trap for cancel modal
   useEffect(() => {
@@ -92,7 +92,7 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
     const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
     const isCurrentlyWithin24Hours = hoursUntilAppointment < 24;
 
-    if (isCurrentlyWithin24Hours && booking.has_used_emergency_cancel) {
+    if (isCurrentlyWithin24Hours && hasUsedEmergencyCancel) {
       setError("Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel.");
       return;
     }

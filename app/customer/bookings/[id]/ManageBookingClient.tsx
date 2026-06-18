@@ -20,7 +20,6 @@ type ManageBookingClientProps = {
     business_id: string;
     service_id: string;
     staff_id: string | null;
-    has_used_emergency_cancel: boolean;
     businesses: {
       name: string;
       slug: string;
@@ -42,9 +41,10 @@ type ManageBookingClientProps = {
       avatar_url: string | null;
     } | null;
   };
+  hasUsedEmergencyCancel: boolean;
 };
 
-export function ManageBookingClient({ booking }: ManageBookingClientProps) {
+export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageBookingClientProps) {
   const router = useRouter();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,8 +62,8 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
   const isWithin24Hours = hoursUntilAppointment < 24;
 
   // Can cancel if: (1) >= 24h away, OR (2) <24h but emergency cancel not used yet
-  const canCancel = !isWithin24Hours || !booking.has_used_emergency_cancel;
-  const isEmergencyCancel = isWithin24Hours && !booking.has_used_emergency_cancel;
+  const canCancel = !isWithin24Hours || !hasUsedEmergencyCancel;
+  const isEmergencyCancel = isWithin24Hours && !hasUsedEmergencyCancel;
 
   const handleCancel = async () => {
     // Re-check 24h policy at action time (not just page load) to prevent stale checks
@@ -71,7 +71,7 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
     const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
     const isCurrentlyWithin24Hours = hoursUntilAppointment < 24;
 
-    if (isCurrentlyWithin24Hours && booking.has_used_emergency_cancel) {
+    if (isCurrentlyWithin24Hours && hasUsedEmergencyCancel) {
       setError("Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel.");
       return;
     }
