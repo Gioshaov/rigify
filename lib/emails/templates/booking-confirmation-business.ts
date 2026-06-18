@@ -1,5 +1,19 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
 
+// Move constant to top to avoid TDZ error
+const SUPPORT_EMAIL = 'support@rigify.ge';
+
+// HTML escape helper to prevent XSS
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 type BookingConfirmationBusinessProps = {
   businessName: string;
   confirmationId: string;
@@ -18,6 +32,7 @@ export function generateBookingConfirmationBusinessEmail(props: BookingConfirmat
   const formattedDate = formatTbilisi(props.appointmentDateTime, 'EEEE, MMMM d, yyyy');
   const formattedTime = formatTbilisi(props.appointmentDateTime, 'h:mm a');
   const priceDisplay = props.price ? `₾${props.price.toFixed(0)}` : 'TBD';
+  const durationDisplay = `${props.duration} min`;
 
   return {
     subject: `New Booking: ${props.serviceName} - ${props.customerName}`,
@@ -28,141 +43,150 @@ export function generateBookingConfirmationBusinessEmail(props: BookingConfirmat
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Booking Notification</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+      .mobile-header-stack { display: block !important; text-align: left !important; }
+      .mobile-confirmation { display: block !important; margin-top: 8px !important; }
+      .mobile-label-width { width: 110px !important; font-size: 9px !important; }
+      .mobile-hero-title { font-size: 18px !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0a; color: #e5e5e5;">
-  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0a;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #0a0a0a;">
     <tr>
-      <td align="center" style="padding: 40px 0;">
-        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #1a1a1a; border: 1px solid rgba(212, 175, 55, 0.1);">
+      <td align="center" style="padding: 0;">
+        <!-- Container -->
+        <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background-color: #111111;">
 
-          <!-- Header -->
+          <!-- 1. HEADER ROW -->
           <tr>
-            <td style="padding: 40px 40px 32px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.1);">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #d4af37; text-transform: uppercase; letter-spacing: -0.02em;">RIGIFY</h1>
-              <p style="margin: 8px 0 0; font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.15em;">Business Portal</p>
-            </td>
-          </tr>
-
-          <!-- Notification Icon -->
-          <tr>
-            <td style="padding: 32px 40px; text-align: center;">
-              <div style="width: 64px; height: 64px; margin: 0 auto; background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2); display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 32px; color: #d4af37;">🔔</span>
-              </div>
-              <h2 style="margin: 24px 0 8px; font-size: 28px; font-weight: 700; color: #d4af37;">New Booking</h2>
-              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.15em;">Confirmation #${props.confirmationId}</p>
-            </td>
-          </tr>
-
-          <!-- Greeting -->
-          <tr>
-            <td style="padding: 0 40px 24px;">
-              <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #e5e5e5;">Hi ${props.businessName},</p>
-              <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.5; color: #e5e5e5;">You have a new booking! Here are the details:</p>
-            </td>
-          </tr>
-
-          <!-- Booking Details -->
-          <tr>
-            <td style="padding: 0 40px 32px;">
-              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #141414; border: 1px solid rgba(255, 255, 255, 0.05);">
-                <tr>
-                  <td style="padding: 24px;">
-                    <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #d4af37; text-transform: uppercase; letter-spacing: 0.2em;">Service</p>
-                    <p style="margin: 0; font-size: 20px; font-weight: 600; color: #fff;">${props.serviceName}</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 0 24px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                    <table role="presentation" style="width: 100%; border-collapse: collapse;">
-                      <tr>
-                        <td style="padding: 16px 0; width: 50%;">
-                          <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Date & Time</p>
-                          <p style="margin: 0; font-size: 16px; color: #d4af37;">${formattedDate}</p>
-                          <p style="margin: 4px 0 0; font-size: 14px; color: #e5e5e5;">${formattedTime}</p>
-                        </td>
-                        <td style="padding: 16px 0; width: 50%;">
-                          <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Duration</p>
-                          <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${props.duration} minutes</p>
-                        </td>
-                      </tr>
-                      ${props.staffName ? `
-                      <tr>
-                        <td style="padding: 16px 0; width: 50%; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                          <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Assigned Staff</p>
-                          <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${props.staffName}</p>
-                        </td>
-                        <td style="padding: 16px 0; width: 50%; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                          <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Price</p>
-                          <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${priceDisplay}</p>
-                        </td>
-                      </tr>
-                      ` : `
-                      <tr>
-                        <td colspan="2" style="padding: 16px 0; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                          <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Price</p>
-                          <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${priceDisplay}</p>
-                        </td>
-                      </tr>
-                      `}
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Customer Details -->
-          <tr>
-            <td style="padding: 0 40px 32px;">
-              <div style="background-color: rgba(212, 175, 55, 0.05); border-left: 2px solid #d4af37; padding: 16px 20px;">
-                <p style="margin: 0 0 12px; font-size: 10px; font-weight: 500; color: #d4af37; text-transform: uppercase; letter-spacing: 0.15em;">Customer Information</p>
-                <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #e5e5e5; font-weight: 600;">${props.customerName}</p>
-                <p style="margin: 8px 0 0; font-size: 14px; color: #999;">
-                  <span style="color: #d4af37;">📞</span> ${props.customerPhone}
-                </p>
-                ${props.customerEmail ? `
-                <p style="margin: 4px 0 0; font-size: 14px; color: #999;">
-                  <span style="color: #d4af37;">✉️</span> ${props.customerEmail}
-                </p>
-                ` : ''}
-              </div>
-            </td>
-          </tr>
-
-          <!-- Actions -->
-          <tr>
-            <td style="padding: 0 40px 32px;">
+            <td style="padding: 24px 32px; border-bottom: 1px solid #1f1f1f;" class="mobile-padding">
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
-                  <td style="padding-bottom: 12px;">
-                    <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/appointments" style="display: block; width: 100%; padding: 16px; background-color: #d4af37; color: #0a0a0a; text-align: center; text-decoration: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;">
-                      View in Dashboard
-                    </a>
+                  <td style="text-align: left;" class="mobile-header-stack">
+                    <span style="font-size: 13px; font-weight: 700; color: #d4a843; letter-spacing: 0.2em;">RIGIFY</span>
+                  </td>
+                  <td style="text-align: right;" class="mobile-header-stack mobile-confirmation">
+                    <span style="font-size: 10px; color: #555555; letter-spacing: 0.1em; font-family: 'Courier New', monospace;">CONFIRMATION #${escapeHtml(props.confirmationId)}</span>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Reminder -->
+          <!-- 2. HERO -->
           <tr>
-            <td style="padding: 0 40px 40px;">
-              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #999;">
-                <strong style="color: #e5e5e5;">Reminder:</strong> The customer expects confirmation and professional service. Please ensure everything is ready for this appointment.
-              </p>
+            <td style="padding: 32px 32px 24px;" class="mobile-padding">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #e8e6f0; letter-spacing: 0.08em;" class="mobile-hero-title">NEW BOOKING RECEIVED</h1>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.businessName)}, you have received a new booking. Please find the details below.</p>
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- 3. DATA TABLE -->
           <tr>
-            <td style="padding: 24px 40px; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 12px; color: #999;">
-                Questions? Contact support at <a href="mailto:${SUPPORT_EMAIL}" style="color: #d4af37; text-decoration: none;">${SUPPORT_EMAIL}</a>
-              </p>
-              <p style="margin: 0; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.2em;">
-                © 2026 Rigify. All rights reserved.
-              </p>
+            <td style="padding: 0 32px;" class="mobile-padding">
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+
+                <!-- SERVICE -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">SERVICE</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${escapeHtml(props.serviceName)}</div>
+                  </td>
+                </tr>
+
+                <!-- DATE & TIME -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">DATE & TIME</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #d4a843; font-weight: 500;">${formattedDate} — ${formattedTime}</span>
+                  </td>
+                </tr>
+
+                <!-- DURATION -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">DURATION</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${durationDisplay}</span>
+                  </td>
+                </tr>
+
+                ${props.staffName ? `
+                <!-- ASSIGNED STAFF -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">ASSIGNED STAFF</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${escapeHtml(props.staffName)}</span>
+                  </td>
+                </tr>
+                ` : ''}
+
+                <!-- PRICE -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">PRICE</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${priceDisplay}</span>
+                  </td>
+                </tr>
+
+                <!-- CUSTOMER NAME -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">CUSTOMER</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${escapeHtml(props.customerName)}</span>
+                  </td>
+                </tr>
+
+                <!-- CUSTOMER CONTACT -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">CONTACT</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <div style="font-size: 14px; color: #e8e6f0; font-weight: 500; margin-bottom: 4px;">${escapeHtml(props.customerPhone)}</div>
+                    ${props.customerEmail ? `<div style="font-size: 11px; color: #555555;">${escapeHtml(props.customerEmail)}</div>` : ''}
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- 4. CTA -->
+          <tr>
+            <td style="padding: 28px 32px;" class="mobile-padding">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW IN DASHBOARD</a>
+            </td>
+          </tr>
+
+          <!-- 5. PREPARATION NOTICE -->
+          <tr>
+            <td style="padding: 0 32px 24px;" class="mobile-padding">
+              <div style="margin-bottom: 6px;">
+                <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">REMINDER</span>
+              </div>
+              <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.6;">The customer expects confirmation and professional service. Please ensure everything is ready for this appointment.</p>
+            </td>
+          </tr>
+
+          <!-- 6. FOOTER -->
+          <tr>
+            <td style="padding: 20px 32px; border-top: 1px solid #1a1a1a;" class="mobile-padding">
+              <p style="margin: 0; font-size: 10px; color: #444444; letter-spacing: 0.08em; font-family: 'Courier New', monospace;">© 2026 RIGIFY. ALL RIGHTS RESERVED. // ${SUPPORT_EMAIL}</p>
             </td>
           </tr>
 
@@ -175,5 +199,3 @@ export function generateBookingConfirmationBusinessEmail(props: BookingConfirmat
     `.trim(),
   };
 }
-
-const SUPPORT_EMAIL = 'support@rigify.ge';

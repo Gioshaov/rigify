@@ -82,7 +82,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
           <tr>
             <td style="padding: 32px 32px 24px;" class="mobile-padding">
               <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #e8e6f0; letter-spacing: 0.08em;" class="mobile-hero-title">BOOKING CONFIRMED</h1>
-              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.customerName)}, your appointment has been confirmed. Please find the transaction details below.</p>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.customerName)}, your appointment has been confirmed. Please find the details below.</p>
             </td>
           </tr>
 
@@ -162,7 +162,7 @@ export function generateBookingConfirmationCustomerEmail(props: BookingConfirmat
           <!-- 4. CTA -->
           <tr>
             <td style="padding: 28px 32px;" class="mobile-padding">
-              <a href="https://rigify.ge/customer/dashboard" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW BOOKING</a>
+              <a href="${process.env.NEXT_PUBLIC_APP_URL}/customer/dashboard" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW BOOKING</a>
             </td>
           </tr>
 
