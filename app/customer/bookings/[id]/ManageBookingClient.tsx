@@ -97,8 +97,8 @@ export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageB
     document.addEventListener('keydown', handleEscape);
     document.addEventListener('keydown', handleTab);
 
-    // Focus first button on mount
-    setTimeout(() => keepBookingBtnRef.current?.focus(), 0);
+    // Focus first button after DOM paint
+    requestAnimationFrame(() => keepBookingBtnRef.current?.focus());
 
     return () => {
       document.removeEventListener('keydown', handleEscape);

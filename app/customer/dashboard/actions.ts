@@ -57,6 +57,7 @@ export async function cancelBookingAction(bookingId: string) {
         if (!bookingData) return;
 
         const confirmationId = `RG-${bookingId.slice(0, 8).toUpperCase()}`;
+        // Type assertion: Foreign key joins return single objects at runtime (not arrays)
         const business = bookingData.businesses as any;
         const service = bookingData.services as any;
 
@@ -264,6 +265,7 @@ export async function rescheduleBookingAction(data: {
         if (!bookingData) return;
 
         const confirmationId = `RG-${data.bookingId.slice(0, 8).toUpperCase()}`;
+        // Type assertion: Foreign key joins return single objects at runtime (not arrays)
         const business = bookingData.businesses as any;
         const service = bookingData.services as any;
         const staff = bookingData.staff as any;

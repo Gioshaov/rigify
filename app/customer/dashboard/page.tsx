@@ -75,8 +75,9 @@ export default async function CustomerBookingsPage() {
   // Derive type from actual query result to stay in sync with Supabase schema
   type BookingRow = NonNullable<typeof upcomingData>[number];
 
-  // Supabase !inner and !left joins on foreign keys return single objects at runtime
-  // Only reviews (one-to-many) returns an array
+  // Type assertions: Supabase SDK infers arrays for foreign key joins without Database type generic
+  // At runtime, !inner and !left joins on foreign keys return single objects (not arrays)
+  // TODO: Wire Database type into createClient() to get accurate types (requires fixing ~200 type errors)
   const upcoming = (upcomingData || []).map((b: BookingRow) => ({
     ...b,
     businesses: b.businesses as any,
