@@ -34,6 +34,12 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const cancelModalRef = useRef<HTMLDivElement>(null);
   const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
 
+  // Calculate hours until appointment for 24h cancellation policy
+  const appointmentDate = new Date(booking.appointment_datetime);
+  const now = new Date();
+  const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const canCancel = hoursUntilAppointment >= 24;
+
   // Focus trap for cancel modal
   useEffect(() => {
     if (!showCancelModal) return;
@@ -181,24 +187,38 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
 
           {/* Actions - Stitch Design */}
           {!isPast && booking.status === "confirmed" && (
-            <div className="mt-8 flex gap-4">
-              <Link
-                data-testid={`manage-btn-${booking.id}`}
-                href={`/customer/bookings/${booking.id}`}
-                className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all inline-block text-center"
-              >
-                Manage
-              </Link>
-              <button
-                data-testid={`cancel-btn-${booking.id}`}
-                onClick={() => {
-                  setError(null);
-                  setShowCancelModal(true);
-                }}
-                className="border border-white/20 text-on-surface px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:border-error hover:text-error transition-all"
-              >
-                Cancel
-              </button>
+            <div className="mt-8 flex flex-col gap-4">
+              <div className="flex gap-4">
+                <Link
+                  data-testid={`manage-btn-${booking.id}`}
+                  href={`/customer/bookings/${booking.id}`}
+                  className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all inline-block text-center"
+                >
+                  Manage
+                </Link>
+                <button
+                  data-testid={`cancel-btn-${booking.id}`}
+                  onClick={() => {
+                    if (!canCancel) return;
+                    setError(null);
+                    setShowCancelModal(true);
+                  }}
+                  disabled={!canCancel}
+                  title={!canCancel ? "Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel." : ""}
+                  className={`border px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase transition-all ${
+                    canCancel
+                      ? "border-white/20 text-on-surface hover:border-error hover:text-error cursor-pointer"
+                      : "border-white/5 text-on-surface-variant opacity-50 cursor-not-allowed"
+                  }`}
+                >
+                  Cancel
+                </button>
+              </div>
+              {!canCancel && (
+                <p className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant">
+                  Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel.
+                </p>
+              )}
             </div>
           )}
 

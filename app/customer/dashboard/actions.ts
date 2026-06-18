@@ -46,8 +46,19 @@ export async function cancelBookingAction(bookingId: string) {
 
   // Check if booking is in the past
   const appointmentDate = new Date(booking.appointment_datetime);
-  if (appointmentDate < new Date()) {
+  const now = new Date();
+
+  if (appointmentDate < now) {
     return { success: false, error: "Cannot cancel past bookings" };
+  }
+
+  // 24-hour cancellation policy: cannot cancel within 24 hours of appointment
+  const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+  if (hoursUntilAppointment < 24) {
+    return {
+      success: false,
+      error: "Cannot cancel within 24 hours of appointment. Please contact the business directly if you need to cancel."
+    };
   }
 
   // Update booking status to cancelled (with ownership check)

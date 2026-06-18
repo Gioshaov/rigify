@@ -52,6 +52,12 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
   const confirmationId = `RG-${booking.id.slice(0, 8).toUpperCase()}`;
   const canManage = booking.status === "confirmed";
 
+  // Calculate hours until appointment for 24h cancellation policy
+  const appointmentDate = new Date(booking.appointment_datetime);
+  const now = new Date();
+  const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const canCancel = hoursUntilAppointment >= 24;
+
   const handleCancel = async () => {
     setLoading(true);
     setError(null);
@@ -225,11 +231,22 @@ export function ManageBookingClient({ booking }: ManageBookingClientProps) {
                   </Link>
                   <button
                     data-testid="cancel-booking-btn"
-                    onClick={() => setShowCancelModal(true)}
-                    className="w-full border border-error/30 text-error font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase py-4 hover:bg-error/10 transition-all active:scale-[0.98]"
+                    onClick={() => canCancel && setShowCancelModal(true)}
+                    disabled={!canCancel}
+                    title={!canCancel ? "Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel." : ""}
+                    className={`w-full border font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase py-4 transition-all ${
+                      canCancel
+                        ? "border-error/30 text-error hover:bg-error/10 active:scale-[0.98] cursor-pointer"
+                        : "border-white/5 text-on-surface-variant opacity-50 cursor-not-allowed"
+                    }`}
                   >
                     Cancel Booking
                   </button>
+                  {!canCancel && (
+                    <p className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant pt-2 border-t border-white/5">
+                      Cancellation requires 24-hour notice. Please contact the business directly if you need to cancel.
+                    </p>
+                  )}
                 </div>
               )}
 
