@@ -20,7 +20,7 @@ export default async function CustomerBookingsPage() {
   const now = new Date();
   const nowISO = now.toISOString();
 
-  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url)";
+  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url), reviews!left(id)";
 
   const [
     { data: upcomingData, error: upcomingError },
@@ -73,14 +73,16 @@ export default async function CustomerBookingsPage() {
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,
-    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff
+    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff,
+    hasReview: Array.isArray(b.reviews) ? b.reviews.length > 0 : !!b.reviews
   }));
 
   const past = (pastData || []).map((b: BookingRow) => ({
     ...b,
     businesses: Array.isArray(b.businesses) ? b.businesses[0] : b.businesses,
     services: Array.isArray(b.services) ? b.services[0] : b.services,
-    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff
+    staff: Array.isArray(b.staff) ? (b.staff.length > 0 ? b.staff[0] : null) : b.staff,
+    hasReview: Array.isArray(b.reviews) ? b.reviews.length > 0 : !!b.reviews
   }));
 
   return (

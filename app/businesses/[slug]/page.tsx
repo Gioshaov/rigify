@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { BusinessLocationMap } from "./BusinessLocationMap";
 import { ServicesList } from "./ServicesList";
+import { ReviewsSection } from "./ReviewsSection";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 interface Service {
@@ -29,6 +30,14 @@ interface Staff {
   is_active: boolean;
 }
 
+interface Review {
+  id: string;
+  customer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
 interface Business {
   id: string;
   name: string;
@@ -41,6 +50,8 @@ interface Business {
   logo_url: string | null;
   latitude: number | null;
   longitude: number | null;
+  rating: number;
+  review_count: number;
   services: Service[];
   staff: Staff[];
   business_categories?: Array<{ category_id: string }>;
@@ -73,6 +84,8 @@ export default async function BusinessProfilePage({
       logo_url,
       latitude,
       longitude,
+      rating,
+      review_count,
       business_categories(category_id),
       services!left(
         id,
@@ -113,6 +126,16 @@ export default async function BusinessProfilePage({
   const staff: Staff[] = Array.isArray(business.staff)
     ? business.staff.filter((s): s is Staff => s !== null && s.is_active === true)
     : [];
+
+  // Fetch reviews for this business (most recent first, limit 10)
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('id, customer_name, rating, comment, created_at')
+    .eq('business_id', business.id)
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  const reviewsList: Review[] = reviews || [];
 
   // Fallback values for missing data
   const displayName = business.name || "Business";
@@ -204,6 +227,14 @@ export default async function BusinessProfilePage({
               </div>
               <ServicesList services={services} businessSlug={business.slug} />
             </section>
+
+            {/* Reviews */}
+            <ReviewsSection
+              businessName={displayName}
+              averageRating={business.rating || 0}
+              reviewCount={business.review_count || 0}
+              reviews={reviewsList}
+            />
 
             {/* Portfolio section removed until portfolio_images table is implemented */}
             {/* TODO: Add Portfolio section back when real data exists - see design-assets/stitch_rigify/stern_barber_shop/ for design */}

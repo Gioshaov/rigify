@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { cancelBookingAction } from "./actions";
+import { LeaveReviewModal } from "./LeaveReviewModal";
 
 type BookingCardProps = {
   booking: {
@@ -17,15 +18,18 @@ type BookingCardProps = {
     businesses: { name: string; address: string };
     services: { name: string };
     staff: { name: string; avatar_url?: string | null } | null;
+    hasReview?: boolean;
   };
   isPast?: boolean;
 };
 
 export function BookingCard({ booking, isPast = false }: BookingCardProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOptimisticallyCancelled, setIsOptimisticallyCancelled] = useState(false);
+  const [hasReviewSubmitted, setHasReviewSubmitted] = useState(false);
 
   const cancelModalRef = useRef<HTMLDivElement>(null);
   const keepBookingBtnRef = useRef<HTMLButtonElement>(null);
@@ -197,6 +201,19 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
               </button>
             </div>
           )}
+
+          {/* Leave Review Button - Stitch Design */}
+          {isPast && booking.status === "completed" && !booking.hasReview && !hasReviewSubmitted && (
+            <div className="mt-8">
+              <button
+                data-testid={`leave-review-btn-${booking.id}`}
+                onClick={() => setShowReviewModal(true)}
+                className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all"
+              >
+                Leave Review
+              </button>
+            </div>
+          )}
         </div>
       </article>
 
@@ -250,6 +267,20 @@ export function BookingCard({ booking, isPast = false }: BookingCardProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Leave Review Modal */}
+      {showReviewModal && (
+        <LeaveReviewModal
+          bookingId={booking.id}
+          businessName={booking.businesses?.name || "Business"}
+          serviceName={booking.services?.name || "Service"}
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={() => {
+            setHasReviewSubmitted(true);
+            setShowReviewModal(false);
+          }}
+        />
       )}
     </>
   );
