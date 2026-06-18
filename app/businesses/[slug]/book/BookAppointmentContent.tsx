@@ -74,6 +74,8 @@ export function BookAppointmentContent({
 
   // Customer details
   const [customerName, setCustomerName] = useState("");
+  const [countryCode, setCountryCode] = useState("+995"); // Default Georgia
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
 
@@ -546,25 +548,46 @@ export function BookAppointmentContent({
                     <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-2">
                       Phone Number *
                     </label>
-                    <input
-                      data-testid="customer-phone-input"
-                      type="tel"
-                      value={customerPhone}
-                      onChange={(e) => {
-                        let value = e.target.value;
-                        // Auto-add + prefix if user starts typing a number
-                        if (value && !value.startsWith('+')) {
-                          value = '+' + value;
-                        }
-                        setCustomerPhone(value);
-                        setPhoneError(null);
-                      }}
-                      placeholder="+995 555 123 456"
-                      className={`w-full bg-surface border px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors ${
-                        phoneError ? "border-error" : "border-white/10"
-                      }`}
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <select
+                        data-testid="country-code-select"
+                        value={countryCode}
+                        onChange={(e) => {
+                          setCountryCode(e.target.value);
+                          setCustomerPhone(e.target.value + ' ' + phoneNumber);
+                          setPhoneError(null);
+                        }}
+                        className={`bg-surface border px-3 py-3 text-on-surface outline-none focus:border-primary transition-colors ${
+                          phoneError ? "border-error" : "border-white/10"
+                        }`}
+                      >
+                        <option value="+995">🇬🇪 +995</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+7">🇷🇺 +7</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+90">🇹🇷 +90</option>
+                        <option value="+374">🇦🇲 +374</option>
+                        <option value="+994">🇦🇿 +994</option>
+                      </select>
+                      <input
+                        data-testid="customer-phone-input"
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9\s]/g, ''); // Only numbers and spaces
+                          setPhoneNumber(value);
+                          setCustomerPhone(countryCode + ' ' + value);
+                          setPhoneError(null);
+                        }}
+                        placeholder="555 123 456"
+                        className={`flex-1 bg-surface border px-4 py-3 text-on-surface placeholder:text-on-surface-variant/50 outline-none focus:border-primary transition-colors ${
+                          phoneError ? "border-error" : "border-white/10"
+                        }`}
+                        required
+                      />
+                    </div>
                     {phoneError && (
                       <p className="mt-1 text-error font-mono text-[10px] tracking-[0.15em] uppercase">
                         {phoneError}
