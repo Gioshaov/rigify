@@ -102,13 +102,23 @@ export async function cancelBookingAction(bookingId: string) {
       .select("id");
 
     if (customerError || !customerUpdate || customerUpdate.length === 0) {
-      // Concurrent tab already used emergency cancel - booking is cancelled but flag wasn't set
-      // This is acceptable: booking is cancelled (success), flag race lost (logged)
+      // KNOWN EDGE CASE: Concurrent tab already used emergency cancel
+      // Booking IS cancelled (success), but flag wasn't set (race lost)
+      //
+      // Scenario: Customer has 2 bookings both <24h, opens 2 tabs, cancels both simultaneously
+      // Result: BOTH bookings get cancelled (emergency exception used twice)
+      //
+      // Why this happens: Flag check (line 67-75) is read-then-write, not atomic with booking update
+      // Both tabs see flag=false, both cancel their bookings, only one sets flag=true
+      //
+      // To fix: Would need Postgres function/transaction or advisory lock (complex)
+      // Accepted as-is: Requires specific scenario (2 bookings, 2 tabs, both <24h, simultaneous)
       console.warn(`[Cancel] Emergency flag race condition for user ${user.id} - booking cancelled but flag already set by concurrent request`);
     }
   }
 
   revalidatePath("/customer/dashboard");
+  revalidatePath("/customer/bookings", "layout"); // Revalidate booking detail pages
 
   // Send cancellation emails (non-blocking)
   Promise.all([
