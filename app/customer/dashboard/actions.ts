@@ -21,100 +21,25 @@ export async function cancelBookingAction(bookingId: string) {
     return { success: false, error: "Not authenticated" };
   }
 
-  // Verify booking belongs to user
-  const { data: booking, error: fetchError } = await supabase
-    .from("bookings")
-    .select("id, customer_id, appointment_datetime, status")
-    .eq("id", bookingId)
-    .single();
-
-  if (fetchError || !booking) {
-    // PGRST116 is expected "not found" - only log real errors
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error("Fetch booking error:", fetchError);
-    }
-    return { success: false, error: "Booking not found" };
-  }
-
-  if (booking.customer_id !== user.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  if (booking.status === "cancelled") {
-    return { success: false, error: "Booking already cancelled" };
-  }
-
-  // Check if booking is in the past
-  const appointmentDate = new Date(booking.appointment_datetime);
-  const now = new Date();
-
-  if (appointmentDate < now) {
-    return { success: false, error: "Cannot cancel past bookings" };
-  }
-
-  // 24-hour cancellation policy with one-time emergency exception
-  const hoursUntilAppointment = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-  const isWithin24Hours = hoursUntilAppointment < 24;
-
-  // Create admin client once (reused for customer check and email query)
+  // Call atomic Postgres function that handles all checks + updates in a single transaction
+  // This prevents race conditions where concurrent tabs could both use emergency cancel
   const admin = createAdminClient();
-
-  if (isWithin24Hours) {
-    // Check customer's emergency cancellation status from customers table
-    const { data: customer } = await admin
-      .from("customers")
-      .select("has_used_emergency_cancel")
-      .eq("id", user.id)
-      .single();
-
-    if (customer?.has_used_emergency_cancel) {
-      return {
-        success: false,
-        error: "Cannot cancel within 24 hours of appointment. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
-      };
-    }
-  }
-
-  // Update booking status to cancelled (with ownership check)
-  const { data: updated, error } = await supabase
-    .from("bookings")
-    .update({ status: "cancelled" })
-    .eq("id", bookingId)
-    .eq("customer_id", user.id)
-    .select("id");
+  const { data, error } = await admin.rpc('cancel_booking_with_emergency_check', {
+    p_booking_id: bookingId,
+    p_customer_id: user.id
+  });
 
   if (error) {
-    console.error("Cancel booking error:", error);
+    console.error("Cancel booking RPC error:", error);
     return { success: false, error: "Failed to cancel booking" };
   }
 
-  if (!updated || updated.length === 0) {
-    return { success: false, error: "Booking could not be cancelled — it may already be cancelled" };
-  }
+  // RPC returns array with single row: { success, error_code, error_message }
+  const result = data?.[0];
 
-  // AFTER booking cancel succeeds: mark emergency cancel as used (prevents flag burn on booking failure)
-  if (isWithin24Hours) {
-    const { data: customerUpdate, error: customerError } = await admin
-      .from("customers")
-      .update({ has_used_emergency_cancel: true })
-      .eq("id", user.id)
-      .eq("has_used_emergency_cancel", false) // Atomic: only update if still false
-      .select("id");
-
-    if (customerError || !customerUpdate || customerUpdate.length === 0) {
-      // KNOWN EDGE CASE: Concurrent tab already used emergency cancel
-      // Booking IS cancelled (success), but flag wasn't set (race lost)
-      //
-      // Scenario: Customer has 2 bookings both <24h, opens 2 tabs, cancels both simultaneously
-      // Result: BOTH bookings get cancelled (emergency exception used twice)
-      //
-      // Why this happens: Flag check (line 67-75) is read-then-write, not atomic with booking update
-      // Both tabs see flag=false, both cancel their bookings, only one sets flag=true
-      //
-      // To fix: Would need Postgres function/transaction or advisory lock (complex)
-      // Accepted as-is: Requires specific scenario (2 bookings, 2 tabs, both <24h, simultaneous)
-      console.warn(`[Cancel] Emergency flag race condition for user ${user.id} - booking cancelled but flag already set by concurrent request`);
-    }
+  if (!result || !result.success) {
+    // Map error codes to user-friendly messages (fallback to error_message from function)
+    return { success: false, error: result?.error_message || "Failed to cancel booking" };
   }
 
   revalidatePath("/customer/dashboard");
