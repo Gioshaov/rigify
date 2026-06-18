@@ -78,5 +78,5 @@ export default async function ManageBookingPage({
     staff: Array.isArray(booking.staff) ? (booking.staff.length > 0 ? booking.staff[0] : null) : booking.staff
   };
 
-  return <ManageBookingClient booking={normalizedBooking} hasUsedEmergencyCancel={hasUsedEmergencyCancel} />;
+  return <ManageBookingClient booking={normalizedBooking} customerId={user.id} initialHasUsedEmergencyCancel={hasUsedEmergencyCancel} />;
 }

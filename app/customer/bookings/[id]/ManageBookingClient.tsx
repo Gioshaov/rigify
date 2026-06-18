@@ -8,6 +8,7 @@ import { formatTbilisi } from "@/lib/utils/datetime";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 import { cancelBookingAction } from "@/app/customer/dashboard/actions";
+import { useEmergencyCancelFlag } from "@/app/customer/dashboard/useEmergencyCancelFlag";
 
 type ManageBookingClientProps = {
   booking: {
@@ -41,13 +42,17 @@ type ManageBookingClientProps = {
       avatar_url: string | null;
     } | null;
   };
-  hasUsedEmergencyCancel: boolean;
+  customerId: string;
+  initialHasUsedEmergencyCancel: boolean;
 };
 
-export function ManageBookingClient({ booking, hasUsedEmergencyCancel }: ManageBookingClientProps) {
+export function ManageBookingClient({ booking, customerId, initialHasUsedEmergencyCancel }: ManageBookingClientProps) {
   const router = useRouter();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Real-time subscription to emergency cancel flag (prevents multi-tab race conditions)
+  const hasUsedEmergencyCancel = useEmergencyCancelFlag(customerId, initialHasUsedEmergencyCancel);
   const [error, setError] = useState<string | null>(null);
 
   const cancelModalRef = useRef<HTMLDivElement>(null);

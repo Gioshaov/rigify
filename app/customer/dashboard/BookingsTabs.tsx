@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BookingCard } from "./BookingCard";
+import { useEmergencyCancelFlag } from "./useEmergencyCancelFlag";
 
 type Booking = {
   id: string;
@@ -19,11 +20,15 @@ type Booking = {
 interface BookingsTabsProps {
   upcomingBookings: Booking[];
   pastBookings: Booking[];
-  hasUsedEmergencyCancel: boolean;
+  customerId: string;
+  initialHasUsedEmergencyCancel: boolean;
 }
 
-export function BookingsTabs({ upcomingBookings, pastBookings, hasUsedEmergencyCancel }: BookingsTabsProps) {
+export function BookingsTabs({ upcomingBookings, pastBookings, customerId, initialHasUsedEmergencyCancel }: BookingsTabsProps) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+
+  // Real-time subscription to emergency cancel flag (prevents multi-tab race conditions)
+  const hasUsedEmergencyCancel = useEmergencyCancelFlag(customerId, initialHasUsedEmergencyCancel);
 
   return (
     <>

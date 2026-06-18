@@ -1,14 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { TopNav } from "@/components/navigation/TopNav";
 import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
-import { BusinessLocationMap } from "./BusinessLocationMap";
 import { ServicesList } from "./ServicesList";
 import { ReviewsSection } from "./ReviewsSection";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
+
+// Dynamic import to prevent 1.7MB Mapbox bundle from being included in initial page load
+const BusinessLocationMap = dynamic(
+  () => import('./BusinessLocationMap').then(mod => ({ default: mod.BusinessLocationMap })),
+  { ssr: false, loading: () => <div className="w-full h-64 bg-surface-container-low animate-pulse" /> }
+);
 
 interface Service {
   id: string;

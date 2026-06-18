@@ -56,11 +56,19 @@ export async function updateCustomerProfileAction(formData: FormData) {
       return { error: "Current password is required to set a new password." };
     }
 
-    // TODO: Implement proper password verification without creating session conflicts
-    // Current approach: rely on Supabase session validity checks
-    // Improvement needed: dedicated reauthentication flow or client-side verification
+    // Verify current password before allowing change (security requirement)
+    // signInWithPassword validates credentials without creating session conflicts
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
 
-    // Update to new password
+    if (verifyError) {
+      console.error("Password verification failed:", verifyError);
+      return { error: "Current password is incorrect." };
+    }
+
+    // Update to new password after verification succeeds
     const { error: passwordError } = await supabase.auth.updateUser({
       password: newPassword,
     });

@@ -111,7 +111,8 @@ export default async function CustomerBookingsPage() {
       <BookingsTabs
         upcomingBookings={upcoming}
         pastBookings={past}
-        hasUsedEmergencyCancel={hasUsedEmergencyCancel}
+        customerId={user.id}
+        initialHasUsedEmergencyCancel={hasUsedEmergencyCancel}
       />
     </div>
   );
