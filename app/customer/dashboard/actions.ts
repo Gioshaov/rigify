@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { combineLocalDateTime } from "@/lib/utils/datetime";
+import {
+  sendCancellationToCustomer,
+  sendCancellationToBusiness,
+  sendRescheduleToCustomer,
+  sendRescheduleToBusiness
+} from "@/lib/emails/send";
 
 export async function cancelBookingAction(bookingId: string) {
   const supabase = createClient();
@@ -62,6 +68,54 @@ export async function cancelBookingAction(bookingId: string) {
   }
 
   revalidatePath("/customer/dashboard");
+
+  // Send cancellation emails (non-blocking)
+  const admin = createAdminClient();
+  Promise.all([
+    admin
+      .from("bookings")
+      .select("customer_name, customer_phone, customer_email, appointment_datetime, services(name), businesses(name, email, slug)")
+      .eq("id", bookingId)
+      .single()
+      .then(async ({ data: bookingData }) => {
+        if (!bookingData) return;
+
+        const confirmationId = `RG-${bookingId.slice(0, 8).toUpperCase()}`;
+        const business = Array.isArray(bookingData.businesses) ? bookingData.businesses[0] : bookingData.businesses;
+        const service = Array.isArray(bookingData.services) ? bookingData.services[0] : bookingData.services;
+
+        if (!business || !service) return;
+
+        // Send to customer if email provided
+        if (bookingData.customer_email) {
+          await sendCancellationToCustomer({
+            customerEmail: bookingData.customer_email,
+            customerName: bookingData.customer_name,
+            confirmationId,
+            serviceName: service.name,
+            businessName: business.name,
+            appointmentDateTime: bookingData.appointment_datetime,
+            cancelledBy: 'customer',
+          });
+        }
+
+        // Send to business
+        if (business.email) {
+          await sendCancellationToBusiness({
+            businessEmail: business.email,
+            businessName: business.name,
+            confirmationId,
+            customerName: bookingData.customer_name,
+            serviceName: service.name,
+            appointmentDateTime: bookingData.appointment_datetime,
+            cancelledBy: 'customer',
+          });
+        }
+      })
+  ]).catch((emailError) => {
+    console.error('[Cancel] Email notification error:', emailError);
+  });
+
   return { success: true };
 }
 
@@ -81,10 +135,10 @@ export async function rescheduleBookingAction(data: {
     return { success: false, error: "Not authenticated" };
   }
 
-  // Verify booking belongs to user
-  const { data: booking, error: fetchError } = await supabase
+  // Verify booking belongs to user and capture old datetime for email
+  const { data: booking, error: fetchError} = await supabase
     .from("bookings")
-    .select("id, customer_id, business_id, service_id, staff_id, status, reschedule_count")
+    .select("id, customer_id, business_id, service_id, staff_id, status, reschedule_count, appointment_datetime")
     .eq("id", data.bookingId)
     .single();
 
@@ -192,6 +246,7 @@ export async function rescheduleBookingAction(data: {
     .from("bookings")
     .update({
       appointment_datetime: newDateTime.toISOString(),
+      end_datetime: endDateTime.toISOString(),
       staff_id: targetStaffId,
       reschedule_count: rescheduleCount + 1,
     })
@@ -218,5 +273,62 @@ export async function rescheduleBookingAction(data: {
   }
 
   revalidatePath("/customer/dashboard");
+
+  // Send reschedule emails (non-blocking)
+  // Capture old datetime from booking fetched before update
+  const oldAppointmentDateTime = booking.appointment_datetime;
+
+  Promise.all([
+    admin
+      .from("bookings")
+      .select("customer_name, customer_phone, customer_email, services(name), staff(name), businesses(name, email, slug)")
+      .eq("id", data.bookingId)
+      .single()
+      .then(async ({ data: bookingData }) => {
+        if (!bookingData) return;
+
+        const confirmationId = `RG-${data.bookingId.slice(0, 8).toUpperCase()}`;
+        const business = Array.isArray(bookingData.businesses) ? bookingData.businesses[0] : bookingData.businesses;
+        const service = Array.isArray(bookingData.services) ? bookingData.services[0] : bookingData.services;
+        const staff = Array.isArray(bookingData.staff) ? bookingData.staff[0] : bookingData.staff;
+
+        if (!business || !service) return;
+
+        // Send to customer if email provided
+        if (bookingData.customer_email) {
+          await sendRescheduleToCustomer({
+            customerEmail: bookingData.customer_email,
+            customerName: bookingData.customer_name,
+            confirmationId,
+            serviceName: service.name,
+            businessName: business.name,
+            businessSlug: business.slug,
+            oldAppointmentDateTime,
+            newAppointmentDateTime: newDateTime.toISOString(),
+            staffName: staff?.name || null,
+            bookingId: data.bookingId,
+          });
+        }
+
+        // Send to business
+        if (business.email) {
+          await sendRescheduleToBusiness({
+            businessEmail: business.email,
+            businessName: business.name,
+            confirmationId,
+            customerName: bookingData.customer_name,
+            serviceName: service.name,
+            businessSlug: business.slug,
+            oldAppointmentDateTime,
+            newAppointmentDateTime: newDateTime.toISOString(),
+            staffName: staff?.name || null,
+            bookingId: data.bookingId,
+          });
+        }
+      })
+  ]).catch((emailError) => {
+    console.error('[Reschedule] Email notification error:', emailError);
+  });
+
   return { success: true };
 }

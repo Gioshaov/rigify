@@ -2,6 +2,10 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { combineLocalDateTime } from '@/lib/utils/datetime'
 import { validateGeorgianPhone, validateName, validateEmail } from '@/lib/utils/validation'
+import {
+  sendBookingConfirmationToCustomer,
+  sendBookingConfirmationToBusiness
+} from '@/lib/emails/send'
 
 export async function POST(request: NextRequest) {
   try {
@@ -291,6 +295,74 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Generate confirmation ID
+    const confirmationId = `RG-${booking.id.slice(0, 8).toUpperCase()}`;
+
+    // Send email notifications (non-blocking - don't fail booking if emails fail)
+    Promise.all([
+      // Get business details for emails
+      admin
+        .from('businesses')
+        .select('name, email, phone, address, city, slug')
+        .eq('id', businessId)
+        .single()
+        .then(async ({ data: businessData }) => {
+          if (!businessData) return;
+
+          // Get staff name if assigned
+          let staffName: string | null = null;
+          if (assignedStaffId) {
+            const { data: staffData } = await admin
+              .from('staff')
+              .select('name')
+              .eq('id', assignedStaffId)
+              .single();
+            staffName = staffData?.name || null;
+          }
+
+          // Send email to customer if email provided
+          if (customerEmail) {
+            await sendBookingConfirmationToCustomer({
+              customerEmail,
+              customerName,
+              confirmationId,
+              serviceName: service.name,
+              businessName: businessData.name,
+              businessAddress: businessData.address,
+              businessCity: businessData.city,
+              businessPhone: businessData.phone,
+              businessSlug: businessData.slug,
+              appointmentDateTime: appointmentDatetime.toISOString(),
+              duration: service.duration_minutes,
+              price: service.price,
+              staffName,
+              bookingId: booking.id,
+            });
+          }
+
+          // Send email to business
+          if (businessData.email) {
+            await sendBookingConfirmationToBusiness({
+              businessEmail: businessData.email,
+              businessName: businessData.name,
+              confirmationId,
+              customerName,
+              customerPhone,
+              customerEmail,
+              serviceName: service.name,
+              appointmentDateTime: appointmentDatetime.toISOString(),
+              duration: service.duration_minutes,
+              price: service.price,
+              staffName,
+              bookingId: booking.id,
+            });
+          }
+        })
+    ]).catch((emailError) => {
+      // Log email errors but don't fail the booking
+      console.error('[Booking] Email notification error:', emailError);
+    });
 
     return NextResponse.json({
       success: true,
