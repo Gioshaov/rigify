@@ -57,14 +57,16 @@ export async function updateCustomerProfileAction(formData: FormData) {
     }
 
     // Verify current password before allowing change (security requirement)
-    // signInWithPassword validates credentials without creating session conflicts
+    // Note: signInWithPassword has side effect of refreshing session tokens (issues new access/refresh tokens)
+    // This is acceptable for password change flow; alternative would be supabase.auth.reauthenticate()
     const { error: verifyError } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: currentPassword,
     });
 
     if (verifyError) {
-      console.error("Password verification failed:", verifyError);
+      // Log only message to avoid PII exposure (error object may contain email)
+      console.error("Password verification failed:", verifyError.message);
       return { error: "Current password is incorrect." };
     }
 
