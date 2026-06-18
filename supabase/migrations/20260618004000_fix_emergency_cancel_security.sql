@@ -1,10 +1,7 @@
--- Atomic emergency cancellation function
--- Prevents double-spend: ensures only ONE booking can use emergency cancel per customer
---
--- LOCK ORDER: customers first, then bookings
--- All functions touching both tables MUST follow this order to prevent deadlocks
+-- CRITICAL SECURITY FIX: Add auth.uid() check to prevent IDOR attacks
+-- Any authenticated user could cancel another customer's booking before this fix
 
--- Create function that performs atomic emergency cancel check + booking update + flag set
+-- Recreate function with security fixes
 create or replace function public.cancel_booking_with_emergency_check(
   p_booking_id uuid,
   p_customer_id uuid
@@ -103,10 +100,3 @@ begin
   return query select true, null::text, null::text;
 end;
 $$;
-
--- Grant execute permission to authenticated users
-grant execute on function public.cancel_booking_with_emergency_check(uuid, uuid) to authenticated;
-
--- Add comment explaining the function
-comment on function public.cancel_booking_with_emergency_check(uuid, uuid) is
-'Atomically cancels a booking with emergency cancellation policy enforcement. Uses row locks to prevent race conditions.';

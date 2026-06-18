@@ -44,10 +44,10 @@ export async function cancelBookingAction(bookingId: string) {
 
   revalidatePath("/customer/dashboard");
 
-  // Send cancellation emails (non-blocking)
+  // Send cancellation emails (non-blocking fire-and-forget)
   // Use admin client for email query (bypasses RLS to fetch related data)
   const admin = createAdminClient();
-  Promise.all([
+  void Promise.all([
     admin
       .from("bookings")
       .select("customer_name, customer_phone, customer_email, appointment_datetime, services(name), businesses(name, email, slug)")
@@ -250,11 +250,11 @@ export async function rescheduleBookingAction(data: {
 
   revalidatePath("/customer/dashboard");
 
-  // Send reschedule emails (non-blocking)
+  // Send reschedule emails (non-blocking fire-and-forget)
   // Capture old datetime from booking fetched before update
   const oldAppointmentDateTime = booking.appointment_datetime;
 
-  Promise.all([
+  void Promise.all([
     admin
       .from("bookings")
       .select("customer_name, customer_phone, customer_email, services(name), staff(name), businesses(name, email, slug)")
