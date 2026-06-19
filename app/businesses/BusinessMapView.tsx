@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const BusinessMap = dynamic(
   () => import('./BusinessMap').then(mod => ({ default: mod.BusinessMap })),
@@ -43,10 +44,17 @@ export function BusinessMapView({
   onFlyComplete
 }: BusinessMapViewProps) {
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleMarkerClick = (businessId: string) => {
     setSelectedBusinessId(businessId);
     onBusinessSelect?.(businessId);
+
+    // Navigate to business page
+    const business = businesses.find(b => b.id === businessId);
+    if (business) {
+      router.push(`/businesses/${business.slug}`);
+    }
   };
 
   return (

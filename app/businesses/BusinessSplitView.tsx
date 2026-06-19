@@ -73,6 +73,12 @@ export function BusinessSplitView({
         block: 'center',
       });
     }
+
+    // Navigate to business page
+    const business = businesses.find(b => b.id === businessId);
+    if (business) {
+      router.push(`/businesses/${business.slug}`);
+    }
   };
 
   const handleBusinessHover = (businessId: string | null) => {
