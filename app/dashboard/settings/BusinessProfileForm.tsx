@@ -103,6 +103,7 @@ export function BusinessProfileForm({
               required
               defaultValue={business.name}
               className="input-field"
+              data-testid="business-settings-name-input"
             />
           </div>
 
@@ -117,6 +118,7 @@ export function BusinessProfileForm({
               defaultValue={business.description || ""}
               className="input-field resize-none"
               placeholder={tr.dashboard.settings.descriptionPlaceholder[lang]}
+              data-testid="business-settings-description-textarea"
             />
           </div>
 
@@ -148,6 +150,7 @@ export function BusinessProfileForm({
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
                 className="input-field"
+                data-testid="business-settings-city-select"
               >
                 {CITIES.map((city) => (
                   <option key={city.id} value={city.id}>
@@ -180,6 +183,7 @@ export function BusinessProfileForm({
               defaultValue={business.address}
               className="input-field"
               placeholder={tr.dashboard.settings.streetAddressPlaceholder[lang]}
+              data-testid="business-settings-address-input"
             />
           </div>
         </div>
@@ -205,6 +209,7 @@ export function BusinessProfileForm({
                 defaultValue={business.phone || ""}
                 className="input-field"
                 placeholder="+995..."
+                data-testid="business-settings-phone-input"
               />
             </div>
 
@@ -219,6 +224,7 @@ export function BusinessProfileForm({
                 defaultValue={business.email || ""}
                 className="input-field"
                 placeholder="contact@business.ge"
+                data-testid="business-settings-email-input"
               />
             </div>
           </div>
@@ -235,6 +241,7 @@ export function BusinessProfileForm({
                 defaultValue={business.website || ""}
                 className="input-field"
                 placeholder="https://..."
+                data-testid="business-settings-website-input"
               />
             </div>
 
@@ -249,6 +256,7 @@ export function BusinessProfileForm({
                 defaultValue={business.instagram || ""}
                 className="input-field"
                 placeholder={tr.dashboard.settings.instagramPlaceholder[lang]}
+                data-testid="business-settings-instagram-input"
               />
             </div>
           </div>
@@ -384,6 +392,7 @@ export function BusinessProfileForm({
           type="submit"
           disabled={loading || !isDirty}
           className="btn-primary"
+          data-testid="business-settings-submit-btn"
         >
           {loading ? tr.dashboard.settings.updating[lang] : tr.dashboard.settings.updateProfile[lang]}
         </button>

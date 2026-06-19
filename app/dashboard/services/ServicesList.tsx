@@ -177,6 +177,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn-primary"
+          data-testid="services-list-toggle-add-form-btn"
         >
           {showAddForm ? tr.common.cancel[lang] : tr.dashboard.services.addService[lang]}
         </button>
@@ -209,6 +210,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                 disabled={loading}
                 className="input-field"
                 placeholder={tr.dashboard.services.namePlaceholder[lang]}
+                data-testid="services-add-name-input"
               />
             </div>
 
@@ -227,6 +229,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                 onBlur={(e) => handleFieldBlur('category', e.target.value)}
                 disabled={loading}
                 className={`input-field ${fieldErrors.category ? 'border-error' : ''}`}
+                data-testid="services-add-category-select"
               >
                 <option value="">{tr.dashboard.services.selectCategory[lang]}</option>
                 {CATEGORIES.map((cat) => (
@@ -253,6 +256,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                   disabled={loading}
                   className="input-field"
                   placeholder={tr.dashboard.services.customCategoryPlaceholder[lang]}
+                  data-testid="services-add-custom-category-input"
                 />
               </div>
             )}
@@ -269,6 +273,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                   className={`input-field ${fieldErrors.price ? 'border-error' : ''}`}
                   placeholder="50"
                   onBlur={(e) => handleFieldBlur('price', e.target.value)}
+                  data-testid="services-add-price-input"
                 />
                 {fieldErrors.price && (
                   <p className="mt-stack-xs text-sm text-error">✗ {fieldErrors.price}</p>
@@ -285,6 +290,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                   className={`input-field ${fieldErrors.duration_minutes ? 'border-error' : ''}`}
                   placeholder="60"
                   onBlur={(e) => handleFieldBlur('duration_minutes', e.target.value)}
+                  data-testid="services-add-duration-input"
                 />
                 {fieldErrors.duration_minutes ? (
                   <p className="mt-stack-xs text-sm text-error">✗ {fieldErrors.duration_minutes}</p>
@@ -304,6 +310,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                 disabled={loading}
                 className="input-field resize-none"
                 placeholder={tr.dashboard.services.descriptionPlaceholder[lang]}
+                data-testid="services-add-description-textarea"
               />
             </div>
 
@@ -312,6 +319,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                 type="submit"
                 disabled={loading}
                 className="btn-primary"
+                data-testid="services-add-submit-btn"
               >
                 {loading ? tr.dashboard.services.adding[lang] : tr.dashboard.services.addService[lang]}
               </button>
@@ -323,6 +331,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                 }}
                 disabled={loading}
                 className="btn-secondary"
+                data-testid="services-add-cancel-btn"
               >
                 {tr.common.cancel[lang]}
               </button>
@@ -375,6 +384,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         required
                         disabled={loading}
                         className="input-field"
+                        data-testid={`services-edit-name-input-${service.id}`}
                       />
                     </div>
 
@@ -393,6 +403,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         onBlur={(e) => handleFieldBlur('category', e.target.value)}
                         disabled={loading}
                         className={`input-field ${fieldErrors.category ? 'border-error' : ''}`}
+                        data-testid={`services-edit-category-select-${service.id}`}
                       >
                         <option value="">{tr.dashboard.services.selectCategory[lang]}</option>
                         {CATEGORIES.map((cat) => (
@@ -419,6 +430,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                           disabled={loading}
                           className="input-field"
                           placeholder={tr.dashboard.services.customCategoryPlaceholder[lang]}
+                          data-testid={`services-edit-custom-category-input-${service.id}`}
                         />
                       </div>
                     )}
@@ -435,6 +447,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                           disabled={loading}
                           className={`input-field ${fieldErrors.price ? 'border-error' : ''}`}
                           onBlur={(e) => handleFieldBlur('price', e.target.value)}
+                          data-testid={`services-edit-price-input-${service.id}`}
                         />
                         {fieldErrors.price && (
                           <p className="mt-stack-xs text-sm text-error">✗ {fieldErrors.price}</p>
@@ -451,6 +464,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                           disabled={loading}
                           className={`input-field ${fieldErrors.duration_minutes ? 'border-error' : ''}`}
                           onBlur={(e) => handleFieldBlur('duration_minutes', e.target.value)}
+                          data-testid={`services-edit-duration-input-${service.id}`}
                         />
                         {fieldErrors.duration_minutes && (
                           <p className="mt-stack-xs text-sm text-error">✗ {fieldErrors.duration_minutes}</p>
@@ -466,6 +480,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         rows={3}
                         disabled={loading}
                         className="input-field resize-none"
+                        data-testid={`services-edit-description-textarea-${service.id}`}
                       />
                     </div>
 
@@ -477,6 +492,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                           defaultChecked={service.is_active}
                           disabled={loading}
                           className="w-4 h-4"
+                          data-testid={`services-edit-active-checkbox-${service.id}`}
                         />
                         <span className="label-mono">{tr.dashboard.services.activeBooking[lang]}</span>
                       </label>
@@ -487,6 +503,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         type="submit"
                         disabled={loading}
                         className="btn-primary"
+                        data-testid={`services-edit-submit-btn-${service.id}`}
                       >
                         {loading ? tr.dashboard.staff.saving[lang] : tr.common.save[lang]}
                       </button>
@@ -498,6 +515,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         }}
                         disabled={loading}
                         className="btn-secondary"
+                        data-testid={`services-edit-cancel-btn-${service.id}`}
                       >
                         {tr.common.cancel[lang]}
                       </button>
@@ -549,6 +567,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                         }
                       }}
                       className="label-mono text-primary hover:underline text-sm py-2 px-3 -mx-3"
+                      data-testid={`services-list-edit-btn-${service.id}`}
                     >
                       {tr.common.edit[lang]}
                     </button>
@@ -556,6 +575,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
                       onClick={() => handleDelete(service.id)}
                       disabled={loading}
                       className="label-mono text-error hover:underline text-sm py-2 px-3 -mx-3"
+                      data-testid={`services-list-delete-btn-${service.id}`}
                     >
                       {tr.dashboard.services.delete[lang]}
                     </button>
