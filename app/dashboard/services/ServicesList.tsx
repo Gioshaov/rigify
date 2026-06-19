@@ -174,6 +174,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
     <div className="space-y-gutter">
       {/* Add Button */}
       <div>
+        {/* NOTE: This button toggles between two states (open/close add form) with the same test ID */}
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn-primary"

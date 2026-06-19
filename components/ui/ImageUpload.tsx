@@ -77,6 +77,7 @@ export function ImageUpload({
           accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
           onChange={handleFileSelect}
           className="hidden"
+          data-testid={`business-settings-${type}-upload-input`}
         />
         <button
           type="button"
@@ -87,6 +88,7 @@ export function ImageUpload({
               ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10 disabled:opacity-50'
               : 'bg-surface hover:bg-surface-container text-on-surface border border-outline-variant disabled:opacity-50'
           }`}
+          data-testid={`business-settings-${type}-upload-btn`}
         >
           {uploading ? 'Uploading...' : currentUrl ? 'Change Image' : 'Choose Image'}
         </button>

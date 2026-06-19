@@ -398,7 +398,7 @@ export function BusinessProfileForm({
         </button>
 
         {isDirty && (
-          <p className="label-mono text-on-surface-variant">
+          <p className="label-mono text-on-surface-variant" data-testid="business-settings-unsaved-indicator">
             UNSAVED CHANGES
           </p>
         )}

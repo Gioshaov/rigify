@@ -52,6 +52,7 @@ export function CategoryDropdown({ defaultSelected, onChange }: CategoryDropdown
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="input-field w-full text-left flex items-center justify-between"
+        data-testid="business-settings-category-dropdown-btn"
       >
         <span className={selectedCount === 0 ? 'text-on-surface-variant' : ''}>
           {buttonText}
@@ -80,6 +81,7 @@ export function CategoryDropdown({ defaultSelected, onChange }: CategoryDropdown
                   checked={selected.includes(cat.id)}
                   onChange={() => toggleCategory(cat.id)}
                   className="w-4 h-4 rounded"
+                  data-testid={`business-settings-category-option-${cat.id}`}
                 />
                 <div>
                   <p className="text-body-md">{cat.en}</p>

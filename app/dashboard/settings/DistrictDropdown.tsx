@@ -58,6 +58,7 @@ export function DistrictDropdown({ defaultValue, selectedCity, onChange }: Distr
         onClick={() => !isDisabled && setIsOpen(!isOpen)}
         disabled={isDisabled}
         className="input-field w-full text-left flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+        data-testid="business-settings-district-dropdown-btn"
       >
         <span className={!selected ? 'text-on-surface-variant' : ''}>
           {matchedDistrict ? `${matchedDistrict.en} · ${matchedDistrict.ka}` : buttonText}
@@ -81,6 +82,7 @@ export function DistrictDropdown({ defaultValue, selectedCity, onChange }: Distr
               type="button"
               onClick={() => selectDistrict('')}
               className="w-full text-left px-4 py-2.5 hover:bg-surface-container transition-colors text-on-surface-variant"
+              data-testid="business-settings-district-option-none"
             >
               None
             </button>
@@ -91,6 +93,7 @@ export function DistrictDropdown({ defaultValue, selectedCity, onChange }: Distr
                 type="button"
                 onClick={() => selectDistrict(district.en)}
                 className="w-full text-left px-4 py-2.5 hover:bg-surface-container cursor-pointer transition-colors"
+                data-testid={`business-settings-district-option-${district.id}`}
               >
                 <p className="text-body-md">{district.en}</p>
                 <p className="text-body-sm text-on-surface-variant">{district.ka}</p>
