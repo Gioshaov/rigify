@@ -1,18 +1,5 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
-
-// Move constant to top to avoid TDZ error
-const SUPPORT_EMAIL = 'support@rigify.ge';
-
-// HTML escape helper to prevent XSS
-function escapeHtml(str: string | null | undefined): string {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+import { escapeHtml, SUPPORT_EMAIL } from '@/lib/emails/utils';
 
 type BookingRescheduleProps = {
   recipientName: string;
@@ -163,7 +150,8 @@ export function generateBookingRescheduleEmail(props: BookingRescheduleProps) {
           </tr>
           `}
 
-          <!-- 5. PREPARATION NOTICE -->
+          <!-- 5. REMINDER -->
+          ${props.isCustomer ? `
           <tr>
             <td style="padding: 0 32px 24px;" class="mobile-padding">
               <div style="margin-bottom: 6px;">
@@ -172,6 +160,16 @@ export function generateBookingRescheduleEmail(props: BookingRescheduleProps) {
               <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.6;">Please arrive 5-10 minutes early. Note the updated time to ensure you don&apos;t miss your appointment.</p>
             </td>
           </tr>
+          ` : `
+          <tr>
+            <td style="padding: 0 32px 24px;" class="mobile-padding">
+              <div style="margin-bottom: 6px;">
+                <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">REMINDER</span>
+              </div>
+              <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.6;">The appointment time has changed. Please ensure staff and resources are allocated for the updated time slot.</p>
+            </td>
+          </tr>
+          `}
 
           <!-- 6. FOOTER -->
           <tr>

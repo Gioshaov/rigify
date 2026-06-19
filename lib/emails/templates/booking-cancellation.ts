@@ -1,18 +1,5 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
-
-// Move constant to top to avoid TDZ error
-const SUPPORT_EMAIL = 'support@rigify.ge';
-
-// HTML escape helper to prevent XSS
-function escapeHtml(str: string | null | undefined): string {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+import { escapeHtml, SUPPORT_EMAIL } from '@/lib/emails/utils';
 
 type BookingCancellationProps = {
   recipientName: string;
@@ -29,9 +16,19 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
   const formattedDate = formatTbilisi(props.appointmentDateTime, 'EEEE, MMMM d, yyyy');
   const formattedTime = formatTbilisi(props.appointmentDateTime, 'h:mm a');
 
-  const cancelledByText = props.cancelledBy === 'customer'
-    ? 'Your appointment has been cancelled as requested.'
-    : 'Your appointment has been cancelled by the business.';
+  // Build correct message based on recipient and who cancelled
+  let cancelledByText: string;
+  if (props.isCustomer) {
+    // Customer email
+    cancelledByText = props.cancelledBy === 'customer'
+      ? 'Your appointment has been cancelled as requested.'
+      : `Your appointment has been cancelled by ${escapeHtml(props.businessName)}.`;
+  } else {
+    // Business owner email
+    cancelledByText = props.cancelledBy === 'customer'
+      ? `${escapeHtml(props.customerName || 'The customer')} has cancelled their appointment.`
+      : 'This appointment has been cancelled.';
+  }
 
   return {
     subject: `Booking Cancelled: ${props.serviceName} at ${props.businessName}`,
@@ -79,7 +76,7 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
           <tr>
             <td style="padding: 32px 32px 24px;" class="mobile-padding">
               <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #ef4444; letter-spacing: 0.08em;" class="mobile-hero-title">BOOKING CANCELLED</h1>
-              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.recipientName)}, ${cancelledByText}</p>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.recipientName)}, ${cancelledByText /* already escaped in construction */}</p>
             </td>
           </tr>
 

@@ -1,18 +1,5 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
-
-// Move constant to top to avoid TDZ error
-const SUPPORT_EMAIL = 'support@rigify.ge';
-
-// HTML escape helper to prevent XSS
-function escapeHtml(str: string | null | undefined): string {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+import { escapeHtml, SUPPORT_EMAIL } from '@/lib/emails/utils';
 
 type BookingConfirmationBusinessProps = {
   businessName: string;
