@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
-import { Map, Marker, NavigationControl, type MapRef } from 'react-map-gl/mapbox';
+import { Map, Marker, type MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 type Business = {
@@ -90,6 +90,52 @@ function CategoryIconMarker({ categoryId }: { categoryId: string }) {
       >
         {iconName}
       </span>
+    </div>
+  );
+}
+
+// Custom navigation controls
+function MapNavigationControls({ mapRef }: { mapRef: React.MutableRefObject<MapRef | null> }) {
+  const handleZoomIn = () => {
+    mapRef.current?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    mapRef.current?.zoomOut();
+  };
+
+  const handleResetNorth = () => {
+    mapRef.current?.resetNorth();
+  };
+
+  return (
+    <div className="absolute top-4 right-4 z-10 flex flex-col gap-1">
+      {/* Zoom In */}
+      <button
+        onClick={handleZoomIn}
+        className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
+        aria-label="Zoom in"
+      >
+        <span className="material-symbols-outlined text-[18px]">add</span>
+      </button>
+
+      {/* Zoom Out */}
+      <button
+        onClick={handleZoomOut}
+        className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
+        aria-label="Zoom out"
+      >
+        <span className="material-symbols-outlined text-[18px]">remove</span>
+      </button>
+
+      {/* Reset North */}
+      <button
+        onClick={handleResetNorth}
+        className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
+        aria-label="Reset bearing to north"
+      >
+        <span className="material-symbols-outlined text-[18px]">navigation</span>
+      </button>
     </div>
   );
 }
@@ -193,7 +239,7 @@ export function BusinessMap({
   }
 
   return (
-    <div className={className} data-testid="marketplace-map">
+    <div className={`${className} relative`} data-testid="marketplace-map">
       <Map
         ref={mapRef}
         {...viewState}
@@ -210,7 +256,8 @@ export function BusinessMap({
         maxZoom={18}
         scrollZoom={true}
       >
-        <NavigationControl position="top-right" />
+        {/* Custom Navigation Controls */}
+        <MapNavigationControls mapRef={mapRef} />
 
         {/* User location marker */}
         {userLocation && (
