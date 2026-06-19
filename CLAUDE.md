@@ -771,3 +771,12 @@ export function hasOverlap(
 - **UI_GUIDE.md** — Complete UI/UX design system and component patterns
 - **PROJECT_STRUCTURE.md** — Directory organization and file structure guide
 - **supabase/migrations/** — Database schema source of truth
+
+## Session Continuity
+
+When the user asks "what's next", "what are we doing", "where were we", or any equivalent:
+
+1. Read ALL markdown files in the `sessions/` directory to find the most recent session log.
+2. Cross-reference against the codebase — if a feature is already implemented (component exists, route works, data is real), treat it as done even if it appears on a TODO list.
+3. Present only items that are genuinely not yet built or not yet working.
+4. Never repeat a task that was completed in a prior session unless the user explicitly asks to revisit it.
