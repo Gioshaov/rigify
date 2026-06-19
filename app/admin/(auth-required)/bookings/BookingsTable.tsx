@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { cancelBooking, markNoShow } from './actions';
@@ -271,7 +272,7 @@ export function BookingsTable({
       </div>
 
       {/* Column Headers */}
-      <div className="px-8 py-3 border-b border-[rgba(255,255,255,0.06)] grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr_1fr_100px] gap-4">
+      <div className="px-8 py-3 border-b border-[rgba(255,255,255,0.06)] grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr_1fr_140px] gap-4">
         <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
           Customer
         </div>
@@ -306,7 +307,7 @@ export function BookingsTable({
             <div
               key={booking.id}
               data-testid={`booking-row-${booking.id}`}
-              className="relative px-8 py-4 bg-[#111111] border-b border-[rgba(255,255,255,0.06)] hover:bg-[#1a1a1a] hover:border-l-[1px] hover:border-l-[#d4a843] transition-all grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr_1fr_100px] gap-4 items-center min-h-[64px]"
+              className="relative px-8 py-4 bg-[#111111] border-b border-[rgba(255,255,255,0.06)] hover:bg-[#1a1a1a] hover:border-l-[1px] hover:border-l-[#d4a843] transition-all grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr_1fr_140px] gap-4 items-center min-h-[64px]"
             >
               {/* Customer */}
               <div>
@@ -377,6 +378,13 @@ export function BookingsTable({
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-2">
+                <Link
+                  href={`/admin/bookings/${booking.id}`}
+                  className="h-7 px-2 border border-[rgba(255,255,255,0.12)] text-primary hover:text-white hover:border-primary font-mono text-[11px] uppercase rounded-none transition-colors flex items-center"
+                  data-testid={`bookings-table-view-link-${booking.id}`}
+                >
+                  View
+                </Link>
                 {booking.status === 'confirmed' && (
                   <>
                     <button

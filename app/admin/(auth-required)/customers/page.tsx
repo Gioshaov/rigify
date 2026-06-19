@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { CustomersTable } from './CustomersTable';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
@@ -9,12 +9,16 @@ export default async function CustomersPage({
 }: {
   searchParams: { search?: string; status?: string; page?: string };
 }) {
+  // Check auth
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user || user.app_metadata?.is_super_admin !== true) {
     redirect('/admin/login');
   }
+
+  // Use admin client for queries (bypasses RLS)
+  const admin = createAdminClient();
 
   // Pagination (guard against NaN)
   const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
@@ -25,7 +29,7 @@ export default async function CustomersPage({
   const searchQuery = searchParams.search?.slice(0, 200);
 
   // Build query for customers with booking stats
-  let query = supabase
+  let query = admin
     .from('customers')
     .select(`
       id,
@@ -56,12 +60,14 @@ export default async function CustomersPage({
   }
 
   // Get last booking for each customer (single query with IN clause)
+  // Limit to pageSize per customer to prevent unbounded queries
   const customerIds = (customers || []).map(c => c.id);
-  const { data: lastBookings } = await supabase
+  const { data: lastBookings } = await admin
     .from('bookings')
     .select('customer_id, appointment_datetime')
     .in('customer_id', customerIds)
-    .order('appointment_datetime', { ascending: false });
+    .order('appointment_datetime', { ascending: false })
+    .limit(pageSize * customerIds.length);
 
   // Group last bookings by customer_id
   const lastBookingMap = new Map<string, string>();

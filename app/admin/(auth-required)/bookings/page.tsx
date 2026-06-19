@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { BookingsTable } from './BookingsTable';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
@@ -17,12 +17,16 @@ export default async function BookingsPage({
     page?: string;
   };
 }) {
+  // Check auth
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user || user.app_metadata?.is_super_admin !== true) {
     redirect('/admin/login');
   }
+
+  // Use admin client for queries (bypasses RLS)
+  const admin = createAdminClient();
 
   // Pagination (guard against NaN)
   const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
@@ -33,7 +37,7 @@ export default async function BookingsPage({
   const searchQuery = searchParams.search?.slice(0, 200);
 
   // Build query for bookings with joined data
-  let query = supabase
+  let query = admin
     .from('bookings')
     .select(`
       id,
@@ -77,14 +81,17 @@ export default async function BookingsPage({
   }
 
   if (searchParams.dateFrom) {
-    query = query.gte('appointment_datetime', searchParams.dateFrom);
+    // Convert Tbilisi local date to UTC start of day
+    const { combineLocalDateTime } = await import('@/lib/utils/datetime');
+    const fromDateUtc = combineLocalDateTime(searchParams.dateFrom, '00:00');
+    query = query.gte('appointment_datetime', fromDateUtc.toISOString());
   }
 
   if (searchParams.dateTo) {
-    // Add one day to include the entire end date
-    const endDate = new Date(searchParams.dateTo);
-    endDate.setDate(endDate.getDate() + 1);
-    query = query.lt('appointment_datetime', endDate.toISOString());
+    // Convert Tbilisi local date to UTC end of day (23:59)
+    const { combineLocalDateTime } = await import('@/lib/utils/datetime');
+    const toDateUtc = combineLocalDateTime(searchParams.dateTo, '23:59');
+    query = query.lte('appointment_datetime', toDateUtc.toISOString());
   }
 
   const { data: bookings, error, count } = await query;
@@ -94,7 +101,7 @@ export default async function BookingsPage({
   }
 
   // Fetch all businesses for filter dropdown
-  const { data: businesses } = await supabase
+  const { data: businesses } = await admin
     .from('businesses')
     .select('id, name')
     .order('name');

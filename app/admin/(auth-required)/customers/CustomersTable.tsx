@@ -1,9 +1,10 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { useState, useTransition, useRef, useEffect } from 'react';
-import { suspendCustomer, activateCustomer, deleteCustomer } from './actions';
+import { updateCustomerStatus, deleteCustomer } from './actions';
 import { Ban, CheckCircle, Trash2 } from 'lucide-react';
 
 type Customer = {
@@ -72,11 +73,11 @@ export function CustomersTable({
 
     setActionInProgress(customerId);
     startTransition(async () => {
-      const result = await suspendCustomer(customerId, customerName);
+      const result = await updateCustomerStatus(customerId, 'suspended', customerName);
       setActionInProgress(null);
 
-      if (result.error) {
-        alert(result.error);
+      if (!result.success) {
+        alert(result.message);
       } else {
         router.refresh();
       }
@@ -90,11 +91,11 @@ export function CustomersTable({
 
     setActionInProgress(customerId);
     startTransition(async () => {
-      const result = await activateCustomer(customerId, customerName);
+      const result = await updateCustomerStatus(customerId, 'active', customerName);
       setActionInProgress(null);
 
-      if (result.error) {
-        alert(result.error);
+      if (!result.success) {
+        alert(result.message);
       } else {
         router.refresh();
       }
@@ -167,7 +168,7 @@ export function CustomersTable({
       </div>
 
       {/* Column Headers */}
-      <div className="px-8 py-3 border-b border-[rgba(255,255,255,0.06)] grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_120px] gap-4">
+      <div className="px-8 py-3 border-b border-[rgba(255,255,255,0.06)] grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_160px] gap-4">
         <div className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
           Name
         </div>
@@ -202,7 +203,7 @@ export function CustomersTable({
             <div
               key={customer.id}
               data-testid={`customer-row-${customer.id}`}
-              className="relative px-8 py-4 bg-[#111111] border-b border-[rgba(255,255,255,0.06)] hover:bg-[#1a1a1a] hover:border-l-[1px] hover:border-l-[#d4a843] transition-all grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center min-h-[64px]"
+              className="relative px-8 py-4 bg-[#111111] border-b border-[rgba(255,255,255,0.06)] hover:bg-[#1a1a1a] hover:border-l-[1px] hover:border-l-[#d4a843] transition-all grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr_160px] gap-4 items-center min-h-[64px]"
             >
               {/* Name */}
               <div>
@@ -254,6 +255,13 @@ export function CustomersTable({
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-2">
+                <Link
+                  href={`/admin/customers/${customer.id}`}
+                  className="h-7 px-3 border border-[rgba(255,255,255,0.12)] text-primary hover:text-white hover:border-primary font-mono text-[11px] uppercase rounded-none transition-colors flex items-center"
+                  data-testid={`customers-table-view-link-${customer.id}`}
+                >
+                  View
+                </Link>
                 {customer.status === 'active' ? (
                   <button
                     onClick={() => handleSuspend(customer.id, customer.name)}
