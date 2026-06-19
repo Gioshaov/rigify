@@ -124,7 +124,11 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
                     <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">CANCELLED BY</span>
                   </td>
                   <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
-                    <span style="font-size: 14px; color: #ef4444; font-weight: 500;">${props.cancelledBy === 'customer' ? 'You' : escapeHtml(props.businessName)}</span>
+                    <span style="font-size: 14px; color: #ef4444; font-weight: 500;">${
+                      props.isCustomer
+                        ? (props.cancelledBy === 'customer' ? 'You' : escapeHtml(props.businessName))
+                        : (props.cancelledBy === 'customer' ? escapeHtml(props.customerName || 'The customer') : 'You')
+                    }</span>
                   </td>
                 </tr>
 
