@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 18, 2026  
-**Session**: Session 22 - Technical Debt Cleanup & Email Redesign
+**Last Updated**: June 19, 2026  
+**Session**: Session 23 - Email System Unified Redesign
 
 ---
 
@@ -78,6 +78,7 @@
 - ✅ **Loading buttons** - Reusable LoadingButton with spinner
 - ✅ **Password input** - Reusable PasswordInput with visibility toggle
 - ✅ **Favicon & PWA support** - Optimized favicons (ICO, PNG), Apple touch icons, Android icons, PWA manifest
+- ✅ **Email system** - Unified visual design across all 4 templates (confirmation, cancellation, reschedule)
 
 **Database** (Complete):
 - ✅ 22 migrations applied (all idempotent)
@@ -111,200 +112,134 @@
 
 ---
 
-## Latest Session Work (Session 22 - June 18, 2026)
+## Latest Session Work (Session 23 - June 19, 2026)
 
-**Objective**: Complete all technical debt items (quick wins + medium priority) and redesign email templates with unified visual system
+**Objective**: Complete unified visual system for all email templates (cancellation + reschedule)
 
-### Phase 1: Quick Wins (All Completed)
+### Phase 1: Email Redesign (Cancellation + Reschedule)
 
-**@code-reviewer Findings**: 1 Critical, 5 Major issues requiring fixes
+**Initial Status**:
+- Confirmation emails (customer + business) already had unified design ✅
+- Cancellation email still used old design (emojis, card-based layout, different colors)
+- Reschedule email still used old design (emojis, card-based layout, different colors)
 
-**Critical Issues Fixed**:
+**Redesign Complete**:
 
-1. **[C1] Booking overlap constraint bypassed by NULL staff_id**
-   - **Problem**: PostgreSQL `NULL = NULL` returns `NULL`, not `TRUE`, so exclusion constraint didn't prevent overlaps when `staff_id IS NULL`
-   - **Fix**: Created migration `20260617125000_bookings_staff_id_not_null.sql`
-     - Backfilled NULL values with active staff members
-     - Cancelled bookings with no staff available
-     - Deleted orphaned bookings (businesses with no staff)
-     - Added `NOT NULL` constraint
-   - **Impact**: Exclusion constraint now works correctly for all bookings
+1. **Cancellation Email (`booking-cancellation.ts`)**
+   - Adopted table-based layout matching confirmation emails
+   - Dark minimal aesthetic (#111111 background, #d4a843 gold)
+   - Red accent (#ef4444) for cancelled status
+   - Removed emoji icons for professional appearance
+   - Strikethrough styling on cancelled service/date
+   - "CANCELLED BY" row shows who initiated cancellation
+   - Mobile-responsive with media queries
 
-**Major Issues Fixed**:
+2. **Reschedule Email (`booking-reschedule.ts`)**
+   - Clean table structure replacing card-based layout
+   - Previous time shown with strikethrough + opacity
+   - New time highlighted with gold accent
+   - Removed emoji icons (professional appearance)
+   - Conditional reminder text (customer vs business)
+   - Same header/footer structure as confirmation
 
-2. **[M1] SQL injection risk in operating cities RPC**
-   - **Problem**: `security definer` function without `set search_path` vulnerable to search_path injection
-   - **Fix**: Added `set search_path = public` to function definition
-   - **Impact**: Prevents attacker from creating malicious schema objects
+### Phase 2: Code Review & Fixes
 
-3. **[M2] Delete business leaves orphaned auth users on failure**
-   - **Problem**: Deletes business first, then auth user - if second step fails, user can log in with no business
-   - **Fix**: Reversed order - delete auth user first, then business (with NULL owner_id handling)
-   - **Impact**: Prevents orphaned credentials, supports test/seed businesses with NULL owner_id
-
-4. **[M3] Reschedule limit race condition**
-   - **Problem**: Limit (3x max) only enforced in app code - concurrent requests can both pass the check
-   - **Fix**: Added `.lt('reschedule_count', 3)` to update query for atomic database-level enforcement
-   - **Impact**: Prevents race condition where users reschedule more than 3 times
-
-5. **[M4] Contact form uses overprivileged admin client**
-   - **Problem**: `submitContactMessage` bypassed RLS with service_role, but `anon` insert policy exists
-   - **Fix**: Changed from `createAdminClient()` to `createClient()` to respect RLS policy
-   - **Impact**: Reduces unnecessary privilege, follows principle of least privilege
-
-6. **[M5] Rate limit IP spoofing undocumented**
-   - **Problem**: `x-forwarded-for` header extraction not validated (spoofable if not behind trusted proxy)
-   - **Fix**: Added comment explaining Vercel sets this correctly
-   - **Impact**: Documents trusted reverse proxy assumption
-
-### Phase 2: Codex Review & Additional Fixes
-
-**Codex Findings**: 3 Priority runtime failures in existing flows
+**@code-reviewer Round 1 Findings**: 3 Major issues
 
 **Issues Fixed**:
 
-1. **[P1] Dashboard "Any Staff" appointments broken after NOT NULL migration**
-   - **Problem**: `app/dashboard/appointments/actions.ts` still allowed `staffId: null` but constraint now enforces NOT NULL
-   - **Fix**: Added auto-assignment logic - queries first active staff member when staffId is NULL
-   - **Impact**: Dashboard appointment creation with "Any Staff" now works correctly
+1. **[M1] Cancellation email text logic wrong + not escaped**
+   - **Problem**: Business owner email said "You cancelled" when customer cancelled (factually wrong)
+   - **Fix**: Conditional logic based on both `isCustomer` and `cancelledBy`
+     - Customer email: "You cancelled" or "Business X cancelled"
+     - Business email: "Customer Y cancelled" or "This was cancelled"
+   - **Impact**: All recipients now get factually correct cancellation messages
+   - **Security**: All dynamic text properly escaped with `escapeHtml()`
 
-2. **[P2] Delete business fails for ownerless businesses**
-   - **Problem**: Reversed delete order broke for businesses with `owner_id IS NULL` (test/seed data)
-   - **Fix**: Added NULL check - only attempts `deleteUser()` when `owner_id` exists
-   - **Impact**: Test/seed businesses can be deleted, supports full business lifecycle
+2. **[M2] Reschedule business email had customer-facing reminder**
+   - **Problem**: Business email said "Please arrive 5-10 minutes early" (customer advice)
+   - **Fix**: Conditional reminder based on recipient type
+     - Customer: "Please arrive 5-10 minutes early..."
+     - Business: "Ensure staff and resources allocated for updated time slot"
+   - **Impact**: Each recipient gets appropriate guidance
 
-3. **[P2] Contact form fails for authenticated users**
-   - **Problem**: RLS policy only allowed `anon` role, but logged-in users insert as `authenticated` role
-   - **Fix**: Added `contact_messages_authenticated_insert` policy to migration
-   - **Impact**: Contact form now works for both anonymous visitors AND logged-in users
+3. **[M3] Code duplication across 4 templates**
+   - **Problem**: `escapeHtml()` + `SUPPORT_EMAIL` duplicated in all templates
+   - **Fix**: Created `lib/emails/utils.ts` with shared exports
+   - **Impact**: DRY principle - future changes need only 1 edit instead of 4
 
-### Phase 3: Reschedule Improvements
+**@code-reviewer Round 2 Finding**: 1 residual issue from M1
 
-**Features Added**:
-
-1. **Reschedule limit (3 times max per booking)**
-   - Migration: Added `reschedule_count` column with default 0 and check constraint
-   - Server action: Enforces limit with clear error message
-   - Atomic increment on successful reschedule
-   - Database-level enforcement with `.lt('reschedule_count', 3)` guard
-
-2. **Inline success states (no redirect, manual dismiss)**
-   - **Modal flow** (`app/customer/dashboard/RescheduleModal.tsx`):
-     - Animated gold line (600ms draw, CSS keyframes)
-     - Large checkmark with fade+scale entrance (300ms)
-     - Data rows: NEW DATE and BOOKING ID
-     - DONE button for manual dismissal
-   - **Page flow** (`app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx`):
-     - Identical success view pattern
-     - Replaces entire page content (not just modal)
-     - Fixed TypeScript ternary structure error
-
-3. **Auto "+" prefix on phone input**
-   - `app/businesses/[slug]/book/BookAppointmentContent.tsx`
-   - Automatically prepends "+" if user forgets
-   - Improves UX for international phone format
-
-### Phase 4: Quick Wins Completed
-
-**Contact Form Implementation**:
-- Created `app/contact/actions.ts` server action with validation
-- Created `supabase/migrations/20260617120000_create_contact_messages.sql`
-- Fixed RLS policies for both anon and authenticated users
-
-**Rate Limiting Fix**:
-- `app/api/contact/route.ts` - Atomic Redis operations with Vercel KV
-- Changed from get+check+incr to incr+check pattern
-- Prevents race condition in rate limiting
-
-**Language Persistence**:
-- `lib/contexts/LanguageContext.tsx` - Added cookie storage
-- `lib/utils/server-translations.ts` - Reads from cookies for SSR
-- Fixes language preference flash on page load
-
-**Operating Cities Feature**:
-- `supabase/migrations/20260617121000_add_operating_cities_rpc.sql`
-- `app/admin/(auth-required)/page.tsx` - Added 5th stat card
-- Shows geographic reach of platform
-
-**Delete Business with Auth Cleanup**:
-- `app/admin/(auth-required)/businesses/actions.ts` - deleteBusiness function
-- Deletes auth user to prevent orphaned credentials
-- Handles NULL owner_id for test/seed businesses
-
-**Booking Overlap Prevention**:
-- `supabase/migrations/20260617123000_prevent_booking_overlap.sql`
-- PostgreSQL exclusion constraint with btree_gist
-- Database-level atomic overlap prevention
-- Error handling in booking actions for constraint violations
-
-### Phase 5: Test IDs & Quality
-
-**Test IDs Added**:
-- Reschedule success views: `reschedule-success-view`, `reschedule-done-btn`
-- Admin stat cards: `admin-stat-total-businesses`, `admin-stat-active-businesses`, `admin-stat-operating-cities`, `admin-stat-total-customers`, `admin-stat-today-bookings`
-- All new UI elements have proper test IDs following naming convention
+4. **[M1 residual] CANCELLED BY cell used wrong pronoun**
+   - **Problem**: Business email showed "You" in data cell when customer cancelled
+   - **Fix**: Applied same conditional logic to data table cell
+   - **Impact**: Both hero text AND data cell now show correct information
 
 ---
 
 ## Session Summary
 
-**Focus**: Security vulnerabilities, reschedule improvements, and quick wins
+**Focus**: Complete unified visual system for all email templates
 
-**Migrations Created**:
-1. `20260617120000_create_contact_messages.sql` - Contact form table
-2. `20260617121000_add_operating_cities_rpc.sql` - Operating cities RPC function
-3. `20260617122000_fix_contact_messages_rls.sql` - RLS policies for contact form
-4. `20260617123000_prevent_booking_overlap.sql` - Exclusion constraint for bookings
-5. `20260617124000_add_reschedule_limit.sql` - Reschedule count column
-6. `20260617125000_bookings_staff_id_not_null.sql` - NOT NULL constraint with backfill
+**Files Created**:
+- `lib/emails/utils.ts` - Shared `escapeHtml()` + `SUPPORT_EMAIL` utilities
 
 **Files Modified**:
-- `app/admin/(auth-required)/businesses/actions.ts` (delete business with NULL handling)
-- `app/admin/(auth-required)/page.tsx` (operating cities stat, test IDs)
-- `app/api/contact/route.ts` (atomic rate limiting, IP documentation)
-- `app/contact/actions.ts` (use regular client, respect RLS)
-- `app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx` (inline success state)
-- `app/customer/dashboard/actions.ts` (atomic reschedule limit, reschedule count increment)
-- `app/dashboard/appointments/actions.ts` (auto-assign staff for "Any Staff")
+- `lib/emails/templates/booking-cancellation.ts` - Unified redesign + logic fixes
+- `lib/emails/templates/booking-reschedule.ts` - Unified redesign + conditional reminders
+- `lib/emails/templates/booking-confirmation-customer.ts` - Use shared utils
+- `lib/emails/templates/booking-confirmation-business.ts` - Use shared utils
 
-**Security Issues Fixed (9 total)**:
-- ✅ Rate limiting race condition → Atomic Redis operations
-- ✅ Booking overlap race condition → PostgreSQL exclusion constraint
-- ✅ SQL injection risk → Pinned search_path in RPC
-- ✅ Orphaned auth users → Delete order corrected + NULL handling
-- ✅ Reschedule limit bypass → Database-level atomic check
-- ✅ RLS policy gaps → Contact form supports authenticated users
-- ✅ NULL staff_id constraint bypass → NOT NULL with backfill migration
-- ✅ Dashboard "Any Staff" broken → Auto-assignment logic
-- ✅ Contact form overprivileged → Uses regular client (respects RLS)
+**Visual Design System (Now Unified Across All 4 Templates)**:
+- Dark background (#111111) with outer (#0a0a0a)
+- Gold accent (#d4a843) for branding consistency
+- Table-based layout (max-width: 600px)
+- Uppercase labels with 0.12em letter-spacing
+- Monospace footer (Courier New)
+- Minimal bordered CTA buttons (border: 1px solid #333333)
+- Mobile-responsive with media queries
+- No emojis (professional appearance)
 
-**Features Delivered**:
-- ✅ 3-reschedule limit per booking (tracked in DB)
-- ✅ Inline success states (animated, manual dismiss)
-- ✅ Operating cities stat card
-- ✅ Auto "+" prefix on phone input
-- ✅ Language persistence via cookies + SSR
-- ✅ Contact form backend (with validation)
-- ✅ Delete business with auth cleanup
+**Correctness Fixes**:
+- Cancellation hero text: Conditional based on recipient + who cancelled
+- Cancellation CANCELLED BY cell: Shows correct person/pronoun for each scenario
+- Reschedule reminder: Customer gets "arrive early", business gets "allocate resources"
+- XSS prevention: All dynamic text escaped with `escapeHtml()`
+
+**Code Quality**:
+- Eliminated 4× code duplication with shared utils module
+- DRY principle: 1 place to update escape logic and support email
+- Consistent import pattern across all templates
 
 **Code Reviews**:
-- @code-reviewer: CONDITIONAL PASS → All issues fixed → PASS
-- Codex: 3 runtime failures found → All fixed → PASS
+- @code-reviewer Round 1: CONDITIONAL PASS (3 major issues)
+- All issues fixed: cancellation logic, reschedule reminder, code duplication
+- @code-reviewer Round 2: CONDITIONAL PASS (1 residual issue)
+- Final fix: CANCELLED BY cell pronoun
+- Final status: PASS ✅
 
-**Commit**:
-- `0503f22` - Fix critical security issues and add reschedule improvements
+**Commits**:
+- `8f2b8d7` - Redesign cancellation and reschedule emails with unified visual system
+- `bfcde52` - Fix code review issues: Email template correctness + shared utils
+- `acfaa07` - Fix CANCELLED BY cell logic for business owner emails
 
 **TypeScript**: ✅ Clean compilation (no errors)
 **Build**: ✅ Passes
-**Migrations**: ✅ 6 applied successfully
 **Production**: ✅ Pushed to GitHub
 
+**Email System Status**:
+- ✅ All 4 templates now share unified visual system
+- ✅ All dynamic content properly escaped (XSS prevention)
+- ✅ Recipient-specific messaging (customer vs business)
+- ✅ Mobile-responsive design
+- ✅ Professional appearance (no emojis)
+- ✅ Code DRY with shared utilities
+
 **Key Learnings**:
-- PostgreSQL `NULL = NULL` returns `NULL`, not `TRUE` - use NOT NULL constraints for exclusion constraints to work
-- Always use atomic operations for distributed systems (Redis incr+check, database WHERE clauses)
-- `security definer` functions must pin search_path to prevent injection
-- Delete auth users before business data when cleaning up accounts (unless owner_id is NULL)
-- RLS policies need both `anon` AND `authenticated` roles for public forms that logged-in users might access
+- Email template logic must account for ALL combinations of recipient type + action performer
+- Conditional logic in templates should apply to ALL mentions, not just hero text
+- Shared utilities prevent divergence and reduce maintenance burden
+- Code review catches subtle logic errors that tests would catch if they existed
 
 ---
 
