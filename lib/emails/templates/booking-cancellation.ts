@@ -1,5 +1,19 @@
 import { formatTbilisi } from '@/lib/utils/datetime';
 
+// Move constant to top to avoid TDZ error
+const SUPPORT_EMAIL = 'support@rigify.ge';
+
+// HTML escape helper to prevent XSS
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 type BookingCancellationProps = {
   recipientName: string;
   isCustomer: boolean;
@@ -16,8 +30,8 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
   const formattedTime = formatTbilisi(props.appointmentDateTime, 'h:mm a');
 
   const cancelledByText = props.cancelledBy === 'customer'
-    ? 'You have cancelled this booking'
-    : 'This booking has been cancelled by the business';
+    ? 'Your appointment has been cancelled as requested.'
+    : 'Your appointment has been cancelled by the business.';
 
   return {
     subject: `Booking Cancelled: ${props.serviceName} at ${props.businessName}`,
@@ -28,106 +42,130 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking Cancellation</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+      .mobile-header-stack { display: block !important; text-align: left !important; }
+      .mobile-confirmation { display: block !important; margin-top: 8px !important; }
+      .mobile-label-width { width: 110px !important; font-size: 9px !important; }
+      .mobile-hero-title { font-size: 18px !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0a; color: #e5e5e5;">
-  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0a;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #0a0a0a;">
     <tr>
-      <td align="center" style="padding: 40px 0;">
-        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse; background-color: #1a1a1a; border: 1px solid rgba(212, 175, 55, 0.1);">
+      <td align="center" style="padding: 0;">
+        <!-- Container -->
+        <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background-color: #111111;">
 
-          <!-- Header -->
+          <!-- 1. HEADER ROW -->
           <tr>
-            <td style="padding: 40px 40px 32px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.1);">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #d4af37; text-transform: uppercase; letter-spacing: -0.02em;">RIGIFY</h1>
-              <p style="margin: 8px 0 0; font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.15em;">The Artisan Collective</p>
-            </td>
-          </tr>
-
-          <!-- Cancellation Icon -->
-          <tr>
-            <td style="padding: 32px 40px; text-align: center;">
-              <div style="width: 64px; height: 64px; margin: 0 auto; background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 32px; color: #ef4444;">✕</span>
-              </div>
-              <h2 style="margin: 24px 0 8px; font-size: 28px; font-weight: 700; color: #e5e5e5;">Booking Cancelled</h2>
-              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.15em;">Confirmation #${props.confirmationId}</p>
-            </td>
-          </tr>
-
-          <!-- Message -->
-          <tr>
-            <td style="padding: 0 40px 24px;">
-              <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #e5e5e5;">Hi ${props.recipientName},</p>
-              <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.5; color: #e5e5e5;">${cancelledByText}.</p>
-            </td>
-          </tr>
-
-          <!-- Cancelled Booking Details -->
-          <tr>
-            <td style="padding: 0 40px 32px;">
-              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #141414; border: 1px solid rgba(255, 255, 255, 0.05); opacity: 0.6;">
+            <td style="padding: 24px 32px; border-bottom: 1px solid #1f1f1f;" class="mobile-padding">
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
-                  <td style="padding: 24px;">
-                    <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Cancelled Service</p>
-                    <p style="margin: 0; font-size: 20px; font-weight: 600; color: #fff; text-decoration: line-through;">${props.serviceName}</p>
+                  <td style="text-align: left;" class="mobile-header-stack">
+                    <span style="font-size: 13px; font-weight: 700; color: #d4a843; letter-spacing: 0.2em;">RIGIFY</span>
+                  </td>
+                  <td style="text-align: right;" class="mobile-header-stack mobile-confirmation">
+                    <span style="font-size: 10px; color: #555555; letter-spacing: 0.1em; font-family: 'Courier New', monospace;">CONFIRMATION #${escapeHtml(props.confirmationId)}</span>
                   </td>
                 </tr>
-                <tr>
-                  <td style="padding: 0 24px 24px;">
-                    <p style="margin: 0; font-size: 14px; color: #999;">
-                      <span>🏢</span> ${props.businessName}
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 0 24px 24px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                    <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Was Scheduled For</p>
-                    <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${formattedDate}</p>
-                    <p style="margin: 4px 0 0; font-size: 14px; color: #999;">${formattedTime}</p>
-                  </td>
-                </tr>
-                ${!props.isCustomer && props.customerName ? `
-                <tr>
-                  <td style="padding: 0 24px 24px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                    <p style="margin: 0 0 4px; font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.2em;">Customer</p>
-                    <p style="margin: 0; font-size: 16px; color: #e5e5e5;">${props.customerName}</p>
-                  </td>
-                </tr>
-                ` : ''}
               </table>
             </td>
           </tr>
 
-          <!-- Next Steps -->
-          ${props.isCustomer ? `
+          <!-- 2. HERO -->
           <tr>
-            <td style="padding: 0 40px 32px;">
-              <div style="background-color: rgba(212, 175, 55, 0.05); border-left: 2px solid #d4af37; padding: 16px 20px;">
-                <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #d4af37;">Book Again</p>
-                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #e5e5e5;">
-                  Want to reschedule? Visit ${props.businessName} to book a new appointment.
-                </p>
-              </div>
+            <td style="padding: 32px 32px 24px;" class="mobile-padding">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #ef4444; letter-spacing: 0.08em;" class="mobile-hero-title">BOOKING CANCELLED</h1>
+              <p style="margin: 8px 0 0; font-size: 13px; color: #888888; line-height: 1.6;">Hi ${escapeHtml(props.recipientName)}, ${cancelledByText}</p>
             </td>
           </tr>
+
+          <!-- 3. DATA TABLE -->
           <tr>
-            <td style="padding: 0 40px 32px;">
-              <a href="${process.env.NEXT_PUBLIC_APP_URL}/businesses" style="display: block; width: 100%; padding: 16px; background-color: #d4af37; color: #0a0a0a; text-align: center; text-decoration: none; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;">
-                Browse Studios
-              </a>
+            <td style="padding: 0 32px;" class="mobile-padding">
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+
+                <!-- SERVICE (with strikethrough) -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">SERVICE</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <div style="font-size: 14px; color: #888888; font-weight: 500; margin-bottom: 4px; text-decoration: line-through; opacity: 0.6;">${escapeHtml(props.serviceName)}</div>
+                    <div style="font-size: 11px; color: #555555; text-decoration: line-through; opacity: 0.6;">${escapeHtml(props.businessName)}</div>
+                  </td>
+                </tr>
+
+                <!-- DATE & TIME (with strikethrough) -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">WAS SCHEDULED</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #888888; font-weight: 500; text-decoration: line-through; opacity: 0.6;">${formattedDate} — ${formattedTime}</span>
+                  </td>
+                </tr>
+
+                ${!props.isCustomer && props.customerName ? `
+                <!-- CUSTOMER -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">CUSTOMER</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #e8e6f0; font-weight: 500;">${escapeHtml(props.customerName)}</span>
+                  </td>
+                </tr>
+                ` : ''}
+
+                <!-- CANCELLED BY -->
+                <tr>
+                  <td style="width: 140px; padding: 14px 24px 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;" class="mobile-label-width">
+                    <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">CANCELLED BY</span>
+                  </td>
+                  <td style="padding: 14px 0; border-bottom: 1px solid #1a1a1a; vertical-align: top;">
+                    <span style="font-size: 14px; color: #ef4444; font-weight: 500;">${props.cancelledBy === 'customer' ? 'You' : escapeHtml(props.businessName)}</span>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- 4. CTA -->
+          ${props.isCustomer ? `
+          <tr>
+            <td style="padding: 28px 32px;" class="mobile-padding">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL}/businesses" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">BROWSE STUDIOS</a>
+            </td>
+          </tr>
+          ` : `
+          <tr>
+            <td style="padding: 28px 32px;" class="mobile-padding">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/appointments" style="display: inline-block; width: auto; padding: 12px 24px; background-color: transparent; border: 1px solid #333333; color: #e8e6f0; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; border-radius: 2px;">VIEW DASHBOARD</a>
+            </td>
+          </tr>
+          `}
+
+          <!-- 5. NOTICE -->
+          ${props.isCustomer ? `
+          <tr>
+            <td style="padding: 0 32px 24px;" class="mobile-padding">
+              <div style="margin-bottom: 6px;">
+                <span style="font-size: 10px; color: #555555; text-transform: uppercase; letter-spacing: 0.12em;">NEED ANOTHER APPOINTMENT?</span>
+              </div>
+              <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.6;">Visit ${escapeHtml(props.businessName)} to book a new appointment at a time that works for you.</p>
             </td>
           </tr>
           ` : ''}
 
-          <!-- Footer -->
+          <!-- 6. FOOTER -->
           <tr>
-            <td style="padding: 24px 40px; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 12px; color: #999;">
-                Need help? Contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #d4af37; text-decoration: none;">${SUPPORT_EMAIL}</a>
-              </p>
-              <p style="margin: 0; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.2em;">
-                © 2026 Rigify. All rights reserved.
-              </p>
+            <td style="padding: 20px 32px; border-top: 1px solid #1a1a1a;" class="mobile-padding">
+              <p style="margin: 0; font-size: 10px; color: #444444; letter-spacing: 0.08em; font-family: 'Courier New', monospace;">© 2026 RIGIFY. ALL RIGHTS RESERVED. // ${SUPPORT_EMAIL}</p>
             </td>
           </tr>
 
@@ -140,5 +178,3 @@ export function generateBookingCancellationEmail(props: BookingCancellationProps
     `.trim(),
   };
 }
-
-const SUPPORT_EMAIL = 'support@rigify.ge';
