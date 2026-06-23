@@ -169,6 +169,8 @@ export function BusinessMap({
         duration: 800
       });
     }
+    // Only re-fly when the selection changes; `businesses` ref changes per render and `mapRef` is stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBusinessId]);
 
   // Fly to user location when Near Me is clicked
@@ -181,6 +183,8 @@ export function BusinessMap({
       });
       onFlyComplete?.();
     }
+    // Trigger is gated by `flyToUserLocation`; including `onFlyComplete`/`mapRef` would risk repeat fly-tos.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flyToUserLocation, userLocation]);
 
   // Apply gold road styling when map loads

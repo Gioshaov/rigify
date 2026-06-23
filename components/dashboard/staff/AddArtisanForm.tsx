@@ -228,6 +228,7 @@ export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
               className="w-[120px] h-[120px] border-2 border-dashed border-white/20 bg-surface-container flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 transition-colors"
             >
               {photoPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element -- photoPreview is a base64 data URL from FileReader; next/image can't optimize data URLs
                 <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <>

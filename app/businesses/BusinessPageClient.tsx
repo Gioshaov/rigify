@@ -72,7 +72,9 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
         setViewMode(saved);
       }
     }
-  }, []); // Run once on mount
+    // Run once on mount only; reading `searchParams` here is the initial snapshot by design.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync view mode with URL changes (browser back/forward)
   useEffect(() => {

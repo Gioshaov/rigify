@@ -61,6 +61,7 @@ export function ImageUpload({
       {/* Preview */}
       {(preview || currentUrl) && (
         <div className={`${aspectClass} ${isAdmin ? 'bg-white/5 border border-white/10' : 'bg-surface-container border border-outline-variant'} rounded-lg overflow-hidden`}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- preview is a base64 data URL from FileReader; next/image can't optimize data URLs */}
           <img
             src={preview || currentUrl || ''}
             alt={`${type} preview`}
