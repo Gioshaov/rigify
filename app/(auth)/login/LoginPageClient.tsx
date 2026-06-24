@@ -79,14 +79,9 @@ export function LoginPageClient() {
 
           {/* Password Field */}
           <div>
-            <div className="flex justify-between items-end mb-3">
-              <label htmlFor="password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
-                Password
-              </label>
-              <Link data-testid="forgot-password-link" href="/forgot-password" tabIndex={-1} className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
-                Forgot?
-              </Link>
-            </div>
+            <label htmlFor="password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+              Password
+            </label>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary text-[20px]">
                 lock
@@ -100,6 +95,15 @@ export function LoginPageClient() {
                 placeholder="••••••••"
                 className="w-full bg-background border border-white/10 focus:border-primary pl-14 pr-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
               />
+            </div>
+            {/* Forgot (left) / Register (right) */}
+            <div className="flex justify-between items-center mt-3">
+              <Link data-testid="forgot-password-link" href="/forgot-password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
+                Forgot?
+              </Link>
+              <Link data-testid="sign-up-link" href="/customer-register" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
+                Register
+              </Link>
             </div>
           </div>
 
@@ -143,14 +147,6 @@ export function LoginPageClient() {
           </button>
         </div>
       </div>
-
-      {/* Sign Up Link */}
-      <p className="mt-12 font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant">
-        Don&apos;t have an account?{" "}
-        <Link data-testid="sign-up-link" href="/customer-register" className="text-primary hover:text-primary-container transition-colors font-semibold">
-          Sign Up
-        </Link>
-      </p>
     </main>
   );
 }
