@@ -1,13 +1,20 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Map, Marker, type MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { getBusinessFallbackImage } from '@/lib/utils/fallback-images';
 
 type Business = {
   id: string;
   name: string;
   slug: string;
+  city: string;
+  district: string | null;
+  cover_image_url: string | null;
+  rating: number;
+  review_count: number;
   latitude: number;
   longitude: number;
   business_categories: Array<{ category_id: string }>;
@@ -16,7 +23,13 @@ type Business = {
 interface BusinessMapProps {
   businesses: Business[];
   selectedBusinessId: string | null;
+  /** Business whose preview popup is shown on the map (the marker-selected one). */
+  popupBusinessId?: string | null;
   onMarkerClick: (businessId: string) => void;
+  /** Clicking empty map space (dismiss popup / deselect). */
+  onMapClick?: () => void;
+  /** CTA inside the popup → navigate to the business page. */
+  onPopupNavigate?: (slug: string) => void;
   userLocation?: { lat: number; lng: number } | null;
   className?: string;
   viewMode?: 'list' | 'map' | 'split';
@@ -112,6 +125,7 @@ function MapNavigationControls({ mapRef }: { mapRef: React.MutableRefObject<MapR
     <div className="absolute top-4 right-4 z-10 flex flex-col gap-1">
       {/* Zoom In */}
       <button
+        data-testid="map-zoom-in-btn"
         onClick={handleZoomIn}
         className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
         aria-label="Zoom in"
@@ -121,6 +135,7 @@ function MapNavigationControls({ mapRef }: { mapRef: React.MutableRefObject<MapR
 
       {/* Zoom Out */}
       <button
+        data-testid="map-zoom-out-btn"
         onClick={handleZoomOut}
         className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
         aria-label="Zoom out"
@@ -130,6 +145,7 @@ function MapNavigationControls({ mapRef }: { mapRef: React.MutableRefObject<MapR
 
       {/* Reset North */}
       <button
+        data-testid="map-reset-north-btn"
         onClick={handleResetNorth}
         className="w-8 h-8 bg-surface border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container hover:border-primary transition-colors"
         aria-label="Reset bearing to north"
@@ -143,7 +159,10 @@ function MapNavigationControls({ mapRef }: { mapRef: React.MutableRefObject<MapR
 export function BusinessMap({
   businesses,
   selectedBusinessId,
+  popupBusinessId = null,
   onMarkerClick,
+  onMapClick,
+  onPopupNavigate,
   userLocation = null,
   className = '',
   viewMode = 'map',
@@ -159,19 +178,20 @@ export function BusinessMap({
     zoom: 12
   });
 
-  // Fly to selected business
+  // Fly to the click-selected business. Keyed on popupBusinessId (click-only) so
+  // hovering cards in split view doesn't thrash the map with fly-to animations.
   useEffect(() => {
-    const selectedBusiness = businesses.find(b => b.id === selectedBusinessId);
-    if (selectedBusiness && mapRef.current) {
+    const target = businesses.find(b => b.id === popupBusinessId);
+    if (target && mapRef.current) {
       mapRef.current.flyTo({
-        center: [selectedBusiness.longitude, selectedBusiness.latitude],
+        center: [target.longitude, target.latitude],
         zoom: 16,
         duration: 800
       });
     }
-    // Only re-fly when the selection changes; `businesses` ref changes per render and `mapRef` is stable.
+    // Re-fly only when the click selection changes; `businesses` ref changes per render and `mapRef` is stable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBusinessId]);
+  }, [popupBusinessId]);
 
   // Fly to user location when Near Me is clicked
   useEffect(() => {
@@ -242,6 +262,10 @@ export function BusinessMap({
     );
   }
 
+  const popupBusiness = popupBusinessId
+    ? businesses.find((b) => b.id === popupBusinessId) ?? null
+    : null;
+
   return (
     <div className={`${className} relative`} data-testid="marketplace-map">
       <Map
@@ -249,6 +273,7 @@ export function BusinessMap({
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         onLoad={handleMapLoad}
+        onClick={() => onMapClick?.()}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         style={{ width: '100%', height: '100%' }}
@@ -310,6 +335,84 @@ export function BusinessMap({
             </Marker>
           );
         })}
+
+        {/* Selected-business preview popup (first marker click); click / CTA navigates */}
+        {popupBusiness && (
+          <Marker
+            longitude={popupBusiness.longitude}
+            latitude={popupBusiness.latitude}
+            anchor="bottom"
+            offset={[0, -44]}
+            onClick={(e) => e.originalEvent.stopPropagation()}
+          >
+            <div
+              data-testid="map-business-popup"
+              className="relative w-56 bg-surface border border-white/10 rounded-[4px] overflow-hidden"
+            >
+              {/* Close / deselect */}
+              <button
+                type="button"
+                aria-label="Close preview"
+                data-testid="map-business-popup-close"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMapClick?.();
+                }}
+                className="absolute top-1 right-1 z-10 w-6 h-6 flex items-center justify-center bg-surface/80 border border-white/10 rounded-[4px] text-on-surface hover:text-primary hover:border-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-[16px]">close</span>
+              </button>
+
+              {/* Clickable preview → navigate */}
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${popupBusiness.name}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPopupNavigate?.(popupBusiness.slug);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onPopupNavigate?.(popupBusiness.slug);
+                  }
+                }}
+                className="block text-left cursor-pointer"
+              >
+                <div className="relative w-full aspect-video overflow-hidden">
+                  <Image
+                    src={getBusinessFallbackImage(popupBusiness.cover_image_url, popupBusiness.business_categories)}
+                    alt={popupBusiness.name}
+                    fill
+                    sizes="224px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="font-hanken text-[14px] leading-[1.2] font-semibold text-primary uppercase truncate">
+                      {popupBusiness.name}
+                    </h4>
+                    {popupBusiness.review_count > 0 && (
+                      <span className="flex items-center gap-1 text-primary shrink-0 font-mono text-[11px] tracking-[0.1em]">
+                        <span className="material-symbols-outlined text-[13px]">star</span>
+                        {(popupBusiness.rating ?? 0).toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-mono text-[9px] leading-[1] tracking-[0.2em] text-on-surface-variant uppercase mt-1.5 flex items-center gap-1 truncate">
+                    <span className="material-symbols-outlined text-[12px]">location_on</span>
+                    {popupBusiness.district ? `${popupBusiness.district}, ` : ''}{popupBusiness.city.toUpperCase()}
+                  </p>
+                  <span className="mt-2 block w-full bg-primary text-on-primary text-center py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase font-bold rounded-[4px]">
+                    View
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Marker>
+        )}
       </Map>
     </div>
   );
