@@ -1466,6 +1466,112 @@ Updated `.claude/agents/code-reviewer.md`:
    - `public/*.png` → For manifest-referenced assets
    - `app/manifest.json` → Auto-served with correct Content-Type
 
+---
+
+### Session 25 - June 23, 2026: New Machine Setup, Lint Cleanup, Mock Data & Reviews Grant Fix
+
+**Objective**: Bring the project up on a fresh Windows 11 machine, clean up all lint warnings, seed mock marketplace data for testing, and fix a database permission bug.
+
+**Accomplished**:
+
+1. **New machine setup (Windows 11)**
+   - Installed Git 2.54.0 and Node.js 24.17.0 LTS via winget (neither was present)
+   - Added GitHub SSH host key, cloned repo
+   - `npm install` (497 packages); ran `npm audit fix` then **reverted it** (`git checkout package-lock.json` + `npm ci`) to keep dependencies identical to the old laptop (no Next.js 14→16 upgrade)
+   - Recreated `.env.local` from old laptop; verified Supabase URL + anon/service keys live against project `zipxmghbougztwdtzftn`
+   - Identified password gates as staging-only (`SITE_PASSWORD`/`ADMIN_PREVIEW_PASSWORD`); commented out `ADMIN_PREVIEW_PASSWORD` for local dev, kept the site gate (`SupaAdmin`)
+
+2. **ESLint cleanup** (branch `fix/lint-warnings`, commit `6881ac4`, pushed)
+   - Resolved all 7 warnings → `next lint` clean, build 51/51 routes
+   - Real fix: `StaffDirectoryClient.tsx` `<img>` → `next/image` (`fill`)
+   - 6 documented suppressions (2 base64 data-URL previews, 3 intentional `useEffect` deps, 1 Material Symbols custom font) where forcing a change would break behavior
+
+3. **Mock marketplace data**
+   - New `scripts/seed-mock-businesses.ts` + `seed:mock` npm script
+   - Seeded 8 businesses across Tbilisi districts (real lat/long), all 7 categories, 24 services, 16 staff, ratings, `picsum.photos` images
+   - Idempotent (`mock-` slug prefix, cascade-wipe on re-run), `is_test: false`, owner `mock-owner@rigify.test`
+
+4. **Bug fix: "permission denied for table reviews"**
+   - Root cause: `reviews` and `subscriptions` had RLS policies but no table GRANTs (Postgres checks GRANT before RLS). The customer "My Bookings" query joins `reviews!left(id)` and failed.
+   - Created migration `20260623000001_grant_reviews_subscriptions.sql`; applied to remote DB via Supabase Management API (CLI not installed)
+   - Verified reviews readable, full booking join resolves, customers can read their own bookings
+
+**Files Changed**:
+- Committed (branch `fix/lint-warnings`): 6 files — BusinessMap.tsx, BusinessPageClient.tsx, StaffDirectoryClient.tsx, layout.tsx, AddArtisanForm.tsx, ImageUpload.tsx
+- Uncommitted (working tree): `scripts/seed-mock-businesses.ts` (new), `package.json` (seed:mock), `supabase/migrations/20260623000001_grant_reviews_subscriptions.sql` (new, applied to remote)
+- Local-only (gitignored): `.env.local`
+
+**Commits**:
+- `6881ac4` - Resolve all ESLint warnings (on `fix/lint-warnings`, pushed)
+
+**Migrations**:
+- `20260623000001_grant_reviews_subscriptions.sql` - Grants on reviews/subscriptions (fixes "permission denied for table reviews"). Applied to remote via Management API; not yet recorded in Supabase migration history (a future `supabase db push` will re-apply it idempotently).
+
+**Code Review**: No correctness bugs in the session diff. Noted cosmetic inconsistency — seeded `rating`/`review_count` don't correspond to actual `reviews` rows (cards show ratings, detail Reviews section is empty).
+
+**Next Steps**:
+- Open PR for `fix/lint-warnings` → merge to `main`
+- Decide whether to commit the mock seeder + grants migration (and on which branch)
+- Optional: seed real `reviews` rows so ratings are consistent
+- Set up a super-admin account (`is_super_admin: true`) to access `/admin`
+
+**Status**: New machine fully operational. Lint clean, build passing, mock data live, reviews permission bug fixed. Lint fixes pushed to a branch; mock seeder + grants migration remain uncommitted pending a decision.
+
+---
+
+### Session 26 - June 24, 2026: Booking-Flow Modal Refactor & Marketplace UI Polish
+
+**Objective**: A long UI/UX pass — convert the booking page into a modal with inline confirmation, polish the Browse Businesses views (cards/map/split), unify the homepage layout, add a reusable phone country-code field to booking + registration, and restore the "My Bookings" card to its original Stitch design.
+
+**Accomplished**:
+
+1. **Booking page → modal with inline confirmation**
+   - Replaced the standalone `BookAppointmentContent.tsx` (deleted) with a modal: new `components/booking/` (`BookingModal`, `BookingProvider`, `BookingCalendar`, `BookingConfirmation`) + `lib/bookings/` (`get-confirmation`, `types`).
+   - Booking flow restructured: artisan/time decoupled, month-grid calendar, time-after-date selection. Confirmation now renders inside the modal (no page nav).
+   - Triggered from `ServicesList` / `BookServiceButton` on the business page.
+
+2. **Booking-confirmed page**
+   - Removed the standalone Location card + check icon; added a Mapbox map (reusing `BusinessLocationMap`) and a **Get directions** button.
+   - New shared `lib/utils/directions.ts` (`getDirectionsUrl` / `openDirections` — Apple Maps on iOS, else Google), reused by `GetDirectionsButton` and the tappable address.
+
+3. **Guest email now mandatory** — `app/api/bookings/route.ts` requires email for guest bookings.
+
+4. **Browse Businesses polish** (`BusinessGrid`, `BusinessMap`, `BusinessMapView`, `BusinessSplitView`)
+   - Compact cards; grayscale images that turn color after "View"; split-view photo click mirrors map-view behavior.
+   - Two-step marker selection + popup with an explicit **close icon** (no more deselect-on-click-away only); re-keyed `flyTo` to `popupBusinessId` to stop hover thrash; Marker `onClick` `stopPropagation`.
+
+5. **Phone country-code field** — new `components/ui/CountryCodeSelect.tsx` (GE +995 default, ISO→flag, dial code next to country name). Wired into the booking form **and** the registration page (`customer-register`). `validateGeorgianPhone` accepts international E.164.
+
+6. **Homepage layout** — new `components/layout/Container.tsx`; unified gutters/spacing on `app/page.tsx`.
+
+7. **Login page** — Forgot-password moved below the password field; Register link on the right (`LoginPageClient.tsx`).
+
+8. **My Bookings card restored to Stitch design** (`BookingCard.tsx`, `BookingsTabs.tsx`, `customer/dashboard/page.tsx`)
+   - Horizontal layout: left business **thumbnail** (grayscale → color + zoom on hover), center (business name → service → **Date & Time** → tappable **Location**), View/Cancel actions, right **CONFIRMED** badge + **STAFF MEMBER** + name + **circular avatar** (120×120; intentional exception to the 0-radius rule).
+   - Query extended: `businesses` embed now fetches `cover_image_url` + `business_categories(category_id)` for the thumbnail + category fallback image.
+   - New stitch reference `design-assets/stitch_rigify/stitch_my_bookings/`; old `my_bookings_rigify/` removed.
+
+9. **Hero background SVG** — attempted, looked wrong, **reverted** (`app/page.tsx` restored, component deleted; `HERO/` source assets remain untracked).
+
+10. **CLAUDE.md** — added JSX-escaping + Working Principles / Session Continuity rules.
+
+11. **Tests** — updated `guest-booking-flow.spec.ts` (asserts inline `booking-confirmation-view` instead of URL nav), `booking-validation.spec.ts`, `test-helpers.ts`. Reinforced: never use digits in test names (`validateName` rejects them).
+
+**Files Changed**: ~25 modified, 1 deleted component (`BookAppointmentContent.tsx`); new dirs `components/booking/`, `components/layout/`, `lib/bookings/` + `components/ui/CountryCodeSelect.tsx`, `lib/utils/directions.ts`. All uncommitted.
+
+**Commits**: None — all work is in the working tree on `fix/lint-warnings`.
+
+**Code Review**: Two reviews during the session; fixes applied (test-ID coverage, modal test regression, false-positive "bug" from digit-in-name test data).
+
+**Verification**: Type-check + ESLint clean throughout. Live-verified the My Bookings card via Playwright (register → book at `mock-the-barber-chugureti` → dashboard): thumbnail grayscale→color on hover, 120px circular staff avatar, tappable address opens maps.
+
+**Next Steps**:
+- Commit this session's UI work (large diff — consider grouping: booking modal, browse polish, phone field, My Bookings card).
+- Open PR for `fix/lint-warnings` (still unmerged) and decide on the mock seeder + grants migration.
+- Confirm the My Bookings thumbnail aspect reads well with real cover photos (portrait crop only appears on tall, note-showing cards).
+
+**Status**: Large UI refactor complete and verified locally; entirely uncommitted on `fix/lint-warnings`.
+
 3. **Android Adaptive Icons**
    - 512×512 icons should include `"purpose": "maskable"`
    - Without it, icon appears tiny in adaptive shapes

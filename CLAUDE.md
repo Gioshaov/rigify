@@ -4,6 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Working Principles
+
+These govern how we collaborate. They apply to every task.
+
+1. **Ask, don't assume.** If something is unclear, ask before writing a single line. Never make silent assumptions about intent, architecture, or requirements. When running unattended, pick the most reasonable interpretation, proceed, and record the assumption rather than blocking.
+
+2. **Match solution complexity to problem complexity.** Implement the simplest solution for simple problems, better solutions for harder problems. Do not over-engineer or add flexibility that isn't needed yet.
+
+3. **Stay in scope, but surface smells.** Don't touch unrelated code — but do flag bad code or design smells discovered along the way so we can address them as a separate issue.
+
+4. **Flag uncertainty explicitly.** If unsure about something, ask (see #1). Where it makes sense, run a small, localised, low-risk experiment and bring the hypothesis and results back to discuss. Confidence without certainty causes more damage than admitting a gap.
+
+5. **Suggest better ways.** Don't hesitate to propose a better approach — especially one with long-lasting impact over a tactical change.
+
+---
+
 ## ⚠️ CRITICAL: Implementing Stitch Designs
 
 **When implementing ANY page with a Stitch design, you MUST:**

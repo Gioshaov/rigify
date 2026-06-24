@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 19, 2026  
-**Session**: Session 23 - Email System Unified Redesign
+**Last Updated**: June 24, 2026  
+**Session**: Session 26 - Booking-Flow Modal Refactor & Marketplace UI Polish
 
 ---
 
@@ -119,131 +119,44 @@
 
 ---
 
-## Latest Session Work (Session 24 - June 19, 2026)
+## Latest Session Work (Session 26 - June 24, 2026)
 
-**Objective**: Complete admin panel customer and booking management functionality
+**Objective**: A long UI/UX pass — convert the booking page into a modal with inline confirmation, polish the Browse Businesses views, unify the homepage layout, add a reusable phone country-code field, and restore the "My Bookings" card to its original Stitch design.
 
-### Implementation: Admin Panel Customer & Booking Management
+### 1. Booking page → modal with inline confirmation
+- Deleted `BookAppointmentContent.tsx`; built `components/booking/` (`BookingModal`, `BookingProvider`, `BookingCalendar`, `BookingConfirmation`) + `lib/bookings/` (`get-confirmation`, `types`)
+- Flow restructured: artisan/time decoupled, month-grid calendar, time-after-date; confirmation renders **inside the modal** (no page nav)
+- Triggered from `ServicesList` / `BookServiceButton`
 
-**What Was Built**:
+### 2. Booking-confirmed page + shared directions util
+- Removed the standalone Location card + check icon; added a Mapbox map (`BusinessLocationMap`) + **Get directions** button
+- New `lib/utils/directions.ts` (`getDirectionsUrl` / `openDirections` — Apple Maps on iOS else Google), reused by `GetDirectionsButton` and the tappable My Bookings address
+- Guest email is now **mandatory** (`app/api/bookings/route.ts`)
 
-1. **Customer Management** (4 files created, 2 modified)
-   - Customer detail page with profile info, booking history, and stats
-   - Customer edit page with validation (name, phone, email)
-   - Status toggle (active ↔ suspended) with audit logging
-   - Delete customer with cascade to bookings
-   - "View" link added to customers table
+### 3. Browse Businesses polish
+- Compact cards; grayscale images → color after "View"; split-view photo click mirrors map view
+- Two-step marker selection + popup with an explicit **close icon**; re-keyed `flyTo` to `popupBusinessId` (no hover thrash); Marker `onClick` `stopPropagation`
 
-2. **Booking Management** (6 files created, 2 modified)
-   - Booking detail page with full info, timeline, and actions
-   - Booking edit/reschedule with overlap detection and reschedule count tracking
-   - Multi-step booking creation wizard (5 steps: business → service/staff → datetime → customer → confirm)
-   - Customer search server action (bypasses RLS)
-   - "View" link added to bookings table
+### 4. Phone country-code field
+- New `components/ui/CountryCodeSelect.tsx` (GE +995 default, ISO→flag, dial next to country name)
+- Wired into the **booking form** and the **registration page**; `validateGeorgianPhone` accepts international E.164
 
-3. **RLS Fix** (2 files modified)
-   - Fixed bookings and customers pages to use `createAdminClient()` instead of `createClient()`
-   - Super admins can now see all data (previously blocked by RLS)
+### 5. Homepage + login layout
+- New `components/layout/Container.tsx`; unified gutters/spacing on `app/page.tsx`
+- Login: Forgot-password below the password field, Register link on the right
 
-### Code Review & Fixes
+### 6. My Bookings card restored to Stitch design
+- Horizontal layout: left **thumbnail** (grayscale → color + zoom on hover) → center (business name → service → **Date & Time** → tappable **Location**) → View/Cancel → right **CONFIRMED** badge + **STAFF MEMBER** + name + **circular 120×120 avatar** (intentional 0-radius exception)
+- Query extended: `businesses` embed now fetches `cover_image_url` + `business_categories(category_id)`
+- New stitch ref `design-assets/stitch_rigify/stitch_my_bookings/`; old `my_bookings_rigify/` removed
 
-**@code-reviewer Findings**: 11 issues total (4 major, 7 minor)
+### 7. Misc
+- Hero background SVG attempted then **reverted** (looked wrong); `HERO/` source assets remain untracked
+- `CLAUDE.md`: added JSX-escaping + Working Principles / Session Continuity rules
+- Tests updated for the modal flow (`guest-booking-flow`, `booking-validation`, `test-helpers`)
 
-**MAJOR Issues Fixed**:
-
-1. **[M1] Customer search broken (RLS issue)**
-   - **Problem**: Client-side fetch couldn't read customers table (RLS blocked)
-   - **Fix**: Created `searchCustomers()` server action with admin client and 300ms debounce
-   - **Impact**: Existing customer search now works in booking creation wizard
-
-2. **[M2] PII in delete audit logs**
-   - **Problem**: Full email and phone stored in audit logs (GDPR issue)
-   - **Fix**: Removed email/phone, kept only name and status
-   - **Impact**: GDPR-compliant audit trail
-
-3. **[M3] Overlap detection boundary equality**
-   - **Problem**: Back-to-back appointments (10:00-11:00, 11:00-12:00) were rejected as conflicts
-   - **Fix**: Changed `lte`/`gte` to `lt`/`gt` (strict inequalities)
-   - **Impact**: Adjacent appointments now allowed correctly
-
-4. **[M4] Datetime comparison fragility**
-   - **Problem**: String comparison always different due to format variations
-   - **Fix**: Compare as milliseconds using `.getTime()`
-   - **Impact**: Reschedule count only increments when time actually changes
-
-**MINOR Issues Fixed**:
-
-5. **[m1] Dead code** - Removed duplicate `suspendCustomer`/`activateCustomer` functions
-6. **[m2] Status badge** - Fixed hardcoded green color to show actual status
-7. **[m3] Date filter timezone** - Use Tbilisi timezone instead of UTC midnight
-8. **[m4] Phone validation** - Added format validation to `createBooking`
-9. **[m5] Query limit** - Added limit to last bookings query
-10. **[m6] Logic documentation** - Added comment explaining canEdit/canCancel difference
-11. **[m7] Duplicate className** - Fixed merged className on label
-
----
-
-## Session Summary
-
-**Focus**: Complete admin panel customer and booking management
-
-**Files Created** (14 total):
-- `app/admin/(auth-required)/customers/[id]/page.tsx`
-- `app/admin/(auth-required)/customers/[id]/CustomerDetailView.tsx`
-- `app/admin/(auth-required)/customers/[id]/edit/page.tsx`
-- `app/admin/(auth-required)/customers/[id]/edit/EditCustomerForm.tsx`
-- `app/admin/(auth-required)/bookings/[id]/page.tsx`
-- `app/admin/(auth-required)/bookings/[id]/BookingDetailView.tsx`
-- `app/admin/(auth-required)/bookings/[id]/edit/page.tsx`
-- `app/admin/(auth-required)/bookings/[id]/edit/EditBookingForm.tsx`
-- `app/admin/(auth-required)/bookings/new/page.tsx`
-- `app/admin/(auth-required)/bookings/new/CreateBookingWizard.tsx`
-
-**Files Modified** (7 total):
-- `app/admin/(auth-required)/customers/CustomersTable.tsx` - Added View link
-- `app/admin/(auth-required)/customers/actions.ts` - Added updateCustomerStatus, updateCustomer, searchCustomers; removed dead code
-- `app/admin/(auth-required)/customers/page.tsx` - Fixed RLS issue (use admin client)
-- `app/admin/(auth-required)/bookings/BookingsTable.tsx` - Added View link
-- `app/admin/(auth-required)/bookings/actions.ts` - Added updateBooking, createBooking, searchCustomers
-- `app/admin/(auth-required)/bookings/page.tsx` - Fixed RLS issue (use admin client), fixed date filter timezone
-- `app/admin/(auth-required)/bookings/[id]/edit/EditBookingForm.tsx` - Fixed status badge color
-
-**Features Implemented**:
-- ✅ Customer detail page (profile, booking history, stats)
-- ✅ Customer edit page (name, phone, email validation)
-- ✅ Customer status management (active ↔ suspended)
-- ✅ Booking detail page (full info, timeline, actions)
-- ✅ Booking edit/reschedule (overlap detection, reschedule count tracking)
-- ✅ Booking creation wizard (5-step flow with customer search)
-- ✅ All mutations logged to audit trail with IP and user agent
-- ✅ Comprehensive test IDs for E2E testing
-
-**Security & Quality**:
-- All server actions verify super admin authentication
-- All database operations use admin client (bypasses RLS)
-- Overlap detection prevents double-booking (strict inequalities for back-to-back appointments)
-- Phone validation (Georgian format +995XXXXXXXXX)
-- Datetime comparison uses milliseconds (avoids string format issues)
-- Customer search debounced (300ms) to reduce server load
-- Minimal PII in audit logs (GDPR-compliant)
-
-**Code Reviews**:
-- @code-reviewer: CONDITIONAL PASS (11 issues found)
-- All 4 MAJOR issues fixed (RLS, PII, overlap detection, datetime comparison)
-- All 7 MINOR issues fixed (dead code, status badge, timezone, validation, etc.)
-- Final status: PASS ✅
-
-**TypeScript**: ✅ Clean compilation (no errors)
-**Build**: ✅ Passes
-**Production**: ✅ Ready to deploy
-
-**Key Learnings**:
-- Admin pages must use `createAdminClient()` not `createClient()` to bypass RLS
-- Client-side fetches from browser respect RLS - use server actions for admin operations
-- Date filters must use timezone-aware conversion (Tbilisi local → UTC)
-- Overlap detection requires strict inequalities to allow back-to-back appointments
-- Datetime comparison must use milliseconds, not string equality
-- Audit logs should contain minimal PII for GDPR compliance
+### Code Review (this session)
+- Two reviews; fixes applied: test-ID coverage, a modal test regression (asserted URL nav that no longer happens), and a false "bug" caused by a digit in test-data name (`validateName` blocks digits — never use them in test names).
 
 ---
 
@@ -262,19 +175,30 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `main`  
-**Status**: ✅ All changes committed and pushed
+**Branch**: `fix/lint-warnings` (pushed; PR not yet opened) — lint fixes committed here, NOT yet merged to `main`  
+**Status**: ⚠️ Working tree has a LARGE uncommitted UI diff (this session's work)
 
-**Working Tree**: Clean  
+**Uncommitted (this session — needs commit)**:
+- Booking modal: `components/booking/*` (new), `lib/bookings/*` (new), `BookAppointmentContent.tsx` (deleted), `book/page.tsx`, `ServicesList`, `BookServiceButton`
+- Booking-confirmed + directions: `booking-confirmed/*`, `lib/utils/directions.ts` (new), `app/api/bookings/route.ts`
+- Browse polish: `BusinessGrid`, `BusinessMap`, `BusinessMapView`, `BusinessSplitView`, `BusinessLocationMap`
+- Phone field: `components/ui/CountryCodeSelect.tsx` (new), `customer-register/page.tsx`, `LoginPageClient.tsx`
+- Homepage: `components/layout/Container.tsx` (new), `app/page.tsx`
+- My Bookings: `BookingCard.tsx`, `BookingsTabs.tsx`, `customer/dashboard/page.tsx`
+- Stitch ref swap: `stitch_my_bookings/` (new) / `my_bookings_rigify/` (removed); `HERO/` (untracked, reverted hero assets)
+- `CLAUDE.md`, tests, `package.json`
+
+**Carried over from Session 25 (still uncommitted)**:
+- `scripts/seed-mock-businesses.ts` + `seed:mock` script
+- `supabase/migrations/20260623000001_grant_reviews_subscriptions.sql` (applied to remote DB via Management API)
+
 **TypeScript**: ✅ No errors  
 **Build**: ✅ Passes
-**Deployment**: ✅ Vercel successful
+**Lint**: ✅ Clean (0 warnings)
 
 **Total Project Stats**:
 - 36 pages implemented (88 TSX files total)
-- 22 migrations applied
-- 152 commits total
-- 8000+ lines of code
+- 23 migrations (latest: reviews/subscriptions grants)
 - 95%+ feature complete
 
 ---
@@ -318,6 +242,6 @@
 
 ---
 
-**Session Started**: June 17, 2026  
-**Session Ended**: June 17, 2026  
-**Status**: Critical security fixes complete, reschedule improvements deployed - 9 security issues resolved, 3 runtime failures fixed
+**Session Started**: June 24, 2026  
+**Session Ended**: June 24, 2026  
+**Status**: Large UI refactor complete and verified locally (booking modal + inline confirmation, browse-view polish, phone country-code field, restored My Bookings Stitch card). All uncommitted on `fix/lint-warnings`. Next: commit this session's UI work (consider grouping by area), open the PR for `fix/lint-warnings`, and decide on the mock seeder + grants migration.

@@ -32,11 +32,11 @@ test.describe('Guest Booking Flow', () => {
     await page.getByTestId(`business-card-${testBusiness.slug}`).click();
     await expect(page).toHaveURL(new RegExp(`/businesses/${testBusiness.slug}`));
 
-    // 3. Click "Book Service" button for a service
-    await page.getByTestId(`book-service-btn-${testService.id}`).first().click();
-    await expect(page).toHaveURL(new RegExp(`/businesses/${testBusiness.slug}/book`));
+    // 3. Open the booking modal for a service
+    await page.getByTestId(`service-card-${testService.id}`).first().click();
+    await expect(page.getByTestId('booking-modal')).toBeVisible();
 
-    // 4. Select date and time
+    // 4. Select artisan, date and time
     await selectDateAndTime(page);
 
     // 5. Fill customer details
@@ -45,20 +45,22 @@ test.describe('Guest Booking Flow', () => {
     await page.getByTestId('customer-email-input').fill(GUEST_CUSTOMER_DATA.email);
 
     // 6. Confirm booking
-    await page.getByTestId('confirm-booking-btn').click();
+    await page.getByTestId('booking-confirm').click();
 
-    // 7. Verify confirmation page
-    await expect(page).toHaveURL(/\/booking-confirmed/, { timeout: 10000 });
+    // 7. Confirmation appears inline inside the same modal (no navigation)
+    await expect(page.getByTestId('booking-confirmation-view')).toBeVisible({ timeout: 10000 });
     await expect(page.getByTestId('booking-confirmed-title')).toBeVisible();
-    await expect(page.getByTestId('booking-confirmed-business-name')).toContainText(testBusiness.name);
+    await expect(page.getByTestId('business-name')).toContainText(testBusiness.name);
   });
 
   test('should validate required fields', async ({ page }) => {
     await bypassSitePassword(page);
-    await page.goto(`/businesses/${testBusiness.slug}/book?service=${testService.id}`);
+    await page.goto(`/businesses/${testBusiness.slug}`);
+    await page.getByTestId(`service-card-${testService.id}`).first().click();
+    await expect(page.getByTestId('booking-modal')).toBeVisible();
 
     // Try to submit without filling fields
-    const confirmBtn = page.getByTestId('confirm-booking-btn');
+    const confirmBtn = page.getByTestId('booking-confirm');
     await expect(confirmBtn).toBeDisabled();
 
     // Fill only name
@@ -71,6 +73,10 @@ test.describe('Guest Booking Flow', () => {
 
     // Select date and time
     await selectDateAndTime(page);
+    await expect(confirmBtn).toBeDisabled(); // Still disabled — guests must provide an email
+
+    // Email is required for guests
+    await page.getByTestId('customer-email-input').fill('guest@example.com');
     await expect(confirmBtn).toBeEnabled();
   });
 });
