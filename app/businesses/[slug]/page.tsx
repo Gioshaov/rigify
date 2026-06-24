@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { ServicesList } from "./ServicesList";
 import { ReviewsSection } from "./ReviewsSection";
+import { BookingProvider } from "@/components/booking/BookingProvider";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 // Dynamic import to prevent 1.7MB Mapbox bundle from being included in initial page load
@@ -143,6 +144,10 @@ export default async function BusinessProfilePage({
 
   const reviewsList: Review[] = reviews || [];
 
+  // Auth state — guests (not logged in) must provide an email when booking.
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
+
   // Fallback values for missing data
   const displayName = business.name || "Business";
   const displayLocation = business.city
@@ -154,6 +159,12 @@ export default async function BusinessProfilePage({
 
   return (
     <div className="min-h-screen bg-background">
+      <BookingProvider
+        business={{ id: business.id, name: displayName, slug: business.slug }}
+        services={services}
+        staff={staff}
+        isAuthenticated={isAuthenticated}
+      >
       {/* Top Navigation */}
       <TopNav />
 
@@ -231,7 +242,7 @@ export default async function BusinessProfilePage({
                   AVAILABLE NOW
                 </span>
               </div>
-              <ServicesList services={services} businessSlug={business.slug} />
+              <ServicesList services={services} />
             </section>
 
             {/* Reviews */}
@@ -376,6 +387,7 @@ export default async function BusinessProfilePage({
           </span>
         </Link>
       </footer>
+      </BookingProvider>
     </div>
   );
 }

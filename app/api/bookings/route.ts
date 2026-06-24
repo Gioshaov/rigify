@@ -6,6 +6,8 @@ import {
   sendBookingConfirmationToCustomer,
   sendBookingConfirmationToBusiness
 } from '@/lib/emails/send'
+import { getBookingConfirmation } from '@/lib/bookings/get-confirmation'
+import { getConfirmationId } from '@/lib/bookings/confirmation-id'
 
 export async function POST(request: NextRequest) {
   try {
@@ -136,6 +138,14 @@ export async function POST(request: NextRequest) {
 
     // Get current user (if logged in)
     const { data: { user } } = await supabase.auth.getUser()
+
+    // Guests (not logged in) must provide an email so they receive a confirmation.
+    if (!user && !customerEmail) {
+      return NextResponse.json(
+        { error: 'Email is required for guest bookings' },
+        { status: 400 }
+      )
+    }
 
     // Get service to know duration (must belong to the claimed business)
     const { data: service, error: serviceError } = await admin
@@ -297,7 +307,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate confirmation ID
-    const confirmationId = `RG-${booking.id.slice(0, 8).toUpperCase()}`;
+    const confirmationId = getConfirmationId(booking.id);
 
     // Send email notifications (non-blocking - don't fail booking if emails fail)
     Promise.all([
@@ -364,9 +374,14 @@ export async function POST(request: NextRequest) {
       console.error('[Booking] Email notification error:', emailError);
     });
 
+    // Return the full confirmation so the booking modal can render it inline
+    // without a second request (applies the same auth/PII rules as the page).
+    const confirmation = await getBookingConfirmation(booking.id)
+
     return NextResponse.json({
       success: true,
       bookingId: booking.id,
+      booking: confirmation?.booking ?? null,
       message: 'Booking created successfully'
     })
 
