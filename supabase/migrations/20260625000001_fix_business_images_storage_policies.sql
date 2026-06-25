@@ -26,6 +26,10 @@ as $function$
 $function$;
 
 -- INSERT
+-- Also drop the legacy permissive insert policy from earlier migrations, which
+-- allowed ANY authenticated user to upload anywhere in the bucket. If it ever
+-- lingers it would OR-override the ownership check below.
+drop policy if exists "Authenticated users can upload business images" on storage.objects;
 drop policy if exists "Business owners can upload their images" on storage.objects;
 create policy "Business owners can upload their images"
   on storage.objects for insert
