@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateBusiness } from './actions';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { ServicesPanel } from './ServicesPanel';
 import { MapPin, Phone, Mail, Globe, Clock, Image as ImageIcon, X } from 'lucide-react';
 
 type Business = {
@@ -44,6 +45,17 @@ type Staff = {
   created_at: string;
 };
 
+type Service = {
+  id: string;
+  name: string;
+  name_ka: string | null;
+  category: string | null;
+  duration_minutes: number;
+  price_min: number;
+  price_max: number | null;
+  is_active: boolean;
+};
+
 const AVATAR_COLORS = [
   'bg-[#d4a843] text-black',
   'bg-[#8b7355] text-white',
@@ -65,11 +77,13 @@ export function EditBusinessForm({
   categoryIds,
   staff,
   allCategories,
+  services,
 }: {
   business: Business;
   categoryIds: string[];
   staff: Staff[];
   allCategories: Category[];
+  services: Service[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -622,6 +636,11 @@ export function EditBusinessForm({
               <p className="text-[#888888] text-sm">No staff members yet</p>
             )}
           </section>
+
+          <div className="border-t border-[#2a2a2a]" />
+
+          {/* Services Panel */}
+          <ServicesPanel services={services} businessId={business.id} />
 
           <div className="border-t border-[#2a2a2a]" />
 

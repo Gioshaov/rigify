@@ -21,7 +21,8 @@ export default async function EditBusinessPage({
   const [
     { data: business, error: businessError },
     { data: staff },
-    { data: categories }
+    { data: categories },
+    { data: services }
   ] = await Promise.all([
     admin
       .from('businesses')
@@ -41,7 +42,13 @@ export default async function EditBusinessPage({
     admin
       .from('categories')
       .select('id, name, name_ka')
-      .order('name')
+      .order('name'),
+    admin
+      .from('services')
+      .select('id, name, name_ka, category, duration_minutes, price_min, price_max, is_active')
+      .eq('business_id', params.id)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
   ]);
 
   if (businessError || !business) {
@@ -54,6 +61,7 @@ export default async function EditBusinessPage({
       categoryIds={business.business_categories?.map((bc: any) => bc.category_id) || []}
       staff={staff || []}
       allCategories={categories || []}
+      services={services || []}
     />
   );
 }
