@@ -22,6 +22,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
   // Get form data
   const name = (formData.get('name') as string).trim()
   const description = (formData.get('description') as string)?.trim() || null
+  const descriptionKa = (formData.get('description_ka') as string)?.trim() || null
   const subdomain = (formData.get('subdomain') as string).trim()
   const slug = (formData.get('slug') as string).trim()
   const phone = (formData.get('phone') as string).trim()
@@ -103,6 +104,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
     .update({
       name,
       description,
+      description_ka: descriptionKa,
       subdomain,
       slug,
       phone,
