@@ -14,15 +14,6 @@ const CATEGORY_OPTIONS = [
   { id: 'barber', label: 'Barbershop' },
 ];
 
-const HOURS_OPTIONS = [
-  { value: '', label: 'Select schedule...' },
-  { value: 'Mon-Fri 9:00-18:00, Sat 10:00-16:00', label: 'Weekdays 9-6, Saturday 10-4' },
-  { value: 'Mon-Sat 9:00-20:00', label: 'Monday to Saturday 9-8' },
-  { value: 'Mon-Sun 9:00-21:00', label: 'Every day 9-9' },
-  { value: 'Mon-Fri 8:00-17:00', label: 'Weekdays 8-5' },
-  { value: 'Tue-Sun 10:00-19:00, Mon Closed', label: 'Tuesday to Sunday 10-7, Monday closed' },
-];
-
 const inputClass =
   'w-full h-9 bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs px-3 rounded-none focus:outline-none focus:border-[#d4a843] transition-colors placeholder:text-[#6b6880]';
 const labelClass = 'block text-[#6b6880] font-mono text-[11px] mb-2';
@@ -113,23 +104,14 @@ export default function OnboardForm() {
           <p className="text-[#6b6880] font-mono text-[10px] mt-1">Used in public URL: rigify.ge/business/mitte-beauty-salon</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="status" className={labelClass}>STATUS *</label>
-            <select id="status" name="status" data-testid="onboard-status-select" defaultValue="active" required className={`${inputClass} appearance-none cursor-pointer`}>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="draft">Draft</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="hours" className={labelClass}>OPENING HOURS</label>
-            <select id="hours" name="hours" data-testid="onboard-hours-select" className={`${inputClass} appearance-none cursor-pointer`}>
-              {HOURS_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+        <div>
+          <label htmlFor="status" className={labelClass}>STATUS *</label>
+          <select id="status" name="status" data-testid="onboard-status-select" defaultValue="active" required className={`${inputClass} appearance-none cursor-pointer`}>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="draft">Draft</option>
+          </select>
+          <p className="text-[#6b6880] font-mono text-[10px] mt-1">Opening hours are set later from the business dashboard → Settings.</p>
         </div>
 
         {/* Categories (multi-select chips) */}

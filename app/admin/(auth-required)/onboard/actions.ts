@@ -35,10 +35,7 @@ export async function onboardBusiness(formData: FormData) {
   const email = (formData.get('email') as string)?.trim() || null
   const website = (formData.get('website') as string)?.trim() || null
   const instagram = (formData.get('instagram') as string)?.trim() || null
-  const hours = (formData.get('hours') as string)?.trim() || null
   const statusRaw = (formData.get('status') as string)?.trim() || 'active'
-  const coverImageUrl = formData.get('cover_image_url') as string
-  const logoUrl = formData.get('logo_url') as string
   const latitude = formData.get('latitude') as string
   const longitude = formData.get('longitude') as string
   const ownerEmail = formData.get('owner_email') as string
@@ -66,9 +63,32 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'Invalid status' }
   }
 
+  // Validate categories against the known set (DB also has a check constraint)
+  const VALID_CATEGORIES = ['hair', 'nails', 'skin', 'massage', 'brows', 'makeup', 'barber']
+  if (!categories.every((c) => VALID_CATEGORIES.includes(c))) {
+    return { success: false, message: 'One or more categories are invalid' }
+  }
+
   // Validate optional business email format if provided
   if (email && !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
     return { success: false, message: 'Invalid business email format' }
+  }
+
+  // Validate optional website is an http(s) URL (it renders as a link)
+  if (website && !/^https?:\/\//i.test(website)) {
+    return { success: false, message: 'Website must start with http:// or https://' }
+  }
+
+  // Image URLs come from the ImageUpload component (Supabase Storage public URL).
+  // Reject anything that isn't from our storage bucket (tampered hidden field).
+  const storagePrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}/storage/v1/object/public/business-images/`
+  const coverImageUrl = formData.get('cover_image_url') as string
+  const logoUrl = formData.get('logo_url') as string
+  if (coverImageUrl && !coverImageUrl.startsWith(storagePrefix)) {
+    return { success: false, message: 'Invalid cover image. Please re-upload.' }
+  }
+  if (logoUrl && !logoUrl.startsWith(storagePrefix)) {
+    return { success: false, message: 'Invalid logo. Please re-upload.' }
   }
 
   // Validate subdomain format (minimum 3 characters)
@@ -163,7 +183,6 @@ export async function onboardBusiness(formData: FormData) {
       email,
       website,
       instagram,
-      hours,
       cover_image_url: coverImageUrl || null,
       logo_url: logoUrl || null,
       latitude: parsedLatitude,
@@ -185,6 +204,9 @@ export async function onboardBusiness(formData: FormData) {
     }
     if (bizError?.message?.includes('businesses_subdomain_key')) {
       return { success: false, message: `This subdomain "${subdomain}" is already taken. Please choose a different one.` }
+    }
+    if (bizError?.message?.includes('businesses_pkey')) {
+      return { success: false, message: 'Internal ID conflict. Please reload the form and try again.' }
     }
 
     return { success: false, message: `Failed to create business: ${bizError?.message}` }
