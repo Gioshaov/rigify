@@ -102,7 +102,6 @@ const COUNTRIES: Country[] = [
   { iso: "PT", name: "Portugal", dial: "+351" },
   { iso: "QA", name: "Qatar", dial: "+974" },
   { iso: "RO", name: "Romania", dial: "+40" },
-  { iso: "RU", name: "Russia", dial: "+7" },
   { iso: "SA", name: "Saudi Arabia", dial: "+966" },
   { iso: "RS", name: "Serbia", dial: "+381" },
   { iso: "SG", name: "Singapore", dial: "+65" },

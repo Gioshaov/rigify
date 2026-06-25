@@ -5,7 +5,7 @@
 
 -- ----- Mitte Beauty -----
 insert into public.businesses (
-  id, owner_id, slug, name, name_ka, name_ru, description, description_ka,
+  id, owner_id, slug, name, name_ka, description, description_ka,
   category, city, district, address, address_ka, phone, email, instagram,
   hours, salome_enabled, salome_phone, rating, review_count
 ) values (
@@ -14,7 +14,6 @@ insert into public.businesses (
   'mitte-beauty',
   'Mitte Beauty Salon',
   'მიტე სილამაზის სალონი',
-  'Салон красоты Mitte',
   'Premium hair and beauty studio in the heart of Vake — five award-winning stylists and an editorial colour bar.',
   'პრემიუმ თმისა და სილამაზის სტუდია ვაკეში — ხუთი დაჯილდოებული სტილისტი და სარედაქციო ფერების ბარი.',
   'hair',

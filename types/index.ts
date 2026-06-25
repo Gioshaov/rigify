@@ -8,10 +8,8 @@ export interface Business {
   slug: string;
   name: string;
   name_ka?: string | null;
-  name_ru?: string | null;
   description?: string | null;
   description_ka?: string | null;
-  description_ru?: string | null;
   category: string;
   city: string;
   district?: string | null;
@@ -41,7 +39,6 @@ export interface Service {
   business_id: string;
   name: string;
   name_ka?: string | null;
-  name_ru?: string | null;
   description?: string | null;
   category?: string | null;
   duration_minutes: number;
@@ -118,4 +115,4 @@ export interface Subscription {
   calls_this_month: number;
 }
 
-export type Locale = "ka" | "en" | "ru";
+export type Locale = "ka" | "en";
