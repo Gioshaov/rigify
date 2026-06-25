@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
 
 const RESERVED_SUBDOMAINS = [
   'admin', 'api', 'www', 'app',
@@ -162,6 +163,11 @@ export async function onboardBusiness(formData: FormData) {
     console.error('Failed to insert category:', categoryError)
     // Non-fatal: business is created, admin can add category manually
   }
+
+  // Surface the new business in the marketplace listing without waiting for
+  // the cache to expire.
+  revalidatePath('/businesses')
+  revalidatePath('/admin')
 
   // 4. Optionally create staff account (validation already done above)
   if (staffName && staffEmail && staffPassword) {

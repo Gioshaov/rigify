@@ -375,7 +375,7 @@ export function EditBusinessForm({
                     name="latitude"
                     defaultValue={business.latitude ?? ''}
                     placeholder="41.7151377"
-                    data-testid="input-latitude"
+                    data-testid="edit-business-latitude-input"
                     className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
                   />
                 </div>
@@ -392,7 +392,7 @@ export function EditBusinessForm({
                     name="longitude"
                     defaultValue={business.longitude ?? ''}
                     placeholder="44.7831250"
-                    data-testid="input-longitude"
+                    data-testid="edit-business-longitude-input"
                     className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
                   />
                 </div>
