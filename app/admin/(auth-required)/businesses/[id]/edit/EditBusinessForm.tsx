@@ -22,7 +22,6 @@ type Business = {
   instagram: string | null;
   description: string | null;
   description_ka: string | null;
-  description_ru: string | null;
   opening_hours: string | null;
   cover_image_url: string | null;
   logo_url: string | null;
@@ -34,7 +33,6 @@ type Category = {
   id: string;
   name: string;
   name_ka: string | null;
-  name_ru: string | null;
 };
 
 type Staff = {
@@ -252,19 +250,6 @@ export function EditBusinessForm({
                 />
               </div>
 
-              <div>
-                <label htmlFor="description_ru" className="block text-[#cccccc] text-sm mb-1.5">
-                  Description (Russian)
-                </label>
-                <textarea
-                  id="description_ru"
-                  name="description_ru"
-                  rows={3}
-                  defaultValue={business.description_ru || ''}
-                  data-testid="input-description-ru"
-                  className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843] resize-none"
-                />
-              </div>
 
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Categories</div>

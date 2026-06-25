@@ -194,15 +194,9 @@ export default function OnboardForm() {
           <label htmlFor="description" className={labelClass}>DESCRIPTION (ENGLISH)</label>
           <textarea id="description" name="description" rows={3} data-testid="onboard-description-input" className={`${inputClass} h-auto py-2 resize-none`} placeholder="Premium hair & beauty studio in the heart of Vake." />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="description_ka" className={labelClass}>DESCRIPTION (GEORGIAN)</label>
-            <textarea id="description_ka" name="description_ka" rows={3} data-testid="onboard-description-ka-input" className={`${inputClass} h-auto py-2 resize-none`} />
-          </div>
-          <div>
-            <label htmlFor="description_ru" className={labelClass}>DESCRIPTION (RUSSIAN)</label>
-            <textarea id="description_ru" name="description_ru" rows={3} data-testid="onboard-description-ru-input" className={`${inputClass} h-auto py-2 resize-none`} />
-          </div>
+        <div>
+          <label htmlFor="description_ka" className={labelClass}>DESCRIPTION (GEORGIAN)</label>
+          <textarea id="description_ka" name="description_ka" rows={3} data-testid="onboard-description-ka-input" className={`${inputClass} h-auto py-2 resize-none`} />
         </div>
       </div>
 

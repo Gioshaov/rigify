@@ -40,7 +40,7 @@ export default async function EditBusinessPage({
       .order('created_at', { ascending: false }),
     admin
       .from('categories')
-      .select('id, name, name_ka, name_ru')
+      .select('id, name, name_ka')
       .order('name')
   ]);
 

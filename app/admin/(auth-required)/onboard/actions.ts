@@ -31,7 +31,6 @@ export async function onboardBusiness(formData: FormData) {
   const address = formData.get('address') as string
   const description = (formData.get('description') as string)?.trim() || null
   const descriptionKa = (formData.get('description_ka') as string)?.trim() || null
-  const descriptionRu = (formData.get('description_ru') as string)?.trim() || null
   const email = (formData.get('email') as string)?.trim() || null
   const website = (formData.get('website') as string)?.trim() || null
   const instagram = (formData.get('instagram') as string)?.trim() || null
@@ -179,7 +178,6 @@ export async function onboardBusiness(formData: FormData) {
       address,
       description,
       description_ka: descriptionKa,
-      description_ru: descriptionRu,
       email,
       website,
       instagram,
