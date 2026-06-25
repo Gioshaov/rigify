@@ -87,9 +87,10 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
   // After a successful booking, the modal swaps to the shared confirmation view.
   const [confirmation, setConfirmation] = useState<BookingConfirmationData | null>(null);
 
-  // Combine country code + phone number whenever either changes
+  // Combine country code + phone number whenever either changes.
+  // Strip internal spaces so the stored value matches the register flow's E.164.
   useEffect(() => {
-    setCustomerPhone(phoneNumber ? `${countryCode} ${phoneNumber}` : "");
+    setCustomerPhone(phoneNumber ? `${countryCode} ${phoneNumber.replace(/\s/g, "")}` : "");
   }, [countryCode, phoneNumber]);
 
   // Sync the chosen service to the trigger's context each time the modal opens.
