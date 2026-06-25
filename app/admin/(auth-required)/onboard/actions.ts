@@ -109,7 +109,7 @@ export async function onboardBusiness(formData: FormData) {
     }
     serviceRows = parsed as ServiceInput[]
   }
-  const parsedServices: Array<{ name: string; name_ka: string | null; category: string | null; duration_minutes: number; price_min: number; price_max: number | null; sort_order: number }> = []
+  const parsedServices: Array<{ name: string; name_ka: string | null; category: string | null; duration_minutes: number; price: number; price_min: number; price_max: number | null; sort_order: number }> = []
   for (let idx = 0; idx < serviceRows.length; idx++) {
     const s = serviceRows[idx]
     const sName = (s.name ?? '').trim()
@@ -122,7 +122,7 @@ export async function onboardBusiness(formData: FormData) {
     if (pMax !== null && (isNaN(pMax) || pMax < pMin)) return { success: false, message: `Service ${idx + 1}: price to must be greater than or equal to price from` }
     const sCategory = s.category && s.category.trim() !== '' ? s.category : null
     if (sCategory && !VALID_CATEGORIES.includes(sCategory)) return { success: false, message: `Service ${idx + 1}: invalid category` }
-    parsedServices.push({ name: sName, name_ka: (s.nameKa ?? '').trim() || null, category: sCategory, duration_minutes: duration, price_min: pMin, price_max: pMax, sort_order: idx })
+    parsedServices.push({ name: sName, name_ka: (s.nameKa ?? '').trim() || null, category: sCategory, duration_minutes: duration, price: pMin, price_min: pMin, price_max: pMax, sort_order: idx })
   }
 
   // Validate subdomain format (minimum 3 characters)

@@ -88,7 +88,7 @@ select
 
 -- ----- Subscription (trial) -----
 insert into public.subscriptions (business_id, plan, status, trial_ends_at, salome_enabled, salome_plan, languages, monthly_call_limit)
-values ('11111111-1111-1111-1111-111111111111', 'growth', 'trial', now() + interval '14 days', true, 'standard', array['ka','en','ru'], 500);
+values ('11111111-1111-1111-1111-111111111111', 'growth', 'trial', now() + interval '14 days', true, 'standard', array['ka','en'], 500);
 
 -- ----- Claim the seed business after you register -----
 -- 1. Visit /register and create an account.
