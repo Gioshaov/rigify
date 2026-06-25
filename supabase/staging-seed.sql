@@ -48,7 +48,7 @@ values
 -- 2. Luxe Nails — nails — Tbilisi/Saburtalo
 ('b0000000-0000-0000-0000-000000000002','luxe-nails','Luxe Nails Studio','ლუქს ფრჩხილების სტუდია',
  'Boutique nail studio specialising in gel, nail extensions and nail art.',
- 'ბუტიკ ფრჩხილების სტუდია — გელი, რუსული მანიკიური და ნეილ-არტი.',
+ 'ბუტიკ ფრჩხილების სტუდია — გელი, ფრჩხილის გაგრძელება და ნეილ-არტი.',
  'nails','tbilisi','Saburtalo','5 Kostava St, Tbilisi','5 კოსტავას ქ., თბილისი','+995 32 244 1212','book@luxenails.ge','@luxe.nails.tbilisi',
  'https://picsum.photos/seed/luxenails/800/600',
  jsonb_build_object('mon',jsonb_build_object('open','11:00','close','20:00'),'tue',jsonb_build_object('open','11:00','close','20:00'),'wed',jsonb_build_object('open','11:00','close','20:00'),'thu',jsonb_build_object('open','11:00','close','20:00'),'fri',jsonb_build_object('open','11:00','close','20:00'),'sat',jsonb_build_object('open','11:00','close','18:00'),'sun',null),

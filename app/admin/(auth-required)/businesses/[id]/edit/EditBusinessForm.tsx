@@ -539,6 +539,11 @@ export function EditBusinessForm({
             </button>
           </div>
         </form>
+
+        {/* Services management — in the main column (outside the form), full width */}
+        <div className="px-8 pb-10 border-t border-[#2a2a2a] pt-6">
+          <ServicesPanel services={services} businessId={business.id} />
+        </div>
       </main>
 
       {/* Right Sidebar - Panels */}
@@ -636,11 +641,6 @@ export function EditBusinessForm({
               <p className="text-[#888888] text-sm">No staff members yet</p>
             )}
           </section>
-
-          <div className="border-t border-[#2a2a2a]" />
-
-          {/* Services Panel */}
-          <ServicesPanel services={services} businessId={business.id} />
 
           <div className="border-t border-[#2a2a2a]" />
 
