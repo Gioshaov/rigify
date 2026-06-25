@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { customerRegisterAction } from "./actions";
+import { CountryCodeSelect } from "@/components/ui/CountryCodeSelect";
 
 export default function CustomerRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [countryCode, setCountryCode] = useState("+995"); // Default Georgia
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -98,15 +101,25 @@ export default function CustomerRegisterPage() {
               <label htmlFor="phone" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
                 Phone Number
               </label>
-              <input
-                data-testid="phone-input"
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                placeholder="+1 (555) 000-0000"
-                className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
-              />
+              <div className="flex gap-2">
+                <CountryCodeSelect
+                  testId="register-country-code-select"
+                  value={countryCode}
+                  onChange={setCountryCode}
+                />
+                <input
+                  data-testid="phone-input"
+                  id="phone"
+                  type="tel"
+                  required
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9\s]/g, ""))}
+                  placeholder="555 123 456"
+                  className="flex-1 min-w-0 bg-surface-container border border-white/10 focus:border-primary px-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
+                />
+              </div>
+              {/* Combined value submitted via FormData (name="phone"), e.g. "+995 555123456" */}
+              <input type="hidden" name="phone" value={phoneNumber ? `${countryCode} ${phoneNumber}` : ""} />
             </div>
 
             {/* Password */}

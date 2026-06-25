@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { generateUniquePhone, bypassSitePassword } from '../../utils/test-helpers';
+import { selectDateAndTime, generateUniquePhone, bypassSitePassword } from '../../utils/test-helpers';
 import { getTestBusiness, getTestService } from '../../utils/db-helpers';
 
 test.describe('Booking Validation', () => {
@@ -18,36 +18,42 @@ test.describe('Booking Validation', () => {
 
   test('should reject invalid phone format', async ({ page }) => {
     await bypassSitePassword(page);
-    await page.goto(`/businesses/${testBusiness.slug}/book?service=${testService.id}`);
+    await page.goto(`/businesses/${testBusiness.slug}`);
+    await page.getByTestId(`service-card-${testService.id}`).first().click();
+    await expect(page.getByTestId('booking-modal')).toBeVisible();
 
-    // Select date/time
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    await page.waitForSelector(`[data-testid="calendar-day-${tomorrow.getDate()}"]`, { timeout: 5000 });
-    await page.click(`[data-testid="calendar-day-${tomorrow.getDate()}"]`);
-    await page.waitForSelector('[data-testid^="time-slot-"]:not([disabled])', { timeout: 10000 });
-    await page.locator('[data-testid^="time-slot-"]:not([disabled])').first().click();
+    // Select artisan, date and time
+    await selectDateAndTime(page);
 
-    // Fill form with invalid phone
+    // Fill form: valid email (required for guests) so the phone is the only invalid field
     await page.getByTestId('customer-name-input').fill('Test User');
+    await page.getByTestId('customer-email-input').fill('test@example.com');
     await page.getByTestId('customer-phone-input').fill('123'); // Too short
-    await page.getByTestId('confirm-booking-btn').click();
+    await page.getByTestId('booking-confirm').click();
 
-    // Should stay on booking page (validation prevents navigation)
-    await page.waitForTimeout(1000); // Give time for validation to trigger
-    await expect(page).toHaveURL(/\/book/, { timeout: 5000 });
+    // Validation blocks submission — error shown, no inline confirmation
+    await expect(page.getByText('Please fix the errors above and try again.')).toBeVisible();
+    await expect(page.getByTestId('booking-modal')).toBeVisible();
+    await expect(page.getByTestId('booking-confirmation-view')).toHaveCount(0);
   });
 
   test('should prevent booking past dates', async ({ page }) => {
     await bypassSitePassword(page);
-    await page.goto(`/businesses/${testBusiness.slug}/book?service=${testService.id}`);
+    await page.goto(`/businesses/${testBusiness.slug}`);
+    await page.getByTestId(`service-card-${testService.id}`).first().click();
+    await expect(page.getByTestId('booking-modal')).toBeVisible();
+
+    // Open the date popover to reveal the calendar
+    await page.getByTestId('booking-date-field').click();
+    await page.waitForSelector('[data-testid="booking-calendar"]', { timeout: 5000 });
 
     // Check that past dates are disabled in the calendar
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
     // Try to find yesterday's date button and check if it's disabled
-    const yesterdayButton = page.locator(`[data-testid="calendar-day-${yesterday.getDate()}"]`);
+    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+    const yesterdayButton = page.locator(`[data-testid="calendar-day-${yesterdayStr}"]`);
 
     // The button should either not exist or be disabled
     const count = await yesterdayButton.count();

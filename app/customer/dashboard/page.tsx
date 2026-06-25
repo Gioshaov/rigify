@@ -29,7 +29,7 @@ export default async function CustomerBookingsPage() {
 
   const hasUsedEmergencyCancel = customer?.has_used_emergency_cancel ?? false;
 
-  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address), services!inner(name), staff!left(name, avatar_url), reviews!left(id)";
+  const BOOKING_SELECT = "id, appointment_datetime, status, business_id, service_id, staff_id, businesses!inner(name, address, latitude, longitude, cover_image_url, business_categories(category_id)), services!inner(name), staff!left(name, avatar_url), reviews!left(id)";
 
   const [
     { data: upcomingData, error: upcomingError },

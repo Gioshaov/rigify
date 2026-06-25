@@ -51,7 +51,7 @@ export function BusinessGrid({
 }: BusinessGridProps) {
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
       {businesses.map((business) => {
         // Get primary category for icon
         const primaryCategory = business.business_categories[0]?.category_id || 'other';
@@ -74,29 +74,29 @@ export function BusinessGrid({
             onMouseLeave={() => onBusinessHover?.(null)}
           >
             <article>
-              {/* Cover Image */}
-              <div className="relative aspect-video overflow-hidden">
+              {/* Cover Image — greyscale by default, colour on hover */}
+              <div className="relative aspect-[2/1] overflow-hidden">
                 <Image
                   src={getBusinessFallbackImage(business.cover_image_url, business.business_categories)}
                   alt={business.name}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 group-hover:grayscale-0 grayscale"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-[filter,transform] duration-700"
                 />
 
-                {/* Icon Badge */}
-                <div className="absolute -bottom-6 right-6 w-16 h-16 bg-surface-elevated sharp-border p-2 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-3xl">
+                {/* Category Icon Badge — small, lower-right inside the image */}
+                <div className="absolute bottom-2 right-2 w-9 h-9 bg-surface-elevated sharp-border flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary text-[18px]">
                     {icon}
                   </span>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-4">
                 {/* Title & Rating */}
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase group-hover:text-primary-fixed transition-colors">
+                <div className="flex justify-between items-start gap-2 mb-1.5">
+                  <h3 className="font-hanken text-[18px] leading-[1.3] font-semibold text-primary uppercase group-hover:text-primary-fixed transition-colors">
                     {business.name}
                   </h3>
                   {business.review_count > 0 && (
@@ -118,7 +118,7 @@ export function BusinessGrid({
                 </div>
 
                 {/* Location with distance */}
-                <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase tracking-wider mb-6 flex items-center gap-2">
+                <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">
                     location_on
                   </span>
@@ -131,7 +131,7 @@ export function BusinessGrid({
                 </p>
 
                 {/* Category Tags */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {business.business_categories.slice(0, 3).map((bc) => {
                     const category = CATEGORIES.find(c => c.id === bc.category_id);
                     const displayName = category?.en.toUpperCase() || bc.category_id.toUpperCase();

@@ -9,6 +9,10 @@ interface BusinessLocationMapProps {
   latitude: number;
   longitude: number;
   address: string;
+  /** Optional test id applied to the map container. */
+  testId?: string;
+  /** Optional sizing/border classes for the container (overrides the default height/bg). */
+  className?: string;
 }
 
 function PinMarker() {
@@ -37,7 +41,7 @@ function PinMarker() {
   );
 }
 
-export function BusinessLocationMap({ name, latitude, longitude, address }: BusinessLocationMapProps) {
+export function BusinessLocationMap({ name, latitude, longitude, address, testId, className }: BusinessLocationMapProps) {
   const mapRef = useRef<MapRef>(null);
 
   // Georgia's geographic bounds
@@ -50,6 +54,16 @@ export function BusinessLocationMap({ name, latitude, longitude, address }: Busi
   const handleMapLoad = () => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+
+    // Mapbox renders blank if it initialized while its container had zero size
+    // (e.g. inside a modal). Force a resize once the container has dimensions.
+    requestAnimationFrame(() => {
+      try {
+        map.resize();
+      } catch {
+        // map may have been removed; ignore
+      }
+    });
 
     // Color all road layers gold
     const roadLayers = [
@@ -88,14 +102,20 @@ export function BusinessLocationMap({ name, latitude, longitude, address }: Busi
 
   if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
     return (
-      <div className="w-full h-64 bg-surface-container-low flex items-center justify-center">
+      <div
+        data-testid={testId}
+        className={`flex items-center justify-center ${className ?? "w-full h-64 bg-surface-container-low"}`}
+      >
         <p className="text-error text-sm">Map unavailable: missing Mapbox token</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-64 bg-surface-container-low relative overflow-hidden">
+    <div
+      data-testid={testId}
+      className={`relative overflow-hidden ${className ?? "w-full h-64 bg-surface-container-low"}`}
+    >
       <Map
         ref={mapRef}
         initialViewState={{

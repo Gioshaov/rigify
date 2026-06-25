@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { updateStaffMember, deleteStaff } from "./actions";
 import { AddArtisanForm } from "@/components/dashboard/staff/AddArtisanForm";
@@ -251,10 +252,12 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
                   {/* Photo Area with Status Overlay */}
                   <div className="relative h-[200px] bg-zinc-800">
                     {member.photoUrl ? (
-                      <img
+                      <Image
                         src={member.photoUrl}
                         alt={member.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full bg-zinc-800 flex items-center justify-center">

@@ -12,7 +12,14 @@ type Booking = {
   business_id: string;
   service_id: string;
   staff_id: string | null;
-  businesses: { name: string; address: string };
+  businesses: {
+    name: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    cover_image_url: string | null;
+    business_categories?: Array<{ category_id: string }>;
+  };
   services: { name: string };
   staff: { name: string; avatar_url?: string | null } | null;
 };

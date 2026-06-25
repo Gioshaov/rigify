@@ -18,10 +18,13 @@ if (!supabaseUrl || !supabaseServiceKey) {
 export const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function cleanupTestBookings(customerPhone: string) {
+  // The booking flow stores the phone WITH a country-code prefix (e.g. "+995 599012345"),
+  // while tests pass the bare national number from generateUniquePhone(). Match on a
+  // substring so cleanup works regardless of the prefix and never leaves orphaned rows.
   await adminClient
     .from('bookings')
     .delete()
-    .eq('customer_phone', customerPhone);
+    .ilike('customer_phone', `%${customerPhone}%`);
 }
 
 export async function getTestBusiness() {

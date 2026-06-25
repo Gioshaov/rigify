@@ -6,6 +6,8 @@ import Image from "next/image";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { cancelBookingAction } from "./actions";
 import { LeaveReviewModal } from "./LeaveReviewModal";
+import { openDirections } from "@/lib/utils/directions";
+import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 
 type BookingCardProps = {
   booking: {
@@ -15,7 +17,14 @@ type BookingCardProps = {
     business_id: string;
     service_id: string;
     staff_id: string | null;
-    businesses: { name: string; address: string };
+    businesses: {
+      name: string;
+      address: string;
+      latitude: number | null;
+      longitude: number | null;
+      cover_image_url: string | null;
+      business_categories?: Array<{ category_id: string }>;
+    };
     services: { name: string };
     staff: { name: string; avatar_url?: string | null } | null;
     hasReview?: boolean;
@@ -46,6 +55,11 @@ export function BookingCard({ booking, hasUsedEmergencyCancel, isPast = false }:
   // Can cancel if: (1) >= 24h away, OR (2) <24h but emergency cancel not used yet
   const canCancel = !isWithin24Hours || !hasUsedEmergencyCancel;
   const isEmergencyCancel = isWithin24Hours && !hasUsedEmergencyCancel;
+
+  // Location coordinates (the reused Get directions button requires lat/lng)
+  const latitude = booking.businesses?.latitude ?? null;
+  const longitude = booking.businesses?.longitude ?? null;
+  const hasCoords = latitude != null && longitude != null;
 
   // Focus trap for cancel modal
   useEffect(() => {
@@ -122,152 +136,189 @@ export function BookingCard({ booking, hasUsedEmergencyCancel, isPast = false }:
   return (
     <>
       {/* Stitch Design: Booking card */}
+      {/* Stitch Design: stitch_my_bookings — horizontal card (thumbnail | content | staff) */}
       <article
         data-testid={isPast ? `past-booking-card-${booking.id}` : `booking-card-${booking.id}`}
-        className={`relative ${
+        className={`group relative flex flex-col md:flex-row ${
           isPast
             ? "bg-surface-container-low border border-white/5"
             : "bg-surface-container border border-white/10 hover:bg-surface-container-high transition-all"
-        } p-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}
+        } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
       >
-        {/* Content */}
-        <div className="flex flex-col justify-between">
-          <div>
-            {/* Header: Business Name, Service Name, Status */}
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
-              <div>
-                <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary mb-1 uppercase">
-                  {booking.businesses?.name || "Business"}
-                </h3>
-                <h4 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white">
-                  {booking.services?.name || "Service"}
-                </h4>
-              </div>
-              <span
-                className={`px-3 py-1 ${
-                  isPast
-                    ? "border border-white/5 text-on-surface-variant"
-                    : "bg-primary/10 border border-primary/20 text-primary"
-                } font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase`}
-              >
-                {booking.status}
-              </span>
-            </div>
+        {/* LEFT: business cover thumbnail (greyscale → colour + subtle zoom on hover) */}
+        <div className="relative w-full aspect-[4/3] md:w-56 md:aspect-auto md:self-stretch shrink-0 overflow-hidden border-b border-white/10 md:border-b-0 md:border-r">
+          <Image
+            src={getBusinessFallbackImage(booking.businesses?.cover_image_url ?? null, booking.businesses?.business_categories)}
+            alt={booking.businesses?.name || "Business"}
+            fill
+            sizes="(max-width: 768px) 100vw, 224px"
+            className="object-cover object-center grayscale group-hover:grayscale-0 group-hover:scale-105 transition-[filter,transform] duration-700"
+          />
+        </div>
 
-            {/* Details Grid - Stitch Design */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12 mt-6">
-              {/* Date & Time */}
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-muted-gold text-xl">calendar_today</span>
-                <div>
-                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
-                    Date & Time
-                  </p>
-                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface">
-                    {formatTbilisi(booking.appointment_datetime, "MMM d, yyyy 'at' h:mm a")}
-                  </p>
-                </div>
-              </div>
+        {/* BODY */}
+        <div className="relative flex-1 p-6">
+          {/* Status badge — top-right */}
+          <span
+            className={`absolute top-6 right-6 px-3 py-1 ${
+              isPast
+                ? "border border-white/5 text-on-surface-variant"
+                : "bg-primary/10 border border-primary/20 text-primary"
+            } font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase`}
+          >
+            {booking.status}
+          </span>
 
-              {/* Staff Member */}
-              {booking.staff && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/30 flex-shrink-0">
-                    {booking.staff.avatar_url ? (
-                      <Image
-                        src={booking.staff.avatar_url}
-                        alt={booking.staff.name}
-                        width={32}
-                        height={32}
-                        className="w-full h-full object-cover grayscale"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-surface flex items-center justify-center">
-                        <span className="font-hanken text-[14px] font-bold text-primary select-none">
-                          {booking.staff.name?.charAt(0)?.toUpperCase() || '?'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+          <div className="flex flex-col md:flex-row md:items-center gap-6 md:justify-between">
+            {/* CENTER: details + actions */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-muted-gold mb-1 uppercase pr-24">
+                {booking.businesses?.name || "Business"}
+              </h3>
+              <h4 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white">
+                {booking.services?.name || "Service"}
+              </h4>
+
+              {/* Date & Time, Location */}
+              <div className="mt-6 space-y-4">
+                {/* Date & Time */}
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-muted-gold text-xl mt-0.5">calendar_today</span>
                   <div>
                     <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
-                      Staff Member
+                      Date & Time
                     </p>
                     <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface">
-                      {booking.staff.name}
+                      {formatTbilisi(booking.appointment_datetime, "MMM d, yyyy 'at' h:mm a")}
                     </p>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Actions - Stitch Design */}
-          {!isPast && booking.status === "confirmed" && (
-            <div className="mt-8 flex flex-col gap-4">
-              <div className="flex gap-4">
-                <Link
-                  data-testid={`manage-btn-${booking.id}`}
-                  href={`/customer/bookings/${booking.id}`}
-                  className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all inline-block text-center"
-                >
-                  Manage
-                </Link>
-                <button
-                  data-testid={`cancel-btn-${booking.id}`}
-                  onClick={() => {
-                    setError(null);
-                    setShowCancelModal(true);
-                  }}
-                  disabled={!canCancel}
-                  title={
-                    !canCancel
-                      ? "You have already used your one-time emergency cancellation. Please contact the business directly."
-                      : isEmergencyCancel
-                      ? "Emergency cancellation available - this is your one-time exception"
-                      : ""
-                  }
-                  className={`border px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase transition-all ${
-                    canCancel
-                      ? isEmergencyCancel
-                        ? "border-primary/30 text-primary hover:border-primary hover:text-primary cursor-pointer"
-                        : "border-white/20 text-on-surface hover:border-error hover:text-error cursor-pointer"
-                      : "border-white/5 text-on-surface-variant opacity-50 cursor-not-allowed"
-                  }`}
-                >
-                  Cancel
-                </button>
+                {/* Location — tappable address opens maps on Upcoming (coords present); plain text otherwise */}
+                <div data-testid="booking-location" className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-muted-gold text-xl mt-0.5">location_on</span>
+                  <div className="min-w-0">
+                    <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
+                      Location
+                    </p>
+                    {!isPast && hasCoords ? (
+                      <button
+                        type="button"
+                        data-testid="booking-directions-link"
+                        onClick={() => openDirections(latitude as number, longitude as number)}
+                        aria-label={`Open directions to ${booking.businesses?.address || "this location"}`}
+                        className="text-left font-hanken text-[16px] leading-[1.5] font-normal text-on-surface hover:text-primary hover:underline cursor-pointer transition-colors"
+                      >
+                        {booking.businesses?.address || "Address unavailable"}
+                      </button>
+                    ) : (
+                      <p className="font-hanken text-[16px] leading-[1.5] font-normal text-on-surface">
+                        {booking.businesses?.address || "Address unavailable"}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-              {isWithin24Hours && (
-                <p
-                  className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant"
-                  role="status"
-                  aria-live="polite"
-                >
-                  {isEmergencyCancel ? (
-                    <span className="text-primary">
-                      ⚠️ Emergency cancellation available. This is your one-time exception to the 24-hour policy. After using it, you won&apos;t be able to cancel within 24 hours again.
-                    </span>
-                  ) : (
-                    "Cancellation requires 24-hour notice. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
+
+              {/* Actions */}
+              {!isPast && booking.status === "confirmed" && (
+                <div className="mt-8 flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <Link
+                      data-testid={`manage-btn-${booking.id}`}
+                      href={`/customer/bookings/${booking.id}`}
+                      className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all inline-block text-center"
+                    >
+                      View
+                    </Link>
+                    <button
+                      data-testid={`cancel-btn-${booking.id}`}
+                      onClick={() => {
+                        setError(null);
+                        setShowCancelModal(true);
+                      }}
+                      disabled={!canCancel}
+                      title={
+                        !canCancel
+                          ? "You have already used your one-time emergency cancellation. Please contact the business directly."
+                          : isEmergencyCancel
+                          ? "Emergency cancellation available - this is your one-time exception"
+                          : ""
+                      }
+                      className={`border px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase transition-all ${
+                        canCancel
+                          ? isEmergencyCancel
+                            ? "border-primary/30 text-primary hover:border-primary hover:text-primary cursor-pointer"
+                            : "border-white/20 text-on-surface hover:border-error hover:text-error cursor-pointer"
+                          : "border-white/5 text-on-surface-variant opacity-50 cursor-not-allowed"
+                      }`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  {isWithin24Hours && (
+                    <p
+                      className="font-mono text-[10px] leading-[1.5] tracking-[0.1em] text-on-surface-variant"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {isEmergencyCancel ? (
+                        <span className="text-primary">
+                          ⚠️ Emergency cancellation available. This is your one-time exception to the 24-hour policy. After using it, you won&apos;t be able to cancel within 24 hours again.
+                        </span>
+                      ) : (
+                        "Cancellation requires 24-hour notice. You have already used your one-time emergency cancellation. Please contact the business directly if you need to cancel."
+                      )}
+                    </p>
                   )}
-                </p>
+                </div>
+              )}
+
+              {/* Leave Review Button */}
+              {isPast && booking.status === "completed" && !booking.hasReview && !hasReviewSubmitted && (
+                <div className="mt-8">
+                  <button
+                    data-testid={`leave-review-btn-${booking.id}`}
+                    onClick={() => setShowReviewModal(true)}
+                    className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all"
+                  >
+                    Leave Review
+                  </button>
+                </div>
               )}
             </div>
-          )}
 
-          {/* Leave Review Button - Stitch Design */}
-          {isPast && booking.status === "completed" && !booking.hasReview && !hasReviewSubmitted && (
-            <div className="mt-8">
-              <button
-                data-testid={`leave-review-btn-${booking.id}`}
-                onClick={() => setShowReviewModal(true)}
-                className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase hover:brightness-110 transition-all"
-              >
-                Leave Review
-              </button>
-            </div>
-          )}
+            {/* RIGHT: Staff Member — label + name + circular avatar */}
+            {booking.staff && (
+              <div className="flex items-center gap-4 shrink-0">
+                <div className="text-right">
+                  <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase text-on-surface-variant">
+                    Staff Member
+                  </p>
+                  <p className="font-hanken text-[18px] leading-[1.4] font-semibold text-on-surface">
+                    {booking.staff.name}
+                  </p>
+                </div>
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border border-primary/40 shrink-0">
+                  {booking.staff.avatar_url ? (
+                    <Image
+                      src={booking.staff.avatar_url}
+                      alt={booking.staff.name}
+                      width={120}
+                      height={120}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-surface flex items-center justify-center">
+                      <span className="font-hanken text-[40px] font-bold text-primary select-none">
+                        {booking.staff.name?.charAt(0)?.toUpperCase() || '?'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </article>
 

@@ -48,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
         {/* Material Symbols - non-blocking with display=swap */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- Material Symbols is a variable icon font loaded app-wide; next/font/google doesn't support it, and App Router has no pages/_document */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"

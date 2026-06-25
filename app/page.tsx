@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { BrowseLink } from "@/components/navigation/BrowseLink";
+import { Container } from "@/components/layout/Container";
 
 export default function HomePage() {
   const categories = [
@@ -42,77 +43,83 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-on-surface">
       {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
-          <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
-            RIGIFY
-          </Link>
-        </div>
-
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
-            Home
-          </Link>
-          <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-            Browse
-          </BrowseLink>
-          <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-            My Bookings
-          </Link>
-          <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-            For Business
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <UserMenu />
-        </div>
-      </header>
-
-      <div className="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-        {/* Hero Section */}
-        <section className="relative min-h-[80vh] flex flex-col justify-center py-20">
-          <div className="max-w-3xl space-y-8">
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-[1px] bg-primary"></span>
-            </div>
-            <h2 className="font-hanken text-display-lg md:text-[64px] leading-tight text-white tracking-tighter font-bold">
-              Book Beauty & Wellness <br />Appointments in <span className="text-primary italic">Georgia</span>
-            </h2>
-            <p className="font-hanken text-body-lg text-on-surface-variant max-w-xl">
-              Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link data-testid="hero-browse-studios-btn" href="/businesses?reset=1" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
-                Browse Studios
-              </Link>
-              <Link data-testid="hero-for-businesses-btn" href="/for-businesses" className="border border-white/20 text-white px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98] text-center">
-                For Businesses
-              </Link>
-            </div>
+      <header className="sticky top-0 w-full z-50 bg-surface border-b border-white/10">
+        <Container className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
+            <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
+              RIGIFY
+            </Link>
           </div>
 
-          {/* Hero Image Frame (Desktop only) */}
-          <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-1/3 aspect-[4/5] border border-white/10 p-4 bg-surface-container-lowest">
-            <div className="relative w-full h-full overflow-hidden">
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl91M7x3SfK7ePZrib2pMktEZNPCptK4Hssn8flQ5_FmUq5MFMQD98Lj-IOOXd64FATAIcSy6oE7mDhm6xT7rYIea8llgJy9bdThdUSUak5jTOOXw94aGHbElOix8zKs-qp2CMwnYdZE5Dl0iS26c7Mxf13Ldd0vnPfL_cGhOtYh4FOpSnsziYQnSM5BoT6QG0MFpS14zKU2rGZIgHwBO3cAubkNcMsQn-7olKlrl-OXJ9qnexVvgo4nk_0g2MPewiSmHanD2llc8"
-                alt="Premium beauty treatment"
-                fill
-                className="object-cover grayscale hover:grayscale-0 transition-transform duration-700 hover:scale-110"
-                priority
-              />
-              <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-4 py-2 border-l-2 border-primary">
-                <span className="font-mono text-[10px] text-primary uppercase tracking-[0.2em]">Elite Artisans</span>
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:flex items-center gap-8">
+            <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
+              Home
+            </Link>
+            <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+              Browse
+            </BrowseLink>
+            <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+              My Bookings
+            </Link>
+            <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
+              For Business
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <UserMenu />
+          </div>
+        </Container>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative flex flex-col justify-center py-section-gap lg:min-h-[520px]">
+        <Container>
+          <div className="relative">
+            <div className="max-w-3xl space-y-8">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-[1px] bg-primary"></span>
+              </div>
+              <h2 className="font-hanken text-display-lg md:text-[64px] leading-tight text-white tracking-tighter font-bold">
+                Book Beauty & Wellness <br />Appointments in <span className="text-primary italic">Georgia</span>
+              </h2>
+              <p className="font-hanken text-body-lg text-on-surface-variant max-w-xl">
+                Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link data-testid="hero-browse-studios-btn" href="/businesses?reset=1" className="bg-primary text-on-primary px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:brightness-110 active:scale-[0.98] text-center">
+                  Browse Studios
+                </Link>
+                <Link data-testid="hero-for-businesses-btn" href="/for-businesses" className="border border-white/20 text-white px-10 py-5 font-mono text-data-label uppercase tracking-widest transition-all duration-300 hover:border-primary hover:text-primary active:scale-[0.98] text-center">
+                  For Businesses
+                </Link>
+              </div>
+            </div>
+
+            {/* Hero Image Frame (Desktop only) */}
+            <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-1/3 aspect-[4/5] border border-white/10 p-4 bg-surface-container-lowest">
+              <div className="relative w-full h-full overflow-hidden">
+                <Image
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl91M7x3SfK7ePZrib2pMktEZNPCptK4Hssn8flQ5_FmUq5MFMQD98Lj-IOOXd64FATAIcSy6oE7mDhm6xT7rYIea8llgJy9bdThdUSUak5jTOOXw94aGHbElOix8zKs-qp2CMwnYdZE5Dl0iS26c7Mxf13Ldd0vnPfL_cGhOtYh4FOpSnsziYQnSM5BoT6QG0MFpS14zKU2rGZIgHwBO3cAubkNcMsQn-7olKlrl-OXJ9qnexVvgo4nk_0g2MPewiSmHanD2llc8"
+                  alt="Premium beauty treatment"
+                  fill
+                  className="object-cover grayscale hover:grayscale-0 transition-transform duration-700 hover:scale-110"
+                  priority
+                />
+                <div className="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-md px-4 py-2 border-l-2 border-primary">
+                  <span className="font-mono text-[10px] text-primary uppercase tracking-[0.2em]">Elite Artisans</span>
+                </div>
               </div>
             </div>
           </div>
-        </section>
+        </Container>
+      </section>
 
-        {/* Categories Grid */}
-        <section className="py-24">
+      {/* Categories Grid */}
+      <section className="py-section-gap">
+        <Container>
           <div className="flex justify-between items-end mb-12">
             <div>
               <p className="font-hanken text-headline-md text-white font-semibold">Categories</p>
@@ -145,10 +152,12 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-        </section>
+        </Container>
+      </section>
 
-        {/* Cities Section */}
-        <section className="py-24 mb-24">
+      {/* Cities Section */}
+      <section className="py-section-gap">
+        <Container>
           <div className="text-center mb-16">
             <h3 className="font-mono text-data-label text-primary uppercase tracking-[0.4em] mb-4">The Expansion</h3>
             <p className="font-mono text-display-lg-mobile text-white uppercase font-bold">Regional Presence</p>
@@ -196,12 +205,12 @@ export default function HomePage() {
               <div className="h-[1px] w-12 bg-white/20 group-hover:bg-primary transition-colors duration-300"></div>
             </div>
           </div>
-        </section>
-      </div>
+        </Container>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 px-margin-mobile md:px-margin-desktop mb-20 md:mb-0">
-        <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-20 md:mb-0">
+        <Container className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <h2 className="font-mono text-display-lg-mobile text-primary uppercase mb-6 tracking-tighter font-bold">RIGIFY</h2>
             <p className="font-hanken text-body-md text-on-surface-variant max-w-sm mb-8">
@@ -239,15 +248,15 @@ export default function HomePage() {
               <li><Link data-testid="footer-support" href="#" className="hover:text-primary transition-colors">Support</Link></li>
             </ul>
           </div>
-        </div>
+        </Container>
 
-        <div className="max-w-container-max mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-on-surface-variant uppercase tracking-[0.2em]">
+        <Container className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-on-surface-variant uppercase tracking-[0.2em]">
           <span>© 2024 RIGIFY. All rights reserved.</span>
           <div className="flex gap-8">
             <Link data-testid="footer-privacy-policy" href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link data-testid="footer-terms-of-service" href="#" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
-        </div>
+        </Container>
       </footer>
 
       {/* Mobile Bottom Nav */}

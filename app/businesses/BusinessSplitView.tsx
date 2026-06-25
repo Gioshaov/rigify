@@ -63,6 +63,13 @@ export function BusinessSplitView({
   const activeBusinessId = hoveredBusinessId || selectedBusinessId;
 
   const handleMarkerClick = (businessId: string) => {
+    // Second click on the already-selected marker navigates; first click just selects.
+    if (businessId === selectedBusinessId) {
+      const business = businesses.find(b => b.id === businessId);
+      if (business) router.push(`/businesses/${business.slug}`);
+      return;
+    }
+
     setSelectedBusinessId(businessId);
 
     // Scroll to card in list
@@ -73,20 +80,13 @@ export function BusinessSplitView({
         block: 'center',
       });
     }
-
-    // Navigate to business page
-    const business = businesses.find(b => b.id === businessId);
-    if (business) {
-      router.push(`/businesses/${business.slug}`);
-    }
   };
+
+  const handleMapClick = () => setSelectedBusinessId(null);
+  const handlePopupNavigate = (slug: string) => router.push(`/businesses/${slug}`);
 
   const handleBusinessHover = (businessId: string | null) => {
     setHoveredBusinessId(businessId);
-  };
-
-  const handleBusinessClick = (slug: string) => {
-    router.push(`/businesses/${slug}`);
   };
 
   // Register card refs
@@ -152,7 +152,7 @@ export function BusinessSplitView({
                   ref={(el) => registerCardRef(business.id, el)}
                   onMouseEnter={() => handleBusinessHover(business.id)}
                   onMouseLeave={() => handleBusinessHover(null)}
-                  onClick={() => handleBusinessClick(business.slug)}
+                  onClick={() => handleMarkerClick(business.id)}
                   className={`
                     bg-[#1a1a1a] border cursor-pointer transition-all overflow-hidden
                     ${isActive || isHovered
@@ -168,8 +168,10 @@ export function BusinessSplitView({
                       alt={business.name}
                       fill
                       className={`
-                        object-cover transition-all
-                        ${isActive || isHovered ? 'brightness-110' : 'group-hover:brightness-110'}
+                        object-cover transition-all duration-500
+                        ${isActive || isHovered
+                          ? 'grayscale-0 brightness-110'
+                          : 'grayscale group-hover:grayscale-0 group-hover:brightness-110'}
                       `}
                     />
                   </div>
@@ -222,7 +224,10 @@ export function BusinessSplitView({
         <BusinessMap
           businesses={filteredBusinesses}
           selectedBusinessId={activeBusinessId}
+          popupBusinessId={selectedBusinessId}
           onMarkerClick={handleMarkerClick}
+          onMapClick={handleMapClick}
+          onPopupNavigate={handlePopupNavigate}
           userLocation={userLocation}
           className="w-full h-full"
           viewMode="split"

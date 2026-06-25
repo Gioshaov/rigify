@@ -39,26 +39,29 @@ export async function loginAs(page: Page, email: string, password: string) {
   await page.waitForURL(/\/(dashboard|customer\/dashboard|staff-dashboard|admin)/, { timeout: 10000 });
 }
 
+// Selects artisan (if any), date, and time inside the open booking modal.
 export async function selectDateAndTime(page: Page) {
-  // Wait for calendar to be visible
-  await page.waitForSelector('[data-testid^="calendar-day-"]', { timeout: 5000 });
+  // Pick an artisan if the business has staff (confirm stays disabled otherwise)
+  const artisan = page.getByTestId('booking-artisan-select');
+  if ((await artisan.count()) > 0) {
+    await artisan.selectOption('any').catch(() => {});
+  }
 
-  // Get tomorrow's date to avoid past date issues and midnight edge cases
+  // Open the date popover and pick tomorrow (avoids past-date / midnight edge cases)
+  await page.getByTestId('booking-date-field').click();
+  await page.waitForSelector('[data-testid="booking-calendar"]', { timeout: 5000 });
+
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const day = tomorrow.getDate();
+  const dateStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
 
-  // Click tomorrow's calendar day
-  const daySelector = `[data-testid="calendar-day-${day}"]`;
+  const daySelector = `[data-testid="calendar-day-${dateStr}"]`;
   await page.waitForSelector(daySelector, { state: 'visible' });
   await page.click(daySelector);
 
-  // Wait for time slots to load after selecting date
-  await page.waitForSelector('[data-testid^="time-slot-"]:not([disabled])', { timeout: 10000 });
-
-  // Select first available time slot
-  const firstAvailableSlot = page.locator('[data-testid^="time-slot-"]:not([disabled])').first();
-  await firstAvailableSlot.click();
+  // The time dropdown enables once availability loads; choose the first real slot
+  await page.waitForSelector('[data-testid="booking-time-select"]:not([disabled])', { timeout: 10000 });
+  await page.locator('[data-testid="booking-time-select"]').selectOption({ index: 1 });
 }
 
 export function generateUniquePhone() {

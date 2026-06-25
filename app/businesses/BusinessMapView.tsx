@@ -23,6 +23,11 @@ type Business = {
   id: string;
   name: string;
   slug: string;
+  city: string;
+  district: string | null;
+  cover_image_url: string | null;
+  rating: number;
+  review_count: number;
   latitude: number;
   longitude: number;
   business_categories: Array<{ category_id: string }>;
@@ -47,22 +52,28 @@ export function BusinessMapView({
   const router = useRouter();
 
   const handleMarkerClick = (businessId: string) => {
+    // Second click on the already-selected marker navigates; first click selects + shows popup.
+    if (businessId === selectedBusinessId) {
+      const business = businesses.find(b => b.id === businessId);
+      if (business) router.push(`/businesses/${business.slug}`);
+      return;
+    }
     setSelectedBusinessId(businessId);
     onBusinessSelect?.(businessId);
-
-    // Navigate to business page
-    const business = businesses.find(b => b.id === businessId);
-    if (business) {
-      router.push(`/businesses/${business.slug}`);
-    }
   };
+
+  const handleMapClick = () => setSelectedBusinessId(null);
+  const handlePopupNavigate = (slug: string) => router.push(`/businesses/${slug}`);
 
   return (
     <div className="w-full">
       <BusinessMap
         businesses={businesses}
         selectedBusinessId={selectedBusinessId}
+        popupBusinessId={selectedBusinessId}
         onMarkerClick={handleMarkerClick}
+        onMapClick={handleMapClick}
+        onPopupNavigate={handlePopupNavigate}
         userLocation={userLocation}
         className="w-full h-[70vh] md:h-[80vh]"
         viewMode="map"
