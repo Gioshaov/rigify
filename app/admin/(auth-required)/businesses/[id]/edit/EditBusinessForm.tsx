@@ -13,6 +13,8 @@ type Business = {
   city: string | null;
   district: string | null;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   phone: string | null;
   email: string | null;
   website: string | null;
@@ -357,6 +359,43 @@ export function EditBusinessForm({
                   data-testid="input-address"
                   className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="latitude" className="block text-[#cccccc] text-sm mb-1.5">
+                    Latitude <span className="text-[#888888]">(for map view)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.00000001"
+                    min="-90"
+                    max="90"
+                    id="latitude"
+                    name="latitude"
+                    defaultValue={business.latitude ?? ''}
+                    placeholder="41.7151377"
+                    data-testid="input-latitude"
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="longitude" className="block text-[#cccccc] text-sm mb-1.5">
+                    Longitude <span className="text-[#888888]">(for map view)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.00000001"
+                    min="-180"
+                    max="180"
+                    id="longitude"
+                    name="longitude"
+                    defaultValue={business.longitude ?? ''}
+                    placeholder="44.7831250"
+                    data-testid="input-longitude"
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
+                  />
+                </div>
               </div>
             </div>
           </section>
