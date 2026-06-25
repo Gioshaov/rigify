@@ -28,6 +28,9 @@ delete from public.businesses where id::text like 'b0000000-0000-0000-0000-%';
 -- (inlined per-row below via jsonb_build_object)
 
 -- ===================== BUSINESSES =====================
+-- is_test = false is deliberate: these mock businesses must be visible in the
+-- public marketplace on staging (the businesses_public_select RLS policy filters
+-- out is_test = true rows). They are isolated instead by the b0000000-... id range.
 insert into public.businesses
   (id, slug, name, name_ka, name_ru, description, description_ka, category, city, district,
    address, address_ka, phone, email, instagram, cover_image_url, hours,
@@ -198,12 +201,9 @@ insert into public.reviews (business_id, customer_name, rating, comment, created
  ('b0000000-0000-0000-0000-000000000008','Sofo L.',5,'Brow lamination changed my mornings.', now() - interval '11 days'),
  ('b0000000-0000-0000-0000-000000000008','Ana T.',4,'Great microblading result.', now() - interval '2 days');
 
--- Sync rating + review_count from the reviews just inserted
-update public.businesses b
-set rating = sub.avg, review_count = sub.cnt
-from (select business_id, round(avg(rating)::numeric, 1) as avg, count(*)::int as cnt
-      from public.reviews group by business_id) sub
-where b.id = sub.business_id;
+-- NOTE: businesses.rating and review_count are maintained automatically by the
+-- reviews_recompute_rating trigger (recompute_business_rating()), which fires on
+-- each review insert above. No manual sync needed.
 
 -- ===================== A FEW BOOKINGS (next days) =====================
 -- end_datetime is filled by the bookings_compute_end trigger.
@@ -244,10 +244,13 @@ insert into public.subscriptions (business_id, plan, status, trial_ends_at, salo
 commit;
 
 -- ===================== SUMMARY =====================
-select 'businesses' as t, count(*) from public.businesses
-union all select 'services', count(*) from public.services
-union all select 'staff', count(*) from public.staff
-union all select 'business_categories', count(*) from public.business_categories
-union all select 'reviews', count(*) from public.reviews
-union all select 'bookings', count(*) from public.bookings
-union all select 'subscriptions', count(*) from public.subscriptions;
+-- Scoped to the seed's own mock rows (b0000000-... businesses) so the counts
+-- reflect what this file inserted, not any other staging data.
+with mock as (select id from public.businesses where id::text like 'b0000000-0000-0000-0000-%')
+select 'businesses' as t, count(*) from mock
+union all select 'services', count(*) from public.services where business_id in (select id from mock)
+union all select 'staff', count(*) from public.staff where business_id in (select id from mock)
+union all select 'business_categories', count(*) from public.business_categories where business_id in (select id from mock)
+union all select 'reviews', count(*) from public.reviews where business_id in (select id from mock)
+union all select 'bookings', count(*) from public.bookings where business_id in (select id from mock)
+union all select 'subscriptions', count(*) from public.subscriptions where business_id in (select id from mock);

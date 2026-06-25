@@ -22,12 +22,12 @@ const PRODUCTION_REF = 'zipxmghbougztwdtzftn';
 const SEED_FILE = resolve(__dirname, '../supabase/staging-seed.sql');
 
 async function main() {
-  const token = process.env.SUPABASE_ACCESS_TOKEN;
-  if (!token) {
-    console.error('Missing SUPABASE_ACCESS_TOKEN. Add it to .env.local or .env.staging.local.');
-    console.error('Get one at https://supabase.com/dashboard/account/tokens');
-    process.exit(1);
-  }
+  const dryRun = process.argv.includes('--dry-run');
+
+  // Log the resolved target up front — a shell-exported STAGING_SUPABASE_PROJECT_REF
+  // takes precedence over the .env files (dotenv does not override existing env),
+  // so the operator must see exactly which project is about to be seeded.
+  console.log(`Target staging project ref: ${STAGING_REF}`);
 
   if (STAGING_REF === PRODUCTION_REF) {
     console.error(`Refusing to seed: target ref ${STAGING_REF} is the PRODUCTION project.`);
@@ -36,6 +36,19 @@ async function main() {
   }
 
   const query = readFileSync(SEED_FILE, 'utf8');
+
+  if (dryRun) {
+    console.log(`[dry-run] Would apply ${query.length} chars of SQL to ${STAGING_REF}. No request sent.`);
+    return;
+  }
+
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+  if (!token) {
+    console.error('Missing SUPABASE_ACCESS_TOKEN. Add it to .env.local or .env.staging.local.');
+    console.error('Get one at https://supabase.com/dashboard/account/tokens');
+    process.exit(1);
+  }
+
   console.log(`Seeding staging project ${STAGING_REF} (${query.length} chars of SQL)...`);
 
   const res = await fetch(`https://api.supabase.com/v1/projects/${STAGING_REF}/database/query`, {
@@ -54,6 +67,8 @@ async function main() {
   console.log('Seed applied. Row counts:');
   if (Array.isArray(body)) {
     for (const row of body) console.log(`  ${row.t}: ${row.count}`);
+  } else {
+    console.log(JSON.stringify(body, null, 2));
   }
 }
 
