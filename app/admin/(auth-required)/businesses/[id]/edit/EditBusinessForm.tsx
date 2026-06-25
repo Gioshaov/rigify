@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateBusiness } from './actions';
-import { Calendar, MapPin, Phone, Mail, Globe, Clock, Image as ImageIcon, X } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { ServicesPanel } from './ServicesPanel';
+import { MapPin, Phone, Mail, Globe, Clock, Image as ImageIcon, X } from 'lucide-react';
 
 type Business = {
   id: string;
@@ -13,13 +15,14 @@ type Business = {
   city: string | null;
   district: string | null;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   phone: string | null;
   email: string | null;
   website: string | null;
   instagram: string | null;
   description: string | null;
   description_ka: string | null;
-  description_ru: string | null;
   opening_hours: string | null;
   cover_image_url: string | null;
   logo_url: string | null;
@@ -31,7 +34,6 @@ type Category = {
   id: string;
   name: string;
   name_ka: string | null;
-  name_ru: string | null;
 };
 
 type Staff = {
@@ -41,6 +43,17 @@ type Staff = {
   role: string | null;
   is_active: boolean;
   created_at: string;
+};
+
+type Service = {
+  id: string;
+  name: string;
+  name_ka: string | null;
+  category: string | null;
+  duration_minutes: number;
+  price_min: number;
+  price_max: number | null;
+  is_active: boolean;
 };
 
 const AVATAR_COLORS = [
@@ -64,16 +77,20 @@ export function EditBusinessForm({
   categoryIds,
   staff,
   allCategories,
+  services,
 }: {
   business: Business;
   categoryIds: string[];
   staff: Staff[];
   allCategories: Category[];
+  services: Service[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(categoryIds);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(business.cover_image_url);
+  const [logoUrl, setLogoUrl] = useState<string | null>(business.logo_url);
 
   const availableCategories = allCategories.filter(
     (cat) => !selectedCategories.includes(cat.id)
@@ -157,7 +174,7 @@ export function EditBusinessForm({
         )}
 
         {/* Form */}
-        <form action={handleSubmit} className="px-8 py-6 space-y-6">
+        <form id="edit-business-form" action={handleSubmit} className="px-8 py-6 space-y-6">
           {/* Section 1: Basic Info */}
           <section>
             <h2 className="text-[#888888] text-[11px] uppercase tracking-widest mb-4">
@@ -243,20 +260,6 @@ export function EditBusinessForm({
                   rows={3}
                   defaultValue={business.description_ka || ''}
                   data-testid="input-description-ka"
-                  className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843] resize-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description_ru" className="block text-[#cccccc] text-sm mb-1.5">
-                  Description (Russian)
-                </label>
-                <textarea
-                  id="description_ru"
-                  name="description_ru"
-                  rows={3}
-                  defaultValue={business.description_ru || ''}
-                  data-testid="input-description-ru"
                   className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843] resize-none"
                 />
               </div>
@@ -357,6 +360,43 @@ export function EditBusinessForm({
                   data-testid="input-address"
                   className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="latitude" className="block text-[#cccccc] text-sm mb-1.5">
+                    Latitude <span className="text-[#888888]">(for map view)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.00000001"
+                    min="-90"
+                    max="90"
+                    id="latitude"
+                    name="latitude"
+                    defaultValue={business.latitude ?? ''}
+                    placeholder="41.7151377"
+                    data-testid="edit-business-latitude-input"
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="longitude" className="block text-[#cccccc] text-sm mb-1.5">
+                    Longitude <span className="text-[#888888]">(for map view)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.00000001"
+                    min="-180"
+                    max="180"
+                    id="longitude"
+                    name="longitude"
+                    defaultValue={business.longitude ?? ''}
+                    placeholder="44.7831250"
+                    data-testid="edit-business-longitude-input"
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#d4a843]"
+                  />
+                </div>
               </div>
             </div>
           </section>
@@ -463,68 +503,51 @@ export function EditBusinessForm({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Cover Image</div>
-                <label
-                  htmlFor="cover_image"
-                  className="block h-32 bg-[#1a1a1a] border-2 border-dashed border-[#2a2a2a] rounded flex flex-col items-center justify-center cursor-pointer hover:border-[#d4a843] transition-colors"
-                  data-testid="upload-cover-image"
-                >
-                  <ImageIcon className="w-6 h-6 text-[#888888] mb-2" />
-                  <span className="text-[#888888] text-xs">Click to upload</span>
-                  <input
-                    type="file"
-                    id="cover_image"
-                    name="cover_image"
-                    accept="image/*"
-                    className="sr-only"
-                  />
-                </label>
-                {business.cover_image_url && (
-                  <>
-                    <p className="text-[#888888] text-xs mt-1">Current: image uploaded</p>
-                    <input type="hidden" name="cover_image_url" value={business.cover_image_url} />
-                  </>
-                )}
+                <input type="hidden" name="cover_image_url" value={coverImageUrl ?? ''} />
+                <ImageUpload
+                  businessId={business.id}
+                  type="cover"
+                  variant="admin"
+                  currentUrl={coverImageUrl}
+                  onUploadComplete={setCoverImageUrl}
+                />
               </div>
 
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Logo</div>
-                <label
-                  htmlFor="logo"
-                  className="block h-32 bg-[#1a1a1a] border-2 border-dashed border-[#2a2a2a] rounded flex flex-col items-center justify-center cursor-pointer hover:border-[#d4a843] transition-colors"
-                  data-testid="upload-logo"
-                >
-                  <ImageIcon className="w-6 h-6 text-[#888888] mb-2" />
-                  <span className="text-[#888888] text-xs">Click to upload</span>
-                  <input
-                    type="file"
-                    id="logo"
-                    name="logo"
-                    accept="image/*"
-                    className="sr-only"
-                  />
-                </label>
-                {business.logo_url && (
-                  <>
-                    <p className="text-[#888888] text-xs mt-1">Current: logo uploaded</p>
-                    <input type="hidden" name="logo_url" value={business.logo_url} />
-                  </>
-                )}
+                <input type="hidden" name="logo_url" value={logoUrl ?? ''} />
+                <ImageUpload
+                  businessId={business.id}
+                  type="logo"
+                  variant="admin"
+                  currentUrl={logoUrl}
+                  onUploadComplete={setLogoUrl}
+                />
               </div>
             </div>
           </section>
 
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={isPending}
-              data-testid="btn-save-changes"
-              className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-sm px-6 py-2.5 rounded hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
         </form>
+
+        {/* Services management — full width, above the save button. Lives outside
+            the business <form> (it has its own forms); the Save button below
+            submits the business form via its form="edit-business-form" attribute. */}
+        <div className="px-8 py-6 border-t border-[#2a2a2a]">
+          <ServicesPanel services={services} businessId={business.id} />
+        </div>
+
+        {/* Submit Button — saves the business fields above */}
+        <div className="px-8 pb-10">
+          <button
+            type="submit"
+            form="edit-business-form"
+            disabled={isPending}
+            data-testid="btn-save-changes"
+            className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-sm px-6 py-2.5 rounded hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </main>
 
       {/* Right Sidebar - Panels */}

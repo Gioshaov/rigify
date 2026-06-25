@@ -205,7 +205,7 @@ export default function ForBusinessesPage() {
                   Salome — AI Voice Receptionist
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
-                  Answers calls in Georgian, Russian, or English. Books appointments while you focus on clients.
+                  Answers calls in Georgian or English. Books appointments while you focus on clients.
                 </p>
               </div>
               <div data-testid="feature-dashboard" className="border-l-2 border-primary pl-8">
@@ -243,7 +243,7 @@ export default function ForBusinessesPage() {
                   <span className="material-symbols-outlined text-primary text-[48px]">mic</span>
                 </div>
                 <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary">
-                  Salome speaks Georgian, Russian, and English fluently. She checks availability in real-time, books appointments, and sends confirmations — all through a phone call.
+                  Salome speaks Georgian and English fluently. She checks availability in real-time, books appointments, and sends confirmations — all through a phone call.
                 </p>
               </div>
               <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-outline uppercase">

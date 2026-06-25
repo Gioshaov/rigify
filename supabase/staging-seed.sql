@@ -32,12 +32,12 @@ delete from public.businesses where id::text like 'b0000000-0000-0000-0000-%';
 -- public marketplace on staging (the businesses_public_select RLS policy filters
 -- out is_test = true rows). They are isolated instead by the b0000000-... id range.
 insert into public.businesses
-  (id, slug, name, name_ka, name_ru, description, description_ka, category, city, district,
+  (id, slug, name, name_ka, description, description_ka, category, city, district,
    address, address_ka, phone, email, instagram, cover_image_url, hours,
    salome_enabled, salome_phone, latitude, longitude, status, is_active, is_test)
 values
 -- 1. Mitte Beauty — hair — Tbilisi/Vake
-('b0000000-0000-0000-0000-000000000001','mitte-beauty','Mitte Beauty Salon','მიტე სილამაზის სალონი','Салон красоты Mitte',
+('b0000000-0000-0000-0000-000000000001','mitte-beauty','Mitte Beauty Salon','მიტე სილამაზის სალონი',
  'Premium hair and beauty studio in the heart of Vake — award-winning stylists and an editorial colour bar.',
  'პრემიუმ თმისა და სილამაზის სტუდია ვაკეში — დაჯილდოებული სტილისტები და სარედაქციო ფერების ბარი.',
  'hair','tbilisi','Vake','12 Chavchavadze Ave, Tbilisi','12 ჭავჭავაძის გამზ., თბილისი','+995 32 220 4040','hello@mittebeauty.ge','@mitte.beauty',
@@ -46,16 +46,16 @@ values
  true,'+995 32 999 0001',41.7095,44.7560,'active',true,false),
 
 -- 2. Luxe Nails — nails — Tbilisi/Saburtalo
-('b0000000-0000-0000-0000-000000000002','luxe-nails','Luxe Nails Studio','ლუქს ფრჩხილების სტუდია','Студия маникюра Luxe',
- 'Boutique nail studio specialising in gel, Russian manicure and nail art.',
- 'ბუტიკ ფრჩხილების სტუდია — გელი, რუსული მანიკიური და ნეილ-არტი.',
+('b0000000-0000-0000-0000-000000000002','luxe-nails','Luxe Nails Studio','ლუქს ფრჩხილების სტუდია',
+ 'Boutique nail studio specialising in gel, nail extensions and nail art.',
+ 'ბუტიკ ფრჩხილების სტუდია — გელი, ფრჩხილის გაგრძელება და ნეილ-არტი.',
  'nails','tbilisi','Saburtalo','5 Kostava St, Tbilisi','5 კოსტავას ქ., თბილისი','+995 32 244 1212','book@luxenails.ge','@luxe.nails.tbilisi',
  'https://picsum.photos/seed/luxenails/800/600',
  jsonb_build_object('mon',jsonb_build_object('open','11:00','close','20:00'),'tue',jsonb_build_object('open','11:00','close','20:00'),'wed',jsonb_build_object('open','11:00','close','20:00'),'thu',jsonb_build_object('open','11:00','close','20:00'),'fri',jsonb_build_object('open','11:00','close','20:00'),'sat',jsonb_build_object('open','11:00','close','18:00'),'sun',null),
  false,null,41.7233,44.7523,'active',true,false),
 
 -- 3. Derma Skin Clinic — skin — Tbilisi/Vera
-('b0000000-0000-0000-0000-000000000003','derma-skin-clinic','Derma Skin Clinic','დერმა კანის კლინიკა','Клиника кожи Derma',
+('b0000000-0000-0000-0000-000000000003','derma-skin-clinic','Derma Skin Clinic','დერმა კანის კლინიკა',
  'Medical-grade facials, peels and laser treatments led by certified dermatologists.',
  'სამედიცინო დონის სახის მოვლა, პილინგი და ლაზერული პროცედურები სერტიფიცირებული დერმატოლოგებით.',
  'skin','tbilisi','Vera','28 Melikishvili St, Tbilisi','28 მელიქიშვილის ქ., თბილისი','+995 32 255 7878','care@dermaclinic.ge','@derma.clinic.ge',
@@ -64,7 +64,7 @@ values
  true,'+995 32 999 0003',41.7080,44.7910,'active',true,false),
 
 -- 4. Serenity Massage & Spa — massage — Tbilisi/Mtatsminda
-('b0000000-0000-0000-0000-000000000004','serenity-spa','Serenity Massage & Spa','სერენიტი მასაჟი & სპა','Серенити Массаж и Спа',
+('b0000000-0000-0000-0000-000000000004','serenity-spa','Serenity Massage & Spa','სერენიტი მასაჟი & სპა',
  'A calm retreat offering deep-tissue, hot-stone and aromatherapy massage.',
  'მშვიდი სივრცე — ღრმა ქსოვილოვანი, ცხელი ქვებითა და არომათერაპიული მასაჟი.',
  'massage','tbilisi','Mtatsminda','3 Betlemi St, Tbilisi','3 ბეთლემის ქ., თბილისი','+995 32 298 3030','relax@serenityspa.ge','@serenity.tbilisi',
@@ -73,7 +73,7 @@ values
  false,null,41.6950,44.7980,'active',true,false),
 
 -- 5. Sharp Cuts Barbershop — barber — Tbilisi/Old Tbilisi
-('b0000000-0000-0000-0000-000000000005','sharp-cuts','Sharp Cuts Barbershop','შარპ-ქათს ბარბერშოპი','Барбершоп Sharp Cuts',
+('b0000000-0000-0000-0000-000000000005','sharp-cuts','Sharp Cuts Barbershop','შარპ-ქათს ბარბერშოპი',
  'Classic and modern cuts, hot-towel shaves and beard sculpting for the modern gentleman.',
  'კლასიკური და თანამედროვე შეჭრა, ცხელი პირსახოცით პარსვა და წვერის ფორმირება.',
  'barber','tbilisi','Old Tbilisi','17 Kote Abkhazi St, Tbilisi','17 კოტე აფხაზის ქ., თბილისი','+995 32 277 5050','book@sharpcuts.ge','@sharpcuts.ge',
@@ -82,7 +82,7 @@ values
  false,null,41.6900,44.8080,'active',true,false),
 
 -- 6. Glow Makeup Bar — makeup — Tbilisi/Vake
-('b0000000-0000-0000-0000-000000000006','glow-makeup-bar','Glow Makeup Bar','გლოუ მაკიაჟის ბარი','Glow Makeup Bar',
+('b0000000-0000-0000-0000-000000000006','glow-makeup-bar','Glow Makeup Bar','გლოუ მაკიაჟის ბარი',
  'Event, bridal and editorial makeup by a team of pro MUAs. Lashes and styling too.',
  'ღონისძიების, საქორწინო და სარედაქციო მაკიაჟი პროფესიონალი ვიზაჟისტებისგან.',
  'makeup','tbilisi','Vake','40 Abashidze St, Tbilisi','40 აბაშიძის ქ., თბილისი','+995 32 233 6699','hello@glowbar.ge','@glow.makeup.bar',
@@ -91,7 +91,7 @@ values
  false,null,41.7120,44.7700,'active',true,false),
 
 -- 7. Black Sea Beauty — hair — Batumi
-('b0000000-0000-0000-0000-000000000007','black-sea-beauty','Black Sea Beauty','შავი ზღვის სილამაზე','Black Sea Beauty',
+('b0000000-0000-0000-0000-000000000007','black-sea-beauty','Black Sea Beauty','შავი ზღვის სილამაზე',
  'Seaside salon in Batumi offering cuts, colour and bridal hair with a view.',
  'ზღვისპირა სალონი ბათუმში — შეჭრა, ღებვა და საქორწინო ვარცხნილობა.',
  'hair','batumi','Old Boulevard','9 Ninoshvili St, Batumi','9 ნინოშვილის ქ., ბათუმი','+995 422 27 4040','hello@blackseabeauty.ge','@blacksea.beauty',
@@ -100,7 +100,7 @@ values
  true,'+995 422 99 0007',41.6520,41.6360,'active',true,false),
 
 -- 8. Rioni Brow Lab — brows — Kutaisi
-('b0000000-0000-0000-0000-000000000008','rioni-brow-lab','Rioni Brow Lab','რიონი წარბების ლაბი','Rioni Brow Lab',
+('b0000000-0000-0000-0000-000000000008','rioni-brow-lab','Rioni Brow Lab','რიონი წარბების ლაბი',
  'Brow lamination, microblading and lash lifts in central Kutaisi.',
  'წარბების ლამინაცია, მიკრობლეიდინგი და წამწამების აწევა ქუთაისის ცენტრში.',
  'brows','kutaisi','Centre','11 Tsereteli St, Kutaisi','11 წერეთლის ქ., ქუთაისი','+995 431 24 1515','book@rionibrow.ge','@rioni.brow.lab',
@@ -133,7 +133,7 @@ insert into public.services (business_id, name, name_ka, category, duration_minu
  -- Luxe Nails
  ('b0000000-0000-0000-0000-000000000002','Classic Manicure','კლასიკური მანიკიური','nails',45,40,60,1),
  ('b0000000-0000-0000-0000-000000000002','Gel Manicure','გელის მანიკიური','nails',75,70,110,2),
- ('b0000000-0000-0000-0000-000000000002','Russian Pedicure','რუსული პედიკიური','nails',90,90,140,3),
+ ('b0000000-0000-0000-0000-000000000002','Spa Pedicure','სპა პედიკიური','nails',90,90,140,3),
  ('b0000000-0000-0000-0000-000000000002','Nail Art (per set)','ნეილ-არტი','nails',60,60,150,4),
  -- Derma (skin)
  ('b0000000-0000-0000-0000-000000000003','Deep-Cleanse Facial','ღრმა წმენდის ფეშელი','skin',60,100,140,1),
@@ -237,9 +237,9 @@ select 'b0000000-0000-0000-0000-000000000004',
 
 -- ===================== SUBSCRIPTIONS =====================
 insert into public.subscriptions (business_id, plan, status, trial_ends_at, salome_enabled, salome_plan, languages, monthly_call_limit) values
- ('b0000000-0000-0000-0000-000000000001','growth','trial', now() + interval '14 days', true,'standard', array['ka','en','ru'],500),
+ ('b0000000-0000-0000-0000-000000000001','growth','trial', now() + interval '14 days', true,'standard', array['ka','en'],500),
  ('b0000000-0000-0000-0000-000000000003','growth','active', null, true,'standard', array['ka','en'],500),
- ('b0000000-0000-0000-0000-000000000007','starter','active', null, true,'basic', array['ka','en','ru'],200);
+ ('b0000000-0000-0000-0000-000000000007','starter','active', null, true,'basic', array['ka','en'],200);
 
 commit;
 

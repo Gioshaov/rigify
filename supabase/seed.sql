@@ -5,7 +5,7 @@
 
 -- ----- Mitte Beauty -----
 insert into public.businesses (
-  id, owner_id, slug, name, name_ka, name_ru, description, description_ka,
+  id, owner_id, slug, name, name_ka, description, description_ka,
   category, city, district, address, address_ka, phone, email, instagram,
   hours, salome_enabled, salome_phone, rating, review_count
 ) values (
@@ -14,7 +14,6 @@ insert into public.businesses (
   'mitte-beauty',
   'Mitte Beauty Salon',
   'მიტე სილამაზის სალონი',
-  'Салон красоты Mitte',
   'Premium hair and beauty studio in the heart of Vake — five award-winning stylists and an editorial colour bar.',
   'პრემიუმ თმისა და სილამაზის სტუდია ვაკეში — ხუთი დაჯილდოებული სტილისტი და სარედაქციო ფერების ბარი.',
   'hair',
@@ -89,7 +88,7 @@ select
 
 -- ----- Subscription (trial) -----
 insert into public.subscriptions (business_id, plan, status, trial_ends_at, salome_enabled, salome_plan, languages, monthly_call_limit)
-values ('11111111-1111-1111-1111-111111111111', 'growth', 'trial', now() + interval '14 days', true, 'standard', array['ka','en','ru'], 500);
+values ('11111111-1111-1111-1111-111111111111', 'growth', 'trial', now() + interval '14 days', true, 'standard', array['ka','en'], 500);
 
 -- ----- Claim the seed business after you register -----
 -- 1. Visit /register and create an account.

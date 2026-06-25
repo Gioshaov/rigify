@@ -190,7 +190,6 @@ export type Database = {
           created_at: string | null
           description: string | null
           description_ka: string | null
-          description_ru: string | null
           district: string | null
           email: string | null
           hours: Json | null
@@ -203,7 +202,6 @@ export type Database = {
           longitude: number | null
           name: string
           name_ka: string | null
-          name_ru: string | null
           onboarded_by: string | null
           owner_id: string | null
           phone: string | null
@@ -227,7 +225,6 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           description_ka?: string | null
-          description_ru?: string | null
           district?: string | null
           email?: string | null
           hours?: Json | null
@@ -240,7 +237,6 @@ export type Database = {
           longitude?: number | null
           name: string
           name_ka?: string | null
-          name_ru?: string | null
           onboarded_by?: string | null
           owner_id?: string | null
           phone?: string | null
@@ -264,7 +260,6 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           description_ka?: string | null
-          description_ru?: string | null
           district?: string | null
           email?: string | null
           hours?: Json | null
@@ -277,7 +272,6 @@ export type Database = {
           longitude?: number | null
           name?: string
           name_ka?: string | null
-          name_ru?: string | null
           onboarded_by?: string | null
           owner_id?: string | null
           phone?: string | null
@@ -455,7 +449,6 @@ export type Database = {
           is_active: boolean | null
           name: string
           name_ka: string | null
-          name_ru: string | null
           price: number | null
           price_max: number | null
           price_min: number
@@ -471,7 +464,6 @@ export type Database = {
           is_active?: boolean | null
           name: string
           name_ka?: string | null
-          name_ru?: string | null
           price?: number | null
           price_max?: number | null
           price_min: number
@@ -487,7 +479,6 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           name_ka?: string | null
-          name_ru?: string | null
           price?: number | null
           price_max?: number | null
           price_min?: number

@@ -22,6 +22,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
   // Get form data
   const name = (formData.get('name') as string).trim()
   const description = (formData.get('description') as string)?.trim() || null
+  const descriptionKa = (formData.get('description_ka') as string)?.trim() || null
   const subdomain = (formData.get('subdomain') as string).trim()
   const slug = (formData.get('slug') as string).trim()
   const phone = (formData.get('phone') as string).trim()
@@ -35,6 +36,8 @@ export async function updateBusiness(businessId: string, formData: FormData) {
   const hours = (formData.get('hours') as string)?.trim() || null
   const coverImageUrl = (formData.get('cover_image_url') as string)?.trim() || null
   const logoUrl = (formData.get('logo_url') as string)?.trim() || null
+  const latitude = formData.get('latitude') as string
+  const longitude = formData.get('longitude') as string
   const categories = formData.getAll('categories') as string[]
 
   // Validate required fields
@@ -70,6 +73,16 @@ export async function updateBusiness(businessId: string, formData: FormData) {
     }
   }
 
+  // Parse + validate coordinates (optional, but needed for the map view).
+  const parsedLatitude = latitude && latitude.trim() !== '' ? parseFloat(latitude) : null
+  const parsedLongitude = longitude && longitude.trim() !== '' ? parseFloat(longitude) : null
+  if (parsedLatitude !== null && (isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+    return { success: false, message: 'Latitude must be a valid number between -90 and 90' }
+  }
+  if (parsedLongitude !== null && (isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+    return { success: false, message: 'Longitude must be a valid number between -180 and 180' }
+  }
+
   // Use admin client to bypass RLS
   const admin = createAdminClient()
 
@@ -91,6 +104,7 @@ export async function updateBusiness(businessId: string, formData: FormData) {
     .update({
       name,
       description,
+      description_ka: descriptionKa,
       subdomain,
       slug,
       phone,
@@ -105,6 +119,8 @@ export async function updateBusiness(businessId: string, formData: FormData) {
       hours,
       cover_image_url: coverImageUrl,
       logo_url: logoUrl,
+      latitude: parsedLatitude,
+      longitude: parsedLongitude,
     })
     .eq('id', businessId)
 
