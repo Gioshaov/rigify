@@ -2,6 +2,8 @@
  * Calendar utility functions for booking UI components
  */
 
+import { formatTbilisi } from "./datetime";
+
 export type CalendarDay = {
   day: number | null;
   disabled: boolean;
@@ -13,9 +15,9 @@ export type CalendarDay = {
  * @param month - Month index (0-11)
  * @returns Array of calendar days including leading empty cells
  *
- * Note: Uses browser's local timezone to determine "today". For Tbilisi-specific
- * booking logic, the component should pass a Tbilisi-aware date or add timezone
- * conversion here.
+ * "Today" is resolved in Asia/Tbilisi (bookings are Tbilisi-based), so a day is
+ * only disabled when it is before the current Tbilisi date — regardless of the
+ * viewer's browser timezone.
  */
 export function generateCalendarDays(year: number, month: number): CalendarDay[] {
   const firstDay = new Date(year, month, 1);
@@ -23,8 +25,9 @@ export function generateCalendarDays(year: number, month: number): CalendarDay[]
   const daysInMonth = lastDay.getDate();
   const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Current date in Tbilisi as a comparable YYYYMMDD integer.
+  const [ty, tm, td] = formatTbilisi(new Date(), "yyyy-MM-dd").split("-").map(Number);
+  const todayNum = ty * 10000 + tm * 100 + td;
 
   const days: CalendarDay[] = [];
 
@@ -33,11 +36,10 @@ export function generateCalendarDays(year: number, month: number): CalendarDay[]
     days.push({ day: null, disabled: true });
   }
 
-  // Add actual days of the month
+  // Add actual days of the month (month is 0-indexed, so +1 for comparison)
   for (let i = 1; i <= daysInMonth; i++) {
-    const date = new Date(year, month, i);
-    date.setHours(0, 0, 0, 0);
-    const isPast = date < today;
+    const dayNum = year * 10000 + (month + 1) * 100 + i;
+    const isPast = dayNum < todayNum;
     days.push({ day: i, disabled: isPast });
   }
 
