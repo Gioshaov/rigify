@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { rescheduleBookingAction } from "./actions";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { generateCalendarDays, groupTimeSlots, MONTH_NAMES } from "@/lib/utils/calendar";
-import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/time-format";
+import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/datetime";
 
 type RescheduleModalProps = {
   booking: {

@@ -6,7 +6,7 @@ import { CountryCodeSelect } from "@/components/ui/CountryCodeSelect";
 import { BookingCalendar } from "@/components/booking/BookingCalendar";
 import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 import { MONTH_NAMES } from "@/lib/utils/calendar";
-import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/time-format";
+import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/datetime";
 import { validators, errorMessages } from "@/lib/utils/validation";
 import { BookingConfirmation } from "@/components/booking/BookingConfirmation";
 import type { BookingConfirmationData } from "@/lib/bookings/types";
