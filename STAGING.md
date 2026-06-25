@@ -15,6 +15,37 @@ Supabase project so test data never touches production.
 
 ---
 
+## Current staging instance (provisioned 2026-06-25)
+
+The environment below is already live — this section records what exists so the
+runbook doubles as an as-built reference. No secrets here; credentials live in the
+gitignored `.env.staging.local`.
+
+| Thing | Value |
+|---|---|
+| URL | https://staging.rigify.ge (gated by `SITE_PASSWORD`) |
+| Supabase project | `rigify-staging` · ref `ccjteappgctnlwrmzokp` · region `eu-central-1` · free tier |
+| Vercel project | `rigify` (`prj_tknNUuVSSLptxoFgtS87ckFrk0X2`), team `team-rigify-s-projects` |
+| Deploy trigger | `staging` git branch → Vercel preview, aliased to staging.rigify.ge |
+| Data | empty schema (all 51 migrations applied); mock data added manually |
+
+**As-built deviations from the generic steps below:**
+
+- **DNS:** no manual record needed — `rigify.ge` already uses Vercel nameservers
+  (`ns1/ns2.vercel-dns.com`), so the subdomain is auto-managed by Vercel.
+- **Vercel Authentication was disabled** for the project (`ssoProtection: null`).
+  Otherwise Vercel's own SSO shadows the app's `SITE_PASSWORD` gate and only
+  Vercel team members could reach staging. With it off, the shared password is the
+  gate. If you re-enable it, expect the SSO login wall to return.
+- **Staging env vars are scoped to `target=preview` + `gitBranch=staging`**, so they
+  override the general preview values for the `staging` branch only. ⚠️ Other
+  `feature/*` preview deployments still inherit the **general** preview vars, which
+  currently point at the **production** Supabase project — only the `staging` branch
+  is isolated. Scope per-branch vars similarly if you want a feature preview on its
+  own data.
+
+---
+
 ## Environment variable matrix
 
 Set these in **Vercel → Project → Settings → Environment Variables**, each scoped
