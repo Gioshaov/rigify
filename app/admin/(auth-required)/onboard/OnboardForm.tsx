@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react';
 import { onboardBusiness } from './actions';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 
+type ServiceRow = {
+  name: string;
+  nameKa: string;
+  category: string;
+  duration: string;
+  priceMin: string;
+  priceMax: string;
+};
+
 const CATEGORY_OPTIONS = [
   { id: 'hair', label: 'Hair' },
   { id: 'nails', label: 'Nails' },
@@ -31,10 +40,15 @@ export default function OnboardForm() {
   const [categories, setCategories] = useState<string[]>([]);
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [services, setServices] = useState<ServiceRow[]>([]);
 
   useEffect(() => {
     setBusinessId(crypto.randomUUID());
   }, []);
+
+  function updateService(i: number, patch: Partial<ServiceRow>) {
+    setServices((prev) => prev.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  }
 
   const availableCategories = CATEGORY_OPTIONS.filter((c) => !categories.includes(c.id));
 
@@ -43,6 +57,7 @@ export default function OnboardForm() {
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     categories.forEach((c) => formData.append('categories', c));
+    formData.append('services_json', JSON.stringify(services));
     const res = await onboardBusiness(formData);
     setResult(res);
     setLoading(false);
@@ -65,6 +80,7 @@ export default function OnboardForm() {
             setCategories([]);
             setCoverImageUrl(null);
             setLogoUrl(null);
+            setServices([]);
           }}
           data-testid="onboard-another-btn"
           className="mt-4 text-sm text-[#6b6880] hover:text-white underline transition-colors"
@@ -240,6 +256,63 @@ export default function OnboardForm() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Services */}
+      <div className={sectionClass}>
+        <div className="flex items-center justify-between">
+          <h2 className={sectionTitleClass}>Services <span className="text-[#6b6880]/60 font-normal normal-case">(optional)</span></h2>
+          <button
+            type="button"
+            onClick={() => setServices([...services, { name: '', nameKa: '', category: '', duration: '60', priceMin: '', priceMax: '' }])}
+            data-testid="onboard-service-add-btn"
+            className="text-[#d4a843] font-mono text-[11px] uppercase tracking-wider hover:underline"
+          >
+            + Add service
+          </button>
+        </div>
+        {services.length === 0 && (
+          <p className="text-[#6b6880] font-mono text-[10px]">No services yet — the owner can also add them later from their dashboard.</p>
+        )}
+        {services.map((svc, i) => (
+          <div key={i} className="border border-[rgba(255,255,255,0.08)] rounded p-4 space-y-3" data-testid={`onboard-service-row-${i}`}>
+            <div className="flex items-center justify-between">
+              <span className="text-[#6b6880] font-mono text-[10px] uppercase">Service {i + 1}</span>
+              <button type="button" onClick={() => setServices(services.filter((_, idx) => idx !== i))} className="text-[#6b6880] hover:text-white text-xs" aria-label={`Remove service ${i + 1}`} data-testid={`onboard-service-remove-${i}`}>Remove</button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>NAME *</label>
+                <input value={svc.name} onChange={(e) => updateService(i, { name: e.target.value })} data-testid={`onboard-service-name-${i}`} className={inputClass} placeholder="Signature Haircut" />
+              </div>
+              <div>
+                <label className={labelClass}>NAME (GEORGIAN)</label>
+                <input value={svc.nameKa} onChange={(e) => updateService(i, { nameKa: e.target.value })} data-testid={`onboard-service-nameka-${i}`} className={inputClass} placeholder="ხელმოწერის შეჭრა" />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <div>
+                <label className={labelClass}>CATEGORY</label>
+                <select value={svc.category} onChange={(e) => updateService(i, { category: e.target.value })} data-testid={`onboard-service-category-${i}`} className={`${inputClass} appearance-none cursor-pointer`}>
+                  <option value="">—</option>
+                  {CATEGORY_OPTIONS.map((c) => (<option key={c.id} value={c.id}>{c.label}</option>))}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>DURATION (MIN) *</label>
+                <input value={svc.duration} onChange={(e) => updateService(i, { duration: e.target.value })} data-testid={`onboard-service-duration-${i}`} type="number" min="1" className={inputClass} placeholder="60" />
+              </div>
+              <div>
+                <label className={labelClass}>PRICE FROM (₾) *</label>
+                <input value={svc.priceMin} onChange={(e) => updateService(i, { priceMin: e.target.value })} data-testid={`onboard-service-pricemin-${i}`} type="number" min="0" step="0.01" className={inputClass} placeholder="120" />
+              </div>
+              <div>
+                <label className={labelClass}>PRICE TO (₾)</label>
+                <input value={svc.priceMax} onChange={(e) => updateService(i, { priceMax: e.target.value })} data-testid={`onboard-service-pricemax-${i}`} type="number" min="0" step="0.01" className={inputClass} placeholder="180" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Owner Account */}
