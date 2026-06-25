@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
 
 const RESERVED_SUBDOMAINS = [
   'admin', 'api', 'www', 'app',
@@ -28,6 +29,8 @@ export async function onboardBusiness(formData: FormData) {
   const address = formData.get('address') as string
   const coverImageUrl = formData.get('cover_image_url') as string
   const logoUrl = formData.get('logo_url') as string
+  const latitude = formData.get('latitude') as string
+  const longitude = formData.get('longitude') as string
   const ownerEmail = formData.get('owner_email') as string
   const ownerPassword = formData.get('owner_password') as string
   const staffName = formData.get('staff_name') as string
@@ -63,6 +66,16 @@ export async function onboardBusiness(formData: FormData) {
   // Validate password length
   if (ownerPassword.length < 8) {
     return { success: false, message: 'Password must be at least 8 characters' }
+  }
+
+  // Parse + validate coordinates (optional, but needed for the map view).
+  const parsedLatitude = latitude && latitude.trim() !== '' ? parseFloat(latitude) : null
+  const parsedLongitude = longitude && longitude.trim() !== '' ? parseFloat(longitude) : null
+  if (parsedLatitude !== null && (isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+    return { success: false, message: 'Latitude must be a valid number between -90 and 90' }
+  }
+  if (parsedLongitude !== null && (isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+    return { success: false, message: 'Longitude must be a valid number between -180 and 180' }
   }
 
   // Validate staff fields if provided (before creating anything)
@@ -114,6 +127,8 @@ export async function onboardBusiness(formData: FormData) {
       address,
       cover_image_url: coverImageUrl || null,
       logo_url: logoUrl || null,
+      latitude: parsedLatitude,
+      longitude: parsedLongitude,
       status: 'active',
       onboarded_by: user.id,
       is_active: true,
@@ -148,6 +163,11 @@ export async function onboardBusiness(formData: FormData) {
     console.error('Failed to insert category:', categoryError)
     // Non-fatal: business is created, admin can add category manually
   }
+
+  // Surface the new business in the marketplace listing without waiting for
+  // the cache to expire.
+  revalidatePath('/businesses')
+  revalidatePath('/admin')
 
   // 4. Optionally create staff account (validation already done above)
   if (staffName && staffEmail && staffPassword) {

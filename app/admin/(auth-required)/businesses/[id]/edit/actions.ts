@@ -35,6 +35,8 @@ export async function updateBusiness(businessId: string, formData: FormData) {
   const hours = (formData.get('hours') as string)?.trim() || null
   const coverImageUrl = (formData.get('cover_image_url') as string)?.trim() || null
   const logoUrl = (formData.get('logo_url') as string)?.trim() || null
+  const latitude = formData.get('latitude') as string
+  const longitude = formData.get('longitude') as string
   const categories = formData.getAll('categories') as string[]
 
   // Validate required fields
@@ -68,6 +70,16 @@ export async function updateBusiness(businessId: string, formData: FormData) {
     if (!emailRegex.test(email)) {
       return { success: false, message: 'Invalid email format' }
     }
+  }
+
+  // Parse + validate coordinates (optional, but needed for the map view).
+  const parsedLatitude = latitude && latitude.trim() !== '' ? parseFloat(latitude) : null
+  const parsedLongitude = longitude && longitude.trim() !== '' ? parseFloat(longitude) : null
+  if (parsedLatitude !== null && (isNaN(parsedLatitude) || parsedLatitude < -90 || parsedLatitude > 90)) {
+    return { success: false, message: 'Latitude must be a valid number between -90 and 90' }
+  }
+  if (parsedLongitude !== null && (isNaN(parsedLongitude) || parsedLongitude < -180 || parsedLongitude > 180)) {
+    return { success: false, message: 'Longitude must be a valid number between -180 and 180' }
   }
 
   // Use admin client to bypass RLS
@@ -105,6 +117,8 @@ export async function updateBusiness(businessId: string, formData: FormData) {
       hours,
       cover_image_url: coverImageUrl,
       logo_url: logoUrl,
+      latitude: parsedLatitude,
+      longitude: parsedLongitude,
     })
     .eq('id', businessId)
 

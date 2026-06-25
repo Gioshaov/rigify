@@ -164,6 +164,58 @@ export default function OnboardForm() {
         </div>
       </div>
 
+      {/* Location / Map coordinates */}
+      <div className="bg-[#111111] border border-[rgba(255,255,255,0.06)] rounded p-6 space-y-5">
+        <h2 className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
+          Location <span className="text-[#6b6880]/60 font-normal normal-case">(needed to show on the map view)</span>
+        </h2>
+        <p className="text-[#6b6880] font-mono text-[10px]">
+          <a
+            href="https://www.google.com/maps"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#d4a843] hover:underline"
+          >
+            Find coordinates on Google Maps →
+          </a>{' '}
+          (right-click the location → click the lat,lng to copy)
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="latitude" className="block text-[#6b6880] font-mono text-[11px] mb-2">
+              LATITUDE
+            </label>
+            <input
+              id="latitude"
+              name="latitude"
+              data-testid="onboard-latitude-input"
+              type="number"
+              step="0.00000001"
+              min="-90"
+              max="90"
+              className="w-full h-9 bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs px-3 rounded-none focus:outline-none focus:border-[#d4a843] transition-colors placeholder:text-[#6b6880]"
+              placeholder="41.7151377"
+            />
+          </div>
+          <div>
+            <label htmlFor="longitude" className="block text-[#6b6880] font-mono text-[11px] mb-2">
+              LONGITUDE
+            </label>
+            <input
+              id="longitude"
+              name="longitude"
+              data-testid="onboard-longitude-input"
+              type="number"
+              step="0.00000001"
+              min="-180"
+              max="180"
+              className="w-full h-9 bg-[#0a0a0a] border border-[rgba(255,255,255,0.12)] text-white font-mono text-xs px-3 rounded-none focus:outline-none focus:border-[#d4a843] transition-colors placeholder:text-[#6b6880]"
+              placeholder="44.7831250"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Images */}
       <div className="bg-[#111111] border border-[rgba(255,255,255,0.06)] rounded p-6 space-y-5">
         <h2 className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">
