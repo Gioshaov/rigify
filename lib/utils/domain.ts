@@ -7,8 +7,25 @@
  * no single host is hardcoded.
  */
 
+/** Local (non-deployed) environment — anything that isn't a production build. */
+function isLocalDev(): boolean {
+  return process.env.NODE_ENV !== "production";
+}
+
 function getRootDomain(): string {
-  return process.env.NEXT_PUBLIC_ROOT_DOMAIN || "rigify.ge";
+  const root = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+  if (!root) {
+    // Missing on a deployed build means we'd silently fall back to the prod
+    // host and route staging traffic to production — surface it loudly.
+    if (!isLocalDev()) {
+      console.warn(
+        "NEXT_PUBLIC_ROOT_DOMAIN is not set; falling back to rigify.ge. " +
+          "Set it per environment (e.g. staging.rigify.ge on staging)."
+      );
+    }
+    return "rigify.ge";
+  }
+  return root;
 }
 
 /**
@@ -27,7 +44,7 @@ export function isAdminDomain(host: string): boolean {
  * (admin.localhost cookies must not set an explicit domain).
  */
 export function getAdminCookieDomain(): string | undefined {
-  if (process.env.NODE_ENV !== "production") return undefined;
+  if (isLocalDev()) return undefined;
   return `admin.${getRootDomain()}`;
 }
 
@@ -35,14 +52,12 @@ export function getAdminCookieDomain(): string | undefined {
  * Get the admin panel base URL for the current environment.
  */
 export function getAdminUrl(): string {
-  const isDev = process.env.NODE_ENV === "development";
-  return isDev ? "http://admin.localhost:3000" : `https://admin.${getRootDomain()}`;
+  return isLocalDev() ? "http://admin.localhost:3000" : `https://admin.${getRootDomain()}`;
 }
 
 /**
  * Get the main app base URL for the current environment.
  */
 export function getMainUrl(): string {
-  const isDev = process.env.NODE_ENV === "development";
-  return isDev ? "http://localhost:3000" : `https://${getRootDomain()}`;
+  return isLocalDev() ? "http://localhost:3000" : `https://${getRootDomain()}`;
 }
