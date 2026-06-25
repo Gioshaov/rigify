@@ -3,7 +3,8 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateBusiness } from './actions';
-import { Calendar, MapPin, Phone, Mail, Globe, Clock, Image as ImageIcon, X } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { MapPin, Phone, Mail, Globe, Clock, Image as ImageIcon, X } from 'lucide-react';
 
 type Business = {
   id: string;
@@ -76,6 +77,8 @@ export function EditBusinessForm({
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(categoryIds);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(business.cover_image_url);
+  const [logoUrl, setLogoUrl] = useState<string | null>(business.logo_url);
 
   const availableCategories = allCategories.filter(
     (cat) => !selectedCategories.includes(cat.id)
@@ -502,52 +505,26 @@ export function EditBusinessForm({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Cover Image</div>
-                <label
-                  htmlFor="cover_image"
-                  className="block h-32 bg-[#1a1a1a] border-2 border-dashed border-[#2a2a2a] rounded flex flex-col items-center justify-center cursor-pointer hover:border-[#d4a843] transition-colors"
-                  data-testid="upload-cover-image"
-                >
-                  <ImageIcon className="w-6 h-6 text-[#888888] mb-2" />
-                  <span className="text-[#888888] text-xs">Click to upload</span>
-                  <input
-                    type="file"
-                    id="cover_image"
-                    name="cover_image"
-                    accept="image/*"
-                    className="sr-only"
-                  />
-                </label>
-                {business.cover_image_url && (
-                  <>
-                    <p className="text-[#888888] text-xs mt-1">Current: image uploaded</p>
-                    <input type="hidden" name="cover_image_url" value={business.cover_image_url} />
-                  </>
-                )}
+                <input type="hidden" name="cover_image_url" value={coverImageUrl ?? ''} />
+                <ImageUpload
+                  businessId={business.id}
+                  type="cover"
+                  variant="admin"
+                  currentUrl={coverImageUrl}
+                  onUploadComplete={setCoverImageUrl}
+                />
               </div>
 
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Logo</div>
-                <label
-                  htmlFor="logo"
-                  className="block h-32 bg-[#1a1a1a] border-2 border-dashed border-[#2a2a2a] rounded flex flex-col items-center justify-center cursor-pointer hover:border-[#d4a843] transition-colors"
-                  data-testid="upload-logo"
-                >
-                  <ImageIcon className="w-6 h-6 text-[#888888] mb-2" />
-                  <span className="text-[#888888] text-xs">Click to upload</span>
-                  <input
-                    type="file"
-                    id="logo"
-                    name="logo"
-                    accept="image/*"
-                    className="sr-only"
-                  />
-                </label>
-                {business.logo_url && (
-                  <>
-                    <p className="text-[#888888] text-xs mt-1">Current: logo uploaded</p>
-                    <input type="hidden" name="logo_url" value={business.logo_url} />
-                  </>
-                )}
+                <input type="hidden" name="logo_url" value={logoUrl ?? ''} />
+                <ImageUpload
+                  businessId={business.id}
+                  type="logo"
+                  variant="admin"
+                  currentUrl={logoUrl}
+                  onUploadComplete={setLogoUrl}
+                />
               </div>
             </div>
           </section>
