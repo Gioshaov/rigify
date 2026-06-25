@@ -16,7 +16,7 @@ export async function adminLoginAction(formData: FormData) {
 
   if (!isAdminDomain(host)) {
     return {
-      error: "Admin login is only accessible from admin.rigify.ge or admin.localhost"
+      error: "Admin login is only accessible from the admin subdomain"
     };
   }
 

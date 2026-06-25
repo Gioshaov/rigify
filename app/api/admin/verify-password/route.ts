@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
+import { getAdminCookieDomain } from '@/lib/utils/domain';
 
 // Simple in-memory rate limiting (5 attempts per IP per 15 minutes)
 // NOTE: This is for preview/staging only. On serverless platforms (Vercel), this map
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
         sameSite: 'strict', // Admin panel has no cross-site flows, strict is appropriate
         maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
-        domain: process.env.NODE_ENV === 'production' ? 'admin.rigify.ge' : undefined, // Scope to admin subdomain only
+        domain: getAdminCookieDomain(), // Scope to the current env's admin subdomain
       });
 
       return NextResponse.json({ success: true });

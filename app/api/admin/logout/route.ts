@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
+import { getAdminUrl, getAdminCookieDomain } from '@/lib/utils/domain';
 
 export async function POST() {
   // Sign out from Supabase (terminates the session)
@@ -16,14 +17,10 @@ export async function POST() {
     sameSite: 'strict',
     maxAge: 0, // Expire immediately
     path: '/',
-    domain: process.env.NODE_ENV === 'production' ? 'admin.rigify.ge' : undefined,
+    domain: getAdminCookieDomain(),
   });
 
-  // Use hardcoded redirect URL to prevent open redirect vulnerability
-  // Redirect to login page (middleware will handle password check if needed)
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? 'https://admin.rigify.ge'
-    : 'http://admin.localhost:3000';
-
-  return NextResponse.redirect(`${baseUrl}/admin/login`);
+  // Redirect to the admin login on the current environment's admin subdomain.
+  // Built from a known base (not user input) to avoid open-redirect risk.
+  return NextResponse.redirect(`${getAdminUrl()}/admin/login`);
 }
