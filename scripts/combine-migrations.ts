@@ -21,9 +21,16 @@ const MIGRATIONS_DIR = resolve(__dirname, '../supabase/migrations');
 const OUTPUT_FILE = resolve(__dirname, '../supabase/_staging_bootstrap.sql');
 
 function main() {
-  const files = readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort(); // timestamp-prefixed → lexicographic sort == chronological
+  let files: string[];
+  try {
+    files = readdirSync(MIGRATIONS_DIR)
+      .filter((f) => f.endsWith('.sql'))
+      .sort(); // timestamp-prefixed → lexicographic sort == chronological
+  } catch (err) {
+    console.error(`Could not read migrations directory: ${MIGRATIONS_DIR}`);
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
 
   if (files.length === 0) {
     console.error('No .sql migrations found in', MIGRATIONS_DIR);

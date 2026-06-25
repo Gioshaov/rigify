@@ -30,12 +30,13 @@ projects.
 | `NEXT_PUBLIC_ROOT_DOMAIN` | `rigify.ge` | `staging.rigify.ge` |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | `ka` | `ka` |
 | `SITE_PASSWORD` | **(must NOT be set)** | **set it** — gates the whole site |
-| `ADMIN_PREVIEW_PASSWORD` | optional | optional (gates `admin.` subdomain) |
+| `ADMIN_PREVIEW_PASSWORD` | leave unset unless you want prod admin gated | set **only** if you expose `admin.staging.rigify.ge` and want it gated |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | prod token | reuse same token |
 | `RESEND_API_KEY` | prod key | reuse, or use a test key (see note) |
 | `VAPI_API_KEY` | prod key | reuse / blank |
 
-> ⚠️ **`SITE_PASSWORD` on production locks out every visitor** (see `middleware.ts`).
+> ⚠️ **`SITE_PASSWORD` on production locks out every visitor.** The gate is
+> implemented in the root `middleware.ts` (not `lib/supabase/middleware.ts`).
 > It must exist on staging only. Vercel lets you scope a variable to "Preview"
 > with a specific branch filter — use `staging` so it never leaks to production.
 
@@ -56,10 +57,13 @@ A template lives in `.env.staging.example`.
    - Region: same as production (lowest latency / parity).
    - Save the generated DB password somewhere safe.
 2. When it's ready, grab **Settings → API**: project URL, `anon` key, `service_role` key.
+3. **Set auth URLs now** (not later — magic links and password resets break
+   silently otherwise): **Authentication → URL Configuration** → set **Site URL**
+   to `https://staging.rigify.ge` and add it to the redirect allow-list.
 
 ### 2. Apply the schema to staging
 
-All 51 migrations are idempotent, so we apply them in one shot:
+All migrations are idempotent, so we apply them in one shot:
 
 ```bash
 npm run build:staging-sql
@@ -165,7 +169,5 @@ Production migrations are applied to the prod project the same way, separately.
   Production environment scope in Vercel.
 - The `admin.` subdomain has its own gate (`ADMIN_PREVIEW_PASSWORD`). If you want
   `admin.staging.rigify.ge`, add that DNS record + domain too.
-- Auth redirect URLs: in the **staging** Supabase project, set
-  **Authentication → URL Configuration → Site URL** to `https://staging.rigify.ge`
-  and add it to the redirect allow-list, or magic links / password resets will
-  point at the wrong host.
+- Auth redirect URLs (see step 1.3): if magic links / password resets point at the
+  wrong host, the staging Supabase **Site URL** wasn't set to `https://staging.rigify.ge`.
