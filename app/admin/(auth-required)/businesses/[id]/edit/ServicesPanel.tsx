@@ -98,6 +98,7 @@ export function ServicesPanel({ services, businessId }: { services: Service[]; b
   }
 
   async function handleDelete(serviceId: string) {
+    if (!window.confirm('Delete this service? This cannot be undone.')) return
     setBusy(true); setError(null)
     const res = await deleteServiceAdmin(serviceId)
     setBusy(false)

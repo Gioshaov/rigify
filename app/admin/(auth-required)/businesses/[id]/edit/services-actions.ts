@@ -55,7 +55,7 @@ export async function updateServiceAdmin(serviceId: string, formData: FormData):
   const parsed = parseServiceForm(formData)
   if (!parsed.ok) return { success: false, message: parsed.message }
 
-  const isActive = formData.get('is_active') !== 'false'
+  const isActive = formData.get('is_active') === 'true'
   const admin = createAdminClient()
   const { data: updated, error } = await admin
     .from('services')
@@ -74,8 +74,13 @@ export async function deleteServiceAdmin(serviceId: string): Promise<ServiceResu
   if (!await requireSuperAdmin()) return { success: false, message: 'Unauthorized' }
 
   const admin = createAdminClient()
-  const { data: svc } = await admin.from('services').select('business_id').eq('id', serviceId).single()
-  const { error } = await admin.from('services').delete().eq('id', serviceId)
+  // Delete + return business_id in one round-trip (atomic, no stale pre-read).
+  const { data: deleted, error } = await admin
+    .from('services')
+    .delete()
+    .eq('id', serviceId)
+    .select('business_id')
+    .single()
   if (error) {
     // bookings.service_id is ON DELETE NO ACTION, so a service with bookings
     // can't be hard-deleted — guide the admin to deactivate instead.
@@ -85,7 +90,7 @@ export async function deleteServiceAdmin(serviceId: string): Promise<ServiceResu
     return { success: false, message: `Could not delete service: ${error.message}` }
   }
 
-  if (svc?.business_id) revalidatePath(`/admin/businesses/${svc.business_id}/edit`)
+  if (deleted?.business_id) revalidatePath(`/admin/businesses/${deleted.business_id}/edit`)
   revalidatePath('/businesses')
   return { success: true, message: 'Service deleted' }
 }
