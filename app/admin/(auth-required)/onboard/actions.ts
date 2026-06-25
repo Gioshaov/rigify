@@ -20,15 +20,22 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'Unauthorized' }
   }
 
+  const id = formData.get('id') as string
   const name = formData.get('name') as string
   const subdomain = formData.get('subdomain') as string
   const slug = formData.get('slug') as string
-  const category = formData.get('category') as string
+  const categories = formData.getAll('categories') as string[]
   const city = formData.get('city') as string
+  const district = (formData.get('district') as string)?.trim() || null
   const phone = formData.get('phone') as string
   const address = formData.get('address') as string
-  const coverImageUrl = formData.get('cover_image_url') as string
-  const logoUrl = formData.get('logo_url') as string
+  const description = (formData.get('description') as string)?.trim() || null
+  const descriptionKa = (formData.get('description_ka') as string)?.trim() || null
+  const descriptionRu = (formData.get('description_ru') as string)?.trim() || null
+  const email = (formData.get('email') as string)?.trim() || null
+  const website = (formData.get('website') as string)?.trim() || null
+  const instagram = (formData.get('instagram') as string)?.trim() || null
+  const statusRaw = (formData.get('status') as string)?.trim() || 'active'
   const latitude = formData.get('latitude') as string
   const longitude = formData.get('longitude') as string
   const ownerEmail = formData.get('owner_email') as string
@@ -37,9 +44,51 @@ export async function onboardBusiness(formData: FormData) {
   const staffEmail = formData.get('staff_email') as string
   const staffPassword = formData.get('staff_password') as string
 
+  // Primary category (businesses.category is NOT NULL); the full set goes to
+  // the business_categories junction table.
+  const primaryCategory = categories[0]
+
   // Validate required fields
-  if (!name || !subdomain || !slug || !category || !city || !phone || !address || !ownerEmail || !ownerPassword) {
-    return { success: false, message: 'Missing required fields' }
+  if (!name || !subdomain || !slug || categories.length === 0 || !city || !phone || !address || !ownerEmail || !ownerPassword) {
+    return { success: false, message: 'Missing required fields (name, subdomain, slug, at least one category, city, phone, address, owner email + password)' }
+  }
+
+  // Validate the client-generated business id (used as the image upload path too)
+  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return { success: false, message: 'Invalid business id. Please reload the form and try again.' }
+  }
+
+  // Validate status
+  if (!['active', 'inactive', 'draft'].includes(statusRaw)) {
+    return { success: false, message: 'Invalid status' }
+  }
+
+  // Validate categories against the known set (DB also has a check constraint)
+  const VALID_CATEGORIES = ['hair', 'nails', 'skin', 'massage', 'brows', 'makeup', 'barber']
+  if (!categories.every((c) => VALID_CATEGORIES.includes(c))) {
+    return { success: false, message: 'One or more categories are invalid' }
+  }
+
+  // Validate optional business email format if provided
+  if (email && !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+    return { success: false, message: 'Invalid business email format' }
+  }
+
+  // Validate optional website is an http(s) URL (it renders as a link)
+  if (website && !/^https?:\/\//i.test(website)) {
+    return { success: false, message: 'Website must start with http:// or https://' }
+  }
+
+  // Image URLs come from the ImageUpload component (Supabase Storage public URL).
+  // Reject anything that isn't from our storage bucket (tampered hidden field).
+  const storagePrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}/storage/v1/object/public/business-images/`
+  const coverImageUrl = formData.get('cover_image_url') as string
+  const logoUrl = formData.get('logo_url') as string
+  if (coverImageUrl && !coverImageUrl.startsWith(storagePrefix)) {
+    return { success: false, message: 'Invalid cover image. Please re-upload.' }
+  }
+  if (logoUrl && !logoUrl.startsWith(storagePrefix)) {
+    return { success: false, message: 'Invalid logo. Please re-upload.' }
   }
 
   // Validate subdomain format (minimum 3 characters)
@@ -113,25 +162,34 @@ export async function onboardBusiness(formData: FormData) {
 
   const ownerId = ownerData.user.id
 
-  // 2. Create business record
+  // 2. Create business record (id is the client-generated UUID so it matches
+  //    the path images were uploaded to before submit)
   const { data: business, error: bizError } = await admin
     .from('businesses')
     .insert({
+      id,
       owner_id: ownerId,
       name,
       subdomain,
       slug,
-      category,
+      category: primaryCategory,
       city,
+      district,
       phone,
       address,
+      description,
+      description_ka: descriptionKa,
+      description_ru: descriptionRu,
+      email,
+      website,
+      instagram,
       cover_image_url: coverImageUrl || null,
       logo_url: logoUrl || null,
       latitude: parsedLatitude,
       longitude: parsedLongitude,
-      status: 'active',
+      status: statusRaw,
       onboarded_by: user.id,
-      is_active: true,
+      is_active: statusRaw === 'active',
     })
     .select('id')
     .single()
@@ -147,21 +205,21 @@ export async function onboardBusiness(formData: FormData) {
     if (bizError?.message?.includes('businesses_subdomain_key')) {
       return { success: false, message: `This subdomain "${subdomain}" is already taken. Please choose a different one.` }
     }
+    if (bizError?.message?.includes('businesses_pkey')) {
+      return { success: false, message: 'Internal ID conflict. Please reload the form and try again.' }
+    }
 
     return { success: false, message: `Failed to create business: ${bizError?.message}` }
   }
 
-  // 3. Insert category into business_categories junction table
+  // 3. Insert all selected categories into the business_categories junction
   const { error: categoryError } = await admin
     .from('business_categories')
-    .insert({
-      business_id: business.id,
-      category_id: category,
-    })
+    .insert(categories.map((category_id) => ({ business_id: business.id, category_id })))
 
   if (categoryError) {
-    console.error('Failed to insert category:', categoryError)
-    // Non-fatal: business is created, admin can add category manually
+    console.error('Failed to insert categories:', categoryError)
+    // Non-fatal: business is created, admin can add categories manually
   }
 
   // Surface the new business in the marketplace listing without waiting for
