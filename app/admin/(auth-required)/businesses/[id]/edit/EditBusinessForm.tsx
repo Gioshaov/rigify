@@ -250,7 +250,6 @@ export function EditBusinessForm({
                 />
               </div>
 
-
               <div>
                 <div className="block text-[#cccccc] text-sm mb-1.5">Categories</div>
                 {selectedCategoryObjects.length > 0 && (
