@@ -90,6 +90,41 @@ export async function onboardBusiness(formData: FormData) {
     return { success: false, message: 'Invalid logo. Please re-upload.' }
   }
 
+  // Parse + validate optional services (created with the business below).
+  type ServiceInput = { name?: string; nameKa?: string; category?: string; duration?: string; priceMin?: string; priceMax?: string }
+  let serviceRows: ServiceInput[] = []
+  const servicesJson = formData.get('services_json') as string
+  if (servicesJson && servicesJson !== '[]') {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(servicesJson)
+    } catch {
+      return { success: false, message: 'Invalid services data — please re-add the services.' }
+    }
+    if (!Array.isArray(parsed)) {
+      return { success: false, message: 'Invalid services data — please re-add the services.' }
+    }
+    if (parsed.length > 50) {
+      return { success: false, message: 'Too many services (max 50 per business).' }
+    }
+    serviceRows = parsed as ServiceInput[]
+  }
+  const parsedServices: Array<{ name: string; name_ka: string | null; category: string | null; duration_minutes: number; price_min: number; price_max: number | null; sort_order: number }> = []
+  for (let idx = 0; idx < serviceRows.length; idx++) {
+    const s = serviceRows[idx]
+    const sName = (s.name ?? '').trim()
+    if (!sName) return { success: false, message: `Service ${idx + 1}: name is required` }
+    const duration = parseInt(s.duration ?? '', 10)
+    if (isNaN(duration) || duration <= 0) return { success: false, message: `Service ${idx + 1}: duration must be a positive number` }
+    const pMin = parseFloat(s.priceMin ?? '')
+    if (isNaN(pMin) || pMin < 0) return { success: false, message: `Service ${idx + 1}: price from must be 0 or more` }
+    const pMax = s.priceMax && s.priceMax.trim() !== '' ? parseFloat(s.priceMax) : null
+    if (pMax !== null && (isNaN(pMax) || pMax < pMin)) return { success: false, message: `Service ${idx + 1}: price to must be greater than or equal to price from` }
+    const sCategory = s.category && s.category.trim() !== '' ? s.category : null
+    if (sCategory && !VALID_CATEGORIES.includes(sCategory)) return { success: false, message: `Service ${idx + 1}: invalid category` }
+    parsedServices.push({ name: sName, name_ka: (s.nameKa ?? '').trim() || null, category: sCategory, duration_minutes: duration, price_min: pMin, price_max: pMax, sort_order: idx })
+  }
+
   // Validate subdomain format (minimum 3 characters)
   if (!/^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$/.test(subdomain)) {
     return { success: false, message: 'Invalid subdomain format. Must be 3-63 characters using lowercase letters, numbers, and hyphens only.' }
@@ -220,6 +255,20 @@ export async function onboardBusiness(formData: FormData) {
     // Non-fatal: business is created, admin can add categories manually
   }
 
+  // 3b. Insert services (validated above). The business is already created, so a
+  // failure here is non-fatal — but we surface it in the success message so the
+  // admin knows the services were not saved.
+  let serviceWarning = ''
+  if (parsedServices.length > 0) {
+    const { error: servicesError } = await admin
+      .from('services')
+      .insert(parsedServices.map((s) => ({ ...s, business_id: business.id })))
+    if (servicesError) {
+      console.error('Failed to insert services:', servicesError)
+      serviceWarning = `\n\n⚠️ Services could not be saved (${servicesError.message}). Add them from the dashboard.`
+    }
+  }
+
   // Surface the new business in the marketplace listing without waiting for
   // the cache to expire.
   revalidatePath('/businesses')
@@ -284,14 +333,14 @@ export async function onboardBusiness(formData: FormData) {
     // Staff created successfully!
     return {
       success: true,
-      message: `✅ Business "${name}" created successfully!\n\n👤 Owner: ${ownerEmail}\n👥 Staff: ${staffName} (${staffEmail})\n\nBoth accounts are ready to use.\n\nStaff ID: ${staffRecord.id}`,
+      message: `✅ Business "${name}" created successfully!\n\n👤 Owner: ${ownerEmail}\n👥 Staff: ${staffName} (${staffEmail})\n\nBoth accounts are ready to use.\n\nStaff ID: ${staffRecord.id}${serviceWarning}`,
       subdomain,
     }
   }
 
   return {
     success: true,
-    message: `Business "${name}" created. Owner login: ${ownerEmail}`,
+    message: `Business "${name}" created. Owner login: ${ownerEmail}${serviceWarning}`,
     subdomain,
   }
 }
