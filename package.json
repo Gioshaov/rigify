@@ -15,7 +15,8 @@
     "test:report": "playwright show-report",
     "seed:test": "tsx tests/setup/seed-test-data.ts",
     "update:coords": "tsx scripts/update-test-business-coordinates.ts",
-    "audit:testids": "tsx scripts/audit-test-ids.ts"
+    "audit:testids": "tsx scripts/audit-test-ids.ts",
+    "build:staging-sql": "tsx scripts/combine-migrations.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

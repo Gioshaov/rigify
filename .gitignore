@@ -44,3 +44,4 @@ next-env.d.ts
 # Supabase
 supabase/.branches
 supabase/.temp
+supabase/_staging_bootstrap.sql
