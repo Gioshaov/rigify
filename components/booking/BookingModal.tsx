@@ -87,9 +87,10 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
   // After a successful booking, the modal swaps to the shared confirmation view.
   const [confirmation, setConfirmation] = useState<BookingConfirmationData | null>(null);
 
-  // Combine country code + phone number whenever either changes
+  // Combine country code + phone number whenever either changes.
+  // Strip internal spaces so the stored value matches the register flow's E.164.
   useEffect(() => {
-    setCustomerPhone(phoneNumber ? `${countryCode} ${phoneNumber}` : "");
+    setCustomerPhone(phoneNumber ? `${countryCode} ${phoneNumber.replace(/\s/g, "")}` : "");
   }, [countryCode, phoneNumber]);
 
   // Sync the chosen service to the trigger's context each time the modal opens.
@@ -97,14 +98,18 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
     if (isOpen) setSelectedService(initialService);
   }, [isOpen, initialService]);
 
-  // Fetch available slots when date / service / artisan changes (unchanged logic)
+  // Fetch available slots when date / service / artisan changes.
+  // Aborts an in-flight request when the selection changes so a slow earlier
+  // response can't overwrite the slots for a newer selection.
   useEffect(() => {
-    const fetchAvailability = async () => {
-      if (!selectedDate || !selectedService) {
-        setAvailableSlots([]);
-        return;
-      }
+    if (!selectedDate || !selectedService) {
+      setAvailableSlots([]);
+      return;
+    }
 
+    const controller = new AbortController();
+
+    const fetchAvailability = async () => {
       setIsLoadingAvailability(true);
       setBookingError(null);
 
@@ -113,7 +118,8 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
       try {
         const staffParam = selectedStaff && selectedStaff !== "any" ? `&staffId=${selectedStaff}` : "";
         const response = await fetch(
-          `/api/availability?businessId=${business.id}&serviceId=${selectedService.id}&date=${bookingDate}${staffParam}`
+          `/api/availability?businessId=${business.id}&serviceId=${selectedService.id}&date=${bookingDate}${staffParam}`,
+          { signal: controller.signal }
         );
 
         if (!response.ok) {
@@ -124,15 +130,19 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
         const slots12h = data.slots.map(convertTo12Hour);
         setAvailableSlots(slots12h);
       } catch (error) {
+        // Superseded by a newer selection — ignore, the new run owns the state.
+        if (controller.signal.aborted) return;
         console.error("Error fetching availability:", error);
         setBookingError("Failed to load available slots. Please try again.");
         setAvailableSlots([]);
       } finally {
-        setIsLoadingAvailability(false);
+        if (!controller.signal.aborted) setIsLoadingAvailability(false);
       }
     };
 
     fetchAvailability();
+
+    return () => controller.abort();
   }, [selectedDate, currentMonth, currentYear, selectedService, selectedStaff, business.id]);
 
   // Body scroll lock + focus management while open.

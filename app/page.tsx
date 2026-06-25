@@ -218,7 +218,7 @@ export default function HomePage() {
             </p>
             <div className="flex gap-4">
               <a data-testid="footer-facebook-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Facebook">
-                <span className="material-symbols-outlined text-[20px]">face_nod</span>
+                <span className="material-symbols-outlined text-[20px]">thumb_up</span>
               </a>
               <a data-testid="footer-instagram-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Instagram">
                 <span className="material-symbols-outlined text-[20px]">photo_camera</span>
