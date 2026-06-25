@@ -14,7 +14,7 @@ async function requireSuperAdmin() {
 }
 
 function parseServiceForm(formData: FormData):
-  | { ok: true; values: { name: string; name_ka: string | null; category: string | null; duration_minutes: number; price_min: number; price_max: number | null } }
+  | { ok: true; values: { name: string; name_ka: string | null; category: string | null; duration_minutes: number; price: number; price_min: number; price_max: number | null } }
   | { ok: false; message: string } {
   const name = (formData.get('name') as string)?.trim()
   const nameKa = (formData.get('name_ka') as string)?.trim() || null
@@ -31,7 +31,7 @@ function parseServiceForm(formData: FormData):
   if (priceMax !== null && (isNaN(priceMax) || priceMax < priceMin)) return { ok: false, message: 'Price to must be greater than or equal to price from' }
   if (category && !VALID_CATEGORIES.includes(category)) return { ok: false, message: 'Invalid category' }
 
-  return { ok: true, values: { name, name_ka: nameKa, category, duration_minutes: duration, price_min: priceMin, price_max: priceMax } }
+  return { ok: true, values: { name, name_ka: nameKa, category, duration_minutes: duration, price: priceMin, price_min: priceMin, price_max: priceMax } }
 }
 
 export async function createServiceAdmin(businessId: string, formData: FormData): Promise<ServiceResult> {
@@ -40,8 +40,9 @@ export async function createServiceAdmin(businessId: string, formData: FormData)
   const parsed = parseServiceForm(formData)
   if (!parsed.ok) return { success: false, message: parsed.message }
 
+  const isActive = formData.get('is_active') !== 'false'
   const admin = createAdminClient()
-  const { error } = await admin.from('services').insert({ business_id: businessId, is_active: true, ...parsed.values })
+  const { error } = await admin.from('services').insert({ business_id: businessId, is_active: isActive, ...parsed.values })
   if (error) return { success: false, message: `Could not create service: ${error.message}` }
 
   revalidatePath(`/admin/businesses/${businessId}/edit`)

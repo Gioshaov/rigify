@@ -133,7 +133,7 @@ insert into public.services (business_id, name, name_ka, category, duration_minu
  -- Luxe Nails
  ('b0000000-0000-0000-0000-000000000002','Classic Manicure','კლასიკური მანიკიური','nails',45,40,60,1),
  ('b0000000-0000-0000-0000-000000000002','Gel Manicure','გელის მანიკიური','nails',75,70,110,2),
- ('b0000000-0000-0000-0000-000000000002','Russian Pedicure','რუსული პედიკიური','nails',90,90,140,3),
+ ('b0000000-0000-0000-0000-000000000002','Spa Pedicure','სპა პედიკიური','nails',90,90,140,3),
  ('b0000000-0000-0000-0000-000000000002','Nail Art (per set)','ნეილ-არტი','nails',60,60,150,4),
  -- Derma (skin)
  ('b0000000-0000-0000-0000-000000000003','Deep-Cleanse Facial','ღრმა წმენდის ფეშელი','skin',60,100,140,1),
@@ -237,9 +237,9 @@ select 'b0000000-0000-0000-0000-000000000004',
 
 -- ===================== SUBSCRIPTIONS =====================
 insert into public.subscriptions (business_id, plan, status, trial_ends_at, salome_enabled, salome_plan, languages, monthly_call_limit) values
- ('b0000000-0000-0000-0000-000000000001','growth','trial', now() + interval '14 days', true,'standard', array['ka','en','ru'],500),
+ ('b0000000-0000-0000-0000-000000000001','growth','trial', now() + interval '14 days', true,'standard', array['ka','en'],500),
  ('b0000000-0000-0000-0000-000000000003','growth','active', null, true,'standard', array['ka','en'],500),
- ('b0000000-0000-0000-0000-000000000007','starter','active', null, true,'basic', array['ka','en','ru'],200);
+ ('b0000000-0000-0000-0000-000000000007','starter','active', null, true,'basic', array['ka','en'],200);
 
 commit;
 
