@@ -95,11 +95,19 @@ export async function onboardBusiness(formData: FormData) {
   let serviceRows: ServiceInput[] = []
   const servicesJson = formData.get('services_json') as string
   if (servicesJson && servicesJson !== '[]') {
+    let parsed: unknown
     try {
-      serviceRows = JSON.parse(servicesJson)
+      parsed = JSON.parse(servicesJson)
     } catch {
       return { success: false, message: 'Invalid services data — please re-add the services.' }
     }
+    if (!Array.isArray(parsed)) {
+      return { success: false, message: 'Invalid services data — please re-add the services.' }
+    }
+    if (parsed.length > 50) {
+      return { success: false, message: 'Too many services (max 50 per business).' }
+    }
+    serviceRows = parsed as ServiceInput[]
   }
   const parsedServices: Array<{ name: string; name_ka: string | null; category: string | null; duration_minutes: number; price_min: number; price_max: number | null; sort_order: number }> = []
   for (let idx = 0; idx < serviceRows.length; idx++) {
@@ -247,14 +255,17 @@ export async function onboardBusiness(formData: FormData) {
     // Non-fatal: business is created, admin can add categories manually
   }
 
-  // 3b. Insert services (validated above)
+  // 3b. Insert services (validated above). The business is already created, so a
+  // failure here is non-fatal — but we surface it in the success message so the
+  // admin knows the services were not saved.
+  let serviceWarning = ''
   if (parsedServices.length > 0) {
     const { error: servicesError } = await admin
       .from('services')
       .insert(parsedServices.map((s) => ({ ...s, business_id: business.id })))
     if (servicesError) {
       console.error('Failed to insert services:', servicesError)
-      // Non-fatal: business is created, owner/admin can add services later
+      serviceWarning = `\n\n⚠️ Services could not be saved (${servicesError.message}). Add them from the dashboard.`
     }
   }
 
@@ -322,14 +333,14 @@ export async function onboardBusiness(formData: FormData) {
     // Staff created successfully!
     return {
       success: true,
-      message: `✅ Business "${name}" created successfully!\n\n👤 Owner: ${ownerEmail}\n👥 Staff: ${staffName} (${staffEmail})\n\nBoth accounts are ready to use.\n\nStaff ID: ${staffRecord.id}`,
+      message: `✅ Business "${name}" created successfully!\n\n👤 Owner: ${ownerEmail}\n👥 Staff: ${staffName} (${staffEmail})\n\nBoth accounts are ready to use.\n\nStaff ID: ${staffRecord.id}${serviceWarning}`,
       subdomain,
     }
   }
 
   return {
     success: true,
-    message: `Business "${name}" created. Owner login: ${ownerEmail}`,
+    message: `Business "${name}" created. Owner login: ${ownerEmail}${serviceWarning}`,
     subdomain,
   }
 }

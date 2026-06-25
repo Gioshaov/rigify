@@ -5,6 +5,7 @@ import { onboardBusiness } from './actions';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 
 type ServiceRow = {
+  id: string;
   name: string;
   nameKa: string;
   category: string;
@@ -264,7 +265,7 @@ export default function OnboardForm() {
           <h2 className={sectionTitleClass}>Services <span className="text-[#6b6880]/60 font-normal normal-case">(optional)</span></h2>
           <button
             type="button"
-            onClick={() => setServices([...services, { name: '', nameKa: '', category: '', duration: '60', priceMin: '', priceMax: '' }])}
+            onClick={() => setServices((prev) => [...prev, { id: crypto.randomUUID(), name: '', nameKa: '', category: '', duration: '60', priceMin: '', priceMax: '' }])}
             data-testid="onboard-service-add-btn"
             className="text-[#d4a843] font-mono text-[11px] uppercase tracking-wider hover:underline"
           >
@@ -275,10 +276,10 @@ export default function OnboardForm() {
           <p className="text-[#6b6880] font-mono text-[10px]">No services yet — the owner can also add them later from their dashboard.</p>
         )}
         {services.map((svc, i) => (
-          <div key={i} className="border border-[rgba(255,255,255,0.08)] rounded p-4 space-y-3" data-testid={`onboard-service-row-${i}`}>
+          <div key={svc.id} className="border border-[rgba(255,255,255,0.08)] rounded p-4 space-y-3" data-testid={`onboard-service-row-${i}`}>
             <div className="flex items-center justify-between">
               <span className="text-[#6b6880] font-mono text-[10px] uppercase">Service {i + 1}</span>
-              <button type="button" onClick={() => setServices(services.filter((_, idx) => idx !== i))} className="text-[#6b6880] hover:text-white text-xs" aria-label={`Remove service ${i + 1}`} data-testid={`onboard-service-remove-${i}`}>Remove</button>
+              <button type="button" onClick={() => setServices((prev) => prev.filter((s) => s.id !== svc.id))} className="text-[#6b6880] hover:text-white text-xs" aria-label={`Remove service ${i + 1}`} data-testid={`onboard-service-remove-${i}`}>Remove</button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
