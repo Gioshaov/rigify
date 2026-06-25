@@ -174,7 +174,7 @@ export function EditBusinessForm({
         )}
 
         {/* Form */}
-        <form action={handleSubmit} className="px-8 py-6 space-y-6">
+        <form id="edit-business-form" action={handleSubmit} className="px-8 py-6 space-y-6">
           {/* Section 1: Basic Info */}
           <section>
             <h2 className="text-[#888888] text-[11px] uppercase tracking-widest mb-4">
@@ -527,22 +527,26 @@ export function EditBusinessForm({
             </div>
           </section>
 
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={isPending}
-              data-testid="btn-save-changes"
-              className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-sm px-6 py-2.5 rounded hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
         </form>
 
-        {/* Services management — in the main column (outside the form), full width */}
-        <div className="px-8 pb-10 border-t border-[#2a2a2a] pt-6">
+        {/* Services management — full width, above the save button. Lives outside
+            the business <form> (it has its own forms); the Save button below
+            submits the business form via its form="edit-business-form" attribute. */}
+        <div className="px-8 py-6 border-t border-[#2a2a2a]">
           <ServicesPanel services={services} businessId={business.id} />
+        </div>
+
+        {/* Submit Button — saves the business fields above */}
+        <div className="px-8 pb-10">
+          <button
+            type="submit"
+            form="edit-business-form"
+            disabled={isPending}
+            data-testid="btn-save-changes"
+            className="bg-[#d4a843] text-black font-bold uppercase tracking-wider text-sm px-6 py-2.5 rounded hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? 'Saving...' : 'Save Changes'}
+          </button>
         </div>
       </main>
 
