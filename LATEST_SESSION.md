@@ -134,7 +134,7 @@ Every PR went through `@code-reviewer` (and `/ponytail-review` once it became av
 6. **`min-h-dvh` (#32)** — swapped 45 `min-h-screen` usages. (Safe-area insets were attempted then reverted — `viewport-fit=cover` needs insets on all edges; deferred.)
 7. **Playwright coverage (#33)** — prod-gated `/dev/ui-harness` route + ConfirmDialog/Toast specs (11 tests).
 
-### Open: portal + z-index (PR #34)
+### Merged: portal + z-index (PR #34)
 - **Commit 1**: new SSR-safe `components/ui/Portal.tsx`; portaled all 12 overlays to `document.body` (a full `fixed inset-0` sweep caught 3 inline modals the name-keyed audit missed).
 - **Commit 2**: semantic z-index scale in `tailwind.config.ts` (`nav:40 · dropdown:50 · modal:100 · toast:200`); adopted across ~40 global-layer sites; fixes the latent toast-under-modal ordering.
 - **Commit 3**: review fix — portaling broke focus-on-open (ref null before portal mounts); switched ConfirmDialog/Modal/BookingModal to `autoFocus`; made `Portal` testId required.
@@ -171,8 +171,8 @@ Every PR went through `@code-reviewer` (and `/ponytail-review` once it became av
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `feature/z-index-scale` checked out (PR #34 open). `staging` at `71bd37a`, **6 PRs ahead of `master`** (#28–#33 merged; #34 open) — `master` still at `570f4fb`.  
-**Status**: ✅ Working tree clean; PR #34 pushed/open into `staging`. **`staging` not yet promoted to `master`/production** (awaiting visual verification on `staging.rigify.ge`).
+**Branch**: `staging` checked out. `staging` at `55cbb16`, **9 commits ahead of `master`** (PRs #28–#35 all merged) — `master` still at `570f4fb`.  
+**Status**: ✅ Working tree clean; all Session 31 PRs (#28–#35) merged into `staging`. **`staging` not yet promoted to `master`/production** (awaiting visual verification on `staging.rigify.ge`).
 
 **Local-only (intentionally not committed)**:
 - `.claude/settings.local.json` — gitignored (personal per-machine settings)
@@ -194,4 +194,4 @@ Every PR went through `@code-reviewer` (and `/ponytail-review` once it became av
 
 **Session Started**: June 26, 2026  
 **Session Ended**: June 26, 2026  
-**Status**: ✅ Complete. A UI-correction sweep: PRs #28–#33 merged into `staging` (hero fix, Phase 1 a11y + tail, ConfirmDialog, Toast, min-h-dvh, Playwright coverage); PR #34 (portal overlays + z-index scale) pushed and open into `staging`. `staging` at `71bd37a`, 6 PRs ahead of `master` — **not yet promoted to production**. Working tree clean. Next: verify on `staging.rigify.ge` then promote `staging → master`; remaining UI items + `SITE_PASSWORD` removal tracked in memory `ui-corrections-backlog.md`.
+**Status**: ✅ Complete. A UI-correction sweep — **PRs #28–#35 all merged into `staging`** (hero fix, Phase 1 a11y + tail, ConfirmDialog, Toast, min-h-dvh, Playwright coverage, portal overlays + z-index scale, docs). `staging` at `55cbb16`, **9 commits ahead of `master`** — **not yet promoted to production**. Working tree clean. Next: verify on `staging.rigify.ge` then promote `staging → master`; remaining UI items + `SITE_PASSWORD` removal tracked in memory `ui-corrections-backlog.md`.
