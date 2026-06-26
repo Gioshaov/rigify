@@ -8,7 +8,7 @@
     color: #e4e1e9;
   }
   body {
-    @apply bg-background text-on-surface font-hanken text-body-md antialiased min-h-screen;
+    @apply bg-background text-on-surface font-hanken text-body-md antialiased min-h-dvh;
     letter-spacing: 0.01em;
   }
   ::selection {

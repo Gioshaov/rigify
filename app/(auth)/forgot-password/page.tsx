@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-margin-mobile">
+    <main className="min-h-dvh bg-background relative overflow-hidden flex items-center justify-center px-margin-mobile">
       {/* Diagonal Pattern Background */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0" style={{

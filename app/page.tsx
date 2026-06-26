@@ -41,7 +41,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
+    <div className="min-h-dvh bg-background text-on-surface">
       <a data-testid="home-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>

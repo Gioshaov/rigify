@@ -59,7 +59,7 @@ export default function ForBusinessesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background font-hanken text-on-surface antialiased">
+    <div className="min-h-dvh bg-background font-hanken text-on-surface antialiased">
       <a data-testid="for-businesses-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>

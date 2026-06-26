@@ -24,7 +24,7 @@ export default async function InviteStaffPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Subtle grid pattern background */}
       <div
         className="absolute inset-0 opacity-[0.02]"

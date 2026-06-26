@@ -122,7 +122,7 @@ export function BookingDetailView({ booking }: BookingDetailViewProps) {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
+    <div className="min-h-dvh flex bg-[#0a0a0a]">
       {/* Main Content Column */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}

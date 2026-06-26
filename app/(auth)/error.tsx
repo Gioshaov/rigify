@@ -15,7 +15,7 @@ export default function AuthError({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-dvh bg-background flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-6">
           <span aria-hidden="true" className="material-symbols-outlined text-error text-[64px]">

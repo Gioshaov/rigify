@@ -34,7 +34,7 @@ export default function BookingConfirmedPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background font-hanken text-on-surface antialiased overflow-x-hidden">
+    <div className="min-h-dvh bg-background font-hanken text-on-surface antialiased overflow-x-hidden">
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">

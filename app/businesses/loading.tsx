@@ -1,6 +1,6 @@
 export default function BusinessesLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Header Skeleton */}
       <header className="sticky top-0 z-50 bg-surface border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">

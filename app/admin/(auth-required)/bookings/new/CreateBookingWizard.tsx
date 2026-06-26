@@ -184,7 +184,7 @@ export function CreateBookingWizard({ businesses }: CreateBookingWizardProps) {
   const selectedStaff = staff.find(s => s.id === staffId);
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
+    <div className="min-h-dvh flex bg-[#0a0a0a]">
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}

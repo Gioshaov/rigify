@@ -14,7 +14,7 @@ export function BookingConfirmationClient({
   canViewPII?: boolean
 }) {
   return (
-    <div className="min-h-screen bg-background font-hanken text-on-surface antialiased overflow-x-hidden">
+    <div className="min-h-dvh bg-background font-hanken text-on-surface antialiased overflow-x-hidden">
       {/* Stitch Design: booking_confirmed_rigify */}
 
       {/* Top Navigation */}

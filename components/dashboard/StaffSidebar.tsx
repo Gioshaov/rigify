@@ -45,7 +45,7 @@ export function StaffSidebar({ staff, permissions }: StaffSidebarProps) {
   ].filter((item) => item.show);
 
   return (
-    <aside className="w-64 shrink-0 border-r border-outline-variant bg-surface min-h-screen">
+    <aside className="w-64 shrink-0 border-r border-outline-variant bg-surface min-h-dvh">
       <div className="px-gutter py-stack-lg border-b border-outline-variant">
         <Link
           href="/"

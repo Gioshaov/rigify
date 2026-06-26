@@ -36,7 +36,7 @@ export default async function BrowseBusinessesPage() {
   const businesses = businessesData || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <a data-testid="browse-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>

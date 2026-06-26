@@ -158,7 +158,7 @@ export default async function BusinessProfilePage({
     "Welcome to our business. Book your appointment today.";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <BookingProvider
         business={{ id: business.id, name: displayName, slug: business.slug }}
         services={services}
