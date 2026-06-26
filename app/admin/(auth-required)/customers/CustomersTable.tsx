@@ -7,6 +7,7 @@ import { useState, useTransition, useRef, useEffect } from 'react';
 import { updateCustomerStatus, deleteCustomer } from './actions';
 import { Ban, CheckCircle, Trash2 } from 'lucide-react';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 
 type Customer = {
   id: string;
@@ -38,6 +39,7 @@ export function CustomersTable({
 }: CustomersTableProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const showToast = useToast();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export function CustomersTable({
       setActionInProgress(null);
 
       if (!result.success) {
-        alert(result.message);
+        showToast(result.message, 'error');
       } else {
         router.refresh();
       }
@@ -107,7 +109,7 @@ export function CustomersTable({
       setActionInProgress(null);
 
       if (!result.success) {
-        alert(result.message);
+        showToast(result.message, 'error');
       } else {
         router.refresh();
       }
@@ -131,7 +133,7 @@ export function CustomersTable({
       setActionInProgress(null);
 
       if (result.error) {
-        alert(result.error);
+        showToast(result.error, 'error');
       } else {
         router.refresh();
       }

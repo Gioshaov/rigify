@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Pencil, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { deleteBusiness } from './businesses/actions';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 
 interface BusinessRowActionsProps {
   business: {
@@ -19,6 +20,7 @@ interface BusinessRowActionsProps {
 export function BusinessRowActions({ business }: BusinessRowActionsProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const showToast = useToast();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -36,7 +38,7 @@ export function BusinessRowActions({ business }: BusinessRowActionsProps) {
     const result = await deleteBusiness(business.id);
 
     if (result.error) {
-      alert(`Failed to delete business: ${result.error}`);
+      showToast(`Failed to delete business: ${result.error}`, 'error');
       setDeleting(false);
     } else {
       router.refresh();

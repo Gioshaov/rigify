@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { DeleteServiceModal } from "@/components/dashboard/DeleteServiceModal";
-import { Toast } from "@/components/ui/Toast";
+import { useToast } from "@/lib/contexts/ToastContext";
 import { NewServiceForm } from "@/app/dashboard/services/new/NewServiceForm";
 import { Modal } from "@/components/ui/Modal";
 
@@ -33,11 +33,7 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Toast notification state
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info";
-  } | null>(null);
+  const showToast = useToast();
 
   // Read from URL or use defaults
   const filterCategory = searchParams.get('category') || 'all';
@@ -281,21 +277,9 @@ export function ServicesContent({ businessId, services }: ServicesContentProps) 
           serviceId={serviceToDelete.id}
           onClose={() => setServiceToDelete(null)}
           onSuccess={() => {
-            setToast({
-              message: `${serviceToDelete.name} deleted successfully`,
-              type: "success",
-            });
+            showToast(`${serviceToDelete.name} deleted successfully`, "success");
             router.refresh();
           }}
-        />
-      )}
-
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
         />
       )}
 

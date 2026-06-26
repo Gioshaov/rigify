@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createService } from "../actions";
-import { Toast } from "@/components/ui/Toast";
+import { useToast } from "@/lib/contexts/ToastContext";
 import { CancelButton } from "@/components/ui/CancelButton";
 
 interface NewServiceFormProps {
@@ -38,10 +38,7 @@ export function NewServiceForm({ businessId, onClose }: NewServiceFormProps) {
 
   // UI state
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const showToast = useToast();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -88,10 +85,7 @@ export function NewServiceForm({ businessId, onClose }: NewServiceFormProps) {
       const result = await createService(businessId, formData);
 
       if (result.success) {
-        setToast({
-          message: result.message,
-          type: "success",
-        });
+        showToast(result.message, "success");
         // Close modal or redirect after short delay
         setTimeout(() => {
           if (onClose) {
@@ -311,15 +305,6 @@ export function NewServiceForm({ businessId, onClose }: NewServiceFormProps) {
           </button>
         </div>
       </form>
-
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
     </>
   );
 }

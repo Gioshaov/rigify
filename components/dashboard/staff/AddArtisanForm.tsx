@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createArtisanAction } from "@/app/dashboard/staff/invite/actions";
 import { CancelButton } from "@/components/ui/CancelButton";
+import { useToast } from "@/lib/contexts/ToastContext";
 
 const DAYS = [
   { short: "Mo", full: "Monday" },
@@ -28,6 +29,7 @@ type AddArtisanFormProps = {
 
 export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
   const router = useRouter();
+  const showToast = useToast();
 
   // Form state
   const [photo, setPhoto] = useState<File | null>(null);
@@ -66,15 +68,15 @@ export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
   const handleSubmit = async () => {
     // Basic validation
     if (!fullName.trim()) {
-      alert("Please enter the artisan's full name");
+      showToast("Please enter the artisan's full name", "error");
       return;
     }
     if (!email.trim()) {
-      alert("Please enter an email address");
+      showToast("Please enter an email address", "error");
       return;
     }
     if (!password || password.length < 8) {
-      alert("Password must be at least 8 characters");
+      showToast("Password must be at least 8 characters", "error");
       return;
     }
 
@@ -92,7 +94,7 @@ export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
       });
 
       if (!result.success) {
-        alert(result.error || "Failed to create artisan");
+        showToast(result.error || "Failed to create artisan", "error");
         setIsSubmitting(false);
         return;
       }
@@ -101,7 +103,7 @@ export function AddArtisanForm({ onClose }: AddArtisanFormProps = {}) {
       setShowSuccess(true);
     } catch (error) {
       console.error("Error creating artisan:", error);
-      alert("An error occurred while creating the artisan");
+      showToast("An error occurred while creating the artisan", "error");
       setIsSubmitting(false);
     }
   };
