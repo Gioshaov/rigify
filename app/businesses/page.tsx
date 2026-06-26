@@ -38,6 +38,9 @@ export default async function BrowseBusinessesPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* Top Navigation */}
       <nav className="sticky top-0 w-full z-50 flex items-center justify-between px-4 md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
@@ -111,9 +114,11 @@ export default async function BrowseBusinessesPage() {
       </header>
 
       {/* Client-side interactive filtering/sorting */}
-      <Suspense fallback={<div className="px-4 md:px-margin-desktop py-12"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
-        <BusinessPageClient initialBusinesses={businesses} />
-      </Suspense>
+      <main id="main-content">
+        <Suspense fallback={<div className="px-4 md:px-margin-desktop py-12"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
+          <BusinessPageClient initialBusinesses={businesses} />
+        </Suspense>
+      </main>
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-4 border-t border-white/10">

@@ -18,12 +18,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .maybeSingle();
 
   return (
-    <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
-      <Sidebar businessName={business?.name} city={business?.city} />
-      <div className="flex-1 min-w-0">
-        <DashboardHeader userEmail={user.email ?? ''} />
-        <main className="px-8 py-12">{children}</main>
+    <>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
+        <Sidebar businessName={business?.name} city={business?.city} />
+        <div className="flex-1 min-w-0">
+          <DashboardHeader userEmail={user.email ?? ''} />
+          <main id="main-content" className="px-8 py-12">{children}</main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
