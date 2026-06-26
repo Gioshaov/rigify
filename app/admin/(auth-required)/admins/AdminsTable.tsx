@@ -7,6 +7,7 @@ import { createSuperAdmin, revokeSuperAdmin } from './actions';
 import { Shield, UserMinus, Activity, Plus, X, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 
 type Admin = {
   id: string;
@@ -23,6 +24,7 @@ interface AdminsTableProps {
 export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const showToast = useToast();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
@@ -82,7 +84,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
       setActionInProgress(null);
 
       if (result.error) {
-        alert(result.error);
+        showToast(result.error, 'error');
       } else {
         router.refresh();
       }

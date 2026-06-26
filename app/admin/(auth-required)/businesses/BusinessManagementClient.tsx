@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { toggleBusinessStatus } from './actions';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 
 type Business = {
   id: string;
@@ -25,6 +26,7 @@ type BusinessManagementClientProps = {
 export function BusinessManagementClient({ businesses, totalCount }: BusinessManagementClientProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const showToast = useToast();
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -68,7 +70,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
       if (business.subdomain) {
         window.open(`https://${business.subdomain}.rigify.ge`, '_blank');
       } else {
-        alert('This business does not have a subdomain configured.');
+        showToast('This business does not have a subdomain configured.', 'info');
       }
     } else if (action === 'manage-staff') {
       router.push(`/admin/businesses/${businessId}/edit#staff`);
@@ -91,7 +93,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
       setActionInProgress(null);
 
       if (result.error) {
-        alert(`Failed to ${actionText} business: ${result.error}`);
+        showToast(`Failed to ${actionText} business: ${result.error}`, 'error');
       } else {
         // Set optimistic status immediately
         setOptimisticStatus(prev => ({ ...prev, [businessId]: newStatus }));

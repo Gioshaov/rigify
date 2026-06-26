@@ -7,6 +7,7 @@ import { useState, useTransition, useRef, useEffect } from 'react';
 import { cancelBooking, markNoShow } from './actions';
 import { XCircle, UserX } from 'lucide-react';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 
 type Booking = {
   id: string;
@@ -73,6 +74,7 @@ export function BookingsTable({
 }: BookingsTableProps) {
   const router = useRouter();
   const confirm = useConfirm();
+  const showToast = useToast();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -122,7 +124,7 @@ export function BookingsTable({
       setActionInProgress(null);
 
       if (result.error) {
-        alert(result.error);
+        showToast(result.error, 'error');
       } else {
         router.refresh();
       }
@@ -147,7 +149,7 @@ export function BookingsTable({
       setActionInProgress(null);
 
       if (result.error) {
-        alert(result.error);
+        showToast(result.error, 'error');
       } else {
         router.refresh();
       }

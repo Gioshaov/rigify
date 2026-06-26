@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createAppointment } from "@/app/dashboard/appointments/actions";
-import { Toast } from "@/components/ui/Toast";
+import { useToast } from "@/lib/contexts/ToastContext";
 
 interface Service {
   id: string;
@@ -64,10 +64,7 @@ export function CreateAppointmentModal({
 
   // UI state
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const showToast = useToast();
 
   const timeSlots = generateTimeSlots();
 
@@ -122,10 +119,7 @@ export function CreateAppointmentModal({
       });
 
       if (result.success) {
-        setToast({
-          message: result.message,
-          type: "success",
-        });
+        showToast(result.message, "success");
         // Close modal and refresh after short delay
         setTimeout(() => {
           router.refresh();
@@ -425,15 +419,6 @@ export function CreateAppointmentModal({
           </form>
         </div>
       </div>
-
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
     </>
   );
 }
