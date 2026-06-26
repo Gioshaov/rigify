@@ -15,7 +15,7 @@ export function UiHarness() {
   const [result, setResult] = useState("none");
 
   return (
-    <main className="min-h-screen bg-background text-on-surface p-8 space-y-6">
+    <main className="min-h-dvh bg-background text-on-surface p-8 space-y-6">
       <h1 className="font-hanken text-2xl font-bold">UI Harness</h1>
 
       {/* Status element the specs assert against. */}
