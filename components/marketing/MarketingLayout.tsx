@@ -8,6 +8,9 @@ type MarketingLayoutProps = {
 export function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <a data-testid="marketing-skip-to-main-link" href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-surface border-b border-white/10">
         <nav aria-label="Main navigation" className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
@@ -35,7 +38,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {children}
       </main>
 

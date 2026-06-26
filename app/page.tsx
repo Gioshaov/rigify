@@ -41,7 +41,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="min-h-screen bg-background text-on-surface">
+    <div className="min-h-screen bg-background text-on-surface">
       <a data-testid="home-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -49,7 +49,6 @@ export default function HomePage() {
       <header className="sticky top-0 w-full z-50 bg-surface border-b border-white/10">
         <Container className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
-            <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
             <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
               RIGIFY
             </Link>
@@ -77,8 +76,9 @@ export default function HomePage() {
         </Container>
       </header>
 
+      <main id="main-content">
       {/* Hero Section */}
-      <section id="main-content" className="relative flex flex-col justify-center py-section-gap lg:min-h-[520px]">
+      <section className="relative flex flex-col justify-center py-section-gap lg:min-h-[520px]">
         <Container>
           <div className="relative">
             <div className="max-w-3xl space-y-8">
@@ -210,6 +210,7 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-20 md:mb-0">
@@ -281,6 +282,6 @@ export default function HomePage() {
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>
         </Link>
       </nav>
-    </main>
+    </div>
   );
 }

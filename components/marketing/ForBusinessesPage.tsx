@@ -60,10 +60,12 @@ export default function ForBusinessesPage() {
 
   return (
     <div className="min-h-screen bg-background font-hanken text-on-surface antialiased">
+      <a data-testid="for-businesses-skip-to-main-link" href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">language</span>
           <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
               RIGIFY
@@ -112,7 +114,7 @@ export default function ForBusinessesPage() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-white/10 bg-surface">
           <div className="absolute inset-0 opacity-5">
