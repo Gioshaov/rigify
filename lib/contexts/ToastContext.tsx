@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useCallback, useRef, useState } from "react";
 import { Toast, type ToastType } from "@/components/ui/Toast";
+import { Portal } from "@/components/ui/Portal";
 
 type ShowToast = (message: string, type?: ToastType, duration?: number) => void;
 
@@ -36,23 +37,25 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={showToast}>
       {children}
-      <div
-        className="fixed bottom-8 right-8 z-[60] flex flex-col gap-3 items-end pointer-events-none"
-        data-testid="toast-region"
-        aria-live="polite"
-        aria-atomic="false"
-      >
-        {toasts.map((t) => (
-          <Toast
-            key={t.id}
-            id={t.id}
-            message={t.message}
-            type={t.type}
-            duration={t.duration}
-            onClose={() => remove(t.id)}
-          />
-        ))}
-      </div>
+      <Portal testId="toast-portal">
+        <div
+          className="fixed bottom-8 right-8 z-toast flex flex-col gap-3 items-end pointer-events-none"
+          data-testid="toast-region"
+          aria-live="polite"
+          aria-atomic="false"
+        >
+          {toasts.map((t) => (
+            <Toast
+              key={t.id}
+              id={t.id}
+              message={t.message}
+              type={t.type}
+              duration={t.duration}
+              onClose={() => remove(t.id)}
+            />
+          ))}
+        </div>
+      </Portal>
     </ToastContext.Provider>
   );
 }

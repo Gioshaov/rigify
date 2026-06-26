@@ -163,7 +163,7 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
         {/* Top Navigation */}
         <header
           data-testid="reschedule-booking-header"
-          className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10"
+          className="sticky top-0 w-full z-nav flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10"
         >
           <button
             data-testid="back-btn"
@@ -521,7 +521,7 @@ export function RescheduleBookingClient({ booking, staff }: RescheduleBookingCli
 
         {/* Fixed Footer Action Bar - only show when not in success state */}
         {!success && (
-        <footer className="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile z-50">
+        <footer className="fixed bottom-0 left-0 w-full bg-surface border-t border-white/10 p-margin-mobile z-nav">
           <div className="max-w-container mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="hidden md:block">
               {selectedDate && selectedTime ? (

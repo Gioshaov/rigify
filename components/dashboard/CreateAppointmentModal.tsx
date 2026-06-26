@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createAppointment } from "@/app/dashboard/appointments/actions";
 import { useToast } from "@/lib/contexts/ToastContext";
+import { Portal } from "@/components/ui/Portal";
 
 interface Service {
   id: string;
@@ -134,8 +135,8 @@ export function CreateAppointmentModal({
   const selectedService = services.find((s) => s.id === serviceId);
 
   return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+    <Portal testId="create-appointment-modal-portal">
+      <div className="fixed inset-0 z-modal flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
         <div
           className="bg-surface-container border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           data-testid="create-appointment-modal"
@@ -419,6 +420,6 @@ export function CreateAppointmentModal({
           </form>
         </div>
       </div>
-    </>
+    </Portal>
   );
 }

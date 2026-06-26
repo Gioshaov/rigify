@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { Portal } from "@/components/ui/Portal";
 
 interface ModalProps {
   isOpen: boolean;
@@ -23,7 +24,8 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
     };
 
     document.addEventListener("keydown", handleEscape);
-    closeButtonRef.current?.focus();
+    // (Focus-on-open handled by autoFocus on the close button, reliable
+    // through the Portal's async mount where a manual focus() races.)
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
@@ -33,8 +35,9 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
   if (!isOpen) return null;
 
   return (
+    <Portal testId="modal-portal">
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center z-50 overflow-y-auto py-8"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center z-modal overflow-y-auto py-8"
       onClick={onClose}
     >
       <div
@@ -45,6 +48,8 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
       >
         <button
           ref={closeButtonRef}
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: focus the dialog's close control on open
+          autoFocus
           type="button"
           data-testid={closeButtonTestId}
           onClick={onClose}
@@ -55,5 +60,6 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
         {children}
       </div>
     </div>
+    </Portal>
   );
 }

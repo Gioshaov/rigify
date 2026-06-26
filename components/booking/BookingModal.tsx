@@ -10,6 +10,7 @@ import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/datetime";
 import { validators, errorMessages } from "@/lib/utils/validation";
 import { BookingConfirmation } from "@/components/booking/BookingConfirmation";
 import type { BookingConfirmationData } from "@/lib/bookings/types";
+import { Portal } from "@/components/ui/Portal";
 
 interface Service {
   id: string;
@@ -151,8 +152,8 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Focus the dialog on open
-    dialogRef.current?.focus();
+    // (Focus-on-open handled by autoFocus on the dialog, reliable through the
+    // Portal's async mount where a manual focus() races.)
     return () => {
       document.body.style.overflow = prevOverflow;
       previouslyFocused?.focus?.();
@@ -364,8 +365,9 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
     isBooking;
 
   return (
+    <Portal testId="booking-modal-portal">
     <div
-      className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 bg-[#0a0a0a]/70 overflow-y-auto"
+      className="fixed inset-0 z-modal flex items-start sm:items-center justify-center p-4 bg-[#0a0a0a]/70 overflow-y-auto"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -378,6 +380,8 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
         aria-labelledby={confirmation ? undefined : "booking-modal-title"}
         aria-label={confirmation ? "Booking confirmed" : undefined}
         tabIndex={-1}
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: move focus into the dialog on open
+        autoFocus
         data-testid="booking-modal"
         className={`w-full ${confirmation ? "max-w-[920px]" : "max-w-[520px]"} my-4 bg-surface border border-white/10 rounded-[4px] flex flex-col ${confirmation ? "max-h-[95vh]" : "max-h-[92vh]"} outline-none`}
       >
@@ -709,5 +713,6 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
         )}
       </div>
     </div>
+    </Portal>
   );
 }

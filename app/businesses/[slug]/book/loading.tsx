@@ -2,7 +2,7 @@ export default function BookingLoading() {
   return (
     <div className="min-h-dvh bg-background flex flex-col">
       {/* Header Skeleton */}
-      <header className="sticky top-0 z-50 bg-surface border-b border-white/10">
+      <header className="sticky top-0 z-nav bg-surface border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="h-6 bg-white/10 animate-pulse w-24"></div>
           <div className="h-10 w-10 bg-white/10 animate-pulse rounded-full"></div>

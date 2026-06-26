@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { updateStaffMember, deleteStaff } from "./actions";
 import { AddArtisanForm } from "@/components/dashboard/staff/AddArtisanForm";
 import { Modal } from "@/components/ui/Modal";
+import { Portal } from "@/components/ui/Portal";
 
 type StaffMember = {
   id: string;
@@ -458,8 +459,9 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
 
       {/* Profile Modal */}
       {selectedProfile && (
+        <Portal testId="staff-profile-modal-portal">
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal"
           onClick={() => setProfileModalId(null)}
         >
           <div
@@ -571,6 +573,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
             </div>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* Invite Staff Modal */}

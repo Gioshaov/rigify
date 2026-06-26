@@ -299,7 +299,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
                   {/* Popover Content */}
                   <div
                     data-testid={`business-popover-${business.id}`}
-                    className="absolute right-8 top-full mt-1 w-[220px] bg-[#1a1a1a] border border-[rgba(255,255,255,0.15)] rounded-none shadow-lg z-50 animate-[fadeIn_150ms_ease-out]"
+                    className="absolute right-8 top-full mt-1 w-[220px] bg-[#1a1a1a] border border-[rgba(255,255,255,0.15)] rounded-none shadow-lg z-dropdown animate-[fadeIn_150ms_ease-out]"
                     style={{
                       animation: 'fadeIn 150ms ease-out',
                     }}
@@ -356,7 +356,7 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
         </div>
 
         {/* Status Bar */}
-        <div className="fixed bottom-0 left-60 right-0 h-8 bg-[#0a0a0a] border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between px-8 z-30">
+        <div className="fixed bottom-0 left-60 right-0 h-8 bg-[#0a0a0a] border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between px-8 z-nav">
           <div className="flex items-center gap-2">
             <div className="w-[5px] h-[5px] rounded-full bg-green-500" />
             <span className="text-[#6b6880] font-mono text-[10px] uppercase tracking-wider">

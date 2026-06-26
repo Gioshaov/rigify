@@ -361,7 +361,7 @@ export default async function BusinessProfilePage({
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <footer className="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
+      <footer className="fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
         <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">

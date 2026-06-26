@@ -8,6 +8,7 @@ import { Shield, UserMinus, Activity, Plus, X, Copy, Check } from 'lucide-react'
 import Link from 'next/link';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
 import { useToast } from '@/lib/contexts/ToastContext';
+import { Portal } from '@/components/ui/Portal';
 
 type Admin = {
   id: string;
@@ -193,7 +194,8 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
 
       {/* Add Admin Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <Portal testId="add-admin-modal-portal">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-modal">
           <div className="bg-[#111111] border border-[rgba(255,255,255,0.15)] rounded p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-bold text-lg">Add Super Admin</h3>
@@ -260,11 +262,13 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* Success Modal (Temp Password) */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <Portal testId="admin-success-modal-portal">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-modal">
           <div
             data-testid="temp-password-modal"
             className="bg-[#111111] border border-[rgba(255,255,255,0.15)] rounded p-6 w-full max-w-md"
@@ -318,6 +322,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
             </button>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );

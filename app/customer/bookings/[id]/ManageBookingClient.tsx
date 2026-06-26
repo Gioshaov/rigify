@@ -9,6 +9,7 @@ import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 import { cancelBookingAction } from "@/app/customer/dashboard/actions";
 import { useEmergencyCancelFlag } from "@/app/customer/dashboard/useEmergencyCancelFlag";
+import { Portal } from "@/components/ui/Portal";
 
 type ManageBookingClientProps = {
   booking: {
@@ -143,7 +144,7 @@ export function ManageBookingClient({ booking, customerId, initialHasUsedEmergen
         {/* Top Navigation */}
         <header
           data-testid="manage-booking-header"
-          className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10"
+          className="sticky top-0 w-full z-nav flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10"
         >
           <button
             data-testid="back-btn"
@@ -400,8 +401,9 @@ export function ManageBookingClient({ booking, customerId, initialHasUsedEmergen
 
       {/* Cancel Modal */}
       {showCancelModal && (
+        <Portal testId="manage-booking-cancel-modal-portal">
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal px-4"
           onClick={() => !loading && setShowCancelModal(false)}
           role="dialog"
           aria-modal="true"
@@ -454,6 +456,7 @@ export function ManageBookingClient({ booking, customerId, initialHasUsedEmergen
             </div>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );

@@ -46,7 +46,7 @@ export default function HomePage() {
         Skip to main content
       </a>
       {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-50 bg-surface border-b border-white/10">
+      <header className="sticky top-0 w-full z-nav bg-surface border-b border-white/10">
         <Container className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
@@ -264,7 +264,7 @@ export default function HomePage() {
       </footer>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
         <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>

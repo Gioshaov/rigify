@@ -69,7 +69,7 @@ export function CategoryDropdown({ defaultSelected, onChange }: CategoryDropdown
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-surface border border-outline-variant rounded shadow-xl max-h-64 overflow-y-auto">
+        <div className="absolute z-dropdown mt-1 w-full bg-surface border border-outline-variant rounded shadow-xl max-h-64 overflow-y-auto">
           <div className="py-1">
             {CATEGORIES.map((cat) => (
               <label

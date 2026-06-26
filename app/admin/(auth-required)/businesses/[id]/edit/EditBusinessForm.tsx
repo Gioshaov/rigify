@@ -147,7 +147,7 @@ export function EditBusinessForm({
       {/* Main Form Column */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
-        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-nav">
           <h1 className="text-xl font-bold text-white">Edit Business</h1>
           <button
             type="button"

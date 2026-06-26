@@ -214,7 +214,7 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId }:
       {open && (
         <ul
           role="listbox"
-          className="absolute left-0 top-full z-30 mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface py-1"
+          className="absolute left-0 top-full z-dropdown mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface py-1"
         >
           {COUNTRIES.map((c, i) => {
             const isSelected = c === selected;

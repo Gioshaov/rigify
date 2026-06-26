@@ -12,7 +12,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
         Skip to main content
       </a>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-surface border-b border-white/10">
+      <header className="sticky top-0 z-nav bg-surface border-b border-white/10">
         <nav aria-label="Main navigation" className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link data-testid="logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
             RIGIFY

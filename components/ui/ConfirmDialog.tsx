@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Portal } from "@/components/ui/Portal";
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -43,8 +44,9 @@ export function ConfirmDialog({
     if (!isOpen) return;
 
     // Remember what had focus so we can restore it when the dialog closes.
+    // (Focus-on-open is handled by autoFocus on the confirm button, which is
+    // reliable through the Portal's async mount where a manual focus() races.)
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    confirmRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -76,8 +78,9 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
+    <Portal testId="confirm-dialog-portal">
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal p-4"
       onClick={onCancel}
     >
       <div
@@ -116,6 +119,8 @@ export function ConfirmDialog({
           </button>
           <button
             ref={confirmRef}
+            // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: focus the primary action when the dialog opens
+            autoFocus
             type="button"
             data-testid={`${testId}-confirm-btn`}
             onClick={onConfirm}
@@ -130,5 +135,6 @@ export function ConfirmDialog({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }
