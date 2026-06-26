@@ -79,7 +79,7 @@ export function ConfirmDialog({
   return (
     <Portal testId="confirm-dialog-portal">
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal p-4"
       onClick={onCancel}
     >
       <div

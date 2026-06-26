@@ -327,7 +327,7 @@ export function BookingCard({ booking, hasUsedEmergencyCancel, isPast = false }:
       {showCancelModal && (
         <Portal testId="booking-card-cancel-modal-portal">
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal px-4"
           onClick={() => !loading && setShowCancelModal(false)}
           role="dialog"
           aria-modal="true"

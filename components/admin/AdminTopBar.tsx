@@ -9,7 +9,7 @@ type AdminTopBarProps = {
 
 export function AdminTopBar({ title, subtitle, action }: AdminTopBarProps) {
   return (
-    <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
+    <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-nav">
       <div className="flex items-center gap-4">
         <h2 className="text-xl font-bold text-white">{title}</h2>
         {subtitle && (

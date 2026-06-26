@@ -188,7 +188,7 @@ export function CreateBookingWizard({ businesses }: CreateBookingWizardProps) {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
-        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-nav">
           <h1 className="text-xl font-bold text-white">Create New Booking</h1>
           <Link
             href="/admin/bookings"
@@ -403,7 +403,7 @@ export function CreateBookingWizard({ businesses }: CreateBookingWizardProps) {
                     className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-4 py-3 text-white text-sm focus:outline-none focus:border-[#d4a843]"
                   />
                   {customers.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded max-h-48 overflow-y-auto z-10">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded max-h-48 overflow-y-auto z-dropdown">
                       {customers.map((customer) => (
                         <button
                           key={customer.id}

@@ -36,7 +36,7 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
   return (
     <Portal testId="modal-portal">
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center z-50 overflow-y-auto py-8"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center z-modal overflow-y-auto py-8"
       onClick={onClose}
     >
       <div

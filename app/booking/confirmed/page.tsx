@@ -36,7 +36,7 @@ export default function BookingConfirmedPage() {
   return (
     <div className="min-h-dvh bg-background font-hanken text-on-surface antialiased overflow-x-hidden">
       {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
+      <header className="sticky top-0 w-full z-nav flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
           <Link data-testid="logo-link" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
@@ -214,7 +214,7 @@ export default function BookingConfirmedPage() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
         <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">

@@ -461,7 +461,7 @@ export function StaffDirectoryClient({ initialStaff, businessId }: StaffDirector
       {selectedProfile && (
         <Portal testId="staff-profile-modal-portal">
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-modal"
           onClick={() => setProfileModalId(null)}
         >
           <div

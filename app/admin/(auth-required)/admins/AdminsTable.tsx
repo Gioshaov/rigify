@@ -195,7 +195,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
       {/* Add Admin Modal */}
       {showAddModal && (
         <Portal testId="add-admin-modal-portal">
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-modal">
           <div className="bg-[#111111] border border-[rgba(255,255,255,0.15)] rounded p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-bold text-lg">Add Super Admin</h3>
@@ -268,7 +268,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
       {/* Success Modal (Temp Password) */}
       {showSuccessModal && (
         <Portal testId="admin-success-modal-portal">
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-modal">
           <div
             data-testid="temp-password-modal"
             className="bg-[#111111] border border-[rgba(255,255,255,0.15)] rounded p-6 w-full max-w-md"

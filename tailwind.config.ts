@@ -10,6 +10,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Semantic stacking scale for the global overlapping layers. Local
+      // in-component stacking keeps numeric z-10 / z-20. Overlays (modal/toast)
+      // are portaled to <body>, so these compete in one root stacking context.
+      zIndex: {
+        nav: "40", // fixed / sticky page headers + bottom navs
+        dropdown: "50", // menus, popovers, select dropdowns
+        modal: "100", // modal & dialog backdrops
+        toast: "200", // notifications — always on top
+      },
       colors: {
         background: "#0a0a0f",
         surface: "#1a1a24",

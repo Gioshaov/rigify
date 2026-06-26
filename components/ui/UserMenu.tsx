@@ -82,7 +82,7 @@ export function UserMenu() {
       </button>
 
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-48 bg-surface-container border border-white/10 shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-surface-container border border-white/10 shadow-lg z-dropdown">
           <div className="p-3 border-b border-white/10">
             <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-text-secondary uppercase truncate">
               {user.email}

@@ -35,7 +35,7 @@ export function DeleteServiceModal({
 
   return (
     <Portal testId="delete-service-modal-portal">
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
       <div
         className="bg-surface-container border-2 border-error/30 max-w-md w-full p-8"
         data-testid="delete-service-modal"

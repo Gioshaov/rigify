@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <Portal testId="toast-portal">
         <div
-          className="fixed bottom-8 right-8 z-[60] flex flex-col gap-3 items-end pointer-events-none"
+          className="fixed bottom-8 right-8 z-toast flex flex-col gap-3 items-end pointer-events-none"
           data-testid="toast-region"
           aria-live="polite"
           aria-atomic="false"

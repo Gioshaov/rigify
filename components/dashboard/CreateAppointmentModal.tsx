@@ -136,7 +136,7 @@ export function CreateAppointmentModal({
 
   return (
     <Portal testId="create-appointment-modal-portal">
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+      <div className="fixed inset-0 z-modal flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
         <div
           className="bg-surface-container border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           data-testid="create-appointment-modal"

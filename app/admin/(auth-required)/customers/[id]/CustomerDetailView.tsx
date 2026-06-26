@@ -123,7 +123,7 @@ export function CustomerDetailView({ customer, bookings, stats }: CustomerDetail
       {/* Main Content Column */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
-        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className="h-14 bg-[#111111] border-b border-[#2a2a2a] flex items-center justify-between px-8 sticky top-0 z-nav">
           <div>
             <h1 className="text-xl font-bold text-white">Customer Details</h1>
             <p className="text-[#888888] text-sm" data-testid="customer-detail-name-text">{customer.name}</p>

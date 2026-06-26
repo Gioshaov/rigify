@@ -367,7 +367,7 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
   return (
     <Portal testId="booking-modal-portal">
     <div
-      className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 bg-[#0a0a0a]/70 overflow-y-auto"
+      className="fixed inset-0 z-modal flex items-start sm:items-center justify-center p-4 bg-[#0a0a0a]/70 overflow-y-auto"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
