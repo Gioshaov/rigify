@@ -45,6 +45,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <Toast
             key={t.id}
+            id={t.id}
             message={t.message}
             type={t.type}
             duration={t.duration}
