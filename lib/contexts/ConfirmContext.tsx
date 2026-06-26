@@ -31,6 +31,8 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const confirm = useCallback<ConfirmFn>((opts) => {
+    // If a dialog is already open, cancel it so its awaiter doesn't hang.
+    resolverRef.current?.(false);
     setOptions(opts);
     return new Promise<boolean>((resolve) => {
       resolverRef.current = resolve;
@@ -43,6 +45,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     setOptions(null);
   }, []);
 
+  const handleConfirm = useCallback(() => settle(true), [settle]);
+  const handleCancel = useCallback(() => settle(false), [settle]);
+
   return (
     <ConfirmContext.Provider value={confirm}>
       {children}
@@ -54,8 +59,8 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
         cancelLabel={options?.cancelLabel}
         destructive={options?.destructive}
         testId={options?.testId}
-        onConfirm={() => settle(true)}
-        onCancel={() => settle(false)}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
       />
     </ConfirmContext.Provider>
   );

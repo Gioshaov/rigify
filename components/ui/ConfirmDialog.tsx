@@ -10,8 +10,6 @@ export interface ConfirmDialogProps {
   cancelLabel?: string;
   /** Destructive actions colour the confirm button with the error token. */
   destructive?: boolean;
-  /** When true, the confirm button shows a busy state and both buttons disable. */
-  loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   /** Prefix for the dialog's data-testid attributes (e.g. "delete-service"). */
@@ -22,6 +20,10 @@ export interface ConfirmDialogProps {
  * Compact yes/no confirmation dialog matching the Rigify design system.
  * Driven imperatively via the ConfirmProvider / useConfirm() hook — most call
  * sites should not render this directly.
+ *
+ * Accessibility: role="alertdialog", focuses the confirm button on open, traps
+ * Tab focus between the two buttons, returns focus to the trigger on close, and
+ * cancels on Escape or backdrop click.
  */
 export function ConfirmDialog({
   isOpen,
@@ -30,33 +32,53 @@ export function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   destructive = false,
-  loading = false,
   onConfirm,
   onCancel,
   testId = "confirm-dialog",
 }: ConfirmDialogProps) {
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !loading) onCancel();
+    // Remember what had focus so we can restore it when the dialog closes.
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    confirmRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onCancel();
+        return;
+      }
+      // Trap focus: only the two buttons are focusable, so cycle between them.
+      if (e.key === "Tab") {
+        const first = cancelRef.current;
+        const last = confirmRef.current;
+        if (!first || !last) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    // Focus the confirm action so the dialog is keyboard-operable immediately.
-    confirmButtonRef.current?.focus();
-
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, loading, onCancel]);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [isOpen, onCancel]);
 
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
-      onClick={() => !loading && onCancel()}
+      onClick={onCancel}
     >
       <div
         role="alertdialog"
@@ -84,27 +106,26 @@ export function ConfirmDialog({
         )}
         <div className="flex gap-3">
           <button
+            ref={cancelRef}
             type="button"
             data-testid={`${testId}-cancel-btn`}
             onClick={onCancel}
-            disabled={loading}
-            className="flex-1 py-3 border border-white/10 text-on-surface hover:bg-surface-container-low transition-all font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-3 border border-white/10 text-on-surface hover:bg-surface-container-low transition-all font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-medium"
           >
             {cancelLabel}
           </button>
           <button
-            ref={confirmButtonRef}
+            ref={confirmRef}
             type="button"
             data-testid={`${testId}-confirm-btn`}
             onClick={onConfirm}
-            disabled={loading}
-            className={`flex-1 py-3 transition-all font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`flex-1 py-3 transition-all font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold active:scale-[0.98] ${
               destructive
                 ? "bg-error text-background hover:brightness-110"
                 : "bg-primary text-on-primary hover:bg-primary-container"
             }`}
           >
-            {loading ? "…" : confirmLabel}
+            {confirmLabel}
           </button>
         </div>
       </div>

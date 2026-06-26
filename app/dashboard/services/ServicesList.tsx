@@ -159,7 +159,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
   }
 
   async function handleDelete(serviceId: string) {
-    if (!(await confirm({ title: tr.dashboard.services.confirmDelete[lang], destructive: true, confirmLabel: 'Delete', testId: 'delete-service' }))) return
+    if (!(await confirm({ title: tr.dashboard.services.confirmDelete[lang], destructive: true, confirmLabel: tr.common.delete[lang], cancelLabel: tr.common.cancel[lang], testId: 'delete-service' }))) return
 
     setLoading(true)
     const response = await deleteService(serviceId)
