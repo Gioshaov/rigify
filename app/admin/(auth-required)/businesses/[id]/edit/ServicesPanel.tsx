@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createServiceAdmin, updateServiceAdmin, deleteServiceAdmin } from './services-actions'
+import { useConfirm } from '@/lib/contexts/ConfirmContext'
 
 type Service = {
   id: string
@@ -76,6 +77,7 @@ function ServiceFields({ svc }: { svc?: Service }) {
 }
 
 export function ServicesPanel({ services, businessId }: { services: Service[]; businessId: string }) {
+  const confirm = useConfirm()
   const [showAdd, setShowAdd] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -98,7 +100,7 @@ export function ServicesPanel({ services, businessId }: { services: Service[]; b
   }
 
   async function handleDelete(serviceId: string) {
-    if (!window.confirm('Delete this service? This cannot be undone.')) return
+    if (!(await confirm({ title: 'Delete this service?', message: 'This cannot be undone.', confirmLabel: 'Delete', destructive: true, testId: 'delete-service' }))) return
     setBusy(true); setError(null)
     const res = await deleteServiceAdmin(serviceId)
     setBusy(false)

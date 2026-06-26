@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Pencil, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { deleteBusiness } from './businesses/actions';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 interface BusinessRowActionsProps {
   business: {
@@ -17,10 +18,17 @@ interface BusinessRowActionsProps {
 
 export function BusinessRowActions({ business }: BusinessRowActionsProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${business.name}? This will permanently delete the business owner's account, all staff, services, bookings, and reviews. This action cannot be undone.`)) {
+    if (!(await confirm({
+      title: `Delete ${business.name}?`,
+      message: "This will permanently delete the business owner's account, all staff, services, bookings, and reviews. This action cannot be undone.",
+      confirmLabel: 'Delete',
+      destructive: true,
+      testId: 'delete-business',
+    }))) {
       return;
     }
 

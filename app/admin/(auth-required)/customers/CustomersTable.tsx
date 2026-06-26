@@ -6,6 +6,7 @@ import { formatTbilisi } from '@/lib/utils/datetime';
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { updateCustomerStatus, deleteCustomer } from './actions';
 import { Ban, CheckCircle, Trash2 } from 'lucide-react';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Customer = {
   id: string;
@@ -36,6 +37,7 @@ export function CustomersTable({
   searchQuery,
 }: CustomersTableProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -67,7 +69,13 @@ export function CustomersTable({
   };
 
   const handleSuspend = async (customerId: string, customerName: string) => {
-    if (!confirm(`Suspend customer ${customerName}? They will not be able to make new bookings.`)) {
+    if (!(await confirm({
+      title: `Suspend customer ${customerName}?`,
+      message: 'They will not be able to make new bookings.',
+      confirmLabel: 'Suspend',
+      destructive: true,
+      testId: 'suspend-customer',
+    }))) {
       return;
     }
 
@@ -85,7 +93,11 @@ export function CustomersTable({
   };
 
   const handleActivate = async (customerId: string, customerName: string) => {
-    if (!confirm(`Activate customer ${customerName}?`)) {
+    if (!(await confirm({
+      title: `Activate customer ${customerName}?`,
+      confirmLabel: 'Activate',
+      testId: 'activate-customer',
+    }))) {
       return;
     }
 
@@ -103,7 +115,13 @@ export function CustomersTable({
   };
 
   const handleDelete = async (customerId: string, customerName: string) => {
-    if (!confirm(`Delete customer ${customerName}? This will also delete all their bookings. This action cannot be undone.`)) {
+    if (!(await confirm({
+      title: `Delete customer ${customerName}?`,
+      message: 'This will also delete all their bookings. This action cannot be undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
+      testId: 'delete-customer',
+    }))) {
       return;
     }
 

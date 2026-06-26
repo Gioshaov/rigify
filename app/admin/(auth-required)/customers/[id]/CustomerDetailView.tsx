@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { updateCustomerStatus, deleteCustomer } from '../actions';
 import { User, Mail, Phone, Calendar, TrendingUp, CheckCircle, XCircle, Ban } from 'lucide-react';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Customer = {
   id: string;
@@ -54,14 +55,21 @@ interface CustomerDetailViewProps {
 
 export function CustomerDetailView({ customer, bookings, stats }: CustomerDetailViewProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleToggleStatus = () => {
+  const handleToggleStatus = async () => {
     const newStatus = customer.status === 'active' ? 'suspended' : 'active';
     const action = newStatus === 'active' ? 'activate' : 'suspend';
 
-    if (!confirm(`Are you sure you want to ${action} ${customer.name}?`)) {
+    if (!(await confirm({
+      title: `${action === 'activate' ? 'Activate' : 'Suspend'} ${customer.name}?`,
+      message: action === 'suspend' ? 'They will not be able to make new bookings.' : undefined,
+      confirmLabel: action === 'activate' ? 'Activate' : 'Suspend',
+      destructive: action === 'suspend',
+      testId: 'toggle-customer-status',
+    }))) {
       return;
     }
 
@@ -77,8 +85,14 @@ export function CustomerDetailView({ customer, bookings, stats }: CustomerDetail
     });
   };
 
-  const handleDelete = () => {
-    if (!confirm(`Delete customer ${customer.name}? This will also delete all their bookings. This action cannot be undone.`)) {
+  const handleDelete = async () => {
+    if (!(await confirm({
+      title: `Delete customer ${customer.name}?`,
+      message: 'This will also delete all their bookings. This action cannot be undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
+      testId: 'delete-customer',
+    }))) {
       return;
     }
 
