@@ -1,7 +1,7 @@
 # Latest Session Summary
 
 **Last Updated**: June 26, 2026  
-**Session**: Session 27 - Ponytail cleanup pass + repo/CI plumbing fixes
+**Session**: Session 28 - Ponytail cleanup pass + repo/CI plumbing fixes
 
 ---
 
@@ -119,7 +119,7 @@
 
 ---
 
-## Latest Session Work (Session 27 - June 26, 2026)
+## Latest Session Work (Session 28 - June 26, 2026)
 
 **Objective**: Repo-wide cleanup pass for over-engineering, plus fix the cascade of branch/CI/Vercel mismatches discovered while shipping it.
 

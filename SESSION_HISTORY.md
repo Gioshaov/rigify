@@ -1913,7 +1913,34 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 
 ---
 
-### Session 27 - June 26, 2026: Ponytail cleanup + repo/CI plumbing fixes
+### Session 27 - June 25, 2026: Staging Environment + Admin Services & Russian Removal (promoted to prod)
+
+**Objective**: Stand up a proper staging environment, add services management to the admin panel, remove Russian from the product, and ship it all to production.
+
+**Accomplished** (15 PRs, #3–#17):
+- **Staging environment**: separate Supabase project `rigify-staging` (`ccjteappgctnlwrmzokp`, eu-central-1) provisioned via Management API + all migrations applied; `staging.rigify.ge` + `admin.staging.rigify.ge` domains (branch-scoped Vercel env, DNS auto via Vercel nameservers); `SITE_PASSWORD` gate (Vercel Authentication disabled so it's the gate); reusable seed (`staging-seed.sql` + `npm run seed:staging`, prod-guarded); `combine-migrations.ts`; staging super-admin `admin@rigify.ge`; `STAGING.md` runbook. Credentials in gitignored `.env.staging.local`.
+- **UI bug fixes**: calendar "today" in Asia/Tbilisi; availability fetch AbortController; phone E.164 (strip internal spaces) in register + booking; footer `face_nod` → valid icon.
+- **Admin subdomain environment-aware** (`lib/utils/domain.ts`): `isAdminDomain` matches any `admin.` host; URLs/cookie domain derive from `NEXT_PUBLIC_ROOT_DOMAIN`.
+- **Business coordinates** (lat/lng) on admin onboard + edit (map view).
+- **Add Business parity + real image upload**: onboard rebuilt to match edit (descriptions, status, multi-category, district, contact, images via Supabase Storage `ImageUpload` using a client-pre-generated business UUID); edit form switched to the real uploader.
+- **Storage RLS policy fix** (`20260625000001`): write policies passed `businesses.name` into a uuid-casting fn → all uploads crashed; now uses object path + super-admin/owner check, hardened helper, dropped legacy permissive policy.
+- **Russian removed end-to-end** (`20260625000002`): UI/forms/constants/`Language` type/marketing; dropped `name_ru`/`description_ru` columns; updated types; removed "Russia" phone option. App is ka/en only.
+- **Services management**: Add Business (dynamic rows) + Edit Business (`ServicesPanel` CRUD via `services-actions.ts`, placed above Save).
+- **Reviews**: holistic review + high-effort `/code-review` caught a real bug — admin-created services never set `services.price` (read by the booking flow) → fixed; plus `description_ka` not saving on edit, active-flag-on-add, Russian seed leftovers.
+
+**Files Changed**: ~25 created/modified across `app/admin`, `lib/utils`, `lib/constants`, `components/ui`, `supabase/migrations` (2 new), seed files, docs.
+
+**Commits/PRs**: PRs #3–#17 merged. Promotion PR #17 (`staging → master`, merge `fe0a5c5`). Two migrations applied to **production** Supabase (`zipxmghbougztwdtzftn`): storage policy fix + Russian column drop (prod had 0 Russian rows → no data lost). `master` = `staging` = `fe0a5c5`.
+
+**Next Steps**:
+- Remove `SITE_PASSWORD` from the Production Vercel scope before public launch of `rigify.ge`.
+- Optional cleanup from `/code-review`: dedupe category list (×4) → `lib/constants/categories.ts`, dedupe service validation (×3) + super-admin gate + coordinate validation, `router.refresh()` instead of `window.location.reload()` in `ServicesPanel`, designate primary category instead of `categories[0]`, unique `ImageUpload` test-ids.
+
+**Status**: ✅ Complete and promoted to production. Staging fully operational (isolated DB, gated, super-admin). Production deploy building; prod DB migrated.
+
+---
+
+### Session 28 - June 26, 2026: Ponytail cleanup + repo/CI plumbing fixes
 
 **Objective**: Repo-wide over-engineering audit and ship the verified cuts. Discovered and fixed a cascade of branch/CI/Vercel mismatches along the way.
 
