@@ -6,6 +6,7 @@ import { formatTbilisi } from '@/lib/utils/datetime';
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { cancelBooking, markNoShow } from './actions';
 import { XCircle, UserX } from 'lucide-react';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Booking = {
   id: string;
@@ -71,6 +72,7 @@ export function BookingsTable({
   searchQuery,
 }: BookingsTableProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -103,7 +105,14 @@ export function BookingsTable({
 
   const handleCancel = async (bookingId: string, booking: Booking) => {
     const appointmentTime = formatTbilisi(booking.appointmentDatetime, 'MMM d, yyyy HH:mm');
-    if (!confirm(`Cancel booking for ${booking.customerName} at ${appointmentTime}?`)) {
+    if (!(await confirm({
+      title: `Cancel booking for ${booking.customerName}?`,
+      message: `Appointment at ${appointmentTime}.`,
+      confirmLabel: 'Cancel booking',
+      cancelLabel: 'Keep booking',
+      destructive: true,
+      testId: 'cancel-booking',
+    }))) {
       return;
     }
 
@@ -122,7 +131,13 @@ export function BookingsTable({
 
   const handleNoShow = async (bookingId: string, booking: Booking) => {
     const appointmentTime = formatTbilisi(booking.appointmentDatetime, 'MMM d, yyyy HH:mm');
-    if (!confirm(`Mark booking for ${booking.customerName} as no-show?`)) {
+    if (!(await confirm({
+      title: `Mark booking as no-show?`,
+      message: `Booking for ${booking.customerName} at ${appointmentTime}.`,
+      confirmLabel: 'Mark no-show',
+      destructive: true,
+      testId: 'mark-no-show',
+    }))) {
       return;
     }
 

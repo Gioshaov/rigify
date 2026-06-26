@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createService, updateService, deleteService } from './actions'
 import { CATEGORIES } from '@/lib/constants/categories'
 import { useTranslations } from '@/lib/hooks/useTranslations'
+import { useConfirm } from '@/lib/contexts/ConfirmContext'
 
 type Service = {
   id: string
@@ -17,6 +18,7 @@ type Service = {
 
 export function ServicesList({ businessId, services }: { businessId: string; services: Service[] }) {
   const { tr, lang } = useTranslations()
+  const confirm = useConfirm()
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -157,7 +159,7 @@ export function ServicesList({ businessId, services }: { businessId: string; ser
   }
 
   async function handleDelete(serviceId: string) {
-    if (!confirm(tr.dashboard.services.confirmDelete[lang])) return
+    if (!(await confirm({ title: tr.dashboard.services.confirmDelete[lang], destructive: true, confirmLabel: 'Delete', testId: 'delete-service' }))) return
 
     setLoading(true)
     const response = await deleteService(serviceId)

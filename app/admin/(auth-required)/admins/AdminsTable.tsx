@@ -6,6 +6,7 @@ import { formatTbilisi } from '@/lib/utils/datetime';
 import { createSuperAdmin, revokeSuperAdmin } from './actions';
 import { Shield, UserMinus, Activity, Plus, X, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Admin = {
   id: string;
@@ -21,6 +22,7 @@ interface AdminsTableProps {
 
 export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
@@ -64,7 +66,13 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
   };
 
   const handleRevoke = async (adminId: string, adminEmail: string) => {
-    if (!confirm(`Revoke admin access for ${adminEmail}? They will no longer be able to access the admin panel.`)) {
+    if (!(await confirm({
+      title: `Revoke admin access for ${adminEmail}?`,
+      message: 'They will no longer be able to access the admin panel.',
+      confirmLabel: 'Revoke',
+      destructive: true,
+      testId: 'revoke-admin',
+    }))) {
       return;
     }
 

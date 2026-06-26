@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { toggleBusinessStatus } from './actions';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Business = {
   id: string;
@@ -23,6 +24,7 @@ type BusinessManagementClientProps = {
 
 export function BusinessManagementClient({ businesses, totalCount }: BusinessManagementClientProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -73,7 +75,12 @@ export function BusinessManagementClient({ businesses, totalCount }: BusinessMan
     } else if (action === 'deactivate') {
       const currentStatus = optimisticStatus[businessId] || business.status;
       const actionText = currentStatus === 'active' ? 'deactivate' : 'activate';
-      if (!confirm(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} "${business.name}"?`)) {
+      if (!(await confirm({
+        title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} "${business.name}"?`,
+        confirmLabel: actionText.charAt(0).toUpperCase() + actionText.slice(1),
+        destructive: actionText === 'deactivate',
+        testId: 'toggle-business-status',
+      }))) {
         return;
       }
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { formatTbilisi } from '@/lib/utils/datetime';
 import { cancelBooking } from '../actions';
 import { Calendar, Clock, User, Phone, Mail, FileText, TrendingUp, Edit, XCircle } from 'lucide-react';
+import { useConfirm } from '@/lib/contexts/ConfirmContext';
 
 type Booking = {
   id: string;
@@ -52,6 +53,7 @@ interface BookingDetailViewProps {
 
 export function BookingDetailView({ booking }: BookingDetailViewProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -62,9 +64,16 @@ export function BookingDetailView({ booking }: BookingDetailViewProps) {
   const canEdit = booking.status !== 'cancelled' && booking.status !== 'completed' && booking.status !== 'no_show';
   const canCancel = booking.status === 'confirmed';
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     const appointmentTime = formatTbilisi(booking.appointment_datetime, 'MMM d, yyyy HH:mm');
-    if (!confirm(`Cancel booking for ${booking.customer_name} at ${appointmentTime}?`)) {
+    if (!(await confirm({
+      title: `Cancel booking for ${booking.customer_name}?`,
+      message: `Appointment at ${appointmentTime}.`,
+      confirmLabel: 'Cancel booking',
+      cancelLabel: 'Keep booking',
+      destructive: true,
+      testId: 'cancel-booking',
+    }))) {
       return;
     }
 
