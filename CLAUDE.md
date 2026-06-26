@@ -753,6 +753,10 @@ export function hasOverlap(
 - Do NOT read `SESSION_HISTORY.md` (saves context)
 
 **When user says "session end"**:
+0. **Commit gate (do this FIRST)**:
+   - Run `git status`. If the working tree has any uncommitted **tracked** changes, or untracked files that are not known local-only/ignored paths (e.g. `HERO/`, `.claude/settings.local.json`), list them and ask the user whether to commit before wrapping up.
+   - Do NOT finish the session-end procedure until the tree is clean **or** every leftover has been explicitly acknowledged as intentional. This prevents uncommitted work from silently traveling between machines (it has bitten us — see Session 29).
+
 1. **Update LATEST_SESSION.md**:
    - Update "Current Implementation Status" if features added
    - Replace "Latest Session Work" section with this session's work
