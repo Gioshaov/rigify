@@ -8,9 +8,6 @@ export function TopNav() {
   return (
     <header className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
       <div className="flex items-center gap-4">
-        <span data-testid="language-toggle" className="material-symbols-outlined text-primary cursor-pointer">
-          language
-        </span>
         <Link data-testid="logo-link" href="/">
           <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
             RIGIFY
