@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/components/ui/UserMenu";
@@ -92,16 +91,6 @@ export default async function BrowseBusinessesPage() {
 
       {/* Hero Section */}
       <header className="relative w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1613145997165-cc9d0c847c5f?w=1920&h=800&fit=crop"
-            alt="Tbilisi Architecture"
-            fill
-            className="object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
-        </div>
         <div className="relative z-10 max-w-container mx-auto w-full">
           <span className="font-mono text-[12px] leading-[1] tracking-[0.3em] font-medium text-primary uppercase mb-4 block">
             Curated Excellence
