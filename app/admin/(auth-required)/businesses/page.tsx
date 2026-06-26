@@ -19,7 +19,7 @@ export default async function BusinessesPage() {
   if (error) {
     console.error('Failed to fetch businesses:', error);
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-8">
+      <div className="min-h-dvh bg-[#0a0a0a] flex items-center justify-center p-8">
         <div className="max-w-md">
           <p className="text-red-400 text-lg font-semibold mb-2">
             Failed to load businesses

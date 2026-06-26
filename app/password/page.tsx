@@ -39,7 +39,7 @@ export default function PasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center px-margin-mobile">
+    <main className="min-h-dvh bg-background flex items-center justify-center px-margin-mobile">
       <div className="w-full max-w-md">
         <div className="text-center mb-stack-lg">
           <h1 className="font-mono text-data-label uppercase tracking-[0.2em] text-primary mb-stack-md">

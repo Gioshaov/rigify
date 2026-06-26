@@ -13,7 +13,7 @@ export default async function OnboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
+    <div className="min-h-dvh flex bg-[#0a0a0a]">
       <AdminSidebar />
 
       <main className="flex-1 ml-60 overflow-y-auto pb-12">

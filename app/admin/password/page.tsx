@@ -39,7 +39,7 @@ export default function AdminPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div className="min-h-dvh flex items-center justify-center bg-[#0a0a0a]">
       <div className="max-w-md w-full mx-4">
         {/* Logo */}
         <div className="text-center mb-8">

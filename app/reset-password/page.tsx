@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
   // Show loading while waiting for auth state
   if (!isReady && !success) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center px-margin-mobile">
+      <main className="min-h-dvh bg-background flex items-center justify-center px-margin-mobile">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p data-testid="loading-message" className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase">
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-margin-mobile">
+    <main className="min-h-dvh bg-background relative overflow-hidden flex items-center justify-center px-margin-mobile">
       {/* Diagonal Pattern Background */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div className="absolute inset-0" style={{

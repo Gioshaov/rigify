@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <a data-testid="dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
+      <div className="flex min-h-dvh bg-background text-on-surface font-hanken antialiased">
         <Sidebar businessName={business?.name} city={business?.city} />
         <div className="flex-1 min-w-0">
           <DashboardHeader userEmail={user.email ?? ''} />

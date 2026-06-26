@@ -48,7 +48,7 @@ export default async function StaffDashboardLayout({
       <a data-testid="staff-dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <div className="flex min-h-screen bg-background text-on-surface">
+      <div className="flex min-h-dvh bg-background text-on-surface">
         <StaffSidebar staff={staff} permissions={permissions} />
         <div className="flex-1 min-w-0">
           <header className="border-b border-outline-variant px-gutter md:px-margin-desktop h-16 flex items-center justify-between">

@@ -26,7 +26,7 @@ export function LoginPageClient() {
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center px-margin-mobile py-16">
+    <main className="min-h-dvh bg-background flex flex-col items-center justify-center px-margin-mobile py-16">
       {/* Logo & Tagline */}
       <div className="text-center mb-16">
         <Link data-testid="logo-link" href="/" className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary uppercase">

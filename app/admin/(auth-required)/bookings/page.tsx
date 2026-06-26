@@ -156,7 +156,7 @@ export default async function BookingsPage({
   });
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
+    <div className="min-h-dvh flex bg-[#0a0a0a]">
       {/* SIDEBAR */}
       <AdminSidebar />
 

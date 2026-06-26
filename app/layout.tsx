@@ -17,6 +17,9 @@ const mono = JetBrains_Mono({
 
 export const viewport: Viewport = {
   themeColor: "#C9A961",
+  // Extend content under the notch/home-indicator so env(safe-area-inset-*)
+  // resolves to real values for the fixed bottom navs.
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {

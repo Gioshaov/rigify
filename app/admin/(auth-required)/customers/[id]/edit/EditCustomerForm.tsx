@@ -39,7 +39,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a0a]">
+    <div className="min-h-dvh flex bg-[#0a0a0a]">
       {/* Main Form Column */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}

@@ -22,7 +22,7 @@ export default async function CustomerDashboardLayout({ children }: { children: 
       <a data-testid="customer-dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">
+      <div className="flex min-h-dvh bg-background text-on-surface font-hanken antialiased">
         <CustomerSidebar customerName={customer?.name} />
         <div className="flex-1 min-w-0">
           <header className="border-b border-white/10 px-8 h-16 flex items-center justify-between bg-surface">

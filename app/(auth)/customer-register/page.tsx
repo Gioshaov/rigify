@@ -34,7 +34,7 @@ export default function CustomerRegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col px-margin-mobile py-12">
+    <main className="min-h-dvh bg-background flex flex-col px-margin-mobile py-12">
       {/* Header */}
       <div className="flex justify-between items-center mb-16">
         <Link data-testid="logo-link" href="/" className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">

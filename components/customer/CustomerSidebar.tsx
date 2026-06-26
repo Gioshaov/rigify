@@ -29,7 +29,7 @@ export function CustomerSidebar({ customerName }: CustomerSidebarProps) {
   ];
 
   return (
-    <aside className="w-72 shrink-0 border-r border-white/10 bg-surface min-h-screen flex flex-col font-hanken">
+    <aside className="w-72 shrink-0 border-r border-white/10 bg-surface min-h-dvh flex flex-col font-hanken">
       <div className="flex-1">
         {/* Logo & User Section */}
         <div className="p-8 border-b border-white/10">
