@@ -48,8 +48,8 @@
      home-indicator / gesture bar via the safe-area inset. Replaces a bare
      `h-20` on the fixed mobile bottom navs. */
   .bottom-nav-safe {
-    height: calc(5rem + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 

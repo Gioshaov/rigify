@@ -213,7 +213,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-20 md:mb-0">
+      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-[calc(5rem_+_env(safe-area-inset-bottom))] md:mb-0">
         <Container className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <h2 className="font-mono text-display-lg-mobile text-primary uppercase mb-6 tracking-tighter font-bold">RIGIFY</h2>
