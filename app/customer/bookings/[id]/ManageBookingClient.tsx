@@ -9,6 +9,7 @@ import { formatPrice, formatDuration } from "@/lib/utils/formatting";
 import { getBusinessFallbackImage } from "@/lib/utils/fallback-images";
 import { cancelBookingAction } from "@/app/customer/dashboard/actions";
 import { useEmergencyCancelFlag } from "@/app/customer/dashboard/useEmergencyCancelFlag";
+import { Portal } from "@/components/ui/Portal";
 
 type ManageBookingClientProps = {
   booking: {
@@ -400,6 +401,7 @@ export function ManageBookingClient({ booking, customerId, initialHasUsedEmergen
 
       {/* Cancel Modal */}
       {showCancelModal && (
+        <Portal testId="manage-booking-cancel-modal-portal">
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4"
           onClick={() => !loading && setShowCancelModal(false)}
@@ -454,6 +456,7 @@ export function ManageBookingClient({ booking, customerId, initialHasUsedEmergen
             </div>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );

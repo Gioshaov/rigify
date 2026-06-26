@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { submitReviewAction } from "./review-actions";
+import { Portal } from "@/components/ui/Portal";
 
 type LeaveReviewModalProps = {
   bookingId: string;
@@ -88,6 +89,7 @@ export function LeaveReviewModal({
   const stars = Array.from({ length: 5 }, (_, i) => i + 1);
 
   return (
+    <Portal testId="leave-review-modal-portal">
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4"
       onClick={() => !loading && onClose()}
@@ -198,5 +200,6 @@ export function LeaveReviewModal({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

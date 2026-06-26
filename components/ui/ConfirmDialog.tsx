@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Portal } from "@/components/ui/Portal";
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -76,6 +77,7 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
+    <Portal testId="confirm-dialog-portal">
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
       onClick={onCancel}
@@ -130,5 +132,6 @@ export function ConfirmDialog({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

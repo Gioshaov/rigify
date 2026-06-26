@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { deleteService } from "@/app/dashboard/services/actions";
+import { Portal } from "@/components/ui/Portal";
 
 interface DeleteServiceModalProps {
   serviceName: string;
@@ -33,6 +34,7 @@ export function DeleteServiceModal({
   };
 
   return (
+    <Portal testId="delete-service-modal-portal">
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
       <div
         className="bg-surface-container border-2 border-error/30 max-w-md w-full p-8"
@@ -109,5 +111,6 @@ export function DeleteServiceModal({
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

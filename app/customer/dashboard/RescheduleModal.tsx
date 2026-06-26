@@ -5,6 +5,7 @@ import { rescheduleBookingAction } from "./actions";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { generateCalendarDays, groupTimeSlots, MONTH_NAMES } from "@/lib/utils/calendar";
 import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/datetime";
+import { Portal } from "@/components/ui/Portal";
 
 type RescheduleModalProps = {
   booking: {
@@ -175,6 +176,7 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
   const currentDateTime = formatTbilisi(booking.appointment_datetime, "EEEE, MMM d 'at' h:mm a");
 
   return (
+    <Portal testId="reschedule-modal-portal">
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-8 overflow-y-auto"
       onClick={() => !loading && onClose()}
@@ -553,5 +555,6 @@ export function RescheduleModal({ booking, staff, onClose }: RescheduleModalProp
         )}
       </div>
     </div>
+    </Portal>
   );
 }

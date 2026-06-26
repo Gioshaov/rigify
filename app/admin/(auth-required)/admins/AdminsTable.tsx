@@ -8,6 +8,7 @@ import { Shield, UserMinus, Activity, Plus, X, Copy, Check } from 'lucide-react'
 import Link from 'next/link';
 import { useConfirm } from '@/lib/contexts/ConfirmContext';
 import { useToast } from '@/lib/contexts/ToastContext';
+import { Portal } from '@/components/ui/Portal';
 
 type Admin = {
   id: string;
@@ -193,6 +194,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
 
       {/* Add Admin Modal */}
       {showAddModal && (
+        <Portal testId="add-admin-modal-portal">
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#111111] border border-[rgba(255,255,255,0.15)] rounded p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
@@ -260,10 +262,12 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* Success Modal (Temp Password) */}
       {showSuccessModal && (
+        <Portal testId="admin-success-modal-portal">
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div
             data-testid="temp-password-modal"
@@ -318,6 +322,7 @@ export function AdminsTable({ admins, currentUserId }: AdminsTableProps) {
             </button>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );

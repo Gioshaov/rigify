@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { Portal } from "@/components/ui/Portal";
 
 interface ModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
   if (!isOpen) return null;
 
   return (
+    <Portal testId="modal-portal">
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center z-50 overflow-y-auto py-8"
       onClick={onClose}
@@ -55,5 +57,6 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
         {children}
       </div>
     </div>
+    </Portal>
   );
 }

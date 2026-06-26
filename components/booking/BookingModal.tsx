@@ -10,6 +10,7 @@ import { convertTo12Hour, convertTo24Hour } from "@/lib/utils/datetime";
 import { validators, errorMessages } from "@/lib/utils/validation";
 import { BookingConfirmation } from "@/components/booking/BookingConfirmation";
 import type { BookingConfirmationData } from "@/lib/bookings/types";
+import { Portal } from "@/components/ui/Portal";
 
 interface Service {
   id: string;
@@ -364,6 +365,7 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
     isBooking;
 
   return (
+    <Portal testId="booking-modal-portal">
     <div
       className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 bg-[#0a0a0a]/70 overflow-y-auto"
       onMouseDown={(e) => {
@@ -709,5 +711,6 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
         )}
       </div>
     </div>
+    </Portal>
   );
 }
