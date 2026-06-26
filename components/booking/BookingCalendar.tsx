@@ -43,17 +43,19 @@ export function BookingCalendar({
             type="button"
             data-testid="calendar-prev-month"
             onClick={onPrevMonth}
+            aria-label="Previous month"
             className="w-9 h-9 flex items-center justify-center bg-surface border border-white/10 rounded-[4px] text-on-surface hover:border-primary hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>
           </button>
           <button
             type="button"
             data-testid="calendar-next-month"
             onClick={onNextMonth}
+            aria-label="Next month"
             className="w-9 h-9 flex items-center justify-center bg-surface border border-white/10 rounded-[4px] text-on-surface hover:border-primary hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
           </button>
         </div>
       </div>

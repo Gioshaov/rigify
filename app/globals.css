@@ -15,6 +15,28 @@
     background-color: #c9a84c;
     color: #0a0a0f;
   }
+
+  /* Global keyboard-focus indicator for any interactive element that does not
+     define its own. The .btn-* component classes set their own focus-visible
+     ring and override this; this catches the many inline-styled buttons, links,
+     and clickable cards that previously relied on the (invisible-in-dark-mode)
+     browser default. Mouse clicks use :focus-visible so the ring only shows for
+     keyboard/AT users. */
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Clickable elements styled as buttons should show the pointer cursor. */
+  [role="button"]:not([aria-disabled="true"]) {
+    @apply cursor-pointer;
+  }
 }
 
 @layer utilities {

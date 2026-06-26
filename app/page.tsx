@@ -42,6 +42,9 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-background text-on-surface">
+      <a data-testid="home-skip-to-main-link" href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-50 bg-surface border-b border-white/10">
         <Container className="flex items-center justify-between h-16">
@@ -75,16 +78,16 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative flex flex-col justify-center py-section-gap lg:min-h-[520px]">
+      <section id="main-content" className="relative flex flex-col justify-center py-section-gap lg:min-h-[520px]">
         <Container>
           <div className="relative">
             <div className="max-w-3xl space-y-8">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-[1px] bg-primary"></span>
               </div>
-              <h2 className="font-hanken text-display-lg md:text-[64px] leading-tight text-white tracking-tighter font-bold">
+              <h1 className="font-hanken text-display-lg md:text-[64px] leading-tight text-white tracking-tighter font-bold">
                 Book Beauty & Wellness <br />Appointments in <span className="text-primary italic">Georgia</span>
-              </h2>
+              </h1>
               <p className="font-hanken text-body-lg text-on-surface-variant max-w-xl">
                 Discover local professionals in Tbilisi. Experience a curated marketplace of world-class artisans and wellness practitioners.
               </p>
@@ -122,7 +125,7 @@ export default function HomePage() {
         <Container>
           <div className="flex justify-between items-end mb-12">
             <div>
-              <p className="font-hanken text-headline-md text-white font-semibold">Categories</p>
+              <h2 className="font-hanken text-headline-md text-white font-semibold">Categories</h2>
             </div>
             <div className="hidden md:block h-[1px] flex-grow mx-12 bg-white/10"></div>
             <Link data-testid="view-all-categories-link" href="/businesses?reset=1" className="font-mono text-[10px] text-on-surface-variant hover:text-primary uppercase flex items-center gap-2 tracking-[0.2em]">
@@ -146,7 +149,7 @@ export default function HomePage() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="relative h-full p-8 flex flex-col justify-end bg-gradient-to-t from-surface to-transparent">
-                  <h4 className="font-hanken text-headline-md text-white mb-2 font-semibold">{category.name}</h4>
+                  <h3 className="font-hanken text-headline-md text-white mb-2 font-semibold">{category.name}</h3>
                   <div className="h-0.5 w-0 bg-primary transition-all duration-500 group-hover:w-16"></div>
                 </div>
               </Link>
@@ -159,8 +162,8 @@ export default function HomePage() {
       <section className="py-section-gap">
         <Container>
           <div className="text-center mb-16">
-            <h3 className="font-mono text-data-label text-primary uppercase tracking-[0.4em] mb-4">The Expansion</h3>
-            <p className="font-mono text-display-lg-mobile text-white uppercase font-bold">Regional Presence</p>
+            <p className="font-mono text-data-label text-primary uppercase tracking-[0.4em] mb-4">The Expansion</p>
+            <h2 className="font-mono text-display-lg-mobile text-white uppercase font-bold">Regional Presence</h2>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8">
@@ -170,7 +173,7 @@ export default function HomePage() {
                 <span className="material-symbols-outlined text-primary text-4xl">location_on</span>
                 <div className="px-3 py-1 border border-primary text-primary font-mono text-[10px] uppercase tracking-[0.2em]">Active</div>
               </div>
-              <h5 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Tbilisi</h5>
+              <h3 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Tbilisi</h3>
               <p className="font-hanken text-body-md text-on-surface-variant mb-8">
                 The heart of Georgian beauty. Over 200+ premium studios and independent artisans ready for booking.
               </p>
@@ -185,7 +188,7 @@ export default function HomePage() {
                 <span className="material-symbols-outlined text-on-surface-variant text-4xl">waves</span>
                 <div className="px-3 py-1 border border-white/20 text-on-surface-variant font-mono text-[10px] uppercase tracking-[0.2em]">Coming Soon</div>
               </div>
-              <h5 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Batumi</h5>
+              <h3 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Batumi</h3>
               <p className="font-hanken text-body-md text-on-surface-variant mb-8">
                 Coastal elegance meets premium wellness. Bringing the Rigify standard to the Black Sea coast this summer.
               </p>
@@ -198,7 +201,7 @@ export default function HomePage() {
                 <span className="material-symbols-outlined text-on-surface-variant text-4xl">architecture</span>
                 <div className="px-3 py-1 border border-white/20 text-on-surface-variant font-mono text-[10px] uppercase tracking-[0.2em]">Coming Soon</div>
               </div>
-              <h5 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Kutaisi</h5>
+              <h3 className="font-mono text-display-lg-mobile text-white mb-4 font-bold">Kutaisi</h3>
               <p className="font-hanken text-body-md text-on-surface-variant mb-8">
                 Preserving tradition while embracing modern grooming. Our network is expanding to the historic capital soon.
               </p>
@@ -230,7 +233,7 @@ export default function HomePage() {
           </div>
 
           <div>
-            <h6 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h6>
+            <h3 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h3>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
               <li><Link data-testid="footer-browse-studios" href="/businesses?reset=1" className="hover:text-primary transition-colors">Browse Studios</Link></li>
               <li><Link data-testid="footer-special-offers" href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
@@ -240,7 +243,7 @@ export default function HomePage() {
           </div>
 
           <div>
-            <h6 className="font-mono text-data-label text-white uppercase mb-6">Partners</h6>
+            <h3 className="font-mono text-data-label text-white uppercase mb-6">Partners</h3>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
               <li><Link data-testid="footer-register-business" href="/for-businesses" className="hover:text-primary transition-colors">Register Business</Link></li>
               <li><Link data-testid="footer-partner-dashboard" href="/dashboard" className="hover:text-primary transition-colors">Partner Dashboard</Link></li>

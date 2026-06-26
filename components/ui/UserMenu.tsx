@@ -52,7 +52,7 @@ export function UserMenu() {
   if (loading) {
     return (
       <div className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center animate-pulse">
-        <span className="material-symbols-outlined text-primary text-[20px]">person</span>
+        <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">person</span>
       </div>
     );
   }
@@ -74,9 +74,11 @@ export function UserMenu() {
       <button
         data-testid="user-menu-btn"
         onClick={() => setShowDropdown(!showDropdown)}
+        aria-label="Account menu"
+        aria-expanded={showDropdown}
         className="w-10 h-10 bg-surface-container-high border border-primary/20 shadow-md shadow-primary/30 flex items-center justify-center hover:border-primary hover:shadow-lg hover:shadow-primary/50 transition-all cursor-pointer"
       >
-        <span className="material-symbols-outlined text-primary text-[20px]">person</span>
+        <span className="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">person</span>
       </button>
 
       {showDropdown && (
@@ -93,7 +95,7 @@ export function UserMenu() {
               className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
               onClick={() => setShowDropdown(false)}
             >
-              <span className="material-symbols-outlined text-[18px]">event_available</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">event_available</span>
               <span className="font-hanken text-[14px] leading-[1.5] font-normal">My Bookings</span>
             </Link>
             <Link
@@ -102,7 +104,7 @@ export function UserMenu() {
               className="flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
               onClick={() => setShowDropdown(false)}
             >
-              <span className="material-symbols-outlined text-[18px]">person</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">person</span>
               <span className="font-hanken text-[14px] leading-[1.5] font-normal">Profile</span>
             </Link>
             <button
@@ -110,7 +112,7 @@ export function UserMenu() {
               onClick={handleSignOut}
               className="w-full flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container-low transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">logout</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">logout</span>
               <span className="font-hanken text-[14px] leading-[1.5] font-normal">Sign Out</span>
             </button>
           </div>
