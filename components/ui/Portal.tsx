@@ -5,8 +5,11 @@ import { createPortal } from "react-dom";
 
 interface PortalProps {
   children: React.ReactNode;
-  /** data-testid for the portal's root container appended to <body>. */
-  testId?: string;
+  /**
+   * data-testid for the portal's root container appended to <body>. Required
+   * (no default) so each portal root is unique per the test-id convention.
+   */
+  testId: string;
 }
 
 /**
@@ -19,7 +22,7 @@ interface PortalProps {
  * first client render both return null, there is no hydration mismatch. The
  * mounted guard lives here, once; individual overlays must not re-implement it.
  */
-export function Portal({ children, testId = "portal-root" }: PortalProps) {
+export function Portal({ children, testId }: PortalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

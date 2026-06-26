@@ -152,8 +152,8 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Focus the dialog on open
-    dialogRef.current?.focus();
+    // (Focus-on-open handled by autoFocus on the dialog, reliable through the
+    // Portal's async mount where a manual focus() races.)
     return () => {
       document.body.style.overflow = prevOverflow;
       previouslyFocused?.focus?.();
@@ -380,6 +380,8 @@ export function BookingModal({ isOpen, onClose, business, staff, services, initi
         aria-labelledby={confirmation ? undefined : "booking-modal-title"}
         aria-label={confirmation ? "Booking confirmed" : undefined}
         tabIndex={-1}
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: move focus into the dialog on open
+        autoFocus
         data-testid="booking-modal"
         className={`w-full ${confirmation ? "max-w-[920px]" : "max-w-[520px]"} my-4 bg-surface border border-white/10 rounded-[4px] flex flex-col ${confirmation ? "max-h-[95vh]" : "max-h-[92vh]"} outline-none`}
       >

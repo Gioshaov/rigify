@@ -24,7 +24,8 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
     };
 
     document.addEventListener("keydown", handleEscape);
-    closeButtonRef.current?.focus();
+    // (Focus-on-open handled by autoFocus on the close button, reliable
+    // through the Portal's async mount where a manual focus() races.)
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
@@ -47,6 +48,8 @@ export function Modal({ isOpen, onClose, children, closeButtonTestId }: ModalPro
       >
         <button
           ref={closeButtonRef}
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: focus the dialog's close control on open
+          autoFocus
           type="button"
           data-testid={closeButtonTestId}
           onClick={onClose}
