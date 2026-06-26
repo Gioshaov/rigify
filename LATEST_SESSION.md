@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 24, 2026  
-**Session**: Session 26 - Booking-Flow Modal Refactor & Marketplace UI Polish
+**Last Updated**: June 26, 2026  
+**Session**: Session 27 - Ponytail cleanup pass + repo/CI plumbing fixes
 
 ---
 
@@ -119,44 +119,38 @@
 
 ---
 
-## Latest Session Work (Session 26 - June 24, 2026)
+## Latest Session Work (Session 27 - June 26, 2026)
 
-**Objective**: A long UI/UX pass — convert the booking page into a modal with inline confirmation, polish the Browse Businesses views, unify the homepage layout, add a reusable phone country-code field, and restore the "My Bookings" card to its original Stitch design.
+**Objective**: Repo-wide cleanup pass for over-engineering, plus fix the cascade of branch/CI/Vercel mismatches discovered while shipping it.
 
-### 1. Booking page → modal with inline confirmation
-- Deleted `BookAppointmentContent.tsx`; built `components/booking/` (`BookingModal`, `BookingProvider`, `BookingCalendar`, `BookingConfirmation`) + `lib/bookings/` (`get-confirmation`, `types`)
-- Flow restructured: artisan/time decoupled, month-grid calendar, time-after-date; confirmation renders **inside the modal** (no page nav)
-- Triggered from `ServicesList` / `BookServiceButton`
+### 1. Ponytail audit → 6 verified cuts
+- Ran `/ponytail-audit` over the source tree, surfaced 14 candidate findings, then verified each one against actual call sites — 6 solid, 3 wrong on verification (would have introduced XSS in email templates, removed a needed JSONB type guard, deleted an actually-used util), 5 churn-for-churn-sake.
+- **Shipped (PR #18, squashed as `a8018fb`):**
+  - Uninstalled `next-intl`, `clsx`, `tailwind-merge` (zero importers across `app/`, `components/`, `lib/`, `tests/`, `scripts/`, and config files)
+  - Deleted `CATEGORY_IDS`, `CITY_IDS`, `formatAuditDetails` (no callers)
+  - Merged `lib/utils/time-format.ts` into `lib/utils/datetime.ts` (function bodies identical, 3 importers updated)
+- **Net: −190 lines, −3 deps.** Type-check + `@code-reviewer` PASS.
 
-### 2. Booking-confirmed page + shared directions util
-- Removed the standalone Location card + check icon; added a Mapbox map (`BusinessLocationMap`) + **Get directions** button
-- New `lib/utils/directions.ts` (`getDirectionsUrl` / `openDirections` — Apple Maps on iOS else Google), reused by `GetDirectionsButton` and the tappable My Bookings address
-- Guest email is now **mandatory** (`app/api/bookings/route.ts`)
+### 2. CR Protocol updated for ponytail-review
+- `CLAUDE.md`: `/ponytail-review` now runs in parallel with `@code-reviewer` on every CR pass. Findings are **advisory only** — must verify each one + grade as `solid` / `wrong` / `churn` + get per-finding user approval before touching code. Codified after 3/14 false positives proved auto-applying findings was unsafe.
+- `WORKFLOWS.md`: cut the duplicated Code Review Protocol section (was drifting from CLAUDE.md), replaced with a one-line pointer so the rule has a single source of truth.
 
-### 3. Browse Businesses polish
-- Compact cards; grayscale images → color after "View"; split-view photo click mirrors map view
-- Two-step marker selection + popup with an explicit **close icon**; re-keyed `flyTo` to `popupBusinessId` (no hover thrash); Marker `onClick` `stopPropagation`
+### 3. Repo/branch state untangled
+- Discovered GitHub had **no `main` branch** (silently renamed to `master`), the **default branch was set to `chore/ponytail-cuts`** (broken state), and **Vercel still pointed production at `main`** — every layer was out of sync.
+- Fixed: GitHub default → `master` (via `gh api`), Vercel `productionBranch: main` → `master` (dashboard → Project → Environments → Production Branch), pruned stale local `main` ref and `origin/HEAD` dangling pointer.
+- `CLAUDE.md`, `STAGING.md`, `WORKFLOWS.md`: every `main` reference that named the prod git branch updated to `master`; promotion-flow diagram and example commands now reflect `master + staging` reality.
 
-### 4. Phone country-code field
-- New `components/ui/CountryCodeSelect.tsx` (GE +995 default, ISO→flag, dial next to country name)
-- Wired into the **booking form** and the **registration page**; `validateGeorgianPhone` accepts international E.164
+### 4. Tooling installed
+- `gh` CLI v2.95.0 (via winget) — authed as `Gioshaov`
+- Vercel CLI v54.17.3 (via npm -g) — authed as `gioshaov-3816` / `team-rigify-s-projects`
+- `.claude/settings.local.json`: persisted `gh auth *` / `gh api *` permissions
 
-### 5. Homepage + login layout
-- New `components/layout/Container.tsx`; unified gutters/spacing on `app/page.tsx`
-- Login: Forgot-password below the password field, Register link on the right
+### 5. Memories saved
+- `feedback_ponytail_review_no_autoapply.md` — verify + grade + approval gate for all ponytail-review findings, with the 3/14 false-positive history as the *why*
+- `feedback_staging_stays_current.md` — after every merge to `master`, fast-forward `staging` from `master` and push (don't wait to be asked)
 
-### 6. My Bookings card restored to Stitch design
-- Horizontal layout: left **thumbnail** (grayscale → color + zoom on hover) → center (business name → service → **Date & Time** → tappable **Location**) → View/Cancel → right **CONFIRMED** badge + **STAFF MEMBER** + name + **circular 120×120 avatar** (intentional 0-radius exception)
-- Query extended: `businesses` embed now fetches `cover_image_url` + `business_categories(category_id)`
-- New stitch ref `design-assets/stitch_rigify/stitch_my_bookings/`; old `my_bookings_rigify/` removed
-
-### 7. Misc
-- Hero background SVG attempted then **reverted** (looked wrong); `HERO/` source assets remain untracked
-- `CLAUDE.md`: added JSX-escaping + Working Principles / Session Continuity rules
-- Tests updated for the modal flow (`guest-booking-flow`, `booking-validation`, `test-helpers`)
-
-### Code Review (this session)
-- Two reviews; fixes applied: test-ID coverage, a modal test regression (asserted URL nav that no longer happens), and a false "bug" caused by a digit in test-data name (`validateName` blocks digits — never use them in test names).
+### 6. Merge + sync
+- PR #18 squash-merged to `master` (`a8018fb`), branch auto-deleted on GitHub. `staging` fast-forwarded from `master` and pushed — both long-lived branches now in sync. Vercel will auto-deploy production from `master` and staging from `staging`.
 
 ---
 
@@ -175,26 +169,15 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `fix/lint-warnings` (pushed; PR not yet opened) — lint fixes committed here, NOT yet merged to `main`  
-**Status**: ⚠️ Working tree has a LARGE uncommitted UI diff (this session's work)
+**Branch**: `staging` (checked out locally); `master` = `staging` = `a8018fb`  
+**Status**: ✅ Working tree clean; PR #18 merged; long-lived branches in sync
 
-**Uncommitted (this session — needs commit)**:
-- Booking modal: `components/booking/*` (new), `lib/bookings/*` (new), `BookAppointmentContent.tsx` (deleted), `book/page.tsx`, `ServicesList`, `BookServiceButton`
-- Booking-confirmed + directions: `booking-confirmed/*`, `lib/utils/directions.ts` (new), `app/api/bookings/route.ts`
-- Browse polish: `BusinessGrid`, `BusinessMap`, `BusinessMapView`, `BusinessSplitView`, `BusinessLocationMap`
-- Phone field: `components/ui/CountryCodeSelect.tsx` (new), `customer-register/page.tsx`, `LoginPageClient.tsx`
-- Homepage: `components/layout/Container.tsx` (new), `app/page.tsx`
-- My Bookings: `BookingCard.tsx`, `BookingsTabs.tsx`, `customer/dashboard/page.tsx`
-- Stitch ref swap: `stitch_my_bookings/` (new) / `my_bookings_rigify/` (removed); `HERO/` (untracked, reverted hero assets)
-- `CLAUDE.md`, tests, `package.json`
-
-**Carried over from Session 25 (still uncommitted)**:
-- `scripts/seed-mock-businesses.ts` + `seed:mock` script
-- `supabase/migrations/20260623000001_grant_reviews_subscriptions.sql` (applied to remote DB via Management API)
+**Untracked (intentionally not committed this session)**:
+- `.claude/skills/` — local skill installs
+- `supabase/reset-data.sql` — local-only utility
 
 **TypeScript**: ✅ No errors  
 **Build**: ✅ Passes
-**Lint**: ✅ Clean (0 warnings)
 
 **Total Project Stats**:
 - 36 pages implemented (88 TSX files total)
@@ -205,43 +188,20 @@
 
 ## Key Learnings This Session
 
-### 1. Next.js 14 Metadata API Changes
-**Lesson**: `themeColor` moved from `Metadata` to `Viewport` export
+### 1. Ponytail findings are a candidate list, never a worklist
+3/14 cuts from the audit were wrong on verification — one would have removed `escapeHtml` from raw-HTML email templates (where React isn't involved → XSS); one would have removed a JSONB type guard that validates untrusted DB data; one was a "used nowhere" claim disproved by two real call sites. Lesson encoded in `CLAUDE.md` step 4 of the CR workflow and saved as memory `ponytail-review-no-autoapply`: every finding verified + graded + per-finding-approved before touching code.
 
-**Why it matters**:
-- Using `themeColor` in `metadata` is deprecated in Next.js 14
-- Causes build warnings on every page
-- Will stop working in future versions
+### 2. Layered branch state drifts silently until something forces you to look
+GitHub had silently renamed `main → master`; the default branch had been set to a feature branch by accident; Vercel still pointed `productionBranch` at the dead `main`. None of this surfaced until `gh pr create` threw "no commits between main and chore/ponytail-cuts". Always cross-check (a) `gh repo view --json defaultBranchRef`, (b) `gh api repos/.../branches`, (c) Vercel project's `link.productionBranch` whenever git plumbing feels off — don't trust any single source.
 
-**Solution**: Use separate `export const viewport: Viewport = { themeColor: "..." }`
+### 3. Vercel `productionBranch` can't be changed via REST API for already-linked projects
+`PATCH /v9/projects/:id` rejects `gitProductionBranch` as an unknown field. `POST /v9/projects/:id/link` returns 200 + no-op on the field. The setting is dashboard-only (Project → Environments → Production Branch). If a future session needs to change it, skip the API spelunking and go straight there.
 
-### 2. Favicon File Placement in Next.js 14 App Router
-**Best practice**:
-- `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` → Auto-generated metadata
-- `public/*.png` → For manifest-referenced assets (Android icons)
-- `app/manifest.json` → Auto-served with correct Content-Type
-
-**Why**: Next.js 14 App Router conventions handle metadata generation automatically
-
-### 3. Android Adaptive Icons Need Maskable Purpose
-**Lesson**: 512×512 icons should include `"purpose": "maskable"` in manifest
-
-**Why**: Without it, Android adds padding and icon appears tiny in adaptive shapes
-
-**Requirement**: Icon must have safe zone (center 80%) for maskable to work correctly
-
-### 4. Code Review Before Push Catches Issues Early
-**Workflow**: Commit → Review → Fix → Push
-
-**Value**:
-- Critical issues found: Deprecated API usage
-- Major issues found: Missing metadata, invalid attributes
-- All fixed before deployment
-
-**Impact**: Cleaner git history, no broken builds in CI/CD
+### 4. Direct-to-master merge needs an explicit staging fast-forward
+The documented promotion flow is `feature/* → staging → master`. A direct `feature/* → master` merge (acceptable for low-risk cleanups) leaves `staging` behind by however many commits just landed. Don't wait for a feature PR to discover the drift via merge conflicts — fast-forward `staging` immediately. Codified in memory `staging-stays-current`.
 
 ---
 
-**Session Started**: June 24, 2026  
-**Session Ended**: June 24, 2026  
-**Status**: Large UI refactor complete and verified locally (booking modal + inline confirmation, browse-view polish, phone country-code field, restored My Bookings Stitch card). All uncommitted on `fix/lint-warnings`. Next: commit this session's UI work (consider grouping by area), open the PR for `fix/lint-warnings`, and decide on the mock seeder + grants migration.
+**Session Started**: June 26, 2026  
+**Session Ended**: June 26, 2026  
+**Status**: PR #18 merged to `master` (`a8018fb`), `staging` fast-forwarded and pushed, both long-lived branches in sync. GitHub default + Vercel production branch both now `master`. `gh` and `vercel` CLIs installed and authed. Two feedback memories saved. Working tree clean. Next session can pick up any of the deferred items (mock seeder + grants migration carried from S25, salome platform integration, social bots, recurring appointments).

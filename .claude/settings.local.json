@@ -28,7 +28,8 @@
       "Bash(grep -E \"\\\\.md$\")",
       "Bash(git show *)",
       "PowerShell(gh auth *)",
-      "PowerShell(gh api *)"
+      "PowerShell(gh api *)",
+      "Bash(git pull *)"
     ]
   }
 }
