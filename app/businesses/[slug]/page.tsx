@@ -168,7 +168,7 @@ export default async function BusinessProfilePage({
       {/* Top Navigation */}
       <TopNav />
 
-      <main className="pb-[calc(6rem_+_env(safe-area-inset-bottom))]">
+      <main className="pb-24">
         {/* Hero Section */}
         <section className="relative h-[353px] md:h-[530px] w-full overflow-hidden bg-surface-variant">
           {/* Cover Image with Unsplash Fallback */}
@@ -356,12 +356,12 @@ export default async function BusinessProfilePage({
       </main>
 
       {/* Mobile CTA (Sticky) */}
-      <div className="md:hidden fixed bottom-[calc(5rem_+_env(safe-area-inset-bottom))] left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
+      <div className="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
         <BookServiceButton mobile />
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <footer className="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface bottom-nav-safe px-margin-mobile border-t border-white/10 md:hidden">
+      <footer className="fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10 md:hidden">
         <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">

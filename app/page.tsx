@@ -213,7 +213,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-[calc(5rem_+_env(safe-area-inset-bottom))] md:mb-0">
+      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-20 md:mb-0">
         <Container className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <h2 className="font-mono text-display-lg-mobile text-primary uppercase mb-6 tracking-tighter font-bold">RIGIFY</h2>
@@ -264,7 +264,7 @@ export default function HomePage() {
       </footer>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface bottom-nav-safe px-margin-mobile border-t border-white/10">
+      <nav className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
         <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
           <span className="material-symbols-outlined">home</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>
