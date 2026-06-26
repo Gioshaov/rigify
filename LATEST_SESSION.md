@@ -1,7 +1,7 @@
 # Latest Session Summary
 
 **Last Updated**: June 26, 2026  
-**Session**: Session 30 - Session-end commit gate + hero asset committed
+**Session**: Session 31 - UI polish sweep (a11y, ConfirmDialog, Toast, viewport, tests, portal + z-index)
 
 ---
 
@@ -119,30 +119,47 @@
 
 ---
 
-## Latest Session Work (Session 30 - June 26, 2026)
+## Latest Session Work (Session 31 - June 26, 2026)
 
-**Objective**: Harden against the Session 29 failure mode (uncommitted work silently traveling between machines) with a session-end commit gate, and clean up the last stray local file (the parked hero SVG).
+**Objective**: A sustained UI-correction sweep — verify the `UI_GUIDE.md` Phase 1/2/3 backlog against the code, then implement the genuinely-missing items as a chain of reviewed PRs into `staging`.
 
-### 1. Session-end commit gate added to CLAUDE.md (PR #23)
-- New **Step 0** in the `session end` procedure: run `git status` first and block the wrap-up on uncommitted tracked changes / unexpected untracked files until the tree is clean or every leftover is explicitly acknowledged. Cross-references Session 29 as the root cause.
-- Reviewed by `@code-reviewer` (PASS); applied its m1/m2 notes (tightened the exclusion wording — gitignored files never appear in `git status`).
+Every PR went through `@code-reviewer` (and `/ponytail-review` once it became available); fixes applied before merge.
 
-### 2. Hero asset committed (PR #24)
-- Confirmed the parked hero SVG was **used nowhere in code** (only doc mentions). User moved it to `design-assets/HERO/`; committed `tbilisi_clean_silhouette_hero_stars.svg` there so it's preserved in-repo instead of stranded on one machine.
+### Merged into `staging` (PRs #28–#33)
+1. **Broken hero image fix** — removed the failing Unsplash `<Image>` from the browse hero.
+2. **Phase 1 accessibility (#28)** — global `:focus-visible` rings, ARIA labels (UserMenu, BookingCalendar), skip-links + `<main>` landmarks (home/browse/dashboards), homepage heading hierarchy (added the missing `<h1>`).
+3. **Phase 1 a11y tail (#29)** — landmarks/skip-links on marketing pages + for-businesses, homepage `<main>` restructure, removed the dead non-functional language-toggle icon from 6 navs.
+4. **`confirm()` → accessible ConfirmDialog (#30)** — promise-based `useConfirm()` provider; migrated all 13 destructive call sites.
+5. **Global Toast system (#31)** — `ToastProvider`/`useToast()`; consolidated 4 ad-hoc toast users and replaced ~15 `alert()` calls.
+6. **`min-h-dvh` (#32)** — swapped 45 `min-h-screen` usages. (Safe-area insets were attempted then reverted — `viewport-fit=cover` needs insets on all edges; deferred.)
+7. **Playwright coverage (#33)** — prod-gated `/dev/ui-harness` route + ConfirmDialog/Toast specs (11 tests).
 
-### 3. Gate example generalized (PR #25)
-- Swapped the now-tracked `HERO/` example in the commit-gate text for a generic "local scratch/assets folder" placeholder. `@code-reviewer` PASS.
-- Note: `gh pr merge` hit a transient GitHub API timeout on the first try; merge succeeded on retry (no data issue).
+### Open: portal + z-index (PR #34)
+- **Commit 1**: new SSR-safe `components/ui/Portal.tsx`; portaled all 12 overlays to `document.body` (a full `fixed inset-0` sweep caught 3 inline modals the name-keyed audit missed).
+- **Commit 2**: semantic z-index scale in `tailwind.config.ts` (`nav:40 · dropdown:50 · modal:100 · toast:200`); adopted across ~40 global-layer sites; fixes the latent toast-under-modal ordering.
+- **Commit 3**: review fix — portaling broke focus-on-open (ref null before portal mounts); switched ConfirmDialog/Modal/BookingModal to `autoFocus`; made `Portal` testId required.
 
-### 4. Merge + sync
-- PRs #23, #24, #25 squash-merged via `feature → staging → master`; `master` fast-forwarded and pushed each time. All four refs in sync at `8bcfde7`. **Working tree now fully clean** (no stray untracked files).
+### Key learnings
+- **Confirm the foundation before the numbers.** A z-index scale is theater if overlays aren't in a shared stacking context — the user's "check for portals first" steer turned a renumber into a portal-then-scale.
+- **Grep by pattern, not by name.** The overlay audit keyed on a filename list and missed 3 `fixed inset-0` modals; a `fixed inset-0` sweep found them.
+- **Don't `npm run build` against a live `npm run dev`** — they share `.next` and it corrupts the running dev server (caused phantom test failures).
 
 ---
 
-## What's Left to Build (Future Enhancements Only)
+## What's Left to Build
+
+### UI corrections remaining (see memory `ui-corrections-backlog.md`):
+1. **Mobile bottom nav on dashboards** + extract the duplicated inline nav into a reusable component
+2. **Inline field validation** — errors below each field + validate on blur (ServicesList is the reference)
+3. **Safe-area insets (edge-to-edge)** — proper `viewport-fit=cover` + insets on all sticky/fixed edges (~20 headers); reverted from #32
+4. **Phase 1 a11y leftovers** — admin pages `<main>`/skip-link (needs a shared admin shell), 2 booking-confirmed pages, dead `language-toggle-btn` in sidebars
+5. **Consolidate bespoke modals** onto the shared `Modal` shell (portaled but not restructured in #34)
+
+### Pre-launch / ops:
+- **Promote `staging` → `master`** for production once verified on `staging.rigify.ge`
+- **Remove `SITE_PASSWORD`** gate before launch (deferred since Session 27)
 
 ### Advanced Features (Future):
-
 1. **Salome AI Platform Integration** - Replace n8n POC with production API
 2. **Social Bots** - Instagram/Facebook DM chatbots
 3. **Recurring Appointments** - Weekly/monthly bookings
@@ -154,8 +171,8 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `master` (checked out locally); `master` = `staging` = `8bcfde7`  
-**Status**: ✅ Working tree fully clean; PRs #23 + #24 + #25 merged; long-lived branches in sync
+**Branch**: `feature/z-index-scale` checked out (PR #34 open). `staging` at `71bd37a`, **6 PRs ahead of `master`** (#28–#33 merged; #34 open) — `master` still at `570f4fb`.  
+**Status**: ✅ Working tree clean; PR #34 pushed/open into `staging`. **`staging` not yet promoted to `master`/production** (awaiting visual verification on `staging.rigify.ge`).
 
 **Local-only (intentionally not committed)**:
 - `.claude/settings.local.json` — gitignored (personal per-machine settings)
@@ -171,18 +188,10 @@
 ---
 
 ## Key Learnings This Session
-
-### 1. Fix the failure mode in the process, not just the instance
-Session 29 lost time to uncommitted work crossing machines. Rather than just "remember to commit," the durable fix was a **Step 0 commit gate** in the session-end procedure — the check now runs every time by construction, at the exact moment (leaving the machine) the failure occurs.
-
-### 2. Prose rules are weaker than tooling, but cheaper
-`@code-reviewer` rightly noted a `.gitignore` entry is enforced by git while a CLAUDE.md exclusion list depends on me applying it. The trade-off: the gate is a judgment call (intentional vs. forgotten), which tooling can't make — so prose is the right tool here, but anything with a clear yes/no answer (like ignoring a file) should be tooling.
-
-### 3. Transient GitHub API failures — just retry
-`gh pr merge` failed once with a `dial tcp ... 443` timeout; the PR was untouched and the merge succeeded on retry. Network blips on `gh`/`git push` are not state corruption — re-check the PR/ref state, then retry rather than reconstructing.
+(See the bulleted "Key learnings" under Latest Session Work above — confirm the foundation before the numbers; grep by pattern not name; never `npm run build` against a live `npm run dev`.)
 
 ---
 
 **Session Started**: June 26, 2026  
 **Session Ended**: June 26, 2026  
-**Status**: ✅ Complete. Session-end commit gate added to CLAUDE.md (PR #23, `@code-reviewer` PASS); parked hero SVG committed to `design-assets/HERO/` (PR #24); gate example generalized (PR #25). `master` = `staging` = `8bcfde7`, working tree fully clean. Deferred items unchanged: pre-launch `SITE_PASSWORD` removal (S27), Salome platform integration, social bots, recurring appointments, packages, gift cards.
+**Status**: ✅ Complete. A UI-correction sweep: PRs #28–#33 merged into `staging` (hero fix, Phase 1 a11y + tail, ConfirmDialog, Toast, min-h-dvh, Playwright coverage); PR #34 (portal overlays + z-index scale) pushed and open into `staging`. `staging` at `71bd37a`, 6 PRs ahead of `master` — **not yet promoted to production**. Working tree clean. Next: verify on `staging.rigify.ge` then promote `staging → master`; remaining UI items + `SITE_PASSWORD` removal tracked in memory `ui-corrections-backlog.md`.
