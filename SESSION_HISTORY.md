@@ -2016,3 +2016,29 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 **Next Steps**: Backlog unchanged — pre-launch `SITE_PASSWORD` removal (S27), Salome platform API, social bots, recurring appointments, packages, gift cards.
 
 **Status**: ✅ Complete. Session-end commit gate live; working tree fully clean (only the gitignored `settings.local.json` remains local).
+
+---
+
+### Session 31 - June 26, 2026: UI polish sweep (a11y, ConfirmDialog, Toast, viewport, tests, portal + z-index)
+
+**Objective**: Verify the `UI_GUIDE.md` Phase 1/2/3 backlog against the actual code, then implement the genuinely-missing items as a chain of reviewed PRs into `staging`. Every PR went through `@code-reviewer` (and `/ponytail-review` once it became available in the repo); fixes applied before each merge.
+
+**Accomplished** (all merged into `staging` except #34):
+- **Broken hero image**: removed the failing Unsplash `<Image>` from the browse hero (rendered as a broken-image box).
+- **Phase 1 accessibility (PR #28)**: global `:focus-visible` rings (one base rule vs ~160 inline buttons), ARIA labels on icon-only controls (UserMenu, BookingCalendar), skip-links + `<main>` landmarks (home/browse/business+staff dashboards), homepage heading hierarchy (added the missing single `<h1>`), `cursor-pointer` for `[role=button]`.
+- **Phase 1 a11y tail (PR #29)**: skip-link/`<main>` on `MarketingLayout` (covers about/contact/help/terms/privacy) + ForBusinessesPage, homepage `<main>` restructure (was wrapping nav+footer), removed the dead non-functional `language` globe icon from 6 navs (kept the real LanguageToggle).
+- **`confirm()` → accessible ConfirmDialog (PR #30)**: `components/ui/ConfirmDialog.tsx` + `lib/contexts/ConfirmContext.tsx` (`useConfirm()` returns a Promise<boolean>); migrated all 13 destructive call sites. Review fixes: localized labels, focus trap + return, duplicate-call guard.
+- **Global Toast system (PR #31)**: `lib/contexts/ToastContext.tsx` (`useToast()`, stacked aria-live region); consolidated 4 ad-hoc per-form toasts and replaced ~15 `alert()` calls. Review fix: stable auto-dismiss timer (was resetting when a 2nd toast appeared), unique per-toast testids.
+- **`min-h-dvh` (PR #32)**: swapped 45 `min-h-screen` usages. Safe-area insets were attempted (`viewport-fit=cover` + `.bottom-nav-safe`) then **reverted** — cover needs insets on every fixed/sticky edge and only the bottom was handled (sticky headers regressed under the iOS PWA status bar); deferred to its own PR.
+- **Playwright coverage (PR #33)**: prod-gated `app/dev/ui-harness` route (404 in production) + `tests/e2e/ui/{confirm-dialog,toast}.spec.ts` (11 tests). Verified locally by spinning a throwaway dev server on :3100.
+- **Portal + z-index scale (PR #34, open)**: new SSR-safe `components/ui/Portal.tsx`; portaled all 12 overlays to `document.body` (a full `fixed inset-0` sweep caught 3 inline modals the name-keyed audit missed: BookingCard/ManageBooking cancel, StaffDirectory profile). Then a semantic z-index scale in `tailwind.config.ts` (`nav:40 / dropdown:50 / modal:100 / toast:200`) adopted across ~40 global-layer sites; fixes the latent toast-under-modal ordering. Review fix: portaling broke focus-on-open (ref null before portal mounts) → switched to `autoFocus`; `Portal` testId made required.
+
+**Files Changed**: ~90 files across the 7 PRs (new: ConfirmDialog, ConfirmContext, ToastContext, Portal, ui-harness route + 2 specs; modified: most overlays, navs/headers, forms, layouts, `tailwind.config.ts`, `globals.css`).
+
+**Commits/PRs**: #28, #29, #30, #31, #32, #33 squash-merged into `staging`; #34 pushed and open. `staging` at `71bd37a`, **6 PRs ahead of `master`** (`570f4fb`) — not yet promoted to production.
+
+**Key learnings**: (1) Confirm the foundation before the numbers — a z-index scale is theater unless overlays share a stacking context; the user's "check for portals first" steer reframed it as portal-then-scale. (2) Grep by pattern, not by name — the overlay audit keyed on a filename list and missed 3 `fixed inset-0` modals. (3) Never `npm run build` against a live `npm run dev` — they share `.next` and it corrupts the running dev server (caused phantom test failures).
+
+**Next Steps**: Verify on `staging.rigify.ge`, then promote `staging → master` for production. Remaining UI items (mobile bottom nav on dashboards, inline field validation, edge-to-edge safe-area, admin a11y landmarks, bespoke-modal consolidation) + `SITE_PASSWORD` removal tracked in memory `ui-corrections-backlog.md`.
+
+**Status**: ✅ Complete. PRs #28–#33 merged to `staging`; #34 open. Working tree clean.
