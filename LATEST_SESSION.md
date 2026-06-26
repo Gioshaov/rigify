@@ -1,7 +1,7 @@
 # Latest Session Summary
 
 **Last Updated**: June 26, 2026  
-**Session**: Session 28 - Ponytail cleanup pass + repo/CI plumbing fixes
+**Session**: Session 29 - Session-doc reconciliation + settings.local untrack + `main` cleanup
 
 ---
 
@@ -119,38 +119,29 @@
 
 ---
 
-## Latest Session Work (Session 28 - June 26, 2026)
+## Latest Session Work (Session 29 - June 26, 2026)
 
-**Objective**: Repo-wide cleanup pass for over-engineering, plus fix the cascade of branch/CI/Vercel mismatches discovered while shipping it.
+**Objective**: Clean up the fallout from working across two machines — a stale local clone with an uncommitted Session 27 draft that collided with the newer Session 27 already on `master`, plus the leftover `main` branch and a wrongly-tracked local settings file.
 
-### 1. Ponytail audit → 6 verified cuts
-- Ran `/ponytail-audit` over the source tree, surfaced 14 candidate findings, then verified each one against actual call sites — 6 solid, 3 wrong on verification (would have introduced XSS in email templates, removed a needed JSONB type guard, deleted an actually-used util), 5 churn-for-churn-sake.
-- **Shipped (PR #18, squashed as `a8018fb`):**
-  - Uninstalled `next-intl`, `clsx`, `tailwind-merge` (zero importers across `app/`, `components/`, `lib/`, `tests/`, `scripts/`, and config files)
-  - Deleted `CATEGORY_IDS`, `CITY_IDS`, `formatAuditDetails` (no callers)
-  - Merged `lib/utils/time-format.ts` into `lib/utils/datetime.ts` (function bodies identical, 3 importers updated)
-- **Net: −190 lines, −3 deps.** Type-check + `@code-reviewer` PASS.
+### 1. Diagnosed the two-machine divergence
+- This clone was stale: local `main`/`master`/`staging` all at `fe0a5c5`, with 3 **uncommitted** files (`LATEST_SESSION.md`, `SESSION_HISTORY.md`, `.claude/settings.local.json`) that were an **older Session 27 draft** ("Staging Environment + Admin Services & Russian Removal", June 25) — never committed before switching machines, still saying `main`.
+- The remote had moved 2 commits ahead (`origin/master` = `origin/staging` = `22d5cc7`) with a **different** Session 27 ("Ponytail cleanup", June 26) that already used correct `master` terminology. Both were labelled "Session 27".
 
-### 2. CR Protocol updated for ponytail-review
-- `CLAUDE.md`: `/ponytail-review` now runs in parallel with `@code-reviewer` on every CR pass. Findings are **advisory only** — must verify each one + grade as `solid` / `wrong` / `churn` + get per-finding user approval before touching code. Codified after 3/14 false positives proved auto-applying findings was unsafe.
-- `WORKFLOWS.md`: cut the duplicated Code Review Protocol section (was drifting from CLAUDE.md), replaced with a one-line pointer so the rule has a single source of truth.
+### 2. Reconciled the session docs (PR #20)
+- Synced local branches to remote, then **kept both** writeups and renumbered: staging-env draft inserted as **Session 27** (June 25); ponytail entry renumbered to **Session 28** (June 26). Chronology now clean: S26 (Jun 24) → S27 (Jun 25) → S28 (Jun 26).
+- Fixed leftover `main → master` branch references inside the inserted Session 27 entry.
+- `LATEST_SESSION.md`: kept the ponytail narrative as latest, renumbered its labels 27 → 28.
+- Unioned this machine's permission entries into `.claude/settings.local.json` (then untracked it — see #4).
 
-### 3. Repo/branch state untangled
-- Discovered GitHub had **no `main` branch** (silently renamed to `master`), the **default branch was set to `chore/ponytail-cuts`** (broken state), and **Vercel still pointed production at `main`** — every layer was out of sync.
-- Fixed: GitHub default → `master` (via `gh api`), Vercel `productionBranch: main` → `master` (dashboard → Project → Environments → Production Branch), pruned stale local `main` ref and `origin/HEAD` dangling pointer.
-- `CLAUDE.md`, `STAGING.md`, `WORKFLOWS.md`: every `main` reference that named the prod git branch updated to `master`; promotion-flow diagram and example commands now reflect `master + staging` reality.
+### 3. `main` branch eliminated
+- GitHub had already deleted `main` (default was already `master`); `origin/main` was just a stale local tracking ref. Pruned it, deleted local `main`, re-pointed `origin/HEAD → origin/master`. `main` now exists nowhere.
 
-### 4. Tooling installed
-- `gh` CLI v2.95.0 (via winget) — authed as `Gioshaov`
-- Vercel CLI v54.17.3 (via npm -g) — authed as `gioshaov-3816` / `team-rigify-s-projects`
-- `.claude/settings.local.json`: persisted `gh auth *` / `gh api *` permissions
+### 4. `settings.local.json` made local-only (PR #21)
+- `git rm --cached .claude/settings.local.json` + added it to `.gitignore`. It's the **personal/per-machine** Claude Code settings file (`settings.json` is the shared one) and shouldn't have been committed.
+- The fast-forward deleted the working-tree copy (still tracked at that moment) → restored it from history. File is back on disk with all 52 allow entries, now untracked + ignored.
 
-### 5. Memories saved
-- `feedback_ponytail_review_no_autoapply.md` — verify + grade + approval gate for all ponytail-review findings, with the 3/14 false-positive history as the *why*
-- `feedback_staging_stays_current.md` — after every merge to `master`, fast-forward `staging` from `master` and push (don't wait to be asked)
-
-### 6. Merge + sync
-- PR #18 squash-merged to `master` (`a8018fb`), branch auto-deleted on GitHub. `staging` fast-forwarded from `master` and pushed — both long-lived branches now in sync. Vercel will auto-deploy production from `master` and staging from `staging`.
+### 5. Merge + sync
+- PRs #20 and #21 squash-merged to `staging` via the `feature → staging → master` flow; `master` fast-forwarded and pushed. All four refs in sync at `1e04bae`. Vercel auto-deploys both branches (docs/config only).
 
 ---
 
@@ -169,12 +160,12 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `staging` (checked out locally); `master` = `staging` = `a8018fb`  
-**Status**: ✅ Working tree clean; PR #18 merged; long-lived branches in sync
+**Branch**: `master` (checked out locally); `master` = `staging` = `1e04bae`  
+**Status**: ✅ Working tree clean; PRs #20 + #21 merged; long-lived branches in sync; `main` fully removed
 
-**Untracked (intentionally not committed this session)**:
-- `.claude/skills/` — local skill installs
-- `supabase/reset-data.sql` — local-only utility
+**Untracked / local-only (intentionally not committed)**:
+- `HERO/` — hero source assets
+- `.claude/settings.local.json` — now gitignored (personal per-machine settings)
 
 **TypeScript**: ✅ No errors  
 **Build**: ✅ Passes
@@ -188,20 +179,17 @@
 
 ## Key Learnings This Session
 
-### 1. Ponytail findings are a candidate list, never a worklist
-3/14 cuts from the audit were wrong on verification — one would have removed `escapeHtml` from raw-HTML email templates (where React isn't involved → XSS); one would have removed a JSONB type guard that validates untrusted DB data; one was a "used nowhere" claim disproved by two real call sites. Lesson encoded in `CLAUDE.md` step 4 of the CR workflow and saved as memory `ponytail-review-no-autoapply`: every finding verified + graded + per-finding-approved before touching code.
+### 1. Uncommitted work + a branch rename on another machine = silent divergence
+The staging-env Session 27 writeup only ever existed in this clone's working tree; the other machine, unaware of it, wrote a *different* Session 27 and pushed. Two writeups, same number, one terminology regression. Lesson: commit (or at least stash-and-note) session docs before switching machines, and when a clone looks stale, diff the working tree against `origin/*` **before** pulling — don't assume your uncommitted changes are the freshest version.
 
-### 2. Layered branch state drifts silently until something forces you to look
-GitHub had silently renamed `main → master`; the default branch had been set to a feature branch by accident; Vercel still pointed `productionBranch` at the dead `main`. None of this surfaced until `gh pr create` threw "no commits between main and chore/ponytail-cuts". Always cross-check (a) `gh repo view --json defaultBranchRef`, (b) `gh api repos/.../branches`, (c) Vercel project's `link.productionBranch` whenever git plumbing feels off — don't trust any single source.
+### 2. A fast-forward will delete a still-tracked working-tree file
+After `git rm --cached` + gitignore in a commit, fast-forwarding a branch onto that commit removes the working-tree copy too (it was tracked at the moment the deletion was applied). The file isn't gone for good — `git show <prev>:path > path` restores it as an untracked/ignored file. Expect this on the *other* machine's next pull as well.
 
-### 3. Vercel `productionBranch` can't be changed via REST API for already-linked projects
-`PATCH /v9/projects/:id` rejects `gitProductionBranch` as an unknown field. `POST /v9/projects/:id/link` returns 200 + no-op on the field. The setting is dashboard-only (Project → Environments → Production Branch). If a future session needs to change it, skip the API spelunking and go straight there.
-
-### 4. Direct-to-master merge needs an explicit staging fast-forward
-The documented promotion flow is `feature/* → staging → master`. A direct `feature/* → master` merge (acceptable for low-risk cleanups) leaves `staging` behind by however many commits just landed. Don't wait for a feature PR to discover the drift via merge conflicts — fast-forward `staging` immediately. Codified in memory `staging-stays-current`.
+### 3. `settings.local.json` is per-machine, `settings.json` is shared
+Committing `settings.local.json` churns shared history with one machine's one-off allow entries. It belongs in `.gitignore`. Done this session.
 
 ---
 
 **Session Started**: June 26, 2026  
 **Session Ended**: June 26, 2026  
-**Status**: PR #18 merged to `master` (`a8018fb`), `staging` fast-forwarded and pushed, both long-lived branches in sync. GitHub default + Vercel production branch both now `master`. `gh` and `vercel` CLIs installed and authed. Two feedback memories saved. Working tree clean. Next session can pick up any of the deferred items (mock seeder + grants migration carried from S25, salome platform integration, social bots, recurring appointments).
+**Status**: ✅ Complete. Two-machine session-doc collision reconciled (staging-env = S27, ponytail = S28; PR #20); `main` branch removed everywhere; `.claude/settings.local.json` untracked + gitignored and restored on disk (PR #21). `master` = `staging` = `1e04bae`, working tree clean. Deferred items unchanged: salome platform integration, social bots, recurring appointments, packages, gift cards (+ the pre-launch `SITE_PASSWORD` removal noted in S27).

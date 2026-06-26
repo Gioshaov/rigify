@@ -1975,3 +1975,25 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 - Future enhancements unchanged: Salome platform API, social bots, recurring appointments, service packages, gift cards.
 
 **Status**: PR shipped, branches in sync, infra plumbing matches docs, two new memories will keep future sessions from re-walking the same rakes.
+
+---
+
+### Session 29 - June 26, 2026: Session-doc reconciliation + settings.local untrack + `main` cleanup
+
+**Objective**: Clean up the fallout of working across two machines — a stale local clone whose uncommitted Session 27 draft collided with the newer Session 27 already on `master`, plus a leftover `main` branch and a wrongly-tracked local settings file.
+
+**Accomplished**:
+- **Diagnosed the divergence**: this clone was stale (local branches at `fe0a5c5`) with 3 uncommitted files that were an older Session 27 draft (staging-env + admin services + Russian removal, June 25), never committed before switching machines and still saying `main`. Remote had advanced 2 commits (`22d5cc7`) with a different Session 27 (ponytail cleanup, June 26) already on `master` terminology.
+- **Reconciled docs (PR #20)**: synced local to remote, kept both writeups, renumbered — staging-env → **Session 27** (Jun 25), ponytail → **Session 28** (Jun 26). Fixed leftover `main → master` refs in the inserted entry. `LATEST_SESSION.md` kept the ponytail (latest) narrative, labels renumbered 27 → 28. Unioned this machine's permission entries into `settings.local.json`.
+- **Removed `main`**: GitHub had already deleted it (default already `master`); `origin/main` was a stale tracking ref. Pruned it, deleted local `main`, re-pointed `origin/HEAD → origin/master`. `main` exists nowhere now.
+- **`settings.local.json` made local-only (PR #21)**: `git rm --cached` + `.gitignore` entry (it's the personal per-machine file; `settings.json` is shared). The FF deleted the still-tracked working copy → restored from history; back on disk (52 allow entries), untracked + ignored.
+
+**Files Changed**: `LATEST_SESSION.md`, `SESSION_HISTORY.md`, `.claude/settings.local.json` (untracked), `.gitignore`.
+
+**Commits/PRs**: PR #20 (`docs: preserve Session 27 staging-env writeup, renumber ponytail to S28`) and PR #21 (`chore: untrack .claude/settings.local.json`), both squash-merged to `staging` then `master` fast-forwarded. All refs in sync at `1e04bae`.
+
+**Next Steps**:
+- Consider a session-end "commit guard" so uncommitted work can't silently travel between machines again (the root cause of this whole cleanup).
+- Backlog unchanged: pre-launch `SITE_PASSWORD` removal (from S27), Salome platform API, social bots, recurring appointments, packages, gift cards.
+
+**Status**: ✅ Complete. Two-machine collision reconciled, `main` gone, settings file local-only. Working tree clean (only `HERO/` untracked + the now-ignored settings file).
