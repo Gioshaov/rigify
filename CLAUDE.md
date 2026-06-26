@@ -754,7 +754,7 @@ export function hasOverlap(
 
 **When user says "session end"**:
 0. **Commit gate (do this FIRST)**:
-   - Run `git status`. If the working tree has any uncommitted **tracked** changes, or untracked files that are not known intentionally-untracked paths (e.g. `HERO/`), list them and ask the user whether to commit before wrapping up. (Gitignored files such as `.claude/settings.local.json` never appear in `git status`, so they need no exclusion.)
+   - Run `git status`. If the working tree has any uncommitted **tracked** changes, or untracked files that are not known intentionally-untracked paths (e.g. a local scratch/assets folder), list them and ask the user whether to commit before wrapping up. (Gitignored files never appear in `git status`, so they need no exclusion.)
    - Do NOT finish the session-end procedure until the tree is clean **or** every leftover has been explicitly acknowledged as intentional. This prevents uncommitted work from silently traveling between machines (it has bitten us — see Session 29).
 
 1. **Update LATEST_SESSION.md**:
