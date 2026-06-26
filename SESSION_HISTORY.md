@@ -1910,3 +1910,41 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 - All technical debt items from audit completed
 
 **Status**: All quick wins and medium priority tasks complete. Email templates redesigned. All changes code-reviewed, tested, and pushed to production.
+
+---
+
+### Session 27 - June 26, 2026: Ponytail cleanup + repo/CI plumbing fixes
+
+**Objective**: Repo-wide over-engineering audit and ship the verified cuts. Discovered and fixed a cascade of branch/CI/Vercel mismatches along the way.
+
+**Accomplished**:
+- Ponytail audit: 14 candidate findings → 6 solid, 3 wrong, 5 churn. Shipped 6 verified-safe cuts.
+- Removed deps: `next-intl`, `clsx`, `tailwind-merge` (zero importers anywhere).
+- Removed dead code: `CATEGORY_IDS`, `CITY_IDS`, `formatAuditDetails`.
+- Merged `lib/utils/time-format.ts` → `lib/utils/datetime.ts` (3 importers updated, function bodies identical).
+- Net cleanup: −190 lines, −3 deps. Type-check + `@code-reviewer` PASS.
+- CR Protocol update: `/ponytail-review` now runs alongside `@code-reviewer` on every CR pass. Findings are **advisory only** — must verify each one, grade as solid/wrong/churn, get per-finding user approval before applying. Encoded in `CLAUDE.md` step 4.
+- Cut duplicated CR Protocol section from `WORKFLOWS.md` → one-line pointer to `CLAUDE.md` (single source of truth).
+- Untangled branch state: GitHub default was set to `chore/ponytail-cuts` (broken) → flipped to `master`; pruned dangling `origin/main` ref; deleted stale local `main` branch.
+- Fixed Vercel production branch: was `main` (literally, not "follow default"), changed to `master` via dashboard (Project → Environments → Production Branch — REST API doesn't expose this for already-linked projects).
+- Renamed `main → master` in `CLAUDE.md`, `STAGING.md`, `WORKFLOWS.md` for every reference describing the prod git branch.
+- Installed tooling: `gh` CLI v2.95.0 (winget, authed as Gioshaov), Vercel CLI v54.17.3 (npm -g, authed as gioshaov-3816 / team-rigify-s-projects).
+- Persisted `.claude/settings.local.json` permissions for `gh auth *` / `gh api *`.
+- Merged PR #18 to `master`, then fast-forwarded `staging` from `master` and pushed — both long-lived branches in sync.
+- Saved two feedback memories: `ponytail-review-no-autoapply` (verify + grade + approve before applying cuts), `staging-stays-current` (fast-forward staging after any master merge).
+
+**Files Changed**: 14 modified across two commits squashed into one merge.
+- Code: `lib/utils/datetime.ts`, `lib/utils/time-format.ts` (deleted), `lib/constants/categories.ts`, `lib/constants/cities.ts`, `lib/utils/audit-log.ts`, `components/booking/BookingModal.tsx`, `app/customer/dashboard/RescheduleModal.tsx`, `app/customer/bookings/[id]/reschedule/RescheduleBookingClient.tsx`, `package.json`, `package-lock.json`.
+- Docs: `CLAUDE.md`, `STAGING.md`, `WORKFLOWS.md`.
+- Settings: `.claude/settings.local.json`.
+
+**Commits**:
+- `fbc60f0` — chore: drop unused deps and dead exports, fold time-format into datetime
+- `81e09c8` — docs: rename main → master, dedupe CR protocol
+- `a8018fb` — squash-merge of PR #18 to master (auto-deployed to staging via FF and to prod via Vercel master watch)
+
+**Next Steps**:
+- Backlog still has the Session 25 carry-overs (`scripts/seed-mock-businesses.ts` + the reviews/subscriptions grants migration applied via Management API but uncommitted on a now-superseded branch — needs revisit).
+- Future enhancements unchanged: Salome platform API, social bots, recurring appointments, service packages, gift cards.
+
+**Status**: PR shipped, branches in sync, infra plumbing matches docs, two new memories will keep future sessions from re-walking the same rakes.
