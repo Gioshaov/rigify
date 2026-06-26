@@ -143,7 +143,7 @@ supabase db push         # Apply migrations
 supabase db reset        # Reset database (destructive)
 
 # Git
-git push origin main     # Push to GitHub
+git push origin master   # Push to GitHub (long-lived branches: master + staging)
 ```
 
 ---
@@ -267,7 +267,8 @@ npm run audit:testids
 
 - Always create a feature branch before making changes
 - Branch naming: `feature/short-description`
-- Never commit directly to main
+- Never commit directly to `master` or `staging` — both are long-lived deploy branches
+- Promotion flow: `feature/*` → PR into `staging` → test on staging.rigify.ge → merge `staging` into `master` → auto-deploys to production. See `STAGING.md` for the full environment setup and `WORKFLOWS.md` for branch/commit conventions.
 - **Code Review Before Push**: After committing, run BOTH reviews in parallel before pushing
 
 ### Code Review Protocol

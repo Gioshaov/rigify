@@ -10,7 +10,8 @@ This document describes the git workflow, code review protocol, and session mana
 
 - **Always create a feature branch** before making changes
 - **Branch naming**: `feature/short-description`
-- **Never commit directly to main**
+- **Never commit directly to `master` or `staging`** — both are long-lived deploy branches
+- **Promotion flow**: `feature/*` → PR into `staging` → merge to `staging` deploys to staging.rigify.ge → merge `staging` into `master` ships to production
 - Create PR when ready for review
 
 ### Branch Creation
@@ -26,70 +27,7 @@ git commit -m "Add booking flow with calendar picker"
 
 ## Code Review Protocol
 
-**After every commit (except trivial changes), Claude must invoke @code-reviewer.**
-
-### What Qualifies as Trivial (Can Skip Reviews)
-
-- Documentation updates (README, code comments only - **excludes CLAUDE.md**)
-- Typo fixes in strings/text
-- Formatting changes (spacing, indentation)
-- Version bumps in package.json
-
-### What Requires Reviews (Never Skip)
-
-- Any code logic changes
-- New features or functionality
-- Security-related changes
-- Database migrations
-- API routes or server actions
-- Authentication or authorization code
-- **CLAUDE.md workflow changes** (always require review)
-
-### Workflow
-
-1. **Make changes and commit locally**
-   ```bash
-   git add .
-   git commit -m "Descriptive commit message"
-   ```
-
-2. **Claude invokes `@code-reviewer`** (thorough review)
-   - User should verify review happened before pushing
-   - Review checks: bugs, security, performance, test coverage
-
-3. **Fix any CRITICAL or MAJOR issues found**
-   - Address all flagged issues
-   - Re-commit fixes if needed
-
-4. **Push to GitHub only after `@code-reviewer` passes**
-   - **PASS** = safe to push
-   - **CONDITIONAL PASS** = resolve flagged conditions first
-   - **FAIL** = DO NOT push, fix issues first
-
-### Optional Second Opinion
-
-- User can run `/codex:review --background` for architectural/design review
-- If run, must also PASS or CONDITIONAL PASS before pushing
-
-### Review Tools
-
-**`@code-reviewer`** (Claude-invoked):
-- Catches bugs, security vulnerabilities, performance issues
-- Validates test coverage
-- Checks code correctness
-
-**`/codex:review`** (user-triggered):
-- Catches design issues, spec compliance
-- Architectural review
-- Deep structural analysis
-
-### Why This Hybrid Approach
-
-- `@code-reviewer` runs via Agent tool (Claude can invoke automatically)
-- `/codex:review` runs via Skill tool (has disable-model-invocation flag to prevent infinite loops)
-- User controls expensive Codex reviews
-- Always get thorough code safety validation
-- FAIL verdict = DO NOT push, fix issues first
+See **CLAUDE.md → "Code Review Protocol"** for the canonical rules (which reviews run, when to skip, how `/ponytail-review` findings are handled, PASS/FAIL semantics). Do not duplicate the protocol here — keep one source of truth so rule updates don't drift.
 
 ---
 
@@ -249,8 +187,9 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 
 ### Vercel (Production)
 
-**Auto-deploy on push to main**:
-- Push to `main` branch → Vercel auto-deploys
+**Auto-deploy on push to `master`**:
+- Push to `master` branch → Vercel auto-deploys production (rigify.ge)
+- Push to `staging` branch → Vercel auto-deploys staging (staging.rigify.ge)
 - Check deploy status at vercel.com/dashboard
 - Review build logs if deployment fails
 

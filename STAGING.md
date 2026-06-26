@@ -5,13 +5,13 @@ password-protected copy of the app at **staging.rigify.ge**, backed by its own
 Supabase project so test data never touches production.
 
 ```
- main  branch ──────────► Vercel Production ──► rigify.ge          (prod Supabase)
+ master branch ─────────► Vercel Production ──► rigify.ge          (prod Supabase)
  staging branch ─────────► Vercel (staging)  ──► staging.rigify.ge  (staging Supabase, SITE_PASSWORD on)
  feature/* branches ─────► Vercel Preview     ──► <hash>.vercel.app  (staging Supabase)
 ```
 
 **Promotion flow:** `feature/*` → merge into `staging` (test on staging.rigify.ge)
-→ merge `staging` into `main` (ships to production).
+→ merge `staging` into `master` (ships to production).
 
 ---
 
@@ -52,7 +52,7 @@ Set these in **Vercel → Project → Settings → Environment Variables**, each
 to the right environment. Production and staging must use **different** Supabase
 projects.
 
-| Variable | Production (`main`) | Staging (`staging` branch) |
+| Variable | Production (`master`) | Staging (`staging` branch) |
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | prod project URL | **staging** project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod anon key | **staging** anon key |
@@ -113,7 +113,7 @@ every file in `supabase/migrations/` in order. Then:
 ### 3. Create the `staging` git branch
 
 ```bash
-git checkout main && git pull
+git checkout master && git pull
 git checkout -b staging
 git push -u origin staging
 ```
@@ -168,13 +168,13 @@ git checkout -b feature/my-thing
 #   merge the PR into staging → auto-deploys to staging.rigify.ge
 
 # ship to production
-git checkout main && git pull
-git merge staging          # or open a staging → main PR
-git push origin main       # auto-deploys to rigify.ge
+git checkout master && git pull
+git merge staging          # or open a staging → master PR
+git push origin master     # auto-deploys to rigify.ge
 ```
 
-Keep `staging` ahead of or equal to `main`. Periodically fast-forward `staging`
-from `main` after a release so they don't diverge.
+Keep `staging` ahead of or equal to `master`. Periodically fast-forward `staging`
+from `master` after a release so they don't diverge.
 
 ---
 
