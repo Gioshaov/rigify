@@ -87,8 +87,8 @@ export default async function BrowseBusinessesPage() {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
-        <div className="relative z-10 max-w-container mx-auto w-full">
+      <header className="w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
+        <div className="relative max-w-container mx-auto w-full">
           <span className="font-mono text-[12px] leading-[1] tracking-[0.3em] font-medium text-primary uppercase mb-4 block">
             Curated Excellence
           </span>
