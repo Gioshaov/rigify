@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import { bypassSitePassword } from '../../utils/test-helpers';
 
 // Exercises the global ConfirmDialog / useConfirm() primitive via the
-// /dev/ui-harness route (no auth or DB needed).
+// /dev/ui-harness route (no auth or DB needed; the route 404s in production,
+// so run against `next dev`).
 test.describe('ConfirmDialog', () => {
   test.beforeEach(async ({ page }) => {
     await bypassSitePassword(page);

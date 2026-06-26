@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test';
 import { bypassSitePassword } from '../../utils/test-helpers';
 
 // Exercises the global Toast / useToast() primitive via the /dev/ui-harness
-// route (no auth or DB needed). Stacked toasts use data-testid
-// `toast-notification-{id}`, matched here by regex.
+// route (no auth or DB needed; the route 404s in production, so run against
+// `next dev`). Stacked toasts use data-testid `toast-notification-{id}`,
+// matched here by regex.
 test.describe('Toast', () => {
   test.beforeEach(async ({ page }) => {
     await bypassSitePassword(page);
@@ -23,7 +24,7 @@ test.describe('Toast', () => {
 
     const toast = page.getByTestId(/^toast-notification-/);
     await expect(toast).toBeVisible();
-    // The quick toast lasts 800ms — it should be gone well within 3s.
+    // The quick toast has a short duration — gone well within the 3s budget.
     await expect(toast).toBeHidden({ timeout: 3000 });
   });
 
