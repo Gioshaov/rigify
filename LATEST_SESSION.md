@@ -1,7 +1,7 @@
 # Latest Session Summary
 
 **Last Updated**: June 26, 2026  
-**Session**: Session 29 - Session-doc reconciliation + settings.local untrack + `main` cleanup
+**Session**: Session 30 - Session-end commit gate + hero asset committed
 
 ---
 
@@ -119,29 +119,23 @@
 
 ---
 
-## Latest Session Work (Session 29 - June 26, 2026)
+## Latest Session Work (Session 30 - June 26, 2026)
 
-**Objective**: Clean up the fallout from working across two machines — a stale local clone with an uncommitted Session 27 draft that collided with the newer Session 27 already on `master`, plus the leftover `main` branch and a wrongly-tracked local settings file.
+**Objective**: Harden against the Session 29 failure mode (uncommitted work silently traveling between machines) with a session-end commit gate, and clean up the last stray local file (the parked hero SVG).
 
-### 1. Diagnosed the two-machine divergence
-- This clone was stale: local `main`/`master`/`staging` all at `fe0a5c5`, with 3 **uncommitted** files (`LATEST_SESSION.md`, `SESSION_HISTORY.md`, `.claude/settings.local.json`) that were an **older Session 27 draft** ("Staging Environment + Admin Services & Russian Removal", June 25) — never committed before switching machines, still saying `main`.
-- The remote had moved 2 commits ahead (`origin/master` = `origin/staging` = `22d5cc7`) with a **different** Session 27 ("Ponytail cleanup", June 26) that already used correct `master` terminology. Both were labelled "Session 27".
+### 1. Session-end commit gate added to CLAUDE.md (PR #23)
+- New **Step 0** in the `session end` procedure: run `git status` first and block the wrap-up on uncommitted tracked changes / unexpected untracked files until the tree is clean or every leftover is explicitly acknowledged. Cross-references Session 29 as the root cause.
+- Reviewed by `@code-reviewer` (PASS); applied its m1/m2 notes (tightened the exclusion wording — gitignored files never appear in `git status`).
 
-### 2. Reconciled the session docs (PR #20)
-- Synced local branches to remote, then **kept both** writeups and renumbered: staging-env draft inserted as **Session 27** (June 25); ponytail entry renumbered to **Session 28** (June 26). Chronology now clean: S26 (Jun 24) → S27 (Jun 25) → S28 (Jun 26).
-- Fixed leftover `main → master` branch references inside the inserted Session 27 entry.
-- `LATEST_SESSION.md`: kept the ponytail narrative as latest, renumbered its labels 27 → 28.
-- Unioned this machine's permission entries into `.claude/settings.local.json` (then untracked it — see #4).
+### 2. Hero asset committed (PR #24)
+- Confirmed the parked hero SVG was **used nowhere in code** (only doc mentions). User moved it to `design-assets/HERO/`; committed `tbilisi_clean_silhouette_hero_stars.svg` there so it's preserved in-repo instead of stranded on one machine.
 
-### 3. `main` branch eliminated
-- GitHub had already deleted `main` (default was already `master`); `origin/main` was just a stale local tracking ref. Pruned it, deleted local `main`, re-pointed `origin/HEAD → origin/master`. `main` now exists nowhere.
+### 3. Gate example generalized (PR #25)
+- Swapped the now-tracked `HERO/` example in the commit-gate text for a generic "local scratch/assets folder" placeholder. `@code-reviewer` PASS.
+- Note: `gh pr merge` hit a transient GitHub API timeout on the first try; merge succeeded on retry (no data issue).
 
-### 4. `settings.local.json` made local-only (PR #21)
-- `git rm --cached .claude/settings.local.json` + added it to `.gitignore`. It's the **personal/per-machine** Claude Code settings file (`settings.json` is the shared one) and shouldn't have been committed.
-- The fast-forward deleted the working-tree copy (still tracked at that moment) → restored it from history. File is back on disk with all 52 allow entries, now untracked + ignored.
-
-### 5. Merge + sync
-- PRs #20 and #21 squash-merged to `staging` via the `feature → staging → master` flow; `master` fast-forwarded and pushed. All four refs in sync at `1e04bae`. Vercel auto-deploys both branches (docs/config only).
+### 4. Merge + sync
+- PRs #23, #24, #25 squash-merged via `feature → staging → master`; `master` fast-forwarded and pushed each time. All four refs in sync at `8bcfde7`. **Working tree now fully clean** (no stray untracked files).
 
 ---
 
@@ -160,12 +154,11 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `master` (checked out locally); `master` = `staging` = `1e04bae`  
-**Status**: ✅ Working tree clean; PRs #20 + #21 merged; long-lived branches in sync; `main` fully removed
+**Branch**: `master` (checked out locally); `master` = `staging` = `8bcfde7`  
+**Status**: ✅ Working tree fully clean; PRs #23 + #24 + #25 merged; long-lived branches in sync
 
-**Untracked / local-only (intentionally not committed)**:
-- `HERO/` — hero source assets
-- `.claude/settings.local.json` — now gitignored (personal per-machine settings)
+**Local-only (intentionally not committed)**:
+- `.claude/settings.local.json` — gitignored (personal per-machine settings)
 
 **TypeScript**: ✅ No errors  
 **Build**: ✅ Passes
@@ -179,17 +172,17 @@
 
 ## Key Learnings This Session
 
-### 1. Uncommitted work + a branch rename on another machine = silent divergence
-The staging-env Session 27 writeup only ever existed in this clone's working tree; the other machine, unaware of it, wrote a *different* Session 27 and pushed. Two writeups, same number, one terminology regression. Lesson: commit (or at least stash-and-note) session docs before switching machines, and when a clone looks stale, diff the working tree against `origin/*` **before** pulling — don't assume your uncommitted changes are the freshest version.
+### 1. Fix the failure mode in the process, not just the instance
+Session 29 lost time to uncommitted work crossing machines. Rather than just "remember to commit," the durable fix was a **Step 0 commit gate** in the session-end procedure — the check now runs every time by construction, at the exact moment (leaving the machine) the failure occurs.
 
-### 2. A fast-forward will delete a still-tracked working-tree file
-After `git rm --cached` + gitignore in a commit, fast-forwarding a branch onto that commit removes the working-tree copy too (it was tracked at the moment the deletion was applied). The file isn't gone for good — `git show <prev>:path > path` restores it as an untracked/ignored file. Expect this on the *other* machine's next pull as well.
+### 2. Prose rules are weaker than tooling, but cheaper
+`@code-reviewer` rightly noted a `.gitignore` entry is enforced by git while a CLAUDE.md exclusion list depends on me applying it. The trade-off: the gate is a judgment call (intentional vs. forgotten), which tooling can't make — so prose is the right tool here, but anything with a clear yes/no answer (like ignoring a file) should be tooling.
 
-### 3. `settings.local.json` is per-machine, `settings.json` is shared
-Committing `settings.local.json` churns shared history with one machine's one-off allow entries. It belongs in `.gitignore`. Done this session.
+### 3. Transient GitHub API failures — just retry
+`gh pr merge` failed once with a `dial tcp ... 443` timeout; the PR was untouched and the merge succeeded on retry. Network blips on `gh`/`git push` are not state corruption — re-check the PR/ref state, then retry rather than reconstructing.
 
 ---
 
 **Session Started**: June 26, 2026  
 **Session Ended**: June 26, 2026  
-**Status**: ✅ Complete. Two-machine session-doc collision reconciled (staging-env = S27, ponytail = S28; PR #20); `main` branch removed everywhere; `.claude/settings.local.json` untracked + gitignored and restored on disk (PR #21). `master` = `staging` = `1e04bae`, working tree clean. Deferred items unchanged: salome platform integration, social bots, recurring appointments, packages, gift cards (+ the pre-launch `SITE_PASSWORD` removal noted in S27).
+**Status**: ✅ Complete. Session-end commit gate added to CLAUDE.md (PR #23, `@code-reviewer` PASS); parked hero SVG committed to `design-assets/HERO/` (PR #24); gate example generalized (PR #25). `master` = `staging` = `8bcfde7`, working tree fully clean. Deferred items unchanged: pre-launch `SITE_PASSWORD` removal (S27), Salome platform integration, social bots, recurring appointments, packages, gift cards.
