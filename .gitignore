@@ -45,3 +45,6 @@ next-env.d.ts
 supabase/.branches
 supabase/.temp
 supabase/_staging_bootstrap.sql
+
+# Claude Code local settings (personal, per-machine — not shared)
+.claude/settings.local.json
