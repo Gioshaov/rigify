@@ -19,7 +19,7 @@ export default async function CustomerDashboardLayout({ children }: { children: 
 
   return (
     <>
-      <a href="#main-content" className="skip-link">
+      <a data-testid="customer-dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">

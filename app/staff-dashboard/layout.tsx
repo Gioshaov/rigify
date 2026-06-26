@@ -45,7 +45,7 @@ export default async function StaffDashboardLayout({
 
   return (
     <>
-      <a href="#main-content" className="skip-link">
+      <a data-testid="staff-dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <div className="flex min-h-screen bg-background text-on-surface">

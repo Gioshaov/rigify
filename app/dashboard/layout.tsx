@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <>
-      <a href="#main-content" className="skip-link">
+      <a data-testid="dashboard-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <div className="flex min-h-screen bg-background text-on-surface font-hanken antialiased">

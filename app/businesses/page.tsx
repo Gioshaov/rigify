@@ -38,7 +38,7 @@ export default async function BrowseBusinessesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <a href="#main-content" className="skip-link">
+      <a data-testid="browse-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
       {/* Top Navigation */}

@@ -75,7 +75,6 @@ export function UserMenu() {
         data-testid="user-menu-btn"
         onClick={() => setShowDropdown(!showDropdown)}
         aria-label="Account menu"
-        aria-haspopup="menu"
         aria-expanded={showDropdown}
         className="w-10 h-10 bg-surface-container-high border border-primary/20 shadow-md shadow-primary/30 flex items-center justify-center hover:border-primary hover:shadow-lg hover:shadow-primary/50 transition-all cursor-pointer"
       >
