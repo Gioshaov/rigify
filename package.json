@@ -23,18 +23,15 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.0",
     "@vercel/kv": "^3.0.0",
-    "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.2.0",
     "lucide-react": "^1.18.0",
     "mapbox-gl": "^3.24.0",
     "next": "14.2.18",
-    "next-intl": "^3.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-map-gl": "^8.1.1",
-    "resend": "^6.14.0",
-    "tailwind-merge": "^2.5.4"
+    "resend": "^6.14.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

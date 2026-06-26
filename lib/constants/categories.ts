@@ -13,5 +13,3 @@ export const CATEGORIES: Category[] = [
   { id: "makeup",  ka: "მაკიაჟი",    en: "Makeup"     },
   { id: "barber",  ka: "საბარბერო",  en: "Barbershop" },
 ];
-
-export const CATEGORY_IDS = CATEGORIES.map((c) => c.id);

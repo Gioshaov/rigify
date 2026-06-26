@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { formatTbilisi } from "@/lib/utils/datetime";
 import { rescheduleBookingAction } from "@/app/customer/dashboard/actions";
 import { generateCalendarDays, groupTimeSlots, MONTH_NAMES, WEEKDAY_NAMES } from "@/lib/utils/calendar";
-import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/time-format";
+import { convertTo12Hour, convertTo24Hour, generateTimeSlotTestId } from "@/lib/utils/datetime";
 
 type RescheduleBookingClientProps = {
   booking: {

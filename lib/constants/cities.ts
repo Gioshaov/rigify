@@ -10,5 +10,3 @@ export const CITIES: City[] = [
   { id: "kutaisi", ka: "ქუთაისი", en: "Kutaisi" },
   { id: "rustavi", ka: "რუსთავი", en: "Rustavi" },
 ];
-
-export const CITY_IDS = CITIES.map((c) => c.id);

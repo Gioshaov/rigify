@@ -143,7 +143,7 @@ supabase db push         # Apply migrations
 supabase db reset        # Reset database (destructive)
 
 # Git
-git push origin main     # Push to GitHub
+git push origin master   # Push to GitHub (long-lived branches: master + staging)
 ```
 
 ---
@@ -267,7 +267,8 @@ npm run audit:testids
 
 - Always create a feature branch before making changes
 - Branch naming: `feature/short-description`
-- Never commit directly to main
+- Never commit directly to `master` or `staging` — both are long-lived deploy branches
+- Promotion flow: `feature/*` → PR into `staging` → test on staging.rigify.ge → merge `staging` into `master` → auto-deploys to production. See `STAGING.md` for the full environment setup and `WORKFLOWS.md` for branch/commit conventions.
 - **Code Review Before Push**: After committing, run BOTH reviews in parallel before pushing
 
 ### Code Review Protocol
@@ -291,11 +292,18 @@ After every commit (except trivial changes), **Claude must invoke @code-reviewer
 
 **Workflow:**
 1. Make changes and commit locally
-2. Claude invokes `@code-reviewer` (thorough review)
-   - **User should verify review happened before pushing**
-3. Fix any CRITICAL or MAJOR issues found
-4. Re-commit fixes if needed
-5. Push to GitHub only after `@code-reviewer` passes (PASS or CONDITIONAL PASS)
+2. Claude invokes `@code-reviewer` AND `/ponytail-review` in parallel
+   - `@code-reviewer`: bugs, security, perf, test coverage
+   - `/ponytail-review`: over-engineering and unnecessary complexity
+   - **User should verify both reviews happened before pushing**
+3. Fix any CRITICAL or MAJOR issues from `@code-reviewer`
+4. **For `/ponytail-review` findings: do NOT auto-apply any cuts.**
+   - Verify each finding before standing behind it (grep call sites, confirm the export/function is really unused, check that the "stdlib replacement" actually matches behavior including edge cases)
+   - Surface the verified list to the user with each finding graded as `solid`, `wrong`, or `churn-for-churn-sake`
+   - Wait for explicit user approval per finding (or "ship all the solid ones") before touching code
+   - Findings the user does not approve are dropped, no follow-up
+5. Re-commit fixes if needed
+6. Push to GitHub only after `@code-reviewer` passes (PASS or CONDITIONAL PASS)
    - **CONDITIONAL PASS** requires resolving all flagged conditions before pushing
 
 **Optional Second Opinion:**
@@ -304,6 +312,7 @@ After every commit (except trivial changes), **Claude must invoke @code-reviewer
 
 **Review Tools:**
 - `@code-reviewer` (Claude-invoked): Catches bugs, security vulnerabilities, performance issues, missing tests
+- `/ponytail-review` (Claude-invoked): Flags over-engineering, dead code, reinvented stdlib, speculative abstractions. Findings are advisory — never auto-applied.
 - `/codex:review` (user-triggered): Catches design issues, spec compliance, architectural problems
 
 **Why This Hybrid Approach:**

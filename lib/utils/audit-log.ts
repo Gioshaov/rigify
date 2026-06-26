@@ -102,28 +102,3 @@ export function getRequestMetadata(request?: Request) {
   return { ipAddress, userAgent };
 }
 
-/**
- * Format details object for audit log with before/after values
- *
- * @example
- * const details = formatAuditDetails({
- *   before: { status: 'active', name: 'Old Name' },
- *   after: { status: 'suspended', name: 'New Name' },
- *   reason: 'User request'
- * });
- */
-export function formatAuditDetails(data: {
-  before?: Record<string, any>;
-  after?: Record<string, any>;
-  reason?: string;
-  metadata?: Record<string, any>;
-}): Record<string, any> {
-  const details: Record<string, any> = {};
-
-  if (data.before) details.before = data.before;
-  if (data.after) details.after = data.after;
-  if (data.reason) details.reason = data.reason;
-  if (data.metadata) details.metadata = data.metadata;
-
-  return details;
-}

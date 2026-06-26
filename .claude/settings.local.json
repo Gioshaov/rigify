@@ -26,7 +26,9 @@
       "Bash(echo \"Exit code: $?\")",
       "Bash(git grep *)",
       "Bash(grep -E \"\\\\.md$\")",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "PowerShell(gh auth *)",
+      "PowerShell(gh api *)"
     ]
   }
 }
