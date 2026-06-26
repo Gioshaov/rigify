@@ -1997,3 +1997,22 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 - Backlog unchanged: pre-launch `SITE_PASSWORD` removal (from S27), Salome platform API, social bots, recurring appointments, packages, gift cards.
 
 **Status**: ✅ Complete. Two-machine collision reconciled, `main` gone, settings file local-only. Working tree clean (only `HERO/` untracked + the now-ignored settings file).
+
+---
+
+### Session 30 - June 26, 2026: Session-end commit gate + hero asset committed
+
+**Objective**: Harden against the Session 29 failure mode (uncommitted work silently crossing machines) and clean up the last stray local file.
+
+**Accomplished**:
+- **Commit gate (PR #23)**: added **Step 0** to the `session end` procedure in `CLAUDE.md` — run `git status` first and block wrap-up on uncommitted tracked changes / unexpected untracked files until clean or explicitly acknowledged. Cross-references Session 29 as the root cause. `@code-reviewer` PASS; applied m1/m2 (tightened exclusion wording — gitignored files never appear in `git status`).
+- **Hero asset (PR #24)**: confirmed the parked hero SVG was unused in code (doc mentions only); committed it to `design-assets/HERO/tbilisi_clean_silhouette_hero_stars.svg` (user had moved it there) so it's preserved in-repo.
+- **Gate example (PR #25)**: swapped the now-tracked `HERO/` example for a generic "local scratch/assets folder" placeholder. `@code-reviewer` PASS. `gh pr merge` hit a transient GitHub API timeout on first attempt; succeeded on retry.
+
+**Files Changed**: `CLAUDE.md` (×2: gate added, example generalized), `design-assets/HERO/tbilisi_clean_silhouette_hero_stars.svg` (new), `LATEST_SESSION.md`, `SESSION_HISTORY.md`.
+
+**Commits/PRs**: PRs #23, #24, #25 squash-merged via `feature → staging → master`, `master` fast-forwarded each time. All refs in sync at `8bcfde7`.
+
+**Next Steps**: Backlog unchanged — pre-launch `SITE_PASSWORD` removal (S27), Salome platform API, social bots, recurring appointments, packages, gift cards.
+
+**Status**: ✅ Complete. Session-end commit gate live; working tree fully clean (only the gitignored `settings.local.json` remains local).
