@@ -806,6 +806,7 @@ export function hasOverlap(
 
 ## Reference Documents
 
+- **PLATFORM.md** — Stakeholder overview: what Rigify is, user types, core flows, tech stack, integrations, built vs planned (non-technical readers start here)
 - **LATEST_SESSION.md** — Current status + latest work (read at session start)
 - **SESSION_HISTORY.md** — Full chronological archive (reference only)
 - **UI_GUIDE.md** — Complete UI/UX design system and component patterns
