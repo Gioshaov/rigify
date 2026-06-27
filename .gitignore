@@ -48,3 +48,6 @@ supabase/_staging_bootstrap.sql
 
 # Claude Code local settings (personal, per-machine — not shared)
 .claude/settings.local.json
+
+# Personal stakeholder reference doc (kept local, not in shared repo)
+PLATFORM.md
