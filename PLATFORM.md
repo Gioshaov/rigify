@@ -18,9 +18,11 @@ The product has three legs:
 
 **Market focus:** Tbilisi is live. Batumi and Kutaisi are advertised on the homepage as "coming soon" but no businesses have been onboarded in them yet.
 
-**Languages:** Georgian (primary) and English are both supported in the UI via a site-wide toggle. Russian was originally planned and had database columns, but those were dropped in late June 2026 — so the product is currently Georgian / English only.
+**Languages:** Georgian (primary) and English are both supported in the UI via a site-wide toggle. Russian was originally planned and had database columns, but those were dropped in late June 2026 — Russian is **not** currently on the roadmap.
 
 **Monetization:** Not yet decided. There is no payment processor integrated (no Stripe, no local Georgian payment provider). Bookings are free for customers and free for businesses today. The expected revenue paths are (a) a per-business subscription for the marketplace listing and Salome voice add-on, (b) optional commission on bookings. None of that is built.
+
+> 🔒 **Pre-launch status:** the production site at `rigify.ge` is currently behind a `SITE_PASSWORD` gate — a single shared password every visitor has to enter before they see anything. This was added to keep things private while we build, and is intentionally still on. **Before public launch we have to remove it** from the Vercel production environment (it's been on the backlog since Session 27). Until then, "live" and "deployed" do not mean "publicly reachable." See the pre-launch checklist in section 8.
 
 ---
 
@@ -339,7 +341,7 @@ The 30 most important files / directories in the project. Grouped by purpose, no
 - **`app/api/admin/logout/route.ts`** — admin logout
 
 ### Database
-- **`supabase/migrations/`** — every change to the database schema, ever. 52 migration files as of 2026-06-28. This is the source of truth for what tables and columns exist.
+- **`supabase/migrations/`** — every change to the database schema, ever. 53 migration files as of 2026-06-28. This is the source of truth for what tables and columns exist.
 - **`supabase/reset-data.sql`** — the destructive utility to wipe all data except super-admin users. Has three safety guards (a confirm flag, a database-name check, and a refusal to run if no super admin exists).
 
 ### Configuration
@@ -415,7 +417,7 @@ This is a snapshot at **2026-06-28**. For the always-current state, read `LATEST
 - Production and staging environments (separate Supabase projects, separate Vercel deployments)
 - Row-Level Security on all database tables, with grants to the right roles
 - Playwright end-to-end test suite covering critical flows, running on every push
-- Realtime customer-channel updates (the database can push customer-row changes to a connected browser — wired but not deeply used in the UI yet)
+- Realtime customer-channel updates: the database can push live changes to a connected browser. We have this capability enabled on the customer data table but haven't built any UI features that take advantage of it yet — it's a foundation for future features (live appointment notifications, real-time dashboards), not a half-finished one.
 
 **Polish**
 - Error boundaries on all major routes
