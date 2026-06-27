@@ -268,7 +268,9 @@ npm run audit:testids
 - Always create a feature branch before making changes
 - Branch naming: `feature/short-description`
 - Never commit directly to `master` or `staging` — both are long-lived deploy branches
-- Promotion flow: `feature/*` → PR into `staging` → test on staging.rigify.ge → merge `staging` into `master` → auto-deploys to production. See `STAGING.md` for the full environment setup and `WORKFLOWS.md` for branch/commit conventions.
+- Promotion flow: `feature/*` → PR into `staging` → test on staging.rigify.ge → merge `staging` into `master` → auto-deploys to production. See `STAGING.md` for the full environment setup.
+- **Commit messages**: `<type>: <description>`. Types: `feat:` (new feature), `fix:` (bug fix), `docs:` (documentation), `refactor:` (no behavior change), `test:` (tests), `chore:` (deps/configs). End every commit with `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`.
+- **Deployment**: push to `master` → prod (`rigify.ge`); push to `staging` → staging (`staging.rigify.ge`). Both via Vercel auto-deploy.
 - **Code Review Before Push**: After committing, run BOTH reviews in parallel before pushing
 
 ### Code Review Protocol
@@ -688,6 +690,8 @@ supabase/
 └── migrations/                  # 11 migrations (all idempotent)
 ```
 
+**File naming conventions**: pages = `page.tsx`, layouts = `layout.tsx`, API routes = `route.ts`, server actions = `actions.ts`, components = `PascalCase.tsx`, utilities = `camelCase.ts`. Route groups `(auth)` / `(auth-required)` don't affect URLs. Imports use the `@/` alias for root-relative paths.
+
 ---
 
 ## Availability Logic (Critical)
@@ -798,14 +802,17 @@ export function hasOverlap(
 - **LATEST_SESSION.md** — Current status + latest work (read at session start)
 - **SESSION_HISTORY.md** — Full chronological archive (reference only)
 - **UI_GUIDE.md** — Complete UI/UX design system and component patterns
-- **PROJECT_STRUCTURE.md** — Directory organization and file structure guide
+- **TESTING.md** — Playwright E2E setup, test ID strategy, writing tests
+- **STAGING.md** — Staging environment runbook
+- **ADMIN_SETUP.md** — Admin subdomain routing
+- **RESEND_SETUP.md** — Email notifications setup
 - **supabase/migrations/** — Database schema source of truth
 
 ## Session Continuity
 
 When the user asks "what's next", "what are we doing", "where were we", or any equivalent:
 
-1. Read ALL markdown files in the `sessions/` directory to find the most recent session log.
+1. Read `LATEST_SESSION.md` for current state; consult `SESSION_HISTORY.md` only if you need to trace something further back.
 2. Cross-reference against the codebase — if a feature is already implemented (component exists, route works, data is real), treat it as done even if it appears on a TODO list.
 3. Present only items that are genuinely not yet built or not yet working.
 4. Never repeat a task that was completed in a prior session unless the user explicitly asks to revisit it.
