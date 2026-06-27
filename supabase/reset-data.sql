@@ -20,6 +20,9 @@
 --   auth.users    → businesses (owner_id, CASCADE)
 --                 → customers  (id,       CASCADE)
 --                 → staff.user_id, audit_logs.admin_user_id (SET NULL)
+--                 → businesses.onboarded_by (NO ACTION — businesses are
+--                   deleted before users, so this never blocks; ordering
+--                   below is LOAD-BEARING, do not reorder)
 --   businesses    → services, staff, bookings, reviews, subscriptions,
 --                   business_categories                    (all CASCADE)
 --   staff         → staff_permissions                      (CASCADE)
@@ -46,17 +49,14 @@ BEGIN;
 
 DO $preflight$
 DECLARE
-  v_current_db  text := current_database();
-  v_expect_db   text := :'expect_db';
-  v_confirm     text := :'confirm';
   v_super_count int;
 BEGIN
-  IF v_confirm <> 'YES' THEN
-    RAISE EXCEPTION 'ABORT: confirm flag is %, expected YES', v_confirm;
+  IF :'confirm' <> 'YES' THEN
+    RAISE EXCEPTION 'ABORT: confirm flag is %, expected YES', :'confirm';
   END IF;
 
-  IF v_current_db <> v_expect_db THEN
-    RAISE EXCEPTION 'ABORT: connected to db %, expected %', v_current_db, v_expect_db;
+  IF current_database() <> :'expect_db' THEN
+    RAISE EXCEPTION 'ABORT: connected to db %, expected %', current_database(), :'expect_db';
   END IF;
 
   SELECT count(*) INTO v_super_count
@@ -67,7 +67,7 @@ BEGIN
     RAISE EXCEPTION 'ABORT: no super-admin user found — refusing to delete all users';
   END IF;
 
-  RAISE NOTICE 'Preflight OK — db=%, super_admins=%', v_current_db, v_super_count;
+  RAISE NOTICE 'Preflight OK — db=%, super_admins=%', current_database(), v_super_count;
 END
 $preflight$;
 
@@ -82,10 +82,11 @@ DELETE FROM public.contact_messages;
 -- we filter on admin_user_id directly rather than relying on the SET NULL
 -- cascade and then chasing orphans.
 DELETE FROM public.audit_logs
-WHERE admin_user_id NOT IN (
-  SELECT id FROM auth.users
-  WHERE (raw_app_meta_data ->> 'is_super_admin')::boolean IS TRUE
-);
+WHERE admin_user_id IS NULL
+   OR admin_user_id NOT IN (
+     SELECT id FROM auth.users
+     WHERE (raw_app_meta_data ->> 'is_super_admin')::boolean IS TRUE
+   );
 
 DELETE FROM auth.users
 WHERE (raw_app_meta_data ->> 'is_super_admin')::boolean IS NOT TRUE;
