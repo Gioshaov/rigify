@@ -269,7 +269,7 @@ npm run audit:testids
 - Branch naming: `feature/short-description`
 - Never commit directly to `master` or `staging` — both are long-lived deploy branches
 - Promotion flow: `feature/*` → PR into `staging` → test on staging.rigify.ge → merge `staging` into `master` → auto-deploys to production. See `STAGING.md` for the full environment setup.
-- **Commit messages**: `<type>: <description>`. Types: `feat:` (new feature), `fix:` (bug fix), `docs:` (documentation), `refactor:` (no behavior change), `test:` (tests), `chore:` (deps/configs). End every commit with `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`.
+- **Commit messages**: `<type>: <description>`. Types: `feat:` (new feature), `fix:` (bug fix), `docs:` (documentation), `refactor:` (no behavior change), `test:` (tests), `chore:` (deps/configs). End every commit with `Co-Authored-By: Claude <current-model> <noreply@anthropic.com>` (use whatever model name is active at commit time, e.g. `Claude Opus 4.8 (1M context)`).
 - **Deployment**: push to `master` → prod (`rigify.ge`); push to `staging` → staging (`staging.rigify.ge`). Both via Vercel auto-deploy.
 - **Code Review Before Push**: After committing, run BOTH reviews in parallel before pushing
 
@@ -329,23 +329,30 @@ After every commit (except trivial changes), **Claude must invoke @code-reviewer
 
 ### ✅ What's Built
 
-**Authentication System** (2 user types):
+**Authentication System** (4 user types + guest):
 1. **Business Owners**: Register at `/register` → manage from `/dashboard`
    - Links: `auth.users` → `businesses` table (via `owner_id`)
 2. **Customers** (with accounts): Register at `/customer-register` → view bookings at `/customer/dashboard`
    - Links: `auth.users` → `customers` table (via `id`)
-3. **Guest Customers**: No account needed, book as guest (supported in bookings table)
+3. **Staff Members**: Invited by business owners → `/staff-dashboard`
+   - Links: `auth.users` → `staff` table (via `id`)
+4. **Super Admins**: Login at `admin.<domain>/login` → `/admin/*`
+   - Gated by `app_metadata.is_super_admin === true` (no separate table)
+5. **Guest Customers**: No account needed, book as guest (supported in bookings table)
 
 **Login Routing** (`/login`):
 - Single unified login page
-- After auth, checks user type:
-  - Has `businesses` row → redirect to `/dashboard` (business owner)
-  - Has `customers` row → redirect to `/customer/dashboard` (customer)
+- After auth, checks user type and redirects:
+  - `businesses` row → `/dashboard`
+  - `customers` row → `/customer/dashboard`
+  - `staff` row → `/staff-dashboard`
   - Neither → error
 
 **Middleware Protection** (`lib/supabase/middleware.ts`):
-- `/dashboard/*` → business owners only (customers auto-redirected)
-- `/customer/dashboard/*` → customers only (business owners auto-redirected)
+- `/dashboard/*` → business owners only (other user types auto-redirected)
+- `/customer/dashboard/*` → customers only
+- `/staff-dashboard/*` → staff only
+- `/admin/*` → super admins only (subdomain-scoped — see `ADMIN_SETUP.md`)
 
 **Database**:
 - All 11 migrations applied (see `supabase/migrations/`)
