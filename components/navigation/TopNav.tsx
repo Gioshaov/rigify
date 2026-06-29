@@ -28,6 +28,13 @@ export function TopNav() {
         >
           Browse
         </BrowseLink>
+        <Link
+          data-testid="nav-for-business"
+          href="/for-businesses"
+          className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
+        >
+          For Business
+        </Link>
       </nav>
       <div className="flex items-center gap-4">
         <UserMenu />
