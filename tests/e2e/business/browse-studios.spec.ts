@@ -32,8 +32,9 @@ test.describe('Browse Studios Page', () => {
     await bypassSitePassword(page);
     await page.goto('/businesses');
 
-    const districtSelect = page.getByTestId('browse-studios-district-select');
-    await districtSelect.selectOption('vake');
+    // District is a custom dropdown (not a native select): open it, then pick the option.
+    await page.getByTestId('district-dropdown-trigger').click();
+    await page.getByTestId('district-option-vake').click();
 
     // Wait for filtering to apply by checking business cards remain visible
     const businessCards = page.locator('[data-testid^="business-card-"]');
