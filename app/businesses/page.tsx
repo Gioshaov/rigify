@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { SiteNav } from "@/components/navigation/SiteNav";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessPageClient } from "./BusinessPageClient";
 
@@ -59,6 +60,8 @@ export default async function BrowseBusinessesPage() {
           <BusinessPageClient initialBusinesses={businesses} />
         </Suspense>
       </main>
+
+      <SiteFooter className="mb-20 md:mb-0" />
 
     </div>
   );
