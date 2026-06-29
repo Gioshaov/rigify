@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { UserMenu } from "@/components/ui/UserMenu";
-import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { Container } from "@/components/layout/Container";
+import { SiteNav } from "@/components/navigation/SiteNav";
 
 export default function HomePage() {
   const categories = [
@@ -45,33 +44,7 @@ export default function HomePage() {
       <a data-testid="home-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-nav bg-surface border-b border-white/10">
-        <Container className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-4">
-            <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
-              RIGIFY
-            </Link>
-          </div>
-
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
-              Home
-            </Link>
-            <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              Browse
-            </BrowseLink>
-            <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              For Business
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <UserMenu />
-          </div>
-        </Container>
-      </header>
+      <SiteNav />
 
       <main id="main-content">
       {/* Hero Section */}
@@ -260,21 +233,6 @@ export default function HomePage() {
         </Container>
       </footer>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>
-        </Link>
-        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">search</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
-        </BrowseLink>
-        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">business_center</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>
-        </Link>
-      </nav>
     </div>
   );
 }

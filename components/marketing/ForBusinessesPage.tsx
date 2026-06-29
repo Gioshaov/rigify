@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, FormEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, FormEvent } from "react";
+import { SiteNav } from "@/components/navigation/SiteNav";
 
 export default function ForBusinessesPage() {
-  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     business_name: "",
@@ -16,15 +15,6 @@ export default function ForBusinessesPage() {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function loadUser() {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    }
-    loadUser();
-  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -63,56 +53,7 @@ export default function ForBusinessesPage() {
       <a data-testid="for-businesses-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-nav flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 bg-surface border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <Link data-testid="logo-link" href="/">
-            <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
-              RIGIFY
-            </span>
-          </Link>
-        </div>
-        <div className="hidden md:flex items-center gap-8">
-          <nav className="flex gap-6">
-            <Link
-              data-testid="nav-home"
-              href="/"
-              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
-            >
-              Home
-            </Link>
-            <Link
-              data-testid="nav-browse"
-              href="/businesses"
-              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
-            >
-              Browse
-            </Link>
-            <Link
-              data-testid="nav-for-business"
-              href="/for-businesses"
-              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-primary uppercase"
-            >
-              For Business
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          {user ? (
-            <div data-testid="user-avatar" className="w-10 h-10 bg-surface-container-high border border-white/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-[20px]">person</span>
-            </div>
-          ) : (
-            <Link
-              data-testid="sign-in-btn"
-              href="/login"
-              className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium text-on-surface hover:text-primary transition-colors duration-200 uppercase"
-            >
-              Sign In
-            </Link>
-          )}
-        </div>
-      </header>
+      <SiteNav />
 
       <main id="main-content">
         {/* Hero Section */}
@@ -422,31 +363,6 @@ export default function ForBusinessesPage() {
         </footer>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Home
-          </span>
-        </Link>
-        <Link data-testid="mobile-nav-browse" href="/businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">search</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Browse
-          </span>
-        </Link>
-        <Link
-          data-testid="mobile-nav-business"
-          href="/for-businesses"
-          className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1"
-        >
-          <span className="material-symbols-outlined">business_center</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            For Business
-          </span>
-        </Link>
-      </nav>
     </div>
   );
 }
