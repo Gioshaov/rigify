@@ -38,7 +38,7 @@ export default function BookingConfirmedPage() {
       {/* Top Navigation */}
       <header className="sticky top-0 w-full z-nav flex items-center justify-between px-margin-mobile h-16 bg-surface border-b border-white/10">
         <div className="flex items-center gap-4">
-          <Link data-testid="logo-link" href="/">
+          <Link data-testid="nav-logo" href="/">
             <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
               RIGIFY
             </span>
