@@ -210,22 +210,11 @@ export default function HomePage() {
           </div>
 
           <div>
-            <h3 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h3>
             <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
               <li><Link data-testid="footer-browse-studios" href="/businesses?reset=1" className="hover:text-primary transition-colors">Browse Studios</Link></li>
-              <li><Link data-testid="footer-special-offers" href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
-              <li><Link data-testid="footer-gift-cards" href="#" className="hover:text-primary transition-colors">Gift Cards</Link></li>
-              <li><Link data-testid="footer-reviews" href="#" className="hover:text-primary transition-colors">Reviews</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-mono text-data-label text-white uppercase mb-6">Partners</h3>
-            <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
+              <li><Link data-testid="footer-reviews" href="/" className="hover:text-primary transition-colors">Reviews</Link></li>
               <li><Link data-testid="footer-register-business" href="/for-businesses" className="hover:text-primary transition-colors">Register Business</Link></li>
-              <li><Link data-testid="footer-partner-dashboard" href="/dashboard" className="hover:text-primary transition-colors">Partner Dashboard</Link></li>
-              <li><Link data-testid="footer-pricing" href="#" className="hover:text-primary transition-colors">Pricing</Link></li>
-              <li><Link data-testid="footer-support" href="#" className="hover:text-primary transition-colors">Support</Link></li>
+              <li><Link data-testid="footer-support" href="/help" className="hover:text-primary transition-colors">Support</Link></li>
             </ul>
           </div>
         </Container>
