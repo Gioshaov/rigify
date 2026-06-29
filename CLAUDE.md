@@ -760,6 +760,7 @@ export function hasOverlap(
    - Only read when needed to trace back
 
 **At Session Start**:
+- **Check git sync status FIRST**: run `git fetch` then `git status -sb` (or `git rev-list --left-right --count @{u}...HEAD`) to see whether the local branch is ahead, behind, or diverged from its remote tracking branch. Report the result to the user (e.g. "local is 2 behind, 0 ahead" or "in sync"). If behind/diverged, flag it before starting work so we don't build on stale state.
 - Read `LATEST_SESSION.md` to understand current state
 - Do NOT read `SESSION_HISTORY.md` (saves context)
 

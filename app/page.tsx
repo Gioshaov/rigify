@@ -11,32 +11,32 @@ export default function HomePage() {
     {
       name: "Hair Salons",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDHeqsjr9sht1Gl8-MdQdHV7rmmihBjI_yv3g4J-JsgNQa47Sskn0U_qEx_KtAyG2Y5fc8wu-6I2TCEilFkLJ3CQgpz_QeaJciarwzh2Pfm4696aUAKHIhsRjmJyoLHeRVaUPPsTWBYJYUbeIk-fFU1lUi1dxQMfM6Z3H8o8HZ221LdigiCBCkoRb2WG7OtcyuH__oFrpKs-q6Chb7cVQo5HqC7BBRS8SaNcX3M-dPeoov6-40FXuwxhI9JPhmnK22Kmcfk0Qx_Ftg",
-      href: "/tbilisi/hair"
+      href: "/businesses?category=hair"
     },
     {
       name: "Barbershops",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAQwakR8Q5VF2ZsLImc1VZC90fzToIefLCDbb5hj2nlDtRdvcc-iLNs1T-lWiLtjhRwlqQI5w9QoPylUx40T6W6eAIq6UkNHjIli780EL_B5BUA29PlRIlbufWtencqCIf-0sPF_Pmt-vv7JUl8akEZVSl8Lffep3zUbr8BTMwZWNKkqf15sgGq-8Hqq4txWJuDld5tFQkybrhpRcPlgUfJCGeWyUM9Cv5g1nViTK_0IXMija0RsYqI38h8bc2pEMYIIG6EUsaUzgo",
-      href: "/tbilisi/barber"
+      href: "/businesses?category=barber"
     },
     {
       name: "Nail Salons",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCqUdjOSD-xc0mABGTFwOazbd5udjwGOr7Drau01uKQlBZEGXoEkuG59bZBU76zBcPjzHU7lIFz8vUI8R8sDcKJyigGMWRuTwPzcuaw3P8t3cu3cgWITmSR2snJpPL4nUc_tNaMfhdIc6CJwK-3_fOpir__Jl_3XaOJ3gNDClqBuRVY6TPvGI_CVwnjimrvmcdp1PfA_6TXmEawgzBl6Bzm6kwDOachoDuKe7hZT1AbzHznXPFbDvhjN2V5m4AhPbeJLobiWkj03Xk",
-      href: "/tbilisi/nails"
+      href: "/businesses?category=nails"
     },
     {
       name: "Massage & Spa",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBmyAPAuhZmdsSBuo5f8usexopqoLfPgjZnkhPvvnH0bn6ICMOvOknMVAM8OlXM0ceyx5d1LAqqqY7U5POb3ldj31gBE9vsvORvQudTtqOgYo2Jdcx0xSoD_9Ba2X2gwhb6V0CdjkS6Q-kzwZRzvu3ZC6tmGzOFPxgI_RwDfj_reMoRfTP2pk0EgD_H4P_9D9EfrQfNp_Rqqs55fF28GARj2HMGTE2Pd0ntwO06LMrO_mumogtojbn-QaAlIeqdP8FvNkmatVuMlXE",
-      href: "/tbilisi/massage"
+      href: "/businesses?category=massage"
     },
     {
       name: "Cosmetology",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWrhjQH7D12EYRosNP9sO8ZTyg5D8wY30EZyXA8Gk9ZVn7sylNsXM6oLJCKQhUuW5bXEckIhejC68B01OVrKZFozB4YfmmxA9z266er5VEt4eDYLBJQsPV1z6EI1CcswZNMkLSdSz9QOti0RF-JJOm32qWiUSzdn2Nc4Kz1AyOuguo8uc4jekkfvg27wNfQYJu4GxNizAWtFekVpSoIX8QuVwOQ7DSF4SQ7fR9ieWdDD24Ivy8pVdTXe4EEIEnFSRg6ROD8Xzgh6w",
-      href: "/tbilisi/cosmetology"
+      href: "/businesses?category=cosmetology"
     },
     {
       name: "Tattoo & Piercing",
       image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCWO2NuKRMlVxTdjc-f0e21-YYWcsf71D_By00uNSrbUi1EZ2aBpWeijKtnqIQOIeZ_cHntPnTHK5WedlED75w3AZeHkECSpbMH3gtoYGWHtfofSQk9qcVFo_4417fIhGz9V-MFN5Al6dMXYR6HaLXjMWYvPupoLrMKmQz6FUDRlmNIvp6sDZZ5j4gcYA7sm8Qgkufgc7-6GJCyZ33SWk5wbxeQrDK3mH942lChpzTniOP3xHN5IDATERO3TUD_8NSSJG11cCoRlx0",
-      href: "/tbilisi/tattoo"
+      href: "/businesses?category=tattoo"
     }
   ];
 
@@ -62,9 +62,6 @@ export default function HomePage() {
             <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
               Browse
             </BrowseLink>
-            <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              My Bookings
-            </Link>
             <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
               For Business
             </Link>
@@ -273,10 +270,6 @@ export default function HomePage() {
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
         </BrowseLink>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">My Bookings</span>
-        </Link>
         <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>

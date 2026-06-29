@@ -50,7 +50,13 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  // Initialize category filter from URL (?category=) so landing-page category
+  // cards pre-filter on arrival. Unknown values (e.g. cosmetology, tattoo —
+  // categories that don't exist yet) pass through and yield an empty result set
+  // by design, surfacing the existing "No Businesses Found" empty state.
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    () => searchParams.get("category") ?? "all"
+  );
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [flyToUserLocation, setFlyToUserLocation] = useState(false);
 
@@ -291,6 +297,14 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
             >
               <option value="all">All Categories</option>
+              {/* Keep the select in sync when arriving with an unknown ?category=
+                  (e.g. cosmetology, tattoo): render it as its own option so the
+                  control reflects the active filter instead of falsely showing
+                  "All Categories". */}
+              {selectedCategory !== "all" &&
+                !CATEGORIES.some((cat) => cat.id === selectedCategory) && (
+                  <option value={selectedCategory}>{selectedCategory}</option>
+                )}
               {CATEGORIES.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.en}
@@ -420,7 +434,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                   onClick={() => setSelectedCategory("all")}
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
                 >
-                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en}
+                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en ?? selectedCategory}
                   <span className="material-symbols-outlined text-[14px]">close</span>
                 </button>
               )}
