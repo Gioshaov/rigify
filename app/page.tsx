@@ -222,8 +222,8 @@ export default function HomePage() {
         <Container className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-on-surface-variant uppercase tracking-[0.2em]">
           <span>© 2024 RIGIFY. All rights reserved.</span>
           <div className="flex gap-8">
-            <Link data-testid="footer-privacy-policy" href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link data-testid="footer-terms-of-service" href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link data-testid="footer-privacy-policy" href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link data-testid="footer-terms-of-service" href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </Container>
       </footer>
