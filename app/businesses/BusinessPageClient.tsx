@@ -136,6 +136,28 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     localStorage.setItem('rigify-map-view', mode);
   };
 
+  // Handle category change — keep the URL ?category= in sync with the filter.
+  // Category is the one filter initialized from the URL (landing-page cards link
+  // with ?category=), so it must round-trip; otherwise a stale value lingers in
+  // the URL after the user clears it. (search/district stay session-only.)
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    const params = new URLSearchParams(searchParams);
+    if (value === "all") {
+      params.delete("category");
+    } else {
+      params.set("category", value);
+    }
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
+  };
+
+  // Title-case a raw category id for display — used for ?category= values that
+  // aren't in CATEGORIES yet (e.g. cosmetology, tattoo) so the label reads
+  // "Cosmetology" instead of "cosmetology".
+  const formatCategoryLabel = (id: string) =>
+    id.charAt(0).toUpperCase() + id.slice(1);
+
   // Enrich businesses with distance if user location available
   const businessesWithDistance = useMemo(() => {
     if (!userLocation) return initialBusinesses;
@@ -237,7 +259,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedDistrict("all");
-    setSelectedCategory("all");
+    handleCategoryChange("all");
   };
 
   return (
@@ -293,7 +315,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             <select
               data-testid="browse-studios-category-select"
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => handleCategoryChange(e.target.value)}
               className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
             >
               <option value="all">All Categories</option>
@@ -303,7 +325,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                   "All Categories". */}
               {selectedCategory !== "all" &&
                 !CATEGORIES.some((cat) => cat.id === selectedCategory) && (
-                  <option value={selectedCategory}>{selectedCategory}</option>
+                  <option value={selectedCategory}>{formatCategoryLabel(selectedCategory)}</option>
                 )}
               {CATEGORIES.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -431,10 +453,10 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
               {selectedCategory !== "all" && (
                 <button
-                  onClick={() => setSelectedCategory("all")}
+                  onClick={() => handleCategoryChange("all")}
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
                 >
-                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en ?? selectedCategory}
+                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en ?? formatCategoryLabel(selectedCategory)}
                   <span className="material-symbols-outlined text-[14px]">close</span>
                 </button>
               )}
