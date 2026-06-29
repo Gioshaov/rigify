@@ -41,7 +41,7 @@ export default async function BrowseBusinessesPage() {
       <SiteNav />
 
       {/* Hero Section */}
-      <header className="w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
+      <header className="w-full h-[280px] md:h-[340px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
         <div className="relative max-w-container mx-auto w-full">
           <span className="font-mono text-[12px] leading-[1] tracking-[0.3em] font-medium text-primary uppercase mb-4 block">
             Curated Excellence
@@ -55,7 +55,7 @@ export default async function BrowseBusinessesPage() {
 
       {/* Client-side interactive filtering/sorting */}
       <main id="main-content">
-        <Suspense fallback={<div className="px-4 md:px-margin-desktop py-12"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
+        <Suspense fallback={<div className="px-4 md:px-margin-desktop py-6 md:py-8"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
           <BusinessPageClient initialBusinesses={businesses} />
         </Suspense>
       </main>

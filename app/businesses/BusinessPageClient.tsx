@@ -374,7 +374,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
       </section>
 
       {/* Main Content */}
-      <main className="px-4 md:px-margin-desktop py-12">
+      <main className="px-4 md:px-margin-desktop py-6 md:py-8">
         <div className="max-w-container mx-auto">
           {/* View Mode Toggle */}
           <ViewModeToggle
