@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, FormEvent } from "react";
 import { SiteNav } from "@/components/navigation/SiteNav";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 
 export default function ForBusinessesPage() {
   const [formData, setFormData] = useState({
@@ -331,37 +332,9 @@ export default function ForBusinessesPage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="bg-surface py-12">
-          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-8 border-b border-white/10">
-              <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
-                RIGIFY
-              </span>
-              <div className="flex gap-6">
-                <Link data-testid="footer-home" href="/" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
-                  Home
-                </Link>
-                <Link data-testid="footer-browse" href="/businesses" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
-                  Browse
-                </Link>
-                <Link data-testid="footer-for-business" href="/for-businesses" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">
-                  For Business
-                </Link>
-              </div>
-            </div>
-            <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase">
-                © 2024 RIGIFY Digital
-              </p>
-              <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-outline uppercase flex items-center gap-2">
-                <span className="material-symbols-outlined text-[14px]">lock</span>
-                Encrypted Access
-              </p>
-            </div>
-          </div>
-        </footer>
       </main>
+
+      <SiteFooter className="mb-20 md:mb-0" />
 
     </div>
   );

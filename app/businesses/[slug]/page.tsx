@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { TopNav } from "@/components/navigation/TopNav";
 import { BrowseLink } from "@/components/navigation/BrowseLink";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { ServicesList } from "./ServicesList";
@@ -354,6 +355,8 @@ export default async function BusinessProfilePage({
           </aside>
         </div>
       </main>
+
+      <SiteFooter className="mb-20 md:mb-0" />
 
       {/* Mobile CTA (Sticky) */}
       <div className="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">

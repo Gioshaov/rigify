@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 
 // Mock confirmation data - will be replaced with real booking data
 const mockBooking = {
@@ -212,6 +213,8 @@ export default function BookingConfirmedPage() {
           </div>
         </div>
       </main>
+
+      <SiteFooter className="mb-20 md:mb-0" />
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
