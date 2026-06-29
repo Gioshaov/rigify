@@ -48,16 +48,12 @@ export function BusinessSplitView({
 }: BusinessSplitViewProps) {
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(null);
   const [hoveredBusinessId, setHoveredBusinessId] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const router = useRouter();
 
-  // Filter businesses by category
-  const filteredBusinesses = selectedCategory === 'all'
-    ? businesses
-    : businesses.filter(b =>
-        b.business_categories.some(cat => cat.category_id === selectedCategory)
-      );
+  // `businesses` arrives already filtered by the main filter bar's Category
+  // selection (BusinessPageClient), so the split view renders it directly —
+  // it no longer keeps its own separate category filter.
 
   // Combine hover + click for marker highlighting
   const activeBusinessId = hoveredBusinessId || selectedBusinessId;
@@ -102,42 +98,12 @@ export function BusinessSplitView({
     <div className="flex h-[calc(100vh-280px)]" data-testid="marketplace-split-view">
       {/* Left Panel: 40% width */}
       <div className="w-[40%] flex flex-col border-r border-outline-variant">
-        {/* Top Bar with Category Dropdown */}
-        <div className="flex items-center justify-between gap-4 px-3 py-3 border-b border-outline-variant bg-surface">
-          <span
-            data-testid="split-view-count"
-            className="font-mono text-[10px] tracking-[0.2em] uppercase text-on-surface-variant whitespace-nowrap"
-          >
-            Showing {filteredBusinesses.length} of {businesses.length}
-          </span>
-
-          {/* Category Dropdown */}
-          <div className="relative flex-1 max-w-[200px]">
-            <select
-              data-testid="split-view-category-filter"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#d4a843] text-primary font-mono text-[10px] tracking-[0.15em] uppercase px-3 py-2 pr-8 appearance-none cursor-pointer outline-none hover:border-primary-container transition-colors"
-            >
-              <option value="all">All Services</option>
-              {CATEGORIES.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.en}
-                </option>
-              ))}
-            </select>
-            <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-primary text-[16px] pointer-events-none">
-              expand_more
-            </span>
-          </div>
-        </div>
-
         {/* Scrollable Business Cards Grid - with custom scrollbar */}
         <div
           className="flex-1 overflow-y-auto p-3 [scrollbar-width:thin] [scrollbar-color:#d4a843_transparent] [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-thumb:hover]:bg-primary-container"
         >
           <div className="grid grid-cols-2 gap-2">
-            {filteredBusinesses.map((business) => {
+            {businesses.map((business) => {
               const isActive = selectedBusinessId === business.id;
               const isHovered = hoveredBusinessId === business.id;
               const categoryNames = business.business_categories
@@ -200,7 +166,7 @@ export function BusinessSplitView({
 
           </div>
 
-          {filteredBusinesses.length === 0 && (
+          {businesses.length === 0 && (
             <div
               data-testid="split-view-empty-state"
               className="flex flex-col items-center justify-center h-64 text-center px-6 col-span-2"
@@ -222,7 +188,7 @@ export function BusinessSplitView({
       {/* Right Panel: 60% width - Map */}
       <div className="w-[60%] h-full">
         <BusinessMap
-          businesses={filteredBusinesses}
+          businesses={businesses}
           selectedBusinessId={activeBusinessId}
           popupBusinessId={selectedBusinessId}
           onMarkerClick={handleMarkerClick}
