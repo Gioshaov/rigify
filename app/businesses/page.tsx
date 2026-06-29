@@ -66,13 +66,6 @@ export default async function BrowseBusinessesPage() {
             Browse
           </BrowseLink>
           <Link
-            data-testid="nav-my-bookings"
-            href="/customer/dashboard"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            My Bookings
-          </Link>
-          <Link
             data-testid="nav-for-business"
             href="/for-businesses"
             className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
@@ -122,12 +115,6 @@ export default async function BrowseBusinessesPage() {
             Browse
           </span>
         </BrowseLink>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Bookings
-          </span>
-        </Link>
         <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">

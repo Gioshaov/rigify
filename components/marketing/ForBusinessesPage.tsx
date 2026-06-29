@@ -436,12 +436,6 @@ export default function ForBusinessesPage() {
             Browse
           </span>
         </Link>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            My Bookings
-          </span>
-        </Link>
         <Link
           data-testid="mobile-nav-business"
           href="/for-businesses"
