@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { UserMenu } from "@/components/ui/UserMenu";
-import { BrowseLink } from "@/components/navigation/BrowseLink";
 import { Container } from "@/components/layout/Container";
+import { SiteNav } from "@/components/navigation/SiteNav";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 
 export default function HomePage() {
   const categories = [
@@ -45,33 +45,7 @@ export default function HomePage() {
       <a data-testid="home-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-nav bg-surface border-b border-white/10">
-        <Container className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-4">
-            <Link data-testid="logo-link" href="/" className="font-mono text-display-lg-mobile text-primary tracking-tighter uppercase font-bold">
-              RIGIFY
-            </Link>
-          </div>
-
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link data-testid="nav-home" href="/" className="font-mono text-data-label uppercase text-primary transition-colors duration-200">
-              Home
-            </Link>
-            <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              Browse
-            </BrowseLink>
-            <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              For Business
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <UserMenu />
-          </div>
-        </Container>
-      </header>
+      <SiteNav />
 
       <main id="main-content">
       {/* Hero Section */}
@@ -209,72 +183,8 @@ export default function HomePage() {
       </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface-container-lowest border-t border-white/10 py-16 mb-20 md:mb-0">
-        <Container className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="col-span-1 md:col-span-2">
-            <h2 className="font-mono text-display-lg-mobile text-primary uppercase mb-6 tracking-tighter font-bold">RIGIFY</h2>
-            <p className="font-hanken text-body-md text-on-surface-variant max-w-sm mb-8">
-              The ultimate destination for luxury beauty and wellness services in Georgia. Connecting elite practitioners with discerning clients.
-            </p>
-            <div className="flex gap-4">
-              <a data-testid="footer-facebook-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Facebook">
-                <span className="material-symbols-outlined text-[20px]">thumb_up</span>
-              </a>
-              <a data-testid="footer-instagram-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Instagram">
-                <span className="material-symbols-outlined text-[20px]">photo_camera</span>
-              </a>
-              <a data-testid="footer-email-link" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all" href="#" aria-label="Email">
-                <span className="material-symbols-outlined text-[20px]">mail</span>
-              </a>
-            </div>
-          </div>
+      <SiteFooter className="mb-20 md:mb-0" />
 
-          <div>
-            <h3 className="font-mono text-data-label text-white uppercase mb-6">Marketplace</h3>
-            <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
-              <li><Link data-testid="footer-browse-studios" href="/businesses?reset=1" className="hover:text-primary transition-colors">Browse Studios</Link></li>
-              <li><Link data-testid="footer-special-offers" href="#" className="hover:text-primary transition-colors">Special Offers</Link></li>
-              <li><Link data-testid="footer-gift-cards" href="#" className="hover:text-primary transition-colors">Gift Cards</Link></li>
-              <li><Link data-testid="footer-reviews" href="#" className="hover:text-primary transition-colors">Reviews</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-mono text-data-label text-white uppercase mb-6">Partners</h3>
-            <ul className="space-y-4 font-hanken text-body-md text-on-surface-variant">
-              <li><Link data-testid="footer-register-business" href="/for-businesses" className="hover:text-primary transition-colors">Register Business</Link></li>
-              <li><Link data-testid="footer-partner-dashboard" href="/dashboard" className="hover:text-primary transition-colors">Partner Dashboard</Link></li>
-              <li><Link data-testid="footer-pricing" href="#" className="hover:text-primary transition-colors">Pricing</Link></li>
-              <li><Link data-testid="footer-support" href="#" className="hover:text-primary transition-colors">Support</Link></li>
-            </ul>
-          </div>
-        </Container>
-
-        <Container className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] text-on-surface-variant uppercase tracking-[0.2em]">
-          <span>© 2024 RIGIFY. All rights reserved.</span>
-          <div className="flex gap-8">
-            <Link data-testid="footer-privacy-policy" href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link data-testid="footer-terms-of-service" href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </Container>
-      </footer>
-
-      {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Home</span>
-        </Link>
-        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">search</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
-        </BrowseLink>
-        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">business_center</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>
-        </Link>
-      </nav>
     </div>
   );
 }

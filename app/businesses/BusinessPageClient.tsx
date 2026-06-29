@@ -9,6 +9,7 @@ import { BusinessSplitView } from "./BusinessSplitView";
 import { useGeolocation, calculateDistance } from "@/lib/utils/geolocation";
 import { TBILISI_DISTRICTS } from "@/lib/constants/districts";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
 
 type Business = {
   id: string;
@@ -136,6 +137,28 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     localStorage.setItem('rigify-map-view', mode);
   };
 
+  // Handle category change — keep the URL ?category= in sync with the filter.
+  // Category is the one filter initialized from the URL (landing-page cards link
+  // with ?category=), so it must round-trip; otherwise a stale value lingers in
+  // the URL after the user clears it. (search/district stay session-only.)
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    const params = new URLSearchParams(searchParams);
+    if (value === "all") {
+      params.delete("category");
+    } else {
+      params.set("category", value);
+    }
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
+  };
+
+  // Title-case a raw category id for display — used for ?category= values that
+  // aren't in CATEGORIES yet (e.g. cosmetology, tattoo) so the label reads
+  // "Cosmetology" instead of "cosmetology".
+  const formatCategoryLabel = (id: string) =>
+    id.charAt(0).toUpperCase() + id.slice(1);
+
   // Enrich businesses with distance if user location available
   const businessesWithDistance = useMemo(() => {
     if (!userLocation) return initialBusinesses;
@@ -237,7 +260,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedDistrict("all");
-    setSelectedCategory("all");
+    handleCategoryChange("all");
   };
 
   return (
@@ -270,19 +293,17 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               District
             </label>
-            <select
-              data-testid="browse-studios-district-select"
+            <FilterDropdown
+              testId="district-dropdown"
+              optionTestId="district"
+              ariaLabel="District"
               value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
-            >
-              <option value="all">All Districts</option>
-              {TBILISI_DISTRICTS.map((district) => (
-                <option key={district.id} value={district.id}>
-                  {district.en}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedDistrict}
+              options={[
+                { value: "all", label: "All Districts" },
+                ...TBILISI_DISTRICTS.map((district) => ({ value: district.id, label: district.en })),
+              ]}
+            />
           </div>
 
           {/* Category Dropdown */}
@@ -290,27 +311,23 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               Category
             </label>
-            <select
-              data-testid="browse-studios-category-select"
+            {/* Options keep the unknown ?category= value (e.g. cosmetology, tattoo)
+                as its own entry so the control reflects the active filter instead
+                of falsely showing "All Categories". */}
+            <FilterDropdown
+              testId="category-dropdown"
+              optionTestId="category"
+              ariaLabel="Category"
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
-            >
-              <option value="all">All Categories</option>
-              {/* Keep the select in sync when arriving with an unknown ?category=
-                  (e.g. cosmetology, tattoo): render it as its own option so the
-                  control reflects the active filter instead of falsely showing
-                  "All Categories". */}
-              {selectedCategory !== "all" &&
-                !CATEGORIES.some((cat) => cat.id === selectedCategory) && (
-                  <option value={selectedCategory}>{selectedCategory}</option>
-                )}
-              {CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.en}
-                </option>
-              ))}
-            </select>
+              onChange={handleCategoryChange}
+              options={[
+                { value: "all", label: "All Categories" },
+                ...(selectedCategory !== "all" && !CATEGORIES.some((cat) => cat.id === selectedCategory)
+                  ? [{ value: selectedCategory, label: formatCategoryLabel(selectedCategory) }]
+                  : []),
+                ...CATEGORIES.map((cat) => ({ value: cat.id, label: cat.en })),
+              ]}
+            />
           </div>
 
           {/* Near Me Button */}
@@ -352,7 +369,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
       </section>
 
       {/* Main Content */}
-      <main className="px-4 md:px-margin-desktop py-12">
+      <main className="px-4 md:px-margin-desktop py-6 md:py-8">
         <div className="max-w-container mx-auto">
           {/* View Mode Toggle */}
           <ViewModeToggle
@@ -431,10 +448,10 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
               {selectedCategory !== "all" && (
                 <button
-                  onClick={() => setSelectedCategory("all")}
+                  onClick={() => handleCategoryChange("all")}
                   className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] tracking-[0.15em] uppercase hover:bg-primary/20 transition-colors"
                 >
-                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en ?? selectedCategory}
+                  Category: {CATEGORIES.find(c => c.id === selectedCategory)?.en ?? formatCategoryLabel(selectedCategory)}
                   <span className="material-symbols-outlined text-[14px]">close</span>
                 </button>
               )}

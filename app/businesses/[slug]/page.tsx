@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { TopNav } from "@/components/navigation/TopNav";
 import { BrowseLink } from "@/components/navigation/BrowseLink";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { BookServiceButton } from "./BookServiceButton";
 import { ServicesList } from "./ServicesList";
@@ -355,6 +356,8 @@ export default async function BusinessProfilePage({
         </div>
       </main>
 
+      <SiteFooter className="mb-20 md:mb-0" />
+
       {/* Mobile CTA (Sticky) */}
       <div className="md:hidden fixed bottom-20 left-0 w-full p-4 bg-gradient-to-t from-background to-transparent z-40">
         <BookServiceButton mobile />
@@ -374,12 +377,6 @@ export default async function BusinessProfilePage({
             Browse
           </span>
         </BrowseLink>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Bookings
-          </span>
-        </Link>
         <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary transition-all">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">

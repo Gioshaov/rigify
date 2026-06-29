@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import { UserMenu } from "@/components/ui/UserMenu";
-import { BrowseLink } from "@/components/navigation/BrowseLink";
+import { SiteNav } from "@/components/navigation/SiteNav";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessPageClient } from "./BusinessPageClient";
 
@@ -40,54 +39,10 @@ export default async function BrowseBusinessesPage() {
       <a data-testid="browse-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      {/* Top Navigation */}
-      <nav className="sticky top-0 w-full z-nav flex items-center justify-between px-4 md:px-margin-desktop h-16 bg-surface border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <Link data-testid="logo-link" href="/">
-            <span className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
-              RIGIFY
-            </span>
-          </Link>
-        </div>
-
-        {/* Desktop Nav Links */}
-        <div className="hidden md:flex items-center gap-8">
-          <Link
-            data-testid="nav-home"
-            href="/"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            Home
-          </Link>
-          <BrowseLink
-            testId="nav-browse"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-primary border-b border-primary pt-1"
-          >
-            Browse
-          </BrowseLink>
-          <Link
-            data-testid="nav-my-bookings"
-            href="/customer/dashboard"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            My Bookings
-          </Link>
-          <Link
-            data-testid="nav-for-business"
-            href="/for-businesses"
-            className="font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase text-on-surface hover:text-primary transition-colors duration-200"
-          >
-            For Business
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <UserMenu />
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* Hero Section */}
-      <header className="w-full h-[353px] md:h-[442px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
+      <header className="w-full h-[280px] md:h-[340px] overflow-hidden flex flex-col justify-center px-4 md:px-margin-desktop">
         <div className="relative max-w-container mx-auto w-full">
           <span className="font-mono text-[12px] leading-[1] tracking-[0.3em] font-medium text-primary uppercase mb-4 block">
             Curated Excellence
@@ -101,40 +56,13 @@ export default async function BrowseBusinessesPage() {
 
       {/* Client-side interactive filtering/sorting */}
       <main id="main-content">
-        <Suspense fallback={<div className="px-4 md:px-margin-desktop py-12"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
+        <Suspense fallback={<div className="px-4 md:px-margin-desktop py-6 md:py-8"><p className="label-mono text-on-surface-variant">Loading...</p></div>}>
           <BusinessPageClient initialBusinesses={businesses} />
         </Suspense>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-4 border-t border-white/10">
-        <Link data-testid="mobile-nav-home" href="/" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Home
-          </span>
-        </Link>
-        <BrowseLink testId="mobile-nav-browse" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-            search
-          </span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Browse
-          </span>
-        </BrowseLink>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Bookings
-          </span>
-        </Link>
-        <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60">
-          <span className="material-symbols-outlined">business_center</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
-            Business
-          </span>
-        </Link>
-      </nav>
+      <SiteFooter className="mb-20 md:mb-0" />
+
     </div>
   );
 }
