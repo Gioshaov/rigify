@@ -9,6 +9,7 @@ import { BusinessSplitView } from "./BusinessSplitView";
 import { useGeolocation, calculateDistance } from "@/lib/utils/geolocation";
 import { TBILISI_DISTRICTS } from "@/lib/constants/districts";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
 
 type Business = {
   id: string;
@@ -292,19 +293,17 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               District
             </label>
-            <select
-              data-testid="browse-studios-district-select"
+            <FilterDropdown
+              testId="district-dropdown"
+              optionTestId="district"
+              ariaLabel="District"
               value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
-            >
-              <option value="all">All Districts</option>
-              {TBILISI_DISTRICTS.map((district) => (
-                <option key={district.id} value={district.id}>
-                  {district.en}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedDistrict}
+              options={[
+                { value: "all", label: "All Districts" },
+                ...TBILISI_DISTRICTS.map((district) => ({ value: district.id, label: district.en })),
+              ]}
+            />
           </div>
 
           {/* Category Dropdown */}
@@ -312,27 +311,23 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               Category
             </label>
-            <select
-              data-testid="browse-studios-category-select"
+            {/* Options keep the unknown ?category= value (e.g. cosmetology, tattoo)
+                as its own entry so the control reflects the active filter instead
+                of falsely showing "All Categories". */}
+            <FilterDropdown
+              testId="category-dropdown"
+              optionTestId="category"
+              ariaLabel="Category"
               value={selectedCategory}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-4 py-3 text-on-surface outline-none appearance-none cursor-pointer"
-            >
-              <option value="all">All Categories</option>
-              {/* Keep the select in sync when arriving with an unknown ?category=
-                  (e.g. cosmetology, tattoo): render it as its own option so the
-                  control reflects the active filter instead of falsely showing
-                  "All Categories". */}
-              {selectedCategory !== "all" &&
-                !CATEGORIES.some((cat) => cat.id === selectedCategory) && (
-                  <option value={selectedCategory}>{formatCategoryLabel(selectedCategory)}</option>
-                )}
-              {CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.en}
-                </option>
-              ))}
-            </select>
+              onChange={handleCategoryChange}
+              options={[
+                { value: "all", label: "All Categories" },
+                ...(selectedCategory !== "all" && !CATEGORIES.some((cat) => cat.id === selectedCategory)
+                  ? [{ value: selectedCategory, label: formatCategoryLabel(selectedCategory) }]
+                  : []),
+                ...CATEGORIES.map((cat) => ({ value: cat.id, label: cat.en })),
+              ]}
+            />
           </div>
 
           {/* Near Me Button */}
