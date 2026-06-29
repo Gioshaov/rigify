@@ -45,10 +45,6 @@ export function BookingConfirmationClient({
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] uppercase mt-1">Browse</span>
         </Link>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-primary border-t-2 border-primary pt-1">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] uppercase mt-1">My Bookings</span>
-        </Link>
       </nav>
     </div>
   );
