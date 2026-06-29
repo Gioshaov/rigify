@@ -2088,3 +2088,28 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 **Next Steps**: Backlog unchanged. The biggest blocker between deployed and publicly reachable remains `SITE_PASSWORD` removal from the production Vercel scope (deferred since Session 27). UI items from Session 31 (mobile bottom nav, inline field validation, edge-to-edge safe-area, admin a11y landmarks, bespoke-modal consolidation) still pending. Future enhancements: Salome platform API, social bots, recurring appointments, service packages, gift cards.
 
 **Status**: ✅ Complete. 3 production deploys, 30 → 22 MD files, reset-data hardened, PLATFORM.md generated and pivoted to local-only. `master` and `staging` 0/0 divergence at `65e8669`.
+
+---
+
+### Session 33 - June 29, 2026: Public-pages chrome consolidation (SiteNav + SiteFooter), custom FilterDropdown, split-view de-dup, category-card fix; 2 prod promotions
+
+**Objective**: Fix the 404-ing landing category cards, then consolidate the fragmented public-page chrome (3 navbars → 1, 3 footers → 1), replace the native filter selects with a styleable custom dropdown, de-duplicate the split view, and ship it. Disciplined loop throughout: audit → implement → `@code-reviewer` + `/ponytail-review` → PR to staging → verify on staging → promote.
+
+**Accomplished** (17 PRs, #46–#62):
+- **Category cards (#46–#48)**: landing cards linked to non-existent `/tbilisi/{cat}` routes (every card 404'd) → repointed to `/businesses?category={id}`; `BusinessPageClient` reads `?category=` from the URL with round-trip sync + title-cased unknown-category passthrough. Removed "My Bookings" from landing nav (#47). #48 promoted #46+#47 to prod.
+- **Email "rate limit exceeded"**: investigated → Supabase Auth dashboard config (Confirm-email ON + built-in email limit), not code. User fixed in dashboard.
+- **Navbar consolidation (#49–#52)**: new `components/navigation/SiteNav.tsx` (shared desktop+mobile, active via `usePathname`, `UserMenu`); `TopNav` (studio) gained "For Business" + lost hardcoded-active Home; "My Bookings" removed sitewide (kept in UserMenu dropdown).
+- **Footer consolidation (#53–#56, #60, #61)**: new `components/marketing/SiteFooter.tsx` replaces 3 footers; auto copyright year, inert FB/IG icons (`aria-hidden`, no link), real Email `mailto:`, caller-controlled mobile-nav clearance. Now on landing, marketing pages, for-businesses, studio, both booking-confirmed pages, and /businesses (all 3 view modes).
+- **Filters/split (#57–#59)**: tightened /businesses spacing; native District/Category selects → `components/ui/FilterDropdown.tsx` (hand-built, no new dep, full listbox a11y + keyboard); split view de-duplicated (honors the single main Category filter, removed its own filter+count).
+- **Staging data fix** (direct Supabase `ccjteappgctnlwrmzokp`): "BARBERSHOP DATA" was a barbershop mis-tagged `[nails, barber, brows]`; confirmed filter logic correct (data bug) → retagged `[barber]`, slug `saloni-nails` → `barbershop-data`, name left as-is. Read-only verify + explicit approval before writes.
+- **Production promotion (#62)**: holistic pre-prod review of the #49–#61 batch = PASS ("safe to ship"); merge-committed `staging` → `master`, prod build green.
+
+**Files Changed**: 3 new shared components (`SiteNav.tsx`, `SiteFooter.tsx`, `FilterDropdown.tsx`); ~14 pages/components refactored onto them; 1 E2E test updated. Net reduction across the batch despite 3 new components — consolidation removed more than it added.
+
+**Commits / PRs**: #46–#61 squash-merged to `staging`; #48 and #62 promoted to `master` (`2221c35`). All `@code-reviewer` PASS or CONDITIONAL-PASS-resolved; all `/ponytail-review` "ship".
+
+**Key learnings**: verify the served artifact, not DOM presence (compute the `HMAC-SHA256(SITE_PASSWORD,'rigify_access')` gate cookie + Playwright a production build — caught a testid-naming bug); a full-screen "broken image" on localhost was a stale `.next`/duplicate dev server (CSS chunks 404'd → `next/image fill` lost its sized parent), fixed by `rm -rf .next` + single dev server; data bugs ≠ logic bugs (didn't touch a correct filter); reused the repo's hand-built dropdown idiom over adding a headless dependency.
+
+**Next Steps**: `SITE_PASSWORD` removal from the production Vercel scope (still the single biggest pre-launch blocker, deferred since Session 27). Session 33 advisory follow-ups: guard `clearAllFilters` no-op history push; add E2E for the Category dropdown + `?category=` sync; standardize `MarketingLayout` logo testid. UI corrections backlog + future features (Salome API, social bots, recurring appointments, packages, gift cards) unchanged.
+
+**Status**: ✅ Complete. 2 production deploys (PRs #48, #62), 17 PRs. `master` @ `2221c35`, `staging` @ `97960b8` — 0/0 divergence. New shared components live on rigify.ge.
