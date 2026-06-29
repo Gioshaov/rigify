@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { BookingConfirmation } from "@/components/booking/BookingConfirmation";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 import type { BookingConfirmationData } from "@/lib/bookings/types";
 
 export function BookingConfirmationClient({
@@ -34,6 +35,8 @@ export function BookingConfirmationClient({
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 pb-32">
         <BookingConfirmation booking={booking} showMyBookings={canViewPII} />
       </main>
+
+      <SiteFooter className="mb-20 md:mb-0" />
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
