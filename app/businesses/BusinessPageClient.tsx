@@ -50,7 +50,13 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  // Initialize category filter from URL (?category=) so landing-page category
+  // cards pre-filter on arrival. Unknown values (e.g. cosmetology, tattoo —
+  // categories that don't exist yet) pass through and yield an empty result set
+  // by design, surfacing the existing "No Businesses Found" empty state.
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    () => searchParams.get("category") ?? "all"
+  );
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [flyToUserLocation, setFlyToUserLocation] = useState(false);
 
