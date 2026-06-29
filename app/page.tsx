@@ -62,9 +62,6 @@ export default function HomePage() {
             <BrowseLink testId="nav-browse" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
               Browse
             </BrowseLink>
-            <Link data-testid="nav-my-bookings" href="/customer/dashboard" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
-              My Bookings
-            </Link>
             <Link data-testid="nav-for-business" href="/for-businesses" className="font-mono text-data-label uppercase text-on-surface hover:text-primary transition-colors duration-200">
               For Business
             </Link>
@@ -273,10 +270,6 @@ export default function HomePage() {
           <span className="material-symbols-outlined">search</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Browse</span>
         </BrowseLink>
-        <Link data-testid="mobile-nav-my-bookings" href="/customer/dashboard" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
-          <span className="material-symbols-outlined">event_available</span>
-          <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">My Bookings</span>
-        </Link>
         <Link data-testid="mobile-nav-business" href="/for-businesses" className="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:text-primary/80 transition-transform active:scale-95">
           <span className="material-symbols-outlined">business_center</span>
           <span className="font-mono text-[10px] uppercase mt-1 tracking-[0.2em]">Business</span>
