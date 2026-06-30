@@ -3,6 +3,8 @@
 import { useState, FormEvent } from "react";
 import { SiteNav } from "@/components/navigation/SiteNav";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
+import { CountryCodeSelect } from "@/components/ui/CountryCodeSelect";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
 
 export default function ForBusinessesPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,10 @@ export default function ForBusinessesPage() {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState("");
+  // Phone is entered as country dial-code + local number (matching /customer-register);
+  // both combine into the existing formData.phone, which still POSTs unchanged.
+  const [countryCode, setCountryCode] = useState("+995");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -225,7 +231,11 @@ export default function ForBusinessesPage() {
                     </p>
                     <button
                       data-testid="for-businesses-send-another-btn"
-                      onClick={() => setShowSuccess(false)}
+                      onClick={() => {
+                        setShowSuccess(false);
+                        setPhoneNumber("");
+                        setCountryCode("+995");
+                      }}
                       className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase inline-flex items-center min-h-[44px] active:scale-95 transition-transform"
                     >
                       Send Another Request
@@ -274,36 +284,49 @@ export default function ForBusinessesPage() {
                         <label htmlFor="contact-phone" className={fieldLabel}>
                           Phone Number *
                         </label>
-                        <input
-                          data-testid="contact-phone-input"
-                          id="contact-phone"
-                          autoComplete="tel"
-                          type="tel"
-                          required
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={fieldInput}
-                          placeholder="+995 555 123 456"
-                        />
+                        <div className="flex gap-2">
+                          <CountryCodeSelect
+                            testId="contact-country-code-select"
+                            value={countryCode}
+                            onChange={(dial) => {
+                              setCountryCode(dial);
+                              setFormData({ ...formData, phone: phoneNumber ? `${dial} ${phoneNumber.replace(/\s/g, "")}` : "" });
+                            }}
+                          />
+                          <input
+                            data-testid="contact-phone-input"
+                            id="contact-phone"
+                            autoComplete="tel"
+                            type="tel"
+                            required
+                            value={phoneNumber}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/[^0-9\s]/g, "");
+                              setPhoneNumber(digits);
+                              setFormData({ ...formData, phone: digits ? `${countryCode} ${digits.replace(/\s/g, "")}` : "" });
+                            }}
+                            className={`flex-1 min-w-0 ${fieldInput}`}
+                            placeholder="555 123 456"
+                          />
+                        </div>
                       </div>
 
                       <div>
-                        <label htmlFor="contact-city" className={fieldLabel}>
-                          City
-                        </label>
-                        <select
-                          data-testid="contact-city-select"
-                          id="contact-city"
+                        <span className={fieldLabel}>City</span>
+                        <FilterDropdown
+                          testId="contact-city-dropdown"
+                          optionTestId="contact-city"
+                          ariaLabel="City"
                           value={formData.city}
-                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                          className={`${fieldInput} appearance-none cursor-pointer`}
-                        >
-                          <option value="">Select City</option>
-                          <option value="tbilisi">Tbilisi</option>
-                          <option value="batumi">Batumi</option>
-                          <option value="kutaisi">Kutaisi</option>
-                          <option value="other">Other</option>
-                        </select>
+                          onChange={(v) => setFormData({ ...formData, city: v })}
+                          options={[
+                            { value: "", label: "Select City" },
+                            { value: "tbilisi", label: "Tbilisi" },
+                            { value: "batumi", label: "Batumi" },
+                            { value: "kutaisi", label: "Kutaisi" },
+                            { value: "other", label: "Other" },
+                          ]}
+                        />
                       </div>
                     </div>
 
