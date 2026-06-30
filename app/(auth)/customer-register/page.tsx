@@ -24,13 +24,15 @@ export default function CustomerRegisterPage() {
 
     const formData = new FormData(e.currentTarget);
 
+    // confirmPassword is a client-only typo guard; it rides along in formData but
+    // the server action ignores it (signUp only consumes password).
     if (formData.get("password") !== formData.get("confirmPassword")) {
       setError("Passwords do not match");
       return;
     }
 
-    setLoading(true);
     setError(null);
+    setLoading(true);
 
     const result = await customerRegisterAction(formData);
 
