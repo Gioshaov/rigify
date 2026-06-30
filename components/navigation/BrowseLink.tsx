@@ -7,9 +7,11 @@ interface BrowseLinkProps {
   className?: string;
   children: React.ReactNode;
   testId?: string;
+  /** Marks this link as the current page for assistive tech. */
+  current?: boolean;
 }
 
-export function BrowseLink({ className, children, testId }: BrowseLinkProps) {
+export function BrowseLink({ className, children, testId, current }: BrowseLinkProps) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -28,6 +30,7 @@ export function BrowseLink({ className, children, testId }: BrowseLinkProps) {
       href="/businesses"
       className={className}
       onClick={handleClick}
+      aria-current={current ? "page" : undefined}
     >
       {children}
     </Link>
