@@ -37,6 +37,20 @@ test.describe('Customer Registration', () => {
     await expect(page).toHaveURL(/\/customer-register/);
   });
 
+  test('password reveal toggle switches the input type and aria-pressed', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/customer-register');
+
+    const password = page.getByTestId('register-password-input');
+    const toggle = page.getByTestId('register-toggle-password-btn');
+    await expect(password).toHaveAttribute('type', 'password');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await toggle.click();
+    await expect(password).toHaveAttribute('type', 'text');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('confirm password reveal toggle switches the input type', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/customer-register');
