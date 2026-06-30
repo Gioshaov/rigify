@@ -253,6 +253,14 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
     return sorted;
   }, [businessesWithDistance, searchQuery, selectedDistrict, selectedCategory, sortBy]);
 
+  // Businesses that can appear on the map. The map and split views drop rows
+  // with null lat/long; the list view shows all of filteredBusinesses. Computed
+  // once here so the results count and the view branches stay in sync.
+  const mappableBusinesses = useMemo(
+    () => filteredBusinesses.filter(hasCoordinates),
+    [filteredBusinesses]
+  );
+
   // Check if any filters are active
   const hasActiveFilters = searchQuery !== "" || selectedDistrict !== "all" || selectedCategory !== "all";
 
@@ -260,7 +268,12 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedDistrict("all");
-    handleCategoryChange("all");
+    // Only touch the URL when category is actually set. handleCategoryChange
+    // always router.push()es, so calling it when category is already "all"
+    // (e.g. only search/district were active) adds a phantom back-step.
+    if (selectedCategory !== "all") {
+      handleCategoryChange("all");
+    }
   };
 
   return (
@@ -384,8 +397,8 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               <h2 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary uppercase tracking-tight">
                 {hasActiveFilters ? "Search Results" : "All Businesses"}
               </h2>
-              <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-2">
-                Showing {filteredBusinesses.length} of {initialBusinesses.length}
+              <p data-testid="browse-studios-results-count" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mt-2">
+                Showing {effectiveViewMode === 'list' ? filteredBusinesses.length : mappableBusinesses.length} of {initialBusinesses.length}
               </p>
             </div>
 
@@ -471,7 +484,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                 search_off
               </span>
-              <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
+              <h3 data-testid="browse-studios-empty-state-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
                 No Businesses Found
               </h3>
               <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase mb-6">
@@ -495,10 +508,8 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                 <BusinessGrid businesses={filteredBusinesses} />
               )}
 
-              {effectiveViewMode === 'map' && (() => {
-                const mappableBusinesses = filteredBusinesses.filter(hasCoordinates);
-                return mappableBusinesses.length === 0 ? (
-                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+              {effectiveViewMode === 'map' && (mappableBusinesses.length === 0 ? (
+                  <div data-testid="browse-studios-map-no-coordinates" className="text-center py-16 bg-surface-container-low sharp-border">
                     <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                       location_off
                     </span>
@@ -522,13 +533,10 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                     flyToUserLocation={flyToUserLocation}
                     onFlyComplete={() => setFlyToUserLocation(false)}
                   />
-                );
-              })()}
+                ))}
 
-              {effectiveViewMode === 'split' && (() => {
-                const mappableBusinesses = filteredBusinesses.filter(hasCoordinates);
-                return mappableBusinesses.length === 0 ? (
-                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+              {effectiveViewMode === 'split' && (mappableBusinesses.length === 0 ? (
+                  <div data-testid="browse-studios-split-no-coordinates" className="text-center py-16 bg-surface-container-low sharp-border">
                     <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                       location_off
                     </span>
@@ -553,8 +561,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                     onFlyComplete={() => setFlyToUserLocation(false)}
                     mapRef={mapRef}
                   />
-                );
-              })()}
+                ))}
             </>
           )}
         </div>

@@ -9,6 +9,7 @@ export default function CustomerRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [countryCode, setCountryCode] = useState("+995"); // Default Georgia
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -21,10 +22,18 @@ export default function CustomerRegisterPage() {
       return;
     }
 
-    setLoading(true);
-    setError(null);
-
     const formData = new FormData(e.currentTarget);
+
+    // confirmPassword is a client-only typo guard; it rides along in formData but
+    // the server action ignores it (signUp only consumes password).
+    if (formData.get("password") !== formData.get("confirmPassword")) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
+
     const result = await customerRegisterAction(formData);
 
     if (result?.error) {
@@ -64,20 +73,36 @@ export default function CustomerRegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Full Name */}
-            <div>
-              <label htmlFor="name" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                Full Name
-              </label>
-              <input
-                data-testid="name-input"
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder="Alexander Sterling"
-                className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
-              />
+            {/* First / Last Name */}
+            <div className="flex gap-2">
+              <div className="flex-1 min-w-0">
+                <label htmlFor="first_name" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+                  First Name
+                </label>
+                <input
+                  data-testid="first-name-input"
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  required
+                  placeholder="Alexander"
+                  className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <label htmlFor="last_name" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+                  Last Name
+                </label>
+                <input
+                  data-testid="last-name-input"
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  required
+                  placeholder="Sterling"
+                  className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
+                />
+              </div>
             </div>
 
             {/* Email */}
@@ -146,6 +171,34 @@ export default function CustomerRegisterPage() {
                 >
                   <span className="material-symbols-outlined text-[20px]">
                     {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label htmlFor="confirmPassword" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  data-testid="confirm-password-input"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  placeholder="••••••••••"
+                  className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 pr-12 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
+                />
+                <button
+                  data-testid="toggle-confirm-password-btn"
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {showConfirmPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
               </div>

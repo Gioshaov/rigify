@@ -41,6 +41,90 @@ test.describe('Browse Studios Page', () => {
     await expect(businessCards.first()).toBeVisible({ timeout: 10000 });
   });
 
+  test('should filter by category and sync ?category= to the URL', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses');
+
+    // Category is a custom dropdown: open it, pick Hair.
+    await page.getByTestId('category-dropdown-trigger').click();
+    await page.getByTestId('category-option-hair').click();
+
+    // Selection round-trips into the URL (landing cards link with ?category=).
+    await expect(page).toHaveURL(/[?&]category=hair\b/);
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Hair');
+    // Grid still renders after filtering — guards against a broken filter memo.
+    await expect(page.locator('[data-testid^="business-card-"]').first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should initialize the Category filter from ?category= in the URL', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?category=nails');
+
+    // The dropdown reflects the URL value on load, not a stale "All Categories".
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Nails');
+  });
+
+  test('should pass an unknown ?category= through to the empty state', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?category=cosmetology');
+
+    // cosmetology isn't in CATEGORIES — the control still reflects it (title-cased)...
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Cosmetology');
+    // ...and no seeded business matches, so the empty state renders.
+    await expect(page.getByTestId('browse-studios-empty-state-title')).toBeVisible();
+  });
+
+  // NOTE: These two tests assert the "Showing X of Y" count equals the number of
+  // cards actually rendered. They run against the ambient DB the rest of this suite
+  // already relies on (it needs businesses with coordinates to render cards). They
+  // only *catch the split/map count bug* when at least one active business has null
+  // coordinates — seed-test-data.ts seeds exactly one such business
+  // (`playwright-test-salon`, no lat/long). See the fixture note in the PR: there is
+  // no seeded business WITH coordinates, so on a pristine seed-only DB the split view
+  // shows the empty state and this assertion has no cards to count.
+  async function shownCount(page: import('@playwright/test').Page): Promise<number> {
+    // textContent (not innerText): the element has an `uppercase` CSS transform, so
+    // innerText would return "SHOWING 8 OF 8" and the regex would miss.
+    const text = await page.getByTestId('browse-studios-results-count').textContent();
+    const match = text?.match(/Showing (\d+) of/);
+    // Throw on a format change rather than returning NaN, so the failure names the
+    // real cause instead of a cryptic "Received: NaN".
+    if (!match) throw new Error(`Unexpected results-count format: ${JSON.stringify(text)}`);
+    return Number(match[1]);
+  }
+
+  test('list view count matches the number of rendered cards', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?view=list');
+
+    const cards = page.locator('[data-testid^="business-card-"]');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+
+    // List view renders every filtered business, so X equals the card count.
+    expect(await shownCount(page)).toBe(await cards.count());
+  });
+
+  test('split view count excludes businesses without map coordinates', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?view=split');
+
+    const cards = page.locator('[data-testid^="split-view-business-card-"]');
+    const noCoords = page.getByTestId('browse-studios-split-no-coordinates');
+
+    // Wait for the split view to settle into one of its two terminal states:
+    // either cards rendered, or the "no map coordinates" empty state.
+    await expect(cards.first().or(noCoords)).toBeVisible({ timeout: 10000 });
+
+    // On a seed-only DB no business has coordinates, so the split view shows the
+    // empty state and there are no cards to count. Skip with a clear reason rather
+    // than letting a later assertion time out and look like a product regression.
+    test.skip(await noCoords.isVisible(), 'No businesses with map coordinates in this DB; split view renders the empty state.');
+
+    // Split view drops null-coordinate businesses; the count must follow the cards,
+    // not the unfiltered total (regression guard for the "Showing 2 of 2 / 1 shown" bug).
+    expect(await shownCount(page)).toBe(await cards.count());
+  });
+
   test('should preserve Stitch design hover effects', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/businesses');
