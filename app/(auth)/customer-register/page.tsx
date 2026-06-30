@@ -67,7 +67,7 @@ export default function CustomerRegisterPage() {
           {error && (
             <div data-testid="register-error-msg" role="alert" className="mb-8 p-4 border border-error bg-error/10">
               <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase">
-                ⚠️ {error}
+                <span aria-hidden="true">⚠️</span> {error}
               </p>
             </div>
           )}
