@@ -197,7 +197,7 @@ export default function CustomerRegisterPage() {
                   data-testid="register-toggle-confirm-password-btn"
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                   aria-pressed={showConfirmPassword}
                   className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-on-surface-variant hover:text-primary transition-colors"
                 >
