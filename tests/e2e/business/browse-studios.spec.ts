@@ -74,6 +74,45 @@ test.describe('Browse Studios Page', () => {
     await expect(page.getByTestId('browse-studios-empty-state-title')).toBeVisible();
   });
 
+  // NOTE: These two tests assert the "Showing X of Y" count equals the number of
+  // cards actually rendered. They run against the ambient DB the rest of this suite
+  // already relies on (it needs businesses with coordinates to render cards). They
+  // only *catch the split/map count bug* when at least one active business has null
+  // coordinates — seed-test-data.ts seeds exactly one such business
+  // (`playwright-test-salon`, no lat/long). See the fixture note in the PR: there is
+  // no seeded business WITH coordinates, so on a pristine seed-only DB the split view
+  // shows the empty state and this assertion has no cards to count.
+  async function shownCount(page: import('@playwright/test').Page): Promise<number> {
+    // textContent (not innerText): the element has an `uppercase` CSS transform, so
+    // innerText would return "SHOWING 8 OF 8" and the regex would miss.
+    const text = await page.getByTestId('browse-studios-results-count').textContent();
+    const match = text?.match(/Showing (\d+) of/);
+    return Number(match?.[1]);
+  }
+
+  test('list view count matches the number of rendered cards', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?view=list');
+
+    const cards = page.locator('[data-testid^="business-card-"]');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+
+    // List view renders every filtered business, so X equals the card count.
+    expect(await shownCount(page)).toBe(await cards.count());
+  });
+
+  test('split view count excludes businesses without map coordinates', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?view=split');
+
+    const cards = page.locator('[data-testid^="split-view-business-card-"]');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+
+    // Split view drops null-coordinate businesses; the count must follow the cards,
+    // not the unfiltered total (regression guard for the "Showing 2 of 2 / 1 shown" bug).
+    expect(await shownCount(page)).toBe(await cards.count());
+  });
+
   test('should preserve Stitch design hover effects', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/businesses');
