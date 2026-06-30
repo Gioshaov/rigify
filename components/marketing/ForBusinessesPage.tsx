@@ -231,7 +231,7 @@ export default function ForBusinessesPage() {
                   <button
                     data-testid="for-businesses-send-another-btn"
                     onClick={() => setShowSuccess(false)}
-                    className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase inline-block py-3 active:scale-95 transition-transform"
+                    className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase inline-flex items-center min-h-[44px] active:scale-95 transition-transform"
                   >
                     Send Another Request
                   </button>
@@ -324,7 +324,7 @@ export default function ForBusinessesPage() {
                   </div>
 
                   {error && (
-                    <p role="alert" className="text-sm text-error font-hanken">⚠️ {error}</p>
+                    <p role="alert" className="text-sm text-error font-hanken"><span aria-hidden="true">⚠️</span> {error}</p>
                   )}
 
                   <button
