@@ -26,7 +26,7 @@ export default function CustomerRegisterPage() {
 
     // confirmPassword is a client-only typo guard; it rides along in formData but
     // the server action ignores it (signUp only consumes password).
-    if (formData.get("password") !== formData.get("confirmPassword")) {
+    if (formData.get("password") !== formData.get("confirm_password")) {
       setError("Passwords do not match");
       return;
     }
@@ -178,14 +178,14 @@ export default function CustomerRegisterPage() {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
+              <label htmlFor="confirm_password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
                 Confirm Password
               </label>
               <div className="relative">
                 <input
                   data-testid="confirm-password-input"
-                  id="confirmPassword"
-                  name="confirmPassword"
+                  id="confirm_password"
+                  name="confirm_password"
                   type={showConfirmPassword ? "text" : "password"}
                   required
                   placeholder="••••••••••"
