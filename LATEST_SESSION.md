@@ -1,7 +1,7 @@
 # Latest Session Summary
 
-**Last Updated**: June 29, 2026  
-**Session**: Session 33 - Public-pages UI consolidation: category-card routing fix, navbar (SiteNav) + footer (SiteFooter) consolidation, custom filter dropdowns, split-view de-dup; 2 prod promotions
+**Last Updated**: June 30, 2026  
+**Session**: Session 34 - Per-view count fix, customer-register first/last+confirm-password, nav consolidation (configurable SiteNav), two accessibility passes, /for-businesses bento restyle + on-brand form controls; 7 prod promotions (#85/#86 restyle still staging-only)
 
 ---
 
@@ -119,48 +119,53 @@
 
 ---
 
-## Latest Session Work (Session 33 - June 29, 2026)
+## Latest Session Work (Session 34 - June 30, 2026)
 
-**Objective**: Fix the 404-ing landing category cards, then a broad consolidation of the public-page chrome (one navbar, one footer), replace the native filter selects with a custom dropdown, de-duplicate the split view, and ship it all. Each change followed the same loop: audit → implement → `@code-reviewer` + `/ponytail-review` → PR to staging → verify → (finally) one production promotion. **17 PRs (#46–#62), 2 production deploys.**
+**Objective**: A long session of public-page UI work, each item run through the same loop (audit → implement → `@code-reviewer` (+ ponytail) → PR to staging → verify → promote). **23 PRs (#64–#86), 7 production promotions.** In-depth 3-lens multi-agent UI reviews (accessibility / design-system / responsive) run on the nav+register+businesses set and again on /for-businesses.
 
-### Category cards + first promotion (PRs #46, #47, #48)
-- **#46** — landing category cards pointed at `/tbilisi/{cat}` routes that never existed → every card 404'd. Repointed to `/businesses?category={id}`; `BusinessPageClient` now reads `?category=` from the URL. Unknown categories (cosmetology, tattoo — not in `CATEGORIES`) pass through to the existing empty state by design.
-- **#47** — removed "My Bookings" from the landing nav. **#48** promoted #46+#47 to production.
+### Session 33 follow-ups (#64)
+- `clearAllFilters` history-guard (no phantom back-step); Category-dropdown + `?category=` URL-sync E2E (+ unknown-category passthrough); `MarketingLayout` logo `logo-link`→`nav-logo`.
 
-### Email registration "rate limit exceeded" (investigation, no code change)
-- `/customer-register` → `supabase.auth.signUp` triggers Supabase Auth's confirmation email; the built-in email service has a ~2/hour limit and "Confirm email" was ON (the code assumes it OFF). Root cause = Supabase **dashboard config**, not code. User fixed it themselves (disabled Confirm email).
+### Per-view results count fix on /businesses (#65/#66)
+- "Showing X of Y" counted null-coordinate businesses the map/split views drop. Hoisted `mappableBusinesses = filteredBusinesses.filter(hasCoordinates)` (`useMemo`); X switches on `effectiveViewMode` (list = filtered, map/split = mappable), Y stays total. Added `browse-studios-results-count` testid + count-vs-cards E2E. Denominator-stays-total was a **deliberate user choice** (flagged again by review later; left as-is).
 
-### Navbar consolidation (PRs #49–#52)
-- Audit found **3 fragmented navbars** + "My Bookings" everywhere. New **`components/navigation/SiteNav.tsx`** (shared desktop+mobile nav, active link via `usePathname()`, real `UserMenu`) → landing, /businesses, /for-businesses. `TopNav` (studio page) gained "For Business" + lost hardcoded-active Home. Removed "My Bookings" from all navs (still reachable via UserMenu dropdown). #52 swept review minors (filter-pill/select honesty, `?category=` URL round-trip, title-cased unknown categories).
+### /customer-register form (#67/#68)
+- Split "Full Name" → side-by-side First/Last (concatenated into the existing single `customers.name` column — **no migration**). Added "Confirm Password" + reveal eye + client-side mismatch guard. New client-side E2E spec. Later renamed `confirmPassword`→`confirm_password` for convention.
 
-### Footer consolidation (PRs #53–#56, #60, #61)
-- Audit found **3 fragmented footers** (landing inline, MarketingLayout 4-column, ForBusinessesPage inline). New **`components/marketing/SiteFooter.tsx`** (landing visual design; auto `new Date().getFullYear()`; FB/IG inert `<span aria-hidden>` since accounts don't exist, Email real `mailto:`; bottom-nav clearance `mb-20 md:mb-0` passed only on pages with a fixed mobile nav). Wired to landing, marketing pages (via MarketingLayout), for-businesses, studio, both booking-confirmed pages, and **/businesses (all 3 view modes)**. Smaller earlier PRs: social brand icons, single link list, grid fix, real Privacy/Terms links.
+### Nav consolidation onto a configurable SiteNav (#71 → #72)
+- Marketing pages (`/about`,`/contact`,`/help`,`/terms`,`/privacy`) used `MarketingLayout`'s own inline header. First swapped to shared `SiteNav` as-is (#71), then **reversed to Option 1**: added an optional `links` prop to `SiteNav` (defaults to Home/Browse/For-Business so `/`,`/businesses`,`/for-businesses` are untouched), and `MarketingLayout` passes Browse Studios/About/Help/Contact — restoring those links on desktop + the mobile bottom nav (icons search/info/help/mail). `BrowseLink` gained a `current` prop for `aria-current`.
 
-### Filters + split view (PRs #57–#59)
-- **#57** tightened /businesses hero/top spacing (per-breakpoint). **#58** replaced native District/Category `<select>`s with **`components/ui/FilterDropdown.tsx`** (hand-built, no new dep — mirrors `CountryCodeSelect`; full listbox a11y + arrow/Home/End/Enter/Esc keyboard + scroll-into-view; Sort stays native). **#59** removed the split view's duplicate category filter + count — it now honors the single main filter via its `businesses` prop.
+### Two accessibility passes (#74/#76, #81/#83) — from the in-depth reviews
+- **Nav + register (#74):** labelled both `<nav>` landmarks, `aria-current` on active link, ≥44px mobile touch targets + no active-border shift, reveal-eye `aria-label`/`aria-pressed`/44px/icon-hidden, required `*`, error `role="alert"`, Discover `text-on-secondary`→`text-on-primary`, `register-` testid prefix. Minors (#76): distinct confirm-toggle label, primary-toggle test.
+- **/for-businesses (#81):** form-label `htmlFor`/`id` association, error `text-error` + ⚠️ icon + `role="alert"`, hero **`flex`→`inline-flex` (full-width-button bug)**, decorative icons `aria-hidden`, heading hierarchy (eyebrow `<span>`→`<h2>`), required `*`, `for-businesses-` testid prefix. Minors (#83): `aria-hidden` the ⚠️ (also on register), true 44px "Send Another".
 
-### Staging data fix (direct Supabase, no code)
-- "BARBERSHOP DATA" (slug `saloni-nails`) was a barbershop mis-tagged `[nails, barber, brows]` → surfaced under Nails. Confirmed the filter logic was correct (data bug, not code). On **staging Supabase (ccjteappgctnlwrmzokp)**, after read-only verification + explicit approval: removed the nails/brows links (kept barber), slug → `barbershop-data`. Name left as-is per request.
+### Dead-code + spacing (#78, #79)
+- Removed orphaned `CustomerRegisterForm.tsx` (#78). Tightened `/for-businesses` vertical rhythm to a compact scale — `py-16` sections + stack-scale intra-gaps — a **deliberate page-only exception** below UI_GUIDE's 80px `section-gap` (#79).
 
-### Production promotion (PR #62)
-- Holistic pre-prod `@code-reviewer` of the full #49–#61 batch = **PASS** ("safe to ship"; TS+ESLint clean, no testid collisions, no double mobile navs, all footer routes exist). Merge-committed `staging` → `master`; Vercel Production build green. `master` and `staging` back in lockstep.
+### /for-businesses bento restyle + on-brand form controls (#85/#86 — STAGING ONLY)
+- Restyled to a dense bento grid from a design reference: compact centered hero, 3-col bento (Missed Calls · wide Booking Page / Paper · Dashboard · No Presence / wide Salome spotlight · Social Chatbots), split waitlist. Folded the duplicate "Salome — AI Voice Receptionist" feature card into the spotlight (moved its `feature-ai-receptionist` testid). All form wiring + content + SiteNav/SiteFooter byte-identical.
+- **Reused** existing components (no new ones): City native `<select>` → dark `FilterDropdown`; phone plain input → `CountryCodeSelect` (GE +995) + number input, both combining into the existing `formData.phone` via a `composePhone()` helper. Phone state resets in `handleSubmit`; whitespace-only number guarded (#86).
+- **Not yet promoted** — #85/#86 are on `staging`, awaiting a production decision.
 
 ### Key learnings
-- **Verify the served artifact, never assume deploy timing.** Staging's `SITE_PASSWORD` ≠ local, so I couldn't read gated pages — verified instead by computing the gate cookie (`HMAC-SHA256(SITE_PASSWORD,'rigify_access')`) and driving a production build with Playwright. Caught a testid-naming bug (`district-dropdown-option-*` vs spec'd `district-option-*`) that DOM-presence checks missed.
-- **"It's broken on localhost" was a stale dev server.** A full-screen "broken image" on /businesses was a stale/duplicate `next dev` serving 404'd CSS chunks → `next/image fill` lost its sized parent and ballooned a picsum placeholder to the viewport. Fix was `rm -rf .next` + single dev server, not code.
-- **Data vs logic bugs are different fixes.** Category filtering "not working" was mis-tagged data; the filter was correct. Did NOT touch the filter.
-- **Reuse the repo's established idiom over a new dependency.** Custom dropdown went hand-built (mirroring `CountryCodeSelect`) instead of adding Radix/Headless UI, because the repo already had that pattern and no headless lib.
+- **Reuse existing components over building new.** The City dropdown and phone selector already existed (`FilterDropdown`, `CountryCodeSelect`); reuse beat any new build and kept the two pages consistent.
+- **Verify the served artifact for restyles** — drove Playwright screenshots of every restyle (hero full-width-button bug, bento layout, dark dropdown) rather than trusting DOM-presence.
+- **Closure correctness for combined state** — the two phone handlers read complementary state from the render closure (always last-committed), so the combined `formData.phone` is correct with no stale-closure bug.
+- **Deliberate exceptions are documented, not "fixed".** The 64px `/for-businesses` section padding and the count's total-denominator were explicit user decisions; reviewers re-flagged both and they were intentionally kept.
 
 ---
 
 ## What's Left to Build
 
-### Session 33 advisory follow-ups (non-blocking, from holistic review):
-1. `clearAllFilters` in `BusinessPageClient` pushes a no-op browser-history entry when only search/district was set (phantom back-step) — guard the `handleCategoryChange("all")` call.
-2. No E2E test for the **Category** custom dropdown or its `?category=` URL sync (District is covered in `browse-studios.spec.ts`); also untested: the unknown-category passthrough (`?category=cosmetology`).
-3. `MarketingLayout` logo still uses `data-testid="logo-link"` while shared nav/footer use `nav-logo`/`footer-*` — testid standardization, out of scope this round.
-4. Footer "Browse Studios" link is self-referential on /businesses (general `SiteFooter` property — could add an `activePath` to suppress/`aria-current`).
-5. Studio page now has two `<footer>` landmarks (SiteFooter + the mobile-nav `<footer>`) — pre-existing pattern, minor a11y.
+### Immediate (top of next session):
+1. **Promote `/for-businesses` restyle to production** — #85 (bento restyle + dark City `FilterDropdown` + GE+995 phone) and #86 (phone reset + whitespace guard) are merged to `staging` but **not yet on `master`**. They're the only un-promoted work; everything else this session is live.
+
+### Session 34 follow-ups (non-blocking, from the in-depth reviews):
+1. **`/for-businesses` form E2E spec** — no Playwright spec covers the waitlist form (submit happy/error paths, phone-combine, City dropdown keyboard nav). Reviewer-recommended.
+2. **Pre-existing a11y debt** surfaced (not introduced this session): nested `<main>` in `BusinessPageClient` (inside `page.tsx`'s `<main>`); the other auth pages (`/login`, `/forgot-password`, `/reset-password`) still use non-prefixed testids; `/businesses` District/Category visible `<label>`s are orphaned.
+3. **Design-system alignment (opt-in, visual change):** `/for-businesses` (and others) hand-roll inputs/buttons/labels instead of `.input-field`/`.btn-primary`/`.label-mono`; token cosmetics (`text-text-secondary`→`on-surface-variant`). Deliberately deferred as a visual restyle.
+4. **City required-vs-optional** on `/for-businesses` — a product decision (currently optional, unmarked).
+5. **Deliberately kept** (re-flagged by review, intentional): the per-view count's total denominator; the 64px `/for-businesses` section padding exception.
 
 ### UI corrections remaining (see memory `ui-corrections-backlog.md`):
 1. **Mobile bottom nav on dashboards** + extract the duplicated inline nav into a reusable component
@@ -184,12 +189,13 @@
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `staging` checked out. `master` at merge commit `2221c35`, `staging` at `97960b8` — **in lockstep** (0/0 divergence). Two production promotions this session (PRs #48, #62).  
-**Status**: ✅ All Session 33 work shipped to production (rigify.ge). New shared components live: `SiteNav`, `SiteFooter`, `FilterDropdown`.
+**Branch**: `staging` checked out. `master` (production) at `f92b243`; `staging` at `221e534` — **staging is ahead by the `/for-businesses` restyle (#85/#86), which is NOT yet promoted to production.** Everything else this session is live on `master`. 7 production promotions this session (PRs #69, #73, #75, #77, #80, #82, #84).  
+**Status**: ✅ Live on rigify.ge: count fix, customer-register form, nav consolidation (`SiteNav` now takes a `links` prop), both a11y passes, `/for-businesses` spacing. ⏳ On staging only: the `/for-businesses` bento restyle + dark City dropdown + GE+995 phone.
 
 **Local-only (intentionally not committed)**:
 - `.claude/settings.local.json` — gitignored (personal per-machine settings)
-- `PLATFORM.md` — gitignored as of PR #42 (personal stakeholder reference doc; kept on developer machine, not in shared repo)
+- `PLATFORM.md` — gitignored as of PR #42 (personal stakeholder reference doc)
+- `Stitch Design/` — local design-reference screenshot for the /for-businesses restyle; gitignored this session
 
 **TypeScript**: ✅ No errors  
 **Build**: ✅ Passes
@@ -206,6 +212,6 @@
 
 ---
 
-**Session Started**: June 29, 2026  
-**Session Ended**: June 29, 2026  
-**Status**: ✅ Complete. **2 production promotions** (PRs #48, #62), **17 PRs total** (#46–#62). Consolidated the public-page chrome: one `SiteNav`, one `SiteFooter`, replacing 3 navbars + 3 footers. Native filter selects → custom `FilterDropdown`. Split view de-duplicated. Fixed the 404-ing category cards and one mis-tagged staging business (direct Supabase). `master` and `staging` in lockstep (`master` @ `2221c35`). Next: `SITE_PASSWORD` removal (pre-launch gate) + the Session 33 advisory follow-ups + the UI corrections backlog.
+**Session Started**: June 30, 2026  
+**Session Ended**: June 30, 2026  
+**Status**: ✅ Complete. **23 PRs (#64–#86), 7 production promotions.** Shipped to prod: per-view count fix, customer-register first/last+confirm-password, nav consolidation onto a configurable `SiteNav`, two accessibility passes (nav/register + /for-businesses), /for-businesses spacing, dead-file cleanup. **On staging only:** the `/for-businesses` bento restyle + dark City `FilterDropdown` + GE+995 phone (#85/#86). `master` @ `f92b243`, `staging` @ `221e534`. **Next: promote #85/#86 to production**, then the Session 34 follow-ups (form E2E spec, pre-existing a11y debt) + the still-open `SITE_PASSWORD` pre-launch gate.
