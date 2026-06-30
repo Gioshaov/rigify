@@ -64,14 +64,14 @@ export default function ForBusinessesPage() {
               backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(230, 195, 100, 0.1) 35px, rgba(230, 195, 100, 0.1) 70px)`
             }}></div>
           </div>
-          <div className="relative max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-24 md:py-32">
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6">
+          <div className="relative max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
               For Businesses
             </span>
-            <h1 className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold md:text-[72px] text-primary uppercase max-w-4xl mb-8">
+            <h1 className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold md:text-[72px] text-primary uppercase max-w-4xl mb-stack-md">
               Grow Your Salon with Rigify
             </h1>
-            <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary max-w-2xl mb-12">
+            <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary max-w-2xl mb-stack-lg">
               Online booking, AI voice receptionist, and Instagram chatbots — all in one platform. Built for beauty and wellness businesses in Georgia.
             </p>
             <button
@@ -87,38 +87,38 @@ export default function ForBusinessesPage() {
 
         {/* Problem Section */}
         <section className="border-b border-white/10 bg-background">
-          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-12">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
               The Problem
             </span>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div data-testid="problem-card-missed-calls" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
-                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+            <div className="grid md:grid-cols-3 gap-stack-lg">
+              <div data-testid="problem-card-missed-calls" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
                   <span className="material-symbols-outlined text-primary text-[32px]">phone_missed</span>
                 </div>
-                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   Missed Calls = Lost Revenue
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
                   Your phone rings while you&apos;re with a client. You miss the call, they book somewhere else.
                 </p>
               </div>
-              <div data-testid="problem-card-notebook" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
-                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+              <div data-testid="problem-card-notebook" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
                   <span className="material-symbols-outlined text-primary text-[32px]">book</span>
                 </div>
-                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   Paper Notebooks & Chaos
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
                   Managing appointments in a notebook is messy, error-prone, and unprofessional.
                 </p>
               </div>
-              <div data-testid="problem-card-no-presence" className="bg-surface-container border border-white/5 p-8 hover:border-primary/30 transition-all">
-                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+              <div data-testid="problem-card-no-presence" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
                   <span className="material-symbols-outlined text-primary text-[32px]">search_off</span>
                 </div>
-                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   No Online Presence
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
@@ -131,13 +131,13 @@ export default function ForBusinessesPage() {
 
         {/* What You Get Section */}
         <section className="border-b border-white/10 bg-surface">
-          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-12">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
               What You Get
             </span>
-            <div className="grid md:grid-cols-2 gap-12">
+            <div className="grid md:grid-cols-2 gap-stack-lg">
               <div data-testid="feature-booking-page" className="border-l-2 border-primary pl-8">
-                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
                   Your Own Booking Page
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
@@ -145,7 +145,7 @@ export default function ForBusinessesPage() {
                 </p>
               </div>
               <div data-testid="feature-ai-receptionist" className="border-l-2 border-primary pl-8">
-                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
                   Salome — AI Voice Receptionist
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
@@ -153,7 +153,7 @@ export default function ForBusinessesPage() {
                 </p>
               </div>
               <div data-testid="feature-dashboard" className="border-l-2 border-primary pl-8">
-                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
                   Dashboard & Calendar
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
@@ -161,7 +161,7 @@ export default function ForBusinessesPage() {
                 </p>
               </div>
               <div data-testid="feature-instagram-link" className="border-l-2 border-primary pl-8">
-                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
                   Instagram & Facebook Chatbots
                 </h3>
                 <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary">
@@ -174,16 +174,16 @@ export default function ForBusinessesPage() {
 
         {/* Salome Spotlight */}
         <section className="border-b border-white/10 bg-background">
-          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
             <div className="max-w-3xl mx-auto text-center">
-              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6">
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
                 Meet Salome
               </span>
-              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] text-primary mb-8">
+              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold md:text-[48px] text-primary mb-stack-md">
                 Your AI Receptionist That Never Sleeps
               </h2>
-              <div className="bg-surface-container border border-white/5 p-12 mb-8">
-                <div className="w-24 h-24 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8">
+              <div className="bg-surface-container border border-white/5 p-gutter mb-stack-lg">
+                <div className="w-24 h-24 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-stack-md">
                   <span className="material-symbols-outlined text-primary text-[48px]">mic</span>
                 </div>
                 <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary">
@@ -199,21 +199,21 @@ export default function ForBusinessesPage() {
 
         {/* Contact Form */}
         <section id="contact" className="border-b border-white/10 bg-surface">
-          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-20">
+          <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
             <div className="max-w-xl mx-auto">
-              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-6 text-center">
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg text-center">
                 Get Early Access
               </span>
-              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-4 text-center">
+              <h2 className="font-hanken text-[36px] leading-[1.2] tracking-tighter font-bold text-primary mb-stack-md text-center">
                 Join the Waitlist
               </h2>
-              <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-12 text-center">
+              <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-stack-lg text-center">
                 We&apos;re launching in Tbilisi first. Leave your details and we&apos;ll contact you within 48 hours.
               </p>
 
               {showSuccess ? (
-                <div data-testid="success-message" className="bg-primary/10 border border-primary p-12 text-center">
-                  <div className="w-20 h-20 bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-6">
+                <div data-testid="success-message" className="bg-primary/10 border border-primary p-gutter text-center">
+                  <div className="w-20 h-20 bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-stack-md">
                     <span
                       className="material-symbols-outlined text-primary text-[40px]"
                       style={{ fontVariationSettings: "'FILL' 1" }}
@@ -221,10 +221,10 @@ export default function ForBusinessesPage() {
                       check_circle
                     </span>
                   </div>
-                  <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-4">
+                  <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
                     Request Received!
                   </h3>
-                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-8">
+                  <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary mb-stack-lg">
                     We&apos;ll review your request and contact you within 48 hours.
                   </p>
                   <button
@@ -236,7 +236,7 @@ export default function ForBusinessesPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-stack-md">
                   <div>
                     <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
                       Full Name
@@ -247,7 +247,7 @@ export default function ForBusinessesPage() {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
                       placeholder="Your full name"
                     />
                   </div>
@@ -262,7 +262,7 @@ export default function ForBusinessesPage() {
                       required
                       value={formData.business_name}
                       onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
                       placeholder="Salon/Studio name"
                     />
                   </div>
@@ -277,7 +277,7 @@ export default function ForBusinessesPage() {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
+                      className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all"
                       placeholder="+995 555 123 456"
                     />
                   </div>
@@ -290,7 +290,7 @@ export default function ForBusinessesPage() {
                       data-testid="contact-city-select"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface outline-none appearance-none cursor-pointer"
+                      className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface outline-none appearance-none cursor-pointer"
                     >
                       <option value="">Select City</option>
                       <option value="tbilisi">Tbilisi</option>
@@ -309,7 +309,7 @@ export default function ForBusinessesPage() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-4 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all resize-none"
+                      className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface placeholder:text-outline outline-none transition-all resize-none"
                       placeholder="Tell us about your business..."
                     />
                   </div>
