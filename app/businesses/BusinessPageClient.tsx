@@ -260,7 +260,12 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedDistrict("all");
-    handleCategoryChange("all");
+    // Only touch the URL when category is actually set. handleCategoryChange
+    // always router.push()es, so calling it when category is already "all"
+    // (e.g. only search/district were active) adds a phantom back-step.
+    if (selectedCategory !== "all") {
+      handleCategoryChange("all");
+    }
   };
 
   return (
