@@ -6,12 +6,16 @@ import { createClient } from "@/lib/supabase/server";
 export async function customerRegisterAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const name = String(formData.get("name") ?? "").trim();
+  const firstName = String(formData.get("first_name") ?? "").trim();
+  const lastName = String(formData.get("last_name") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
 
-  if (!email || !password || !name || !phone) {
+  if (!email || !password || !firstName || !lastName || !phone) {
     return { error: "All fields are required." };
   }
+
+  // customers.name is a single column; store the concatenated full name.
+  const name = `${firstName} ${lastName}`;
 
   // Validate email format (requires proper TLD)
   if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
