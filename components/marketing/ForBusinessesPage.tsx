@@ -59,7 +59,7 @@ export default function ForBusinessesPage() {
       <main id="main-content">
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-white/10 bg-surface">
-          <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 opacity-5 pointer-events-none" aria-hidden="true">
             <div className="absolute inset-0" style={{
               backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(230, 195, 100, 0.1) 35px, rgba(230, 195, 100, 0.1) 70px)`
             }}></div>
@@ -75,12 +75,12 @@ export default function ForBusinessesPage() {
               Online booking, AI voice receptionist, and Instagram chatbots — all in one platform. Built for beauty and wellness businesses in Georgia.
             </p>
             <button
-              data-testid="get-started-btn"
+              data-testid="for-businesses-get-started-btn"
               onClick={scrollToContact}
-              className="bg-primary text-background px-12 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 flex items-center gap-3 group"
+              className="bg-primary text-background px-12 py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 inline-flex items-center gap-3 group"
             >
               Get Started
-              <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform" aria-hidden="true">arrow_forward</span>
             </button>
           </div>
         </section>
@@ -88,13 +88,13 @@ export default function ForBusinessesPage() {
         {/* Problem Section */}
         <section className="border-b border-white/10 bg-background">
           <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
+            <h2 className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
               The Problem
-            </span>
+            </h2>
             <div className="grid md:grid-cols-3 gap-stack-lg">
               <div data-testid="problem-card-missed-calls" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
                 <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
-                  <span className="material-symbols-outlined text-primary text-[32px]">phone_missed</span>
+                  <span className="material-symbols-outlined text-primary text-[32px]" aria-hidden="true">phone_missed</span>
                 </div>
                 <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   Missed Calls = Lost Revenue
@@ -105,7 +105,7 @@ export default function ForBusinessesPage() {
               </div>
               <div data-testid="problem-card-notebook" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
                 <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
-                  <span className="material-symbols-outlined text-primary text-[32px]">book</span>
+                  <span className="material-symbols-outlined text-primary text-[32px]" aria-hidden="true">book</span>
                 </div>
                 <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   Paper Notebooks & Chaos
@@ -116,7 +116,7 @@ export default function ForBusinessesPage() {
               </div>
               <div data-testid="problem-card-no-presence" className="bg-surface-container border border-white/5 p-gutter hover:border-primary/30 transition-all">
                 <div className="w-16 h-16 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
-                  <span className="material-symbols-outlined text-primary text-[32px]">search_off</span>
+                  <span className="material-symbols-outlined text-primary text-[32px]" aria-hidden="true">search_off</span>
                 </div>
                 <h3 className="font-hanken text-[20px] leading-[1.4] font-semibold text-primary mb-stack-md">
                   No Online Presence
@@ -132,9 +132,9 @@ export default function ForBusinessesPage() {
         {/* What You Get Section */}
         <section className="border-b border-white/10 bg-surface">
           <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
-            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
+            <h2 className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-muted-gold uppercase block mb-stack-lg">
               What You Get
-            </span>
+            </h2>
             <div className="grid md:grid-cols-2 gap-stack-lg">
               <div data-testid="feature-booking-page" className="border-l-2 border-primary pl-8">
                 <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-md">
@@ -184,7 +184,7 @@ export default function ForBusinessesPage() {
               </h2>
               <div className="bg-surface-container border border-white/5 p-gutter mb-stack-lg">
                 <div className="w-24 h-24 bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-stack-md">
-                  <span className="material-symbols-outlined text-primary text-[48px]">mic</span>
+                  <span className="material-symbols-outlined text-primary text-[48px]" aria-hidden="true">mic</span>
                 </div>
                 <p className="font-hanken text-[18px] leading-[1.6] font-normal text-text-secondary">
                   Salome speaks Georgian and English fluently. She checks availability in real-time, books appointments, and sends confirmations — all through a phone call.
@@ -212,11 +212,12 @@ export default function ForBusinessesPage() {
               </p>
 
               {showSuccess ? (
-                <div data-testid="success-message" className="bg-primary/10 border border-primary p-gutter text-center">
+                <div data-testid="for-businesses-success-message" role="status" className="bg-primary/10 border border-primary p-gutter text-center">
                   <div className="w-20 h-20 bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-stack-md">
                     <span
                       className="material-symbols-outlined text-primary text-[40px]"
                       style={{ fontVariationSettings: "'FILL' 1" }}
+                      aria-hidden="true"
                     >
                       check_circle
                     </span>
@@ -228,9 +229,9 @@ export default function ForBusinessesPage() {
                     We&apos;ll review your request and contact you within 48 hours.
                   </p>
                   <button
-                    data-testid="send-another-btn"
+                    data-testid="for-businesses-send-another-btn"
                     onClick={() => setShowSuccess(false)}
-                    className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase"
+                    className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase inline-block py-3 active:scale-95 transition-transform"
                   >
                     Send Another Request
                   </button>
@@ -238,11 +239,13 @@ export default function ForBusinessesPage() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-stack-md">
                   <div>
-                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
-                      Full Name
+                    <label htmlFor="contact-name" className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Full Name *
                     </label>
                     <input
                       data-testid="contact-name-input"
+                      id="contact-name"
+                      autoComplete="name"
                       type="text"
                       required
                       value={formData.name}
@@ -253,11 +256,13 @@ export default function ForBusinessesPage() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
-                      Business Name
+                    <label htmlFor="contact-business" className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Business Name *
                     </label>
                     <input
                       data-testid="contact-business-input"
+                      id="contact-business"
+                      autoComplete="organization"
                       type="text"
                       required
                       value={formData.business_name}
@@ -268,11 +273,13 @@ export default function ForBusinessesPage() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
-                      Phone Number
+                    <label htmlFor="contact-phone" className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                      Phone Number *
                     </label>
                     <input
                       data-testid="contact-phone-input"
+                      id="contact-phone"
+                      autoComplete="tel"
                       type="tel"
                       required
                       value={formData.phone}
@@ -283,11 +290,12 @@ export default function ForBusinessesPage() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                    <label htmlFor="contact-city" className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
                       City
                     </label>
                     <select
                       data-testid="contact-city-select"
+                      id="contact-city"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       className="w-full px-4 py-3 bg-surface-container-low border border-white/10 focus:border-primary text-on-surface outline-none appearance-none cursor-pointer"
@@ -301,11 +309,12 @@ export default function ForBusinessesPage() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
+                    <label htmlFor="contact-message" className="block font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2">
                       Message (Optional)
                     </label>
                     <textarea
                       data-testid="contact-message-textarea"
+                      id="contact-message"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       rows={4}
@@ -315,14 +324,14 @@ export default function ForBusinessesPage() {
                   </div>
 
                   {error && (
-                    <p className="text-sm text-red-500 font-hanken">{error}</p>
+                    <p role="alert" className="text-sm text-error font-hanken">⚠️ {error}</p>
                   )}
 
                   <button
                     data-testid="contact-submit-btn"
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-primary text-background py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 disabled:opacity-50"
+                    className="w-full bg-primary text-background py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? "Sending..." : "Send Request"}
                   </button>
