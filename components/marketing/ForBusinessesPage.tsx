@@ -6,6 +6,13 @@ import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { CountryCodeSelect } from "@/components/ui/CountryCodeSelect";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
 
+// Combine a dial code + raw local number into the stored phone value. Returns ""
+// for an empty or whitespace-only number so a bare country code never submits.
+function composePhone(dial: string, raw: string): string {
+  const digits = raw.replace(/\s/g, "");
+  return digits ? `${dial} ${digits}` : "";
+}
+
 export default function ForBusinessesPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -43,6 +50,8 @@ export default function ForBusinessesPage() {
 
       setShowSuccess(true);
       setFormData({ name: "", business_name: "", phone: "", city: "", message: "" });
+      setPhoneNumber("");
+      setCountryCode("+995");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -231,11 +240,7 @@ export default function ForBusinessesPage() {
                     </p>
                     <button
                       data-testid="for-businesses-send-another-btn"
-                      onClick={() => {
-                        setShowSuccess(false);
-                        setPhoneNumber("");
-                        setCountryCode("+995");
-                      }}
+                      onClick={() => setShowSuccess(false)}
                       className="text-primary hover:underline font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase inline-flex items-center min-h-[44px] active:scale-95 transition-transform"
                     >
                       Send Another Request
@@ -290,7 +295,7 @@ export default function ForBusinessesPage() {
                             value={countryCode}
                             onChange={(dial) => {
                               setCountryCode(dial);
-                              setFormData({ ...formData, phone: phoneNumber ? `${dial} ${phoneNumber.replace(/\s/g, "")}` : "" });
+                              setFormData({ ...formData, phone: composePhone(dial, phoneNumber) });
                             }}
                           />
                           <input
@@ -303,7 +308,7 @@ export default function ForBusinessesPage() {
                             onChange={(e) => {
                               const digits = e.target.value.replace(/[^0-9\s]/g, "");
                               setPhoneNumber(digits);
-                              setFormData({ ...formData, phone: digits ? `${countryCode} ${digits.replace(/\s/g, "")}` : "" });
+                              setFormData({ ...formData, phone: composePhone(countryCode, digits) });
                             }}
                             className={`flex-1 min-w-0 ${fieldInput}`}
                             placeholder="555 123 456"
