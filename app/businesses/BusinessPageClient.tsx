@@ -256,7 +256,10 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   // Businesses that can appear on the map. The map and split views drop rows
   // with null lat/long; the list view shows all of filteredBusinesses. Computed
   // once here so the results count and the view branches stay in sync.
-  const mappableBusinesses = filteredBusinesses.filter(hasCoordinates);
+  const mappableBusinesses = useMemo(
+    () => filteredBusinesses.filter(hasCoordinates),
+    [filteredBusinesses]
+  );
 
   // Check if any filters are active
   const hasActiveFilters = searchQuery !== "" || selectedDistrict !== "all" || selectedCategory !== "all";
@@ -506,7 +509,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               )}
 
               {effectiveViewMode === 'map' && (mappableBusinesses.length === 0 ? (
-                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+                  <div data-testid="browse-studios-map-no-coordinates" className="text-center py-16 bg-surface-container-low sharp-border">
                     <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                       location_off
                     </span>
@@ -533,7 +536,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
                 ))}
 
               {effectiveViewMode === 'split' && (mappableBusinesses.length === 0 ? (
-                  <div className="text-center py-16 bg-surface-container-low sharp-border">
+                  <div data-testid="browse-studios-split-no-coordinates" className="text-center py-16 bg-surface-container-low sharp-border">
                     <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                       location_off
                     </span>

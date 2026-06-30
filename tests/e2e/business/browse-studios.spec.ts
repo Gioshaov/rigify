@@ -87,7 +87,10 @@ test.describe('Browse Studios Page', () => {
     // innerText would return "SHOWING 8 OF 8" and the regex would miss.
     const text = await page.getByTestId('browse-studios-results-count').textContent();
     const match = text?.match(/Showing (\d+) of/);
-    return Number(match?.[1]);
+    // Throw on a format change rather than returning NaN, so the failure names the
+    // real cause instead of a cryptic "Received: NaN".
+    if (!match) throw new Error(`Unexpected results-count format: ${JSON.stringify(text)}`);
+    return Number(match[1]);
   }
 
   test('list view count matches the number of rendered cards', async ({ page }) => {
@@ -106,7 +109,16 @@ test.describe('Browse Studios Page', () => {
     await page.goto('/businesses?view=split');
 
     const cards = page.locator('[data-testid^="split-view-business-card-"]');
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    const noCoords = page.getByTestId('browse-studios-split-no-coordinates');
+
+    // Wait for the split view to settle into one of its two terminal states:
+    // either cards rendered, or the "no map coordinates" empty state.
+    await expect(cards.first().or(noCoords)).toBeVisible({ timeout: 10000 });
+
+    // On a seed-only DB no business has coordinates, so the split view shows the
+    // empty state and there are no cards to count. Skip with a clear reason rather
+    // than letting a later assertion time out and look like a product regression.
+    test.skip(await noCoords.isVisible(), 'No businesses with map coordinates in this DB; split view renders the empty state.');
 
     // Split view drops null-coordinate businesses; the count must follow the cards,
     // not the unfiltered total (regression guard for the "Showing 2 of 2 / 1 shown" bug).
