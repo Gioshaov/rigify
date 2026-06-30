@@ -11,29 +11,29 @@ test.describe('Customer Registration', () => {
     await bypassSitePassword(page);
     await page.goto('/customer-register');
 
-    await expect(page.getByTestId('first-name-input')).toBeVisible();
-    await expect(page.getByTestId('last-name-input')).toBeVisible();
-    await expect(page.getByTestId('password-input')).toBeVisible();
-    await expect(page.getByTestId('confirm-password-input')).toBeVisible();
-    await expect(page.getByTestId('toggle-confirm-password-btn')).toBeVisible();
+    await expect(page.getByTestId('register-first-name-input')).toBeVisible();
+    await expect(page.getByTestId('register-last-name-input')).toBeVisible();
+    await expect(page.getByTestId('register-password-input')).toBeVisible();
+    await expect(page.getByTestId('register-confirm-password-input')).toBeVisible();
+    await expect(page.getByTestId('register-toggle-confirm-password-btn')).toBeVisible();
   });
 
   test('blocks submission and shows inline error when passwords do not match', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/customer-register');
 
-    await page.getByTestId('first-name-input').fill('Alexander');
-    await page.getByTestId('last-name-input').fill('Sterling');
-    await page.getByTestId('email-input').fill('mismatch-test@example.com');
-    await page.getByTestId('phone-input').fill('555123456');
-    await page.getByTestId('password-input').fill('password123');
-    await page.getByTestId('confirm-password-input').fill('password999');
-    await page.getByTestId('terms-checkbox').check();
+    await page.getByTestId('register-first-name-input').fill('Alexander');
+    await page.getByTestId('register-last-name-input').fill('Sterling');
+    await page.getByTestId('register-email-input').fill('mismatch-test@example.com');
+    await page.getByTestId('register-phone-input').fill('555123456');
+    await page.getByTestId('register-password-input').fill('password123');
+    await page.getByTestId('register-confirm-password-input').fill('password999');
+    await page.getByTestId('register-terms-checkbox').check();
 
-    await page.getByTestId('create-account-btn').click();
+    await page.getByTestId('register-create-account-btn').click();
 
     // Inline error in the existing error style; stays on the page (no signup happens).
-    await expect(page.getByTestId('error-message')).toContainText('Passwords do not match');
+    await expect(page.getByTestId('register-error-msg')).toContainText('Passwords do not match');
     await expect(page).toHaveURL(/\/customer-register/);
   });
 
@@ -41,9 +41,9 @@ test.describe('Customer Registration', () => {
     await bypassSitePassword(page);
     await page.goto('/customer-register');
 
-    const confirm = page.getByTestId('confirm-password-input');
+    const confirm = page.getByTestId('register-confirm-password-input');
     await expect(confirm).toHaveAttribute('type', 'password');
-    await page.getByTestId('toggle-confirm-password-btn').click();
+    await page.getByTestId('register-toggle-confirm-password-btn').click();
     await expect(confirm).toHaveAttribute('type', 'text');
   });
 });

@@ -46,7 +46,7 @@ export default function CustomerRegisterPage() {
     <main className="min-h-dvh bg-background flex flex-col px-margin-mobile py-12">
       {/* Header */}
       <div className="flex justify-between items-center mb-16">
-        <Link data-testid="logo-link" href="/" className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
+        <Link data-testid="register-logo-link" href="/" className="font-hanken text-[32px] leading-[40px] font-bold text-primary tracking-tighter uppercase">
           RIGIFY
         </Link>
       </div>
@@ -65,7 +65,7 @@ export default function CustomerRegisterPage() {
           </p>
 
           {error && (
-            <div data-testid="error-message" className="mb-8 p-4 border border-error bg-error/10">
+            <div data-testid="register-error-msg" role="alert" className="mb-8 p-4 border border-error bg-error/10">
               <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase">
                 ⚠️ {error}
               </p>
@@ -77,10 +77,10 @@ export default function CustomerRegisterPage() {
             <div className="flex gap-2">
               <div className="flex-1 min-w-0">
                 <label htmlFor="first_name" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                  First Name
+                  First Name *
                 </label>
                 <input
-                  data-testid="first-name-input"
+                  data-testid="register-first-name-input"
                   id="first_name"
                   name="first_name"
                   type="text"
@@ -91,10 +91,10 @@ export default function CustomerRegisterPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <label htmlFor="last_name" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                  Last Name
+                  Last Name *
                 </label>
                 <input
-                  data-testid="last-name-input"
+                  data-testid="register-last-name-input"
                   id="last_name"
                   name="last_name"
                   type="text"
@@ -108,10 +108,10 @@ export default function CustomerRegisterPage() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                Email Address
+                Email Address *
               </label>
               <input
-                data-testid="email-input"
+                data-testid="register-email-input"
                 id="email"
                 name="email"
                 type="email"
@@ -124,7 +124,7 @@ export default function CustomerRegisterPage() {
             {/* Phone Number */}
             <div>
               <label htmlFor="phone" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                Phone Number
+                Phone Number *
               </label>
               <div className="flex gap-2">
                 <CountryCodeSelect
@@ -133,7 +133,7 @@ export default function CustomerRegisterPage() {
                   onChange={setCountryCode}
                 />
                 <input
-                  data-testid="phone-input"
+                  data-testid="register-phone-input"
                   id="phone"
                   type="tel"
                   required
@@ -151,11 +151,11 @@ export default function CustomerRegisterPage() {
             {/* Password */}
             <div>
               <label htmlFor="password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                Secure Password
+                Secure Password *
               </label>
               <div className="relative">
                 <input
-                  data-testid="password-input"
+                  data-testid="register-password-input"
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -164,12 +164,14 @@ export default function CustomerRegisterPage() {
                   className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 pr-12 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
                 />
                 <button
-                  data-testid="toggle-password-btn"
+                  data-testid="register-toggle-password-btn"
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-on-surface-variant hover:text-primary transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
                     {showPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
@@ -179,11 +181,11 @@ export default function CustomerRegisterPage() {
             {/* Confirm Password */}
             <div>
               <label htmlFor="confirm_password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase block mb-3">
-                Confirm Password
+                Confirm Password *
               </label>
               <div className="relative">
                 <input
-                  data-testid="confirm-password-input"
+                  data-testid="register-confirm-password-input"
                   id="confirm_password"
                   name="confirm_password"
                   type={showConfirmPassword ? "text" : "password"}
@@ -192,12 +194,14 @@ export default function CustomerRegisterPage() {
                   className="w-full bg-surface-container border border-white/10 focus:border-primary px-4 py-4 pr-12 text-on-surface placeholder:text-on-surface-variant/40 outline-none transition-colors font-hanken text-[16px] leading-[1.5]"
                 />
                 <button
-                  data-testid="toggle-confirm-password-btn"
+                  data-testid="register-toggle-confirm-password-btn"
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showConfirmPassword}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-on-surface-variant hover:text-primary transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
                     {showConfirmPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
@@ -207,7 +211,7 @@ export default function CustomerRegisterPage() {
             {/* Terms Checkbox */}
             <div className="flex items-start gap-3">
               <input
-                data-testid="terms-checkbox"
+                data-testid="register-terms-checkbox"
                 type="checkbox"
                 id="terms"
                 checked={acceptedTerms}
@@ -216,11 +220,11 @@ export default function CustomerRegisterPage() {
               />
               <label htmlFor="terms" className="font-hanken text-[14px] leading-[1.5] font-normal text-on-surface-variant cursor-pointer">
                 I accept the{" "}
-                <Link data-testid="terms-link" href="/terms" className="text-primary hover:text-primary-container transition-colors">
+                <Link data-testid="register-terms-link" href="/terms" className="text-primary hover:text-primary-container transition-colors">
                   Terms of Service
                 </Link>
                 {" "}and{" "}
-                <Link data-testid="privacy-link" href="/privacy" className="text-primary hover:text-primary-container transition-colors">
+                <Link data-testid="register-privacy-link" href="/privacy" className="text-primary hover:text-primary-container transition-colors">
                   Privacy Policy
                 </Link>
                 {" "}governing this marketplace.
@@ -229,7 +233,7 @@ export default function CustomerRegisterPage() {
 
             {/* Create Account Button */}
             <button
-              data-testid="create-account-btn"
+              data-testid="register-create-account-btn"
               type="submit"
               disabled={loading || !acceptedTerms}
               className="w-full bg-primary text-on-primary py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -241,7 +245,7 @@ export default function CustomerRegisterPage() {
           {/* Sign In Link */}
           <p className="mt-12 text-center font-hanken text-[16px] leading-[1.5] font-normal text-on-surface-variant">
             Already have an account?{" "}
-            <Link data-testid="sign-in-link" href="/login" className="text-primary hover:text-primary-container transition-colors font-semibold">
+            <Link data-testid="register-sign-in-link" href="/login" className="text-primary hover:text-primary-container transition-colors font-semibold">
               Sign In
             </Link>
           </p>
@@ -251,10 +255,10 @@ export default function CustomerRegisterPage() {
       {/* Footer */}
       <div className="flex justify-between items-center mt-16 pt-8 border-t border-white/5">
         <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
-          © 2024 Rigify Digital
+          © {new Date().getFullYear()} Rigify Digital
         </p>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-[16px]">lock</span>
+          <span className="material-symbols-outlined text-primary text-[16px]" aria-hidden="true">lock</span>
           <p className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
             Encrypted Access
           </p>
