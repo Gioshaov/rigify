@@ -41,6 +41,39 @@ test.describe('Browse Studios Page', () => {
     await expect(businessCards.first()).toBeVisible({ timeout: 10000 });
   });
 
+  test('should filter by category and sync ?category= to the URL', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses');
+
+    // Category is a custom dropdown: open it, pick Hair.
+    await page.getByTestId('category-dropdown-trigger').click();
+    await page.getByTestId('category-option-hair').click();
+
+    // Selection round-trips into the URL (landing cards link with ?category=).
+    await expect(page).toHaveURL(/[?&]category=hair\b/);
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Hair');
+    // Grid still renders after filtering — guards against a broken filter memo.
+    await expect(page.locator('[data-testid^="business-card-"]').first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should initialize the Category filter from ?category= in the URL', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?category=nails');
+
+    // The dropdown reflects the URL value on load, not a stale "All Categories".
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Nails');
+  });
+
+  test('should pass an unknown ?category= through to the empty state', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/businesses?category=cosmetology');
+
+    // cosmetology isn't in CATEGORIES — the control still reflects it (title-cased)...
+    await expect(page.getByTestId('category-dropdown-trigger')).toContainText('Cosmetology');
+    // ...and no seeded business matches, so the empty state renders.
+    await expect(page.getByTestId('browse-studios-empty-state-title')).toBeVisible();
+  });
+
   test('should preserve Stitch design hover effects', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/businesses');
