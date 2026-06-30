@@ -5,21 +5,40 @@ import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/ui/UserMenu";
 import { BrowseLink } from "./BrowseLink";
 
+export type SiteNavLink = {
+  href: string;
+  label: string;
+  /** Mobile bottom-nav label; defaults to `label` (e.g. "For Business" → "Business"). */
+  mobileLabel?: string;
+  /** Desktop link test id. */
+  testId: string;
+  /** Mobile bottom-nav link test id. */
+  mobileTestId: string;
+  /** Material Symbols icon name for the mobile bottom nav. */
+  icon: string;
+  /** Render via BrowseLink (resets the marketplace view) instead of a plain Link. */
+  browse?: boolean;
+};
+
+/** Marketplace link set — the default for `/`, `/businesses`, `/for-businesses`. */
+const DEFAULT_LINKS: SiteNavLink[] = [
+  { href: "/", label: "Home", testId: "nav-home", mobileTestId: "mobile-nav-home", icon: "home" },
+  { href: "/businesses", label: "Browse", testId: "nav-browse", mobileTestId: "mobile-nav-browse", icon: "search", browse: true },
+  { href: "/for-businesses", label: "For Business", mobileLabel: "Business", testId: "nav-for-business", mobileTestId: "mobile-nav-business", icon: "business_center" },
+];
+
 /**
- * Shared top + mobile navigation for the public marketplace pages
- * (`/`, `/businesses`, `/for-businesses`). The active link is derived from the
- * current pathname so each route highlights the right item without per-page
- * props, keeping the bar identical everywhere it renders.
+ * Shared top + mobile navigation for the public pages. Defaults to the
+ * marketplace link set (Home / Browse / For Business) used by `/`, `/businesses`
+ * and `/for-businesses`; callers can pass a different `links` set (e.g.
+ * MarketingLayout passes Browse Studios / About / Help / Contact). The active
+ * link is derived from the current pathname so each route highlights the right
+ * item without per-page props.
  *
- * Out of scope by design: the studio page (`/businesses/[slug]`, which still
- * uses TopNav) and the marketing info pages (MarketingLayout) keep their own
- * navs — do not wire them here without widening scope.
+ * Out of scope by design: the studio page (`/businesses/[slug]`) still uses TopNav.
  */
-export function SiteNav() {
+export function SiteNav({ links = DEFAULT_LINKS }: { links?: SiteNavLink[] }) {
   const pathname = usePathname();
-  const isHome = pathname === "/";
-  const isBrowse = pathname === "/businesses";
-  const isForBusiness = pathname === "/for-businesses";
 
   const desktopLink = (active: boolean) =>
     `font-mono text-[12px] leading-[1] tracking-[0.15em] font-medium uppercase transition-colors duration-200 ${
@@ -47,15 +66,17 @@ export function SiteNav() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link data-testid="nav-home" href="/" className={desktopLink(isHome)}>
-              Home
-            </Link>
-            <BrowseLink testId="nav-browse" className={desktopLink(isBrowse)}>
-              Browse
-            </BrowseLink>
-            <Link data-testid="nav-for-business" href="/for-businesses" className={desktopLink(isForBusiness)}>
-              For Business
-            </Link>
+            {links.map((link) =>
+              link.browse ? (
+                <BrowseLink key={link.href} testId={link.testId} className={desktopLink(pathname === link.href)}>
+                  {link.label}
+                </BrowseLink>
+              ) : (
+                <Link key={link.href} data-testid={link.testId} href={link.href} className={desktopLink(pathname === link.href)}>
+                  {link.label}
+                </Link>
+              )
+            )}
           </nav>
 
           <div className="flex items-center gap-4">
@@ -66,18 +87,25 @@ export function SiteNav() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
-        <Link data-testid="mobile-nav-home" href="/" className={mobileLink(isHome)}>
-          <span className="material-symbols-outlined">home</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">Home</span>
-        </Link>
-        <BrowseLink testId="mobile-nav-browse" className={mobileLink(isBrowse)}>
-          <span className="material-symbols-outlined">search</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">Browse</span>
-        </BrowseLink>
-        <Link data-testid="mobile-nav-business" href="/for-businesses" className={mobileLink(isForBusiness)}>
-          <span className="material-symbols-outlined">business_center</span>
-          <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">Business</span>
-        </Link>
+        {links.map((link) => {
+          const content = (
+            <>
+              <span className="material-symbols-outlined">{link.icon}</span>
+              <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
+                {link.mobileLabel ?? link.label}
+              </span>
+            </>
+          );
+          return link.browse ? (
+            <BrowseLink key={link.href} testId={link.mobileTestId} className={mobileLink(pathname === link.href)}>
+              {content}
+            </BrowseLink>
+          ) : (
+            <Link key={link.href} data-testid={link.mobileTestId} href={link.href} className={mobileLink(pathname === link.href)}>
+              {content}
+            </Link>
+          );
+        })}
       </nav>
     </>
   );

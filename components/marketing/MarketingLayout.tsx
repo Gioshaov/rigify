@@ -1,5 +1,12 @@
 import { SiteFooter } from "@/components/marketing/SiteFooter";
-import { SiteNav } from "@/components/navigation/SiteNav";
+import { SiteNav, type SiteNavLink } from "@/components/navigation/SiteNav";
+
+const MARKETING_LINKS: SiteNavLink[] = [
+  { href: "/businesses", label: "Browse Studios", mobileLabel: "Browse", testId: "nav-browse", mobileTestId: "mobile-nav-browse", icon: "search", browse: true },
+  { href: "/about", label: "About", testId: "nav-about", mobileTestId: "mobile-nav-about", icon: "info" },
+  { href: "/help", label: "Help", testId: "nav-help", mobileTestId: "mobile-nav-help", icon: "help" },
+  { href: "/contact", label: "Contact", testId: "nav-contact", mobileTestId: "mobile-nav-contact", icon: "mail" },
+];
 
 type MarketingLayoutProps = {
   children: React.ReactNode;
@@ -11,7 +18,7 @@ export function MarketingLayout({ children }: MarketingLayoutProps) {
       <a data-testid="marketing-skip-to-main-link" href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <SiteNav />
+      <SiteNav links={MARKETING_LINKS} />
 
       {/* Content */}
       <main id="main-content" className="flex-1">
