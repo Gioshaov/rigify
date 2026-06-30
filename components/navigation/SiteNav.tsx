@@ -45,11 +45,14 @@ export function SiteNav({ links = DEFAULT_LINKS }: { links?: SiteNavLink[] }) {
       active ? "text-primary" : "text-on-surface hover:text-primary"
     }`;
 
+  // border-t-2 + pt-1 are applied to every item (transparent when inactive) so the
+  // active border doesn't change an item's height and shift its neighbours.
+  // flex-1 + min-h-[44px] give each item an even, ≥44px touch target.
   const mobileLink = (active: boolean) =>
-    `flex flex-col items-center justify-center transition-transform active:scale-95 ${
+    `flex flex-1 flex-col items-center justify-center min-h-[44px] border-t-2 pt-1 transition-transform active:scale-95 ${
       active
-        ? "text-primary border-t-2 border-primary pt-1"
-        : "text-on-surface-variant opacity-60 hover:text-primary/80"
+        ? "text-primary border-primary"
+        : "text-on-surface-variant opacity-60 hover:text-primary/80 border-transparent"
     }`;
 
   return (
@@ -65,14 +68,14 @@ export function SiteNav({ links = DEFAULT_LINKS }: { links?: SiteNavLink[] }) {
             RIGIFY
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav aria-label="Primary" className="hidden md:flex items-center gap-8">
             {links.map((link) =>
               link.browse ? (
-                <BrowseLink key={link.href} testId={link.testId} className={desktopLink(pathname === link.href)}>
+                <BrowseLink key={link.href} testId={link.testId} current={pathname === link.href} className={desktopLink(pathname === link.href)}>
                   {link.label}
                 </BrowseLink>
               ) : (
-                <Link key={link.href} data-testid={link.testId} href={link.href} className={desktopLink(pathname === link.href)}>
+                <Link key={link.href} data-testid={link.testId} href={link.href} aria-current={pathname === link.href ? "page" : undefined} className={desktopLink(pathname === link.href)}>
                   {link.label}
                 </Link>
               )
@@ -86,22 +89,22 @@ export function SiteNav({ links = DEFAULT_LINKS }: { links?: SiteNavLink[] }) {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
+      <nav aria-label="Mobile" className="md:hidden fixed bottom-0 w-full z-nav flex justify-around items-center bg-surface h-20 px-margin-mobile border-t border-white/10">
         {links.map((link) => {
           const content = (
             <>
-              <span className="material-symbols-outlined">{link.icon}</span>
+              <span className="material-symbols-outlined" aria-hidden="true">{link.icon}</span>
               <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase mt-1">
                 {link.mobileLabel ?? link.label}
               </span>
             </>
           );
           return link.browse ? (
-            <BrowseLink key={link.href} testId={link.mobileTestId} className={mobileLink(pathname === link.href)}>
+            <BrowseLink key={link.href} testId={link.mobileTestId} current={pathname === link.href} className={mobileLink(pathname === link.href)}>
               {content}
             </BrowseLink>
           ) : (
-            <Link key={link.href} data-testid={link.mobileTestId} href={link.href} className={mobileLink(pathname === link.href)}>
+            <Link key={link.href} data-testid={link.mobileTestId} href={link.href} aria-current={pathname === link.href ? "page" : undefined} className={mobileLink(pathname === link.href)}>
               {content}
             </Link>
           );

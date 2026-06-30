@@ -374,7 +374,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
           {/* Discover Button */}
           <button
             data-testid="browse-studios-search-btn"
-            className="bg-primary text-on-secondary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto"
+            className="bg-primary text-on-primary px-8 py-3 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-fixed transition-colors h-[50px] w-full md:w-auto"
           >
             Discover
           </button>
