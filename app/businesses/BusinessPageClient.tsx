@@ -476,7 +476,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               <span className="material-symbols-outlined text-[64px] text-outline mb-4 block">
                 search_off
               </span>
-              <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
+              <h3 data-testid="browse-studios-empty-state-title" className="font-hanken text-[24px] leading-[1.3] font-semibold text-white mb-2">
                 No Businesses Found
               </h3>
               <p className="font-mono text-[12px] tracking-[0.15em] text-on-surface-variant uppercase mb-6">
