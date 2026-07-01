@@ -145,16 +145,23 @@ interface CountryCodeSelectProps {
   onChange: (dial: string) => void;
   hasError?: boolean;
   testId?: string;
+  /**
+   * When true, the open list shows plain country names only (no flag, no dial
+   * code). The collapsed chip still shows the ISO + dial code. Opt-in per page;
+   * defaults to the full "🇬🇪 Georgia +995" list rows.
+   */
+  namesOnlyInList?: boolean;
 }
 
 /**
  * Compact country dial-code picker.
  *
  * Collapsed it shows only the ISO code + dial code (e.g. "GE +995"); the open list
- * shows the flag, full country name and dial code (e.g. "🇬🇪 Georgia +995"). This
- * dual display is why it's a custom control rather than a native <select>.
+ * shows the flag, full country name and dial code (e.g. "🇬🇪 Georgia +995"), or —
+ * when `namesOnlyInList` is set — just the country name. This dual display is why
+ * it's a custom control rather than a native <select>.
  */
-export function CountryCodeSelect({ value, onChange, hasError = false, testId }: CountryCodeSelectProps) {
+export function CountryCodeSelect({ value, onChange, hasError = false, testId, namesOnlyInList = false }: CountryCodeSelectProps) {
   const [open, setOpen] = useState(false);
   // Track the chosen country so duplicate dial codes (+1, +7) display the right ISO.
   const [selected, setSelected] = useState<Country>(
@@ -229,9 +236,9 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId }:
                     isSelected ? "bg-surface-container-low" : ""
                   }`}
                 >
-                  <span aria-hidden="true">{isoToFlag(c.iso)}</span>
+                  {!namesOnlyInList && <span aria-hidden="true">{isoToFlag(c.iso)}</span>}
                   <span className="truncate">{c.name}</span>
-                  <span className="text-on-surface-variant">{c.dial}</span>
+                  {!namesOnlyInList && <span className="text-on-surface-variant">{c.dial}</span>}
                 </button>
               </li>
             );
