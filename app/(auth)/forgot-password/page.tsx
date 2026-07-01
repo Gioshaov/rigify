@@ -49,10 +49,10 @@ export default function ForgotPasswordPage() {
 
       {/* Header */}
       <div className="absolute top-8 left-0 right-0 px-margin-mobile flex justify-between items-center">
-        <Link data-testid="logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
+        <Link data-testid="forgot-password-logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
           RIGIFY
         </Link>
-        <a data-testid="support-link" href="mailto:support@rigify.ge" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+        <a data-testid="forgot-password-support-link" href="mailto:support@rigify.ge" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
           <span className="material-symbols-outlined text-[16px]">help</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase">
             Support
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
               We&apos;ve sent a password reset link to your email address. Please check your inbox and follow the instructions.
             </p>
             <Link
-              data-testid="back-to-login-btn-success"
+              data-testid="forgot-password-back-to-login-success-link"
               href="/login"
               className="flex items-center justify-center gap-2 text-primary hover:text-primary-container transition-colors font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase"
             >
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
             </p>
 
             {error && (
-              <div data-testid="error-message" className="mb-6 p-4 border border-error bg-error/10">
+              <div data-testid="forgot-password-error-message" className="mb-6 p-4 border border-error bg-error/10">
                 <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase text-center">
                   ⚠️ {error}
                 </p>
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
                     mail
                   </span>
                   <input
-                    data-testid="email-input"
+                    data-testid="forgot-password-email-input"
                     id="email"
                     name="email"
                     type="email"
@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
 
               {/* Send Reset Link Button */}
               <button
-                data-testid="send-reset-link-btn"
+                data-testid="forgot-password-send-reset-link-btn"
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
@@ -143,7 +143,7 @@ export default function ForgotPasswordPage() {
 
             {/* Back to Login Link */}
             <Link
-              data-testid="back-to-login-link"
+              data-testid="forgot-password-back-to-login-link"
               href="/login"
               className="mt-10 flex items-center justify-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase"
             >

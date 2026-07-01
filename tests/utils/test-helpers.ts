@@ -32,9 +32,9 @@ export async function bypassSitePassword(page: Page) {
 export async function loginAs(page: Page, email: string, password: string) {
   await bypassSitePassword(page);
   await page.goto('/login');
-  await page.getByTestId('email-input').fill(email);
-  await page.getByTestId('password-input').fill(password);
-  await page.getByTestId('sign-in-btn').click();
+  await page.getByTestId('login-email-input').fill(email);
+  await page.getByTestId('login-password-input').fill(password);
+  await page.getByTestId('login-submit-btn').click();
   // Wait for navigation after login
   await page.waitForURL(/\/(dashboard|customer\/dashboard|staff-dashboard|admin)/, { timeout: 10000 });
 }
