@@ -104,11 +104,15 @@ export default function ForBusinessesPage() {
           </div>
         </section>
 
-        {/* Bento grid */}
+        {/* Bento grid — split into two labeled blocks so the problem→solution
+            narrative reads clearly: "The Problem" (3 pain points) then "What
+            You Get" (the solutions). Both stay on md:grid-cols-3 for density. */}
         <section className="border-b border-white/10 bg-background">
           <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
-            <h2 className="sr-only">What you get with Rigify</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+
+            {/* THE PROBLEM — tight row of 3 pain points */}
+            <h2 className={`${eyebrow} mb-stack-md`}>The Problem</h2>
+            <div data-testid="for-businesses-problem-grid" className="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
 
               {/* Missed Calls */}
               <div data-testid="problem-card-missed-calls" className={cardBase}>
@@ -120,16 +124,6 @@ export default function ForBusinessesPage() {
                 </h3>
                 <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
                   Your phone rings while you&apos;re with a client. You miss the call, they book somewhere else.
-                </p>
-              </div>
-
-              {/* Your Own Booking Page (wide) */}
-              <div data-testid="feature-booking-page" className={`md:col-span-2 flex flex-col justify-center ${cardBase}`}>
-                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-sm">
-                  Your Own Booking Page
-                </h3>
-                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary max-w-xl">
-                  Beautiful, mobile-friendly page where customers book 24/7. Share it on Instagram, Facebook, or Google.
                 </p>
               </div>
 
@@ -146,16 +140,6 @@ export default function ForBusinessesPage() {
                 </p>
               </div>
 
-              {/* Dashboard & Calendar */}
-              <div data-testid="feature-dashboard" className={`flex flex-col justify-center ${cardBase}`}>
-                <h3 className="font-hanken text-[18px] leading-[1.3] font-semibold text-primary mb-stack-sm">
-                  Dashboard & Calendar
-                </h3>
-                <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
-                  See all bookings, manage staff schedules, and track revenue from one clean dashboard.
-                </p>
-              </div>
-
               {/* No Online Presence */}
               <div data-testid="problem-card-no-presence" className={cardBase}>
                 <div className="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center mb-stack-md">
@@ -166,6 +150,32 @@ export default function ForBusinessesPage() {
                 </h3>
                 <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
                   Customers can&apos;t find you online. They book with competitors who have modern booking systems.
+                </p>
+              </div>
+
+            </div>
+
+            {/* WHAT YOU GET — 2-row bento, spotlight stays wide */}
+            <h2 className={`${eyebrow} mt-stack-lg mb-stack-md`}>What You Get</h2>
+            <div data-testid="for-businesses-solutions-grid" className="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+
+              {/* Your Own Booking Page (wide) */}
+              <div data-testid="feature-booking-page" className={`md:col-span-2 flex flex-col justify-center ${cardBase}`}>
+                <h3 className="font-hanken text-[24px] leading-[1.3] font-semibold text-primary mb-stack-sm">
+                  Your Own Booking Page
+                </h3>
+                <p className="font-hanken text-[16px] leading-[1.5] font-normal text-text-secondary max-w-xl">
+                  Beautiful, mobile-friendly page where customers book 24/7. Share it on Instagram, Facebook, or Google.
+                </p>
+              </div>
+
+              {/* Dashboard & Calendar */}
+              <div data-testid="feature-dashboard" className={`flex flex-col justify-center ${cardBase}`}>
+                <h3 className="font-hanken text-[18px] leading-[1.3] font-semibold text-primary mb-stack-sm">
+                  Dashboard & Calendar
+                </h3>
+                <p className="font-hanken text-[14px] leading-[1.5] font-normal text-text-secondary">
+                  See all bookings, manage staff schedules, and track revenue from one clean dashboard.
                 </p>
               </div>
 
