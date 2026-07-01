@@ -143,4 +143,53 @@ test.describe('For Businesses Waitlist Form', () => {
     await expect(countryCode).toContainText('GE');
     await expect(countryCode).toContainText('+995');
   });
+
+  test('selecting a different country code combines into the submitted phone', async ({ page }) => {
+    await bypassSitePassword(page);
+    let captured: Record<string, unknown> | undefined;
+    await page.route('**/api/contact', async (route) => {
+      captured = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
+    });
+    await page.goto('/for-businesses');
+
+    await page.getByTestId('contact-name-input').fill('Alexander Sterling');
+    await page.getByTestId('contact-business-input').fill('Sterling Studio');
+
+    // Open the country picker and choose United Kingdom (+44) instead of GE +995.
+    await page.getByTestId('contact-country-code-select').click();
+    await page.getByTestId('contact-country-code-select-option-gb').click();
+    const countryCode = page.getByTestId('contact-country-code-select');
+    await expect(countryCode).toContainText('GB');
+    await expect(countryCode).toContainText('+44');
+
+    await page.getByTestId('contact-phone-input').fill('7911123456');
+    await page.getByTestId('contact-submit-btn').click();
+
+    // The chosen dial code (not the default) is what combines into the payload.
+    await expect(page.getByTestId('for-businesses-success-message')).toBeVisible();
+    expect(captured?.phone).toBe('+44 7911123456');
+  });
+
+  test('country picker is keyboard-navigable (arrow + enter selects)', async ({ page }) => {
+    await bypassSitePassword(page);
+    await page.goto('/for-businesses');
+
+    await page.getByTestId('contact-country-code-select').click();
+    const listbox = page.getByTestId('contact-country-code-select-listbox');
+    // Wait until the open-focus effect has run (active option = the GE default)
+    // so ArrowDown doesn't race it. ArrowDown then moves to the next country
+    // (Germany +49); Enter selects it. locator.press focuses the listbox first.
+    await expect(listbox).toHaveAttribute('aria-activedescendant', 'contact-country-code-select-option-ge');
+    await listbox.press('ArrowDown');
+    await listbox.press('Enter');
+
+    const countryCode = page.getByTestId('contact-country-code-select');
+    await expect(countryCode).toContainText('DE');
+    await expect(countryCode).toContainText('+49');
+  });
 });
