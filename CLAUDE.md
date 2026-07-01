@@ -569,13 +569,18 @@ formatTbilisi(dateString, "MMM d, yyyy 'at' HH:mm");
 
 ## Internationalization (i18n)
 
-Three languages: Georgian (`ka`), English (`en`), Russian (`ru`).
+Two languages: Georgian (`ka`) and English (`en`). Russian was removed (migration `20260625000002_drop_russian_columns.sql`).
 
-**Database columns**:
-- `name`, `name_ka`, `name_ru`
-- `description`, `description_ka`, `description_ru`
+**Database columns** (bilingual pairs use the Georgian `_ka` suffix; note `description_ka` is `businesses`-only):
+- `businesses`: `name`, `name_ka`, `description`, `description_ka`
+- `services`: `name`, `name_ka`, `description` (no `description_ka`)
 
-**UI translations**: `next-intl` library (not yet wired up)
+**UI translations**: a **custom** in-house system — there is no i18n library (no `next-intl`/`i18next`).
+- Dictionary: `lib/translations/index.ts` (~364 `{ka, en}` string pairs, ~99% genuine Georgian).
+- Consume via the `useTranslations()` hook (`lib/hooks/useTranslations.ts`) → `{ lang, t, tr }`: `t({ ka, en })` picks the current language; `tr.<section>.<key>` reads the dictionary.
+- Language state: `LanguageProvider`/`useLanguage` (`lib/contexts/LanguageContext.tsx`), persisted to `localStorage` + a `rigify-lang` cookie. Switch UI: `components/ui/LanguageToggle.tsx`.
+
+**Known gap (not wired)**: the dictionary is largely complete, but most **public** pages still hardcode English instead of consuming the dictionary, `LanguageToggle` is currently mounted nowhere, and the server-side reader `getServerTranslations()` (`lib/utils/server-translations.ts`) is unused — so language is effectively client-only today. Whether to finish wiring the custom system or migrate to `next-intl` (locale URLs + per-locale SSR/SEO) is an open decision.
 
 **Default locale**: Georgian (`ka`)
 
