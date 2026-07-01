@@ -214,8 +214,11 @@ export default function ForBusinessesPage() {
           </div>
         </section>
 
-        {/* Waitlist — heading left, form right */}
-        <section id="contact" className="border-b border-white/10 bg-surface">
+        {/* Waitlist — heading left, form right.
+            scroll-mt-16 offsets the smooth-scroll target by the SiteNav sticky
+            header height (h-16 = 64px) so "Get Started" (and any anchor to
+            #contact) lands framed below the header, not jammed under it. */}
+        <section id="contact" className="scroll-mt-16 border-b border-white/10 bg-surface">
           <div className="max-w-container mx-auto px-margin-mobile md:px-margin-desktop py-16">
             <div className="grid md:grid-cols-2 gap-stack-lg items-start">
               {/* Left: heading */}
