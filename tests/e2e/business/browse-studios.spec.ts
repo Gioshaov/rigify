@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { bypassSitePassword } from '../../utils/test-helpers';
 
-test.describe('Browse Studios Page', () => {
+test.describe('Browse Studios Page @db', () => {
   test('should display business grid with hero section', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/businesses');

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { bypassSitePassword } from '../../utils/test-helpers';
 import { TEST_USERS } from '../fixtures/test-users';
 
-test.describe('Login Flow', () => {
+test.describe('Login Flow @db', () => {
   test('should login business owner and redirect to dashboard', async ({ page }) => {
     await bypassSitePassword(page);
     await page.goto('/login');

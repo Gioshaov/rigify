@@ -3,7 +3,7 @@ import { selectDateAndTime, generateUniquePhone, bypassSitePassword } from '../.
 import { cleanupTestBookings, getTestBusiness, getTestService } from '../../utils/db-helpers';
 import { GUEST_CUSTOMER_DATA } from '../fixtures/test-users';
 
-test.describe('Guest Booking Flow', () => {
+test.describe('Guest Booking Flow @db', () => {
   let testBusiness: any;
   let testService: any;
   let uniquePhone: string;

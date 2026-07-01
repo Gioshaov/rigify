@@ -5,7 +5,21 @@ import { Page } from '@playwright/test';
  */
 export async function bypassSitePassword(page: Page) {
   const secret = process.env.SITE_PASSWORD;
-  if (!secret) return;
+  if (!secret) {
+    // Under CI a missing SITE_PASSWORD is a misconfiguration: the site-password
+    // gate would redirect every test to /password and the whole suite would fail
+    // with opaque element-not-found timeouts. Fail loudly instead. Locally the
+    // gate is only active when SITE_PASSWORD is set, so no-op is correct there.
+    // GitHub Actions sets CI to the string "true", so a plain truthiness check
+    // is correct here (don't narrow this to === 'true').
+    if (process.env.CI) {
+      throw new Error(
+        'SITE_PASSWORD is not set in the CI environment. Set it as a workflow secret so ' +
+        'bypassSitePassword can compute the rigify_access cookie (see .github/workflows/e2e.yml).'
+      );
+    }
+    return;
+  }
 
   // Create HMAC-based cookie value (must match middleware.ts logic)
   const enc = new TextEncoder();

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { selectDateAndTime, generateUniquePhone, bypassSitePassword } from '../../utils/test-helpers';
 import { getTestBusiness, getTestService } from '../../utils/db-helpers';
 
-test.describe('Booking Validation', () => {
+test.describe('Booking Validation @db', () => {
   let testBusiness: any;
   let testService: any;
   let uniquePhone: string;
