@@ -2138,3 +2138,28 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 **Next Steps**: **Promote #85/#86 (/for-businesses restyle) to production** — the only un-promoted work. Then Session 34 follow-ups: /for-businesses form E2E spec; pre-existing a11y debt (nested `<main>` on /businesses, non-prefixed testids on other auth pages, orphaned filter labels); optional design-system alignment (.input-field/.btn-primary); City required-vs-optional product decision. Still open: `SITE_PASSWORD` pre-launch gate.
 
 **Status**: ✅ Complete. 7 production deploys (PRs #69, #73, #75, #77, #80, #82, #84), 23 PRs (#64–#86). `master` (prod) @ `f92b243`; `staging` @ `221e534` — staging ahead by the /for-businesses restyle (#85/#86), pending promotion.
+
+---
+
+### Session 35 - July 1, 2026: /for-businesses regrouping + CountryCodeSelect polish, waitlist + /contact E2E, a11y batch, Playwright CI (parked), i18n audit; ~13 prod promotions
+
+**Objective**: Continue public-page polish + a11y/testing debt through the standard loop (audit → implement → @code-reviewer + /ponytail-review → PR to staging → verify → promote); audit i18n and decide a direction; stand up CI.
+
+**Accomplished**:
+- **/for-businesses**: promoted the S34 bento restyle to prod (#88); regrouped the flattened bento into two labeled blocks "The Problem" / "What You Get" with restored h1→h2→h3 (#89); `scroll-mt-16` offset so the hero CTA lands below the sticky SiteNav (#94).
+- **CountryCodeSelect (phone picker), 4 PRs**: names-only list via opt-in `namesOnlyInList` (#90); dark styled list matching the City FilterDropdown (#92); full keyboard nav (arrow/Home/End/Enter, aria-activedescendant, focus return) + per-option `{testId}-option-{iso}` testids, plus review-found `role="presentation"` and Escape `stopPropagation` (#104); left gold accent-bar non-color selected cue (closing the earlier accepted WCAG 1.4.1 M1) + mono trigger chip (#106).
+- **E2E specs (then paused)**: waitlist form spec — 5 tests, page.route()-mocked /api/contact, +2 tests with #104 (#98); /contact form spec — DB-free rendering + invalid-email path, no mock (server action validates before the DB insert) (#102).
+- **Playwright CI (#101 → parked)**: GitHub Actions workflow running `--grep-invert @db` on PRs into staging, 5 DB specs tagged `@db`, `bypassSitePassword` throws under CI. Closed/parked pending 3 repo secrets; commit `b8bc7b6` recoverable via issue #99.
+- **a11y batch**: /businesses nested `<main>`→`<div>` + 4 orphaned filter labels fixed + named filter section (#107); auth-page testid prefixes + login spec/helper reconcile (#108) — which introduced a regression (targeted dead `LoginForm.tsx` not the live `LoginPageClient`), caught by review and fixed by prefixing the live component + deleting the dead file (#109).
+- **i18n**: audited the custom system (no library; dict ~364 ka/en pairs ~99% real Georgian; but ~19 public pages hardcode English, LanguageToggle unmounted, getServerTranslations unused → client-only). Corrected the stale CLAUDE.md i18n section (#96). Decided: activate the custom system, defer next-intl, implementation NOT started until asked (memory `i18n-direction`).
+- **Ops**: scheduled a "Rigify — next steps" cloud reminder for 2026-07-02 09:00 Asia/Tbilisi (Opus). Saved memories `i18n-direction` and `workflow-lessons`.
+
+**Files Changed**: `components/marketing/ForBusinessesPage.tsx`, `components/ui/CountryCodeSelect.tsx`, `app/businesses/BusinessPageClient.tsx`, `app/(auth)/login/LoginPageClient.tsx` (+ deleted dead `LoginForm.tsx`), `app/(auth)/forgot-password/page.tsx`, `app/reset-password/page.tsx`, `CLAUDE.md` (i18n section), `.github/workflows/e2e.yml` (parked), `tests/e2e/marketing/{for-businesses-waitlist,contact-form}.spec.ts`, `tests/utils/test-helpers.ts`, 5 DB specs tagged `@db`.
+
+**Commits/PRs**: features #89/#90/#92/#94/#96/#98/#102/#104/#106/#107/#108/#109; promotions #88/#91/#93/#95/#97/#100/#103/#105/#110; CI #101 (closed/parked) + issue #99.
+
+**Key learnings**: verify `gh pr merge` actually landed BEFORE deleting a branch (a transient 401 in a merge-then-cleanup chain deleted an unmerged branch, closing PR #106 — recovered from the dangling commit); audit the LIVE-rendered component (page.tsx → its import), not a same-named sibling (the #108 login regression); Next.js server actions aren't page.route()-mockable, so only pre-insert validation paths are DB-free-testable.
+
+**Next Steps**: resume CI (#99: cherry-pick `b8bc7b6` + add 3 secrets); the #3 UI backlog (mobile dashboard nav, inline validation, safe-area, admin skip-link, modal consolidation). Parked by decision: i18n activation (custom), `SITE_PASSWORD` removal (pre-launch). Deferred to the @db CI suite: /contact happy-path + CountryCodeSelect ArrowUp/Home/End tests.
+
+**Status**: ✅ Complete. ~13 features to production, all promoted; `master`↔`staging` in sync (`master` @ `85521f5`), no open PRs. Playwright CI built but parked in #99.
