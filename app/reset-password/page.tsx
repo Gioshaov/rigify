@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
       <main className="min-h-dvh bg-background flex items-center justify-center px-margin-mobile">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p data-testid="loading-message" className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase">
+          <p data-testid="reset-password-loading-msg" className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase">
             Verifying reset link...
           </p>
         </div>
@@ -125,10 +125,10 @@ export default function ResetPasswordPage() {
 
       {/* Header */}
       <div className="absolute top-8 left-0 right-0 px-margin-mobile flex justify-between items-center">
-        <Link data-testid="logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
+        <Link data-testid="reset-password-logo-link" href="/" className="font-hanken text-[24px] leading-[1.2] font-bold text-primary tracking-tighter uppercase">
           RIGIFY
         </Link>
-        <a data-testid="support-link" href="mailto:support@rigify.ge" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+        <a data-testid="reset-password-support-link" href="mailto:support@rigify.ge" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
           <span className="material-symbols-outlined text-[16px]">help</span>
           <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase">
             Support
@@ -139,7 +139,7 @@ export default function ResetPasswordPage() {
       {/* Reset Card */}
       <div className="relative w-full max-w-[480px] bg-surface-container border border-white/10 p-12">
         {success ? (
-          <div data-testid="success-message" className="text-center" aria-live="polite">
+          <div data-testid="reset-password-success-msg" className="text-center" aria-live="polite">
             <div className="w-16 h-16 bg-primary/10 border border-primary mx-auto mb-6 flex items-center justify-center">
               <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 check_circle
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
             </p>
 
             {error && (
-              <div data-testid="error-message" className="mb-6 p-4 border border-error bg-error/10">
+              <div data-testid="reset-password-error-msg" className="mb-6 p-4 border border-error bg-error/10">
                 <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase text-center">
                   ⚠️ {error}
                 </p>
@@ -186,7 +186,7 @@ export default function ResetPasswordPage() {
                     lock
                   </span>
                   <input
-                    data-testid="password-input"
+                    data-testid="reset-password-password-input"
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
@@ -223,7 +223,7 @@ export default function ResetPasswordPage() {
                     lock
                   </span>
                   <input
-                    data-testid="confirm-password-input"
+                    data-testid="reset-password-confirm-password-input"
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -247,7 +247,7 @@ export default function ResetPasswordPage() {
 
               {/* Reset Password Button */}
               <button
-                data-testid="reset-password-btn"
+                data-testid="reset-password-submit-btn"
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
@@ -259,7 +259,7 @@ export default function ResetPasswordPage() {
 
             {/* Back to Login Link */}
             <Link
-              data-testid="back-to-login-link"
+              data-testid="reset-password-back-to-login-link"
               href="/login"
               className="mt-10 flex items-center justify-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium uppercase"
             >
