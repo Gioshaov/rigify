@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
       <main className="min-h-dvh bg-background flex items-center justify-center px-margin-mobile">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p data-testid="reset-password-loading-msg" className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase">
+          <p data-testid="reset-password-loading-message" className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-on-surface-variant uppercase">
             Verifying reset link...
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function ResetPasswordPage() {
       {/* Reset Card */}
       <div className="relative w-full max-w-[480px] bg-surface-container border border-white/10 p-12">
         {success ? (
-          <div data-testid="reset-password-success-msg" className="text-center" aria-live="polite">
+          <div data-testid="reset-password-success-message" className="text-center" aria-live="polite">
             <div className="w-16 h-16 bg-primary/10 border border-primary mx-auto mb-6 flex items-center justify-center">
               <span className="material-symbols-outlined text-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 check_circle
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
             </p>
 
             {error && (
-              <div data-testid="reset-password-error-msg" className="mb-6 p-4 border border-error bg-error/10">
+              <div data-testid="reset-password-error-message" className="mb-6 p-4 border border-error bg-error/10">
                 <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase text-center">
                   ⚠️ {error}
                 </p>
