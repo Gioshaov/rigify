@@ -2113,3 +2113,28 @@ After initial deployment, discovered production site (rigify.ge) showed favicon 
 **Next Steps**: `SITE_PASSWORD` removal from the production Vercel scope (still the single biggest pre-launch blocker, deferred since Session 27). Session 33 advisory follow-ups: guard `clearAllFilters` no-op history push; add E2E for the Category dropdown + `?category=` sync; standardize `MarketingLayout` logo testid. UI corrections backlog + future features (Salome API, social bots, recurring appointments, packages, gift cards) unchanged.
 
 **Status**: ✅ Complete. 2 production deploys (PRs #48, #62), 17 PRs. `master` @ `2221c35`, `staging` @ `97960b8` — 0/0 divergence. New shared components live on rigify.ge.
+
+---
+
+### Session 34 - June 30, 2026: Per-view count fix, customer-register form, configurable SiteNav, two a11y passes, /for-businesses bento restyle; 7 prod promotions
+
+**Objective**: A long public-page UI session. Each item: audit → implement → `@code-reviewer` (+ ponytail) → PR to staging → verify (Playwright/screenshots) → promote. Two rounds of in-depth 3-lens multi-agent UI reviews (accessibility / design-system / responsive).
+
+**Accomplished** (23 PRs, #64–#86):
+- **#64** Session 33 follow-ups: `clearAllFilters` history-guard; Category dropdown + `?category=` URL-sync E2E (+ unknown-category passthrough); `MarketingLayout` `logo-link`→`nav-logo`.
+- **#65/#66** Per-view results count on /businesses: map/split exclude null-coordinate businesses; `mappableBusinesses` `useMemo`; X switches on `effectiveViewMode`, Y stays total (deliberate); `browse-studios-results-count` testid + count-vs-cards E2E; DB-independent test fixes.
+- **#67/#68** /customer-register: Full Name → First/Last (concatenated into `customers.name`, no migration); Confirm Password + reveal eye + mismatch guard; client-side E2E; `confirm_password` rename.
+- **#71/#72** Nav consolidation: marketing pages → shared `SiteNav`; reversed to add an optional `links` prop (default = marketplace set, so `/`,`/businesses`,`/for-businesses` untouched); `MarketingLayout` passes Browse Studios/About/Help/Contact (desktop + mobile bottom nav). `BrowseLink` gained `current` for `aria-current`.
+- **#74/#76** A11y pass (nav + register): nav landmark labels, `aria-current`, ≥44px touch targets + no active-border shift, reveal-eye `aria-label`/`aria-pressed`/44px/icon-hidden, required `*`, `role="alert"`, Discover token fix, `register-` testid prefix; minors = distinct confirm label + primary-toggle test.
+- **#78** Removed dead `CustomerRegisterForm.tsx`.
+- **#79** /for-businesses spacing tightened to a compact scale (`py-16` sections + stack-scale gaps) — deliberate page-only exception below the 80px standard.
+- **#81/#83** A11y pass (/for-businesses): form-label association, error `text-error`+icon+`role="alert"`, hero `flex`→`inline-flex` (full-width-button bug), decorative icons `aria-hidden`, heading hierarchy, required `*`, `for-businesses-` testid prefix; minors = `aria-hidden` ⚠️ (also register) + true 44px Send Another.
+- **#85/#86** /for-businesses bento restyle (compact hero, 3-col bento, split waitlist; Salome feature folded into spotlight) + on-brand form controls (City → dark `FilterDropdown`, phone → `CountryCodeSelect` GE+995, combined into `formData.phone` via `composePhone()`; phone reset in `handleSubmit`; whitespace guard). **Reused existing components, no new ones.**
+
+**Files Changed**: `app/businesses/BusinessPageClient.tsx`, `app/(auth)/customer-register/page.tsx` + `actions.ts`, `components/navigation/SiteNav.tsx` + `BrowseLink.tsx`, `components/marketing/MarketingLayout.tsx` + `ForBusinessesPage.tsx`, several `tests/e2e/**` specs; removed `CustomerRegisterForm.tsx`. `Stitch Design/` (design-reference screenshot) gitignored.
+
+**Key learnings**: reuse existing components over new builds (FilterDropdown/CountryCodeSelect); verify the served artifact for restyles via screenshots; combined-state phone handlers are closure-correct (read complementary state from the render closure); deliberate exceptions (count denominator, 64px padding) are documented and intentionally kept when re-flagged.
+
+**Next Steps**: **Promote #85/#86 (/for-businesses restyle) to production** — the only un-promoted work. Then Session 34 follow-ups: /for-businesses form E2E spec; pre-existing a11y debt (nested `<main>` on /businesses, non-prefixed testids on other auth pages, orphaned filter labels); optional design-system alignment (.input-field/.btn-primary); City required-vs-optional product decision. Still open: `SITE_PASSWORD` pre-launch gate.
+
+**Status**: ✅ Complete. 7 production deploys (PRs #69, #73, #75, #77, #80, #82, #84), 23 PRs (#64–#86). `master` (prod) @ `f92b243`; `staging` @ `221e534` — staging ahead by the /for-businesses restyle (#85/#86), pending promotion.

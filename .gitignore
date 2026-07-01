@@ -51,3 +51,6 @@ supabase/_staging_bootstrap.sql
 
 # Personal stakeholder reference doc (kept local, not in shared repo)
 PLATFORM.md
+
+# Local design-reference screenshots (Stitch / design tool exports)
+Stitch Design/
