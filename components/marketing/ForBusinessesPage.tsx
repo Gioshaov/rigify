@@ -302,6 +302,7 @@ export default function ForBusinessesPage() {
                         <div className="flex gap-2">
                           <CountryCodeSelect
                             testId="contact-country-code-select"
+                            namesOnlyInList
                             value={countryCode}
                             onChange={(dial) => {
                               setCountryCode(dial);
