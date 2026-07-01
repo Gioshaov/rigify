@@ -294,7 +294,7 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Select country dial code"
-        className={`flex items-center gap-1 h-full bg-surface border ${borderClass} px-3 py-3 text-on-surface outline-none focus:border-primary transition-colors whitespace-nowrap`}
+        className={`flex items-center gap-1 h-full bg-surface border ${borderClass} px-3 py-3 font-mono text-[12px] tracking-[0.1em] text-on-surface outline-none focus:border-primary transition-colors whitespace-nowrap`}
       >
         <span>{selected.iso}</span>
         <span>{selected.dial}</span>
@@ -329,8 +329,8 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
                   tabIndex={-1}
                   onClick={() => choose(c)}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left font-mono text-[12px] tracking-[0.1em] transition-colors ${
-                    isSelected ? "text-primary" : "text-on-surface-variant"
+                  className={`flex w-full items-center gap-2 border-l-2 px-4 py-2.5 text-left font-mono text-[12px] tracking-[0.1em] transition-colors ${
+                    isSelected ? "border-l-primary text-primary" : "border-l-transparent text-on-surface-variant"
                   } ${isActive ? "bg-surface-container-low" : ""}`}
                 >
                   {!namesOnlyInList && <span aria-hidden="true">{isoToFlag(c.iso)}</span>}
