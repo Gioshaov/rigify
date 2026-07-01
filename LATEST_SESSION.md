@@ -1,217 +1,92 @@
 # Latest Session Summary
 
-**Last Updated**: June 30, 2026  
-**Session**: Session 34 - Per-view count fix, customer-register first/last+confirm-password, nav consolidation (configurable SiteNav), two accessibility passes, /for-businesses bento restyle + on-brand form controls; 7 prod promotions (#85/#86 restyle still staging-only)
+**Last Updated**: July 1, 2026  
+**Session**: Session 35 - /for-businesses problem→solution regrouping + dropdown polish (names-only, dark styled, keyboard-nav, accent cue), #contact scroll offset, waitlist + /contact E2E specs, Playwright CI workflow (built then parked in #99), a11y batch (/businesses landmarks/labels + auth testid prefixes + login regression fix), i18n audit + decision. ~13 features to prod.
 
 ---
 
 ## Current Implementation Status
 
-### ✅ What's Built and Working (95%+ Complete)
+**95%+ feature complete.** Full built-feature inventory (auth × 4 user types + guest, public marketplace with LIST/MAP/SPLIT views, booking flow + availability API, customer portal, business/staff/admin dashboards, marketing pages, email system, 53 migrations, Playwright infra, ka/en language system) is unchanged from Session 34 — see `SESSION_HISTORY.md` (Session 34 entry) for the detailed list. This session was polish + a11y + testing debt, no new app features.
 
-**Authentication System** (Complete - 4 user types):
-1. **Super Admins** - Platform management, full access via `/admin`
-2. **Business Owners** - Manage salon/clinic via `/dashboard`
-3. **Staff Members** - View/edit appointments via `/staff-dashboard` (permission-based)
-4. **Customers** - Book and manage appointments via `/customer/dashboard`
-5. **Guest Customers** - Book without account (web, voice, social)
-
-**Public Marketplace** (Complete):
-- ✅ Homepage with hero, categories grid, cities section
-- ✅ Browse Studios (`/businesses`) with search filters, business cards
-- ✅ **THREE VIEW MODES** - LIST/MAP/SPLIT with Mapbox GL JS
-  - **LIST view**: 3-column grid of business cards with Picsum fallback images
-  - **MAP view**: Full-screen Mapbox with gold markers, Georgia region bounds
-  - **SPLIT view**: 2-column business grid (40%) + map (60%)
-  - Custom gold markers, geolocation "Near Me" sorting
-  - URL persistence + localStorage, mobile-responsive
-- ✅ Business profile page (`/businesses/[slug]`) with services, portfolio, location
-- ✅ Booking flow (`/businesses/[slug]/book`) - calendar + time slots
-- ✅ Booking confirmation with summary
-- ✅ Availability API with overlap detection
-
-**Customer Portal** (Complete):
-- ✅ Dashboard (`/customer/dashboard`) - View all bookings (upcoming/past)
-- ✅ Manage Booking (`/customer/bookings/[id]`) - View details, cancel
-- ✅ Reschedule Booking (`/customer/bookings/[id]/reschedule`) - Pick new date/time
-- ✅ Customer Profile (`/customer/dashboard/profile`) - Edit name, phone, email, avatar
-
-**Business Dashboard** (Complete):
-- ✅ Dashboard Overview (`/dashboard`) - Today's appointments
-- ✅ Appointments (`/dashboard/appointments`) - View all appointments
-- ✅ Create Appointment (`/dashboard/appointments/new`) - Manual booking
-- ✅ Services Management (`/dashboard/services`) - View all services
-- ✅ Add Service (`/dashboard/services/new`) - Create new service
-- ✅ Edit Service (`/dashboard/services/[id]/edit`) - Modify service details
-- ✅ Staff Directory (`/dashboard/staff`) - View all staff with modal
-- ✅ Invite Staff (`/dashboard/staff/invite`) - Create staff account
-- ✅ Business Settings (`/dashboard/settings`) - Edit profile, images, hours
-- ✅ Salome Page (`/dashboard/salome`) - Voice AI integration status
-
-**Staff Dashboard** (Complete):
-- ✅ Dashboard (`/staff-dashboard`) - Personal schedule
-- ✅ Appointments (`/staff-dashboard/appointments`) - View assigned appointments
-
-**Admin Panel** (Complete):
-- ✅ Admin Login (`/admin/login`) - Separate auth flow
-- ✅ Admin Dashboard (`/admin`) - Platform overview
-- ✅ Onboard Business (`/admin/onboard`) - Create new business + owner
-- ✅ Edit Business (`/admin/businesses/[id]/edit`) - Modify business details
-- ✅ Customers List (`/admin/customers`) - Search, filter, status management
-- ✅ Customer Detail (`/admin/customers/[id]`) - Profile, booking history, stats
-- ✅ Customer Edit (`/admin/customers/[id]/edit`) - Edit name, phone, email
-- ✅ Bookings List (`/admin/bookings`) - Advanced filters (status, source, business, date range)
-- ✅ Booking Detail (`/admin/bookings/[id]`) - Full booking info, timeline, actions
-- ✅ Booking Edit (`/admin/bookings/[id]/edit`) - Reschedule with overlap detection
-- ✅ Booking Create (`/admin/bookings/new`) - Multi-step wizard (business, service, staff, datetime, customer)
-
-**Marketing Pages** (Complete):
-- ✅ About (`/about`) - Company story, mission, team
-- ✅ Contact (`/contact`) - Contact form, email, office info
-- ✅ Help/FAQ (`/help`) - Common questions and answers
-- ✅ Terms of Service (`/terms`) - Legal terms
-- ✅ Privacy Policy (`/privacy`) - Data privacy policy
-- ✅ For Businesses (`/for-businesses`) - Business value proposition
-
-**Production Polish** (Complete):
-- ✅ **Error boundaries** - Root, dashboard, and auth error handling with retry
-- ✅ **Loading states** - Skeleton screens for dashboard, businesses, profile, booking
-- ✅ **Custom 404 page** - Helpful navigation links
-- ✅ **Form validation** - Comprehensive client-side validation across all forms
-- ✅ **Password strength indicator** - Visual feedback for password requirements
-- ✅ **Empty states** - Reusable EmptyState component
-- ✅ **ESLint compliance** - All build-blocking errors resolved
-- ✅ **Modal components** - Reusable Modal and CancelButton components
-- ✅ **Loading buttons** - Reusable LoadingButton with spinner
-- ✅ **Password input** - Reusable PasswordInput with visibility toggle
-- ✅ **Favicon & PWA support** - Optimized favicons (ICO, PNG), Apple touch icons, Android icons, PWA manifest
-- ✅ **Email system** - Unified visual design across all 4 templates (confirmation, cancellation, reschedule)
-
-**Database** (Complete):
-- ✅ 53 migrations applied (all idempotent)
-- ✅ RLS enabled on all tables with proper grants
-- ✅ 10 test businesses with realistic Tbilisi coordinates
-- ✅ Composite indexes for performance
-- ✅ Test data isolation (`is_test` column)
-
-**Test Automation** (Complete):
-- ✅ Playwright E2E testing infrastructure
-- ✅ 5 test suites covering critical flows
-- ✅ Test utilities (fixtures, helpers, DB cleanup)
-- ✅ Idempotent test data seeding
-- ✅ GitHub Actions CI/CD workflow
-
-**Language System** (Complete):
-- ✅ Georgian/English toggle site-wide
-- ✅ 150+ translation strings
-- ✅ Georgian date/time formatting
-- ✅ Preference persists in localStorage
-
-**Security & Quality** (Complete):
-- ✅ Input validation (format + length)
-- ✅ UUID validation prevents DoS
-- ✅ RLS policies with proper grants
-- ✅ Storage policies with ownership checks
-- ✅ Server Components for SEO
-- ✅ TypeScript strict mode (no `any`)
-- ✅ Suspense boundaries for production builds
-- ✅ **JSX text content rules** documented and enforced
+### Notable state flags
+- **`SITE_PASSWORD` gate is ACTIVE on production** (`SupaAdmin` on prod, `Htc4qefpjnFFZrn3` on staging) — the site is not publicly reachable. Deliberate pre-launch gate; **stays until launch** (user decision this session).
+- **i18n is a custom system (no library), and half-wired** — dictionary ~99% done (~364 ka/en pairs) but ~19 public pages hardcode English, `LanguageToggle` mounted nowhere, `getServerTranslations` unused → effectively client-only. See memory `i18n-direction`.
+- **No CI exists** — the Playwright workflow was built but parked (see below).
 
 ---
 
-## Latest Session Work (Session 34 - June 30, 2026)
+## Latest Session Work (Session 35 - July 1, 2026)
 
-**Objective**: A long session of public-page UI work, each item run through the same loop (audit → implement → `@code-reviewer` (+ ponytail) → PR to staging → verify → promote). **23 PRs (#64–#86), 7 production promotions.** In-depth 3-lens multi-agent UI reviews (accessibility / design-system / responsive) run on the nav+register+businesses set and again on /for-businesses.
+**Objective**: Continue public-page polish + a11y/testing debt, each item through the standard loop (audit → implement → `@code-reviewer` + `/ponytail-review` → PR to staging → verify → promote). ~20 PRs, ~13 features to production, all promoted. Plus a full i18n audit + direction decision, a Playwright CI workflow (built then parked), and a scheduled next-steps reminder.
 
-### Session 33 follow-ups (#64)
-- `clearAllFilters` history-guard (no phantom back-step); Category-dropdown + `?category=` URL-sync E2E (+ unknown-category passthrough); `MarketingLayout` logo `logo-link`→`nav-logo`.
+### /for-businesses finish-out
+- **Promoted the S34 bento restyle (#85/#86) → prod (#88).**
+- **Problem→solution regrouping (#89):** the restyle had flattened all bento cards into one grid; split into two labeled blocks — "The Problem" (3 pain cards) / "What You Get" (4 solution cards), `<h2>` eyebrows restoring h1→h2→h3.
+- **#contact scroll offset (#94):** `scroll-mt-16` so the hero "Get Started" lands framed below the sticky SiteNav (`h-16`), not jammed under it.
 
-### Per-view results count fix on /businesses (#65/#66)
-- "Showing X of Y" counted null-coordinate businesses the map/split views drop. Hoisted `mappableBusinesses = filteredBusinesses.filter(hasCoordinates)` (`useMemo`); X switches on `effectiveViewMode` (list = filtered, map/split = mappable), Y stays total. Added `browse-studios-results-count` testid + count-vs-cards E2E. Denominator-stays-total was a **deliberate user choice** (flagged again by review later; left as-is).
+### CountryCodeSelect (phone picker) thread — 4 PRs
+- **Names-only list (#90):** opt-in `namesOnlyInList` (for-businesses list shows names only; other consumers unchanged).
+- **Dark styled list (#92):** match the City `FilterDropdown` (surface-dim, mono rows, gold selected). Accepted the WCAG 1.4.1 hue-only selected state as a documented decision at the time.
+- **Keyboard nav + option testids (#104):** ported FilterDropdown's arrow/Home/End/Enter + `aria-activedescendant` + focus return; per-option `{testId}-option-{iso}` testids. Review-found a11y fixes: `role="presentation"` on `<li>`s, `stopPropagation` on Escape (was closing the BookingModal).
+- **Selected cue + mono chip (#106):** left gold accent bar (non-color cue — revisited/closed the accepted M1) + mono trigger chip.
 
-### /customer-register form (#67/#68)
-- Split "Full Name" → side-by-side First/Last (concatenated into the existing single `customers.name` column — **no migration**). Added "Confirm Password" + reveal eye + client-side mismatch guard. New client-side E2E spec. Later renamed `confirmPassword`→`confirm_password` for convention.
+### E2E specs (then paused) — 2 specs + CI
+- **Waitlist form spec (#98):** 5 tests, `page.route()`-mocked `/api/contact` (no DB); added `for-businesses-error-msg`. +2 tests (country-code change, keyboard nav) with #104.
+- **/contact form spec (#102):** DB-free (rendering + invalid-email — the server action validates before the DB insert, so no mock/DB needed). Happy path deferred to the `@db` suite.
+- **Playwright CI workflow (#101 → PARKED):** GitHub Actions workflow (`--grep-invert @db` on PRs into staging) + 5 DB specs tagged `@db` + `bypassSitePassword` throws under CI. **Closed/parked** pending 3 repo secrets — commit `b8bc7b6` recoverable via **issue #99**.
 
-### Nav consolidation onto a configurable SiteNav (#71 → #72)
-- Marketing pages (`/about`,`/contact`,`/help`,`/terms`,`/privacy`) used `MarketingLayout`'s own inline header. First swapped to shared `SiteNav` as-is (#71), then **reversed to Option 1**: added an optional `links` prop to `SiteNav` (defaults to Home/Browse/For-Business so `/`,`/businesses`,`/for-businesses` are untouched), and `MarketingLayout` passes Browse Studios/About/Help/Contact — restoring those links on desktop + the mobile bottom nav (icons search/info/help/mail). `BrowseLink` gained a `current` prop for `aria-current`.
+### a11y batch (#107/#108/#109)
+- **/businesses (#107):** removed a nested `<main>` (BusinessPageClient→`<div>`); fixed 4 orphaned filter labels; named the filter `<section>`.
+- **Auth testids (#108):** prefixed forgot/reset-password testids + reconciled the login spec/helper — but **introduced a regression** (targeted the dead `LoginForm.tsx`, not the live `LoginPageClient`). **Caught by review, fixed in #109:** prefixed the live component to `login-*`, deleted dead `LoginForm.tsx`.
 
-### Two accessibility passes (#74/#76, #81/#83) — from the in-depth reviews
-- **Nav + register (#74):** labelled both `<nav>` landmarks, `aria-current` on active link, ≥44px mobile touch targets + no active-border shift, reveal-eye `aria-label`/`aria-pressed`/44px/icon-hidden, required `*`, error `role="alert"`, Discover `text-on-secondary`→`text-on-primary`, `register-` testid prefix. Minors (#76): distinct confirm-toggle label, primary-toggle test.
-- **/for-businesses (#81):** form-label `htmlFor`/`id` association, error `text-error` + ⚠️ icon + `role="alert"`, hero **`flex`→`inline-flex` (full-width-button bug)**, decorative icons `aria-hidden`, heading hierarchy (eyebrow `<span>`→`<h2>`), required `*`, `for-businesses-` testid prefix. Minors (#83): `aria-hidden` the ⚠️ (also on register), true 44px "Send Another".
-
-### Dead-code + spacing (#78, #79)
-- Removed orphaned `CustomerRegisterForm.tsx` (#78). Tightened `/for-businesses` vertical rhythm to a compact scale — `py-16` sections + stack-scale intra-gaps — a **deliberate page-only exception** below UI_GUIDE's 80px `section-gap` (#79).
-
-### /for-businesses bento restyle + on-brand form controls (#85/#86 — STAGING ONLY)
-- Restyled to a dense bento grid from a design reference: compact centered hero, 3-col bento (Missed Calls · wide Booking Page / Paper · Dashboard · No Presence / wide Salome spotlight · Social Chatbots), split waitlist. Folded the duplicate "Salome — AI Voice Receptionist" feature card into the spotlight (moved its `feature-ai-receptionist` testid). All form wiring + content + SiteNav/SiteFooter byte-identical.
-- **Reused** existing components (no new ones): City native `<select>` → dark `FilterDropdown`; phone plain input → `CountryCodeSelect` (GE +995) + number input, both combining into the existing `formData.phone` via a `composePhone()` helper. Phone state resets in `handleSubmit`; whitespace-only number guarded (#86).
-- **Not yet promoted** — #85/#86 are on `staging`, awaiting a production decision.
+### i18n audit + decision (no code)
+- Corrected the stale CLAUDE.md i18n section (#96). **Decision: activate the custom system (defer next-intl); NOT started until asked** (memory `i18n-direction`). Found the `forBusinesses` dict section has drifted from the restyled page copy — wiring will need copy reconciliation + Georgian validation, not mechanical wiring.
 
 ### Key learnings
-- **Reuse existing components over building new.** The City dropdown and phone selector already existed (`FilterDropdown`, `CountryCodeSelect`); reuse beat any new build and kept the two pages consistent.
-- **Verify the served artifact for restyles** — drove Playwright screenshots of every restyle (hero full-width-button bug, bento layout, dark dropdown) rather than trusting DOM-presence.
-- **Closure correctness for combined state** — the two phone handlers read complementary state from the render closure (always last-committed), so the combined `formData.phone` is correct with no stale-closure bug.
-- **Deliberate exceptions are documented, not "fixed".** The 64px `/for-businesses` section padding and the count's total-denominator were explicit user decisions; reviewers re-flagged both and they were intentionally kept.
+- **Verify `gh pr merge` landed BEFORE deleting the branch** — a transient 401 in a `merge && cleanup` chain deleted an unmerged branch and closed the PR (#106); recovered from the dangling commit. Now: merge → verify state → then clean up. (memory `workflow-lessons`)
+- **Audit the LIVE-rendered component, not a same-named sibling** — reconciled login testids to dead `LoginForm.tsx` instead of `LoginPageClient` (#108 regression, fixed #109). Trace `page.tsx` → import; cross-check every test `getByTestId` against a `data-testid` in the live component.
+- **Server actions aren't `page.route()`-mockable** — /contact posts a Next server action; only the pre-insert validation paths are DB-free-testable.
 
 ---
 
 ## What's Left to Build
 
-### Immediate (top of next session):
-1. **Promote `/for-businesses` restyle to production** — #85 (bento restyle + dark City `FilterDropdown` + GE+995 phone) and #86 (phone reset + whitespace guard) are merged to `staging` but **not yet on `master`**. They're the only un-promoted work; everything else this session is live.
+### Immediate / top of next session
+1. **CI (issue #99)** — the Playwright workflow is drafted but parked. To resume: `git cherry-pick b8bc7b6` → add 3 repo secrets (`SITE_PASSWORD`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) → reopen/re-create the PR → merge → promote. **Until then, all Playwright specs run locally only and gate nothing.**
+2. **#3 UI corrections backlog** (memory `ui-corrections-backlog`): mobile bottom nav on dashboards + extract reusable nav; inline field validation (errors below fields, validate on blur); safe-area insets (its own PR); admin `<main>`/skip-link (shared admin shell); consolidate bespoke modals onto shared `Modal`.
 
-### Session 34 follow-ups (non-blocking, from the in-depth reviews):
-1. **`/for-businesses` form E2E spec** — no Playwright spec covers the waitlist form (submit happy/error paths, phone-combine, City dropdown keyboard nav). Reviewer-recommended.
-2. **Pre-existing a11y debt** surfaced (not introduced this session): nested `<main>` in `BusinessPageClient` (inside `page.tsx`'s `<main>`); the other auth pages (`/login`, `/forgot-password`, `/reset-password`) still use non-prefixed testids; `/businesses` District/Category visible `<label>`s are orphaned.
-3. **Design-system alignment (opt-in, visual change):** `/for-businesses` (and others) hand-roll inputs/buttons/labels instead of `.input-field`/`.btn-primary`/`.label-mono`; token cosmetics (`text-text-secondary`→`on-surface-variant`). Deliberately deferred as a visual restyle.
-4. **City required-vs-optional** on `/for-businesses` — a product decision (currently optional, unmarked).
-5. **Deliberately kept** (re-flagged by review, intentional): the per-view count's total denominator; the 64px `/for-businesses` section padding exception.
+### Parked by decision (do NOT start unless the user asks)
+- **i18n activation** — custom system; implementation deferred (memory `i18n-direction`). Includes dict-vs-page copy-drift reconciliation + Georgian validation.
+- **`SITE_PASSWORD` removal** — pre-launch gate; stays until launch.
 
-### UI corrections remaining (see memory `ui-corrections-backlog.md`):
-1. **Mobile bottom nav on dashboards** + extract the duplicated inline nav into a reusable component
-2. **Inline field validation** — errors below each field + validate on blur (ServicesList is the reference)
-3. **Safe-area insets (edge-to-edge)** — proper `viewport-fit=cover` + insets on all sticky/fixed edges (~20 headers); reverted from #32
-4. **Phase 1 a11y leftovers** — admin pages `<main>`/skip-link (needs a shared admin shell), 2 booking-confirmed pages, dead `language-toggle-btn` in sidebars
-5. **Consolidate bespoke modals** onto the shared `Modal` shell (portaled but not restructured in #34)
+### Deferred to the `@db` CI suite (#99)
+- /contact happy-path test (real submit + `contact_messages` cleanup).
+- CountryCodeSelect ArrowUp-to-last / Home / End keyboard coverage.
 
-### Pre-launch / ops:
-- **Remove `SITE_PASSWORD`** gate from the production Vercel scope before public launch (deferred since Session 27 — still the single biggest blocker between "deployed" and "publicly reachable")
+### Pre-existing testid debt (noted by review, not done)
+- `UserMenu.tsx` `sign-in-btn` and `AddArtisanForm.tsx` `email-input`/`password-input` are still bare (un-prefixed).
+- `app/businesses/loading.tsx` `<main>` lacks `id="main-content"` (skip-link target during loading).
+- `FilterDropdown` trigger `aria-label` overrides the visible selected value for AT.
 
-### Advanced Features (Future):
-1. **Salome AI Platform Integration** - Replace n8n POC with production API
-2. **Social Bots** - Instagram/Facebook DM chatbots
-3. **Recurring Appointments** - Weekly/monthly bookings
-4. **Service Packages** - Bundle multiple services
-5. **Gift Cards** - Purchase and redeem
+### Advanced (future)
+- Salome AI platform integration, social bots, recurring appointments, service packages, gift cards.
 
 ---
 
 ## Repository Status
 
 **GitHub**: https://github.com/Gioshaov/rigify  
-**Branch**: `staging` checked out. `master` (production) at `f92b243`; `staging` at `221e534` — **staging is ahead by the `/for-businesses` restyle (#85/#86), which is NOT yet promoted to production.** Everything else this session is live on `master`. 7 production promotions this session (PRs #69, #73, #75, #77, #80, #82, #84).  
-**Status**: ✅ Live on rigify.ge: count fix, customer-register form, nav consolidation (`SiteNav` now takes a `links` prop), both a11y passes, `/for-businesses` spacing. ⏳ On staging only: the `/for-businesses` bento restyle + dark City dropdown + GE+995 phone.
+**Branches**: `master` (prod) and `staging` — **fully in sync** at end of session (`master` @ `85521f5`). All Session 35 work promoted to production. No open PRs (the CI PR #101 was intentionally closed/parked).
 
-**Local-only (intentionally not committed)**:
-- `.claude/settings.local.json` — gitignored (personal per-machine settings)
-- `PLATFORM.md` — gitignored as of PR #42 (personal stakeholder reference doc)
-- `Stitch Design/` — local design-reference screenshot for the /for-businesses restyle; gitignored this session
+**Session 35 PRs**: features #88–#110 range incl. #89, #90, #92, #94, #96, #98, #102, #104, #106, #107, #108, #109; promotions #91/#93/#95/#97/#100/#103/#105/#110; CI parked as #101/#99.
 
-**TypeScript**: ✅ No errors  
-**Build**: ✅ Passes
+**Open items**: issue **#99** (Playwright CI — parked, holds commit `b8bc7b6`). Scheduled routine "Rigify — next steps" fires **2026-07-02 09:00 Asia/Tbilisi** (Opus) with the full next-steps list.
 
-**Total Project Stats**:
-- 53 migrations (latest: drop Russian columns)
-- 22 markdown files in repo (down from 30 after Session 32 consolidation)
-- 95%+ feature complete
+**TypeScript**: ✅ No errors  **Build**: ✅ Passes  **Lint**: ✅ Clean
 
 ---
 
-## Key Learnings This Session
-(See the bulleted "Key learnings" under Latest Session Work above — verify the served artifact (compute the gate cookie + Playwright a production build, don't trust DOM-presence alone); "broken on localhost" was a stale `.next`/duplicate dev server, not code; data bugs ≠ logic bugs (don't fix a correct filter); reuse the repo's hand-built idiom over a new dependency.)
-
----
-
-**Session Started**: June 30, 2026  
-**Session Ended**: June 30, 2026  
-**Status**: ✅ Complete. **23 PRs (#64–#86), 7 production promotions.** Shipped to prod: per-view count fix, customer-register first/last+confirm-password, nav consolidation onto a configurable `SiteNav`, two accessibility passes (nav/register + /for-businesses), /for-businesses spacing, dead-file cleanup. **On staging only:** the `/for-businesses` bento restyle + dark City `FilterDropdown` + GE+995 phone (#85/#86). `master` @ `f92b243`, `staging` @ `221e534`. **Next: promote #85/#86 to production**, then the Session 34 follow-ups (form E2E spec, pre-existing a11y debt) + the still-open `SITE_PASSWORD` pre-launch gate.
+**Session Started**: July 1, 2026  
+**Session Ended**: July 1, 2026  
+**Status**: ✅ Complete. ~13 features to production (all promoted, `master`↔`staging` in sync). Highlights: /for-businesses problem→solution regrouping, CountryCodeSelect full polish (names-only, dark list, keyboard nav, accent cue, mono chip), #contact scroll offset, waitlist + /contact E2E specs, /businesses + auth a11y batch (with a login-testid regression caught in review and fixed). Playwright CI built but parked (#99). i18n audited + decided (activate custom, deferred). Two process lessons + i18n decision saved to memory. **Next: CI (#99) or the #3 UI backlog.**
