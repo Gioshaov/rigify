@@ -219,9 +219,12 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
       </button>
 
       {open && (
+        // Open list — dark styled listbox matching the City field's FilterDropdown
+        // for a consistent look on the same forms (surface-dim panel, mono rows,
+        // gold selected text). Visual parity only; keyboard nav is a follow-up.
         <ul
           role="listbox"
-          className="absolute left-0 top-full z-dropdown mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface py-1"
+          className="absolute left-0 top-full z-dropdown mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface-dim py-1"
         >
           {COUNTRIES.map((c, i) => {
             const isSelected = c === selected;
@@ -232,13 +235,13 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
                   role="option"
                   aria-selected={isSelected}
                   onClick={() => choose(c)}
-                  className={`flex w-full items-center gap-2 px-3 py-2 text-left text-on-surface transition-colors hover:bg-surface-container-low ${
-                    isSelected ? "bg-surface-container-low" : ""
+                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left font-mono text-[12px] tracking-[0.1em] transition-colors hover:bg-surface-container-low ${
+                    isSelected ? "text-primary" : "text-on-surface-variant"
                   }`}
                 >
                   {!namesOnlyInList && <span aria-hidden="true">{isoToFlag(c.iso)}</span>}
                   <span className="truncate">{c.name}</span>
-                  {!namesOnlyInList && <span className="text-on-surface-variant">{c.dial}</span>}
+                  {!namesOnlyInList && <span>{c.dial}</span>}
                 </button>
               </li>
             );
