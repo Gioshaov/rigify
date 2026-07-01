@@ -365,7 +365,7 @@ export default function ForBusinessesPage() {
                     </div>
 
                     {error && (
-                      <p role="alert" className="text-sm text-error font-hanken"><span aria-hidden="true">⚠️</span> {error}</p>
+                      <p data-testid="for-businesses-error-msg" role="alert" className="text-sm text-error font-hanken"><span aria-hidden="true">⚠️</span> {error}</p>
                     )}
 
                     <button
