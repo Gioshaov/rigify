@@ -163,11 +163,22 @@ interface CountryCodeSelectProps {
  */
 export function CountryCodeSelect({ value, onChange, hasError = false, testId, namesOnlyInList = false }: CountryCodeSelectProps) {
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   // Track the chosen country so duplicate dial codes (+1, +7) display the right ISO.
   const [selected, setSelected] = useState<Country>(
     () => COUNTRIES.find((c) => c.dial === value) ?? COUNTRIES[0]
   );
-  const ref = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  // When opening via ArrowUp, land on the last option instead of the selected one.
+  const openToLastRef = useRef(false);
+
+  // Stable per-option id — reused for the data-testid and aria-activedescendant.
+  // ISO (unique) not dial, since dial codes duplicate (+1, +7).
+  const optBase = testId ?? "country-code";
+  const optionId = (c: Country) => `${optBase}-option-${c.iso.toLowerCase()}`;
+  const selectedIndex = COUNTRIES.indexOf(selected);
 
   // Re-sync the display if the dial code is changed from outside.
   useEffect(() => {
@@ -177,37 +188,109 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
     }
   }, [value, selected.dial]);
 
-  // Close on outside click / Escape.
+  // Close on outside click.
   useEffect(() => {
     if (!open) return;
     const onPointer = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", onPointer);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onPointer);
-      document.removeEventListener("keydown", onKey);
-    };
+    return () => document.removeEventListener("mousedown", onPointer);
   }, [open]);
+
+  // On open: highlight the selected option (or last, if opened via ArrowUp) and
+  // move focus into the list so arrow keys work.
+  useEffect(() => {
+    if (!open) return;
+    setActiveIndex(openToLastRef.current ? COUNTRIES.length - 1 : selectedIndex >= 0 ? selectedIndex : 0);
+    openToLastRef.current = false;
+    listRef.current?.focus();
+    // selectedIndex read once on open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Keep the active option scrolled into view during keyboard navigation.
+  useEffect(() => {
+    if (activeIndex < 0 || !listRef.current) return;
+    const c = COUNTRIES[activeIndex];
+    if (!c) return;
+    listRef.current.querySelector<HTMLElement>(`[id="${optionId(c)}"]`)?.scrollIntoView({ block: "nearest" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex]);
+
+  const close = (returnFocus = true) => {
+    setOpen(false);
+    if (returnFocus) triggerRef.current?.focus();
+  };
 
   const choose = (c: Country) => {
     setSelected(c);
     onChange(c.dial);
-    setOpen(false);
+    close();
   };
+
+  const onTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openToLastRef.current = false;
+      setOpen(true);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      openToLastRef.current = true;
+      setOpen(true);
+    }
+  };
+
+  const onListKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case "Escape":
+        e.preventDefault();
+        // Stop the Escape from bubbling to an enclosing handler (e.g. BookingModal's
+        // keydown), which would otherwise close the whole modal instead of just the picker.
+        e.stopPropagation();
+        close();
+        break;
+      case "Tab":
+        close(false);
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(i + 1, COUNTRIES.length - 1));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(i - 1, 0));
+        break;
+      case "Home":
+        e.preventDefault();
+        setActiveIndex(0);
+        break;
+      case "End":
+        e.preventDefault();
+        setActiveIndex(COUNTRIES.length - 1);
+        break;
+      case "Enter":
+      case " ": {
+        e.preventDefault();
+        const c = COUNTRIES[activeIndex];
+        if (c) choose(c);
+        break;
+      }
+    }
+  };
+
+  const activeCountry = activeIndex >= 0 ? COUNTRIES[activeIndex] : undefined;
 
   const borderClass = hasError ? "border-error" : "border-white/10";
 
   return (
-    <div ref={ref} className="relative shrink-0 self-stretch">
+    <div ref={rootRef} className="relative shrink-0 self-stretch">
       <button
+        ref={triggerRef}
         type="button"
         data-testid={testId}
         onClick={() => setOpen((o) => !o)}
+        onKeyDown={onTriggerKeyDown}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Select country dial code"
@@ -220,24 +303,35 @@ export function CountryCodeSelect({ value, onChange, hasError = false, testId, n
 
       {open && (
         // Open list — dark styled listbox matching the City field's FilterDropdown
-        // for a consistent look on the same forms (surface-dim panel, mono rows,
-        // gold selected text). Visual parity only; keyboard nav is a follow-up.
+        // (surface-dim panel, mono rows, gold selected text) with full keyboard
+        // navigation: arrow/Home/End/Enter, aria-activedescendant, focus return.
         <ul
+          ref={listRef}
           role="listbox"
-          className="absolute left-0 top-full z-dropdown mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface-dim py-1"
+          tabIndex={-1}
+          aria-label="Country dial code"
+          aria-activedescendant={activeCountry ? optionId(activeCountry) : undefined}
+          onKeyDown={onListKeyDown}
+          data-testid={`${optBase}-listbox`}
+          className="absolute left-0 top-full z-dropdown mt-1 max-h-60 w-72 max-w-[80vw] overflow-y-auto border border-white/10 bg-surface-dim py-1 outline-none"
         >
           {COUNTRIES.map((c, i) => {
             const isSelected = c === selected;
+            const isActive = i === activeIndex;
             return (
-              <li key={`${c.iso}-${c.dial}-${i}`}>
+              <li key={`${c.iso}-${c.dial}-${i}`} role="presentation">
                 <button
                   type="button"
+                  id={optionId(c)}
+                  data-testid={optionId(c)}
                   role="option"
                   aria-selected={isSelected}
+                  tabIndex={-1}
                   onClick={() => choose(c)}
-                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left font-mono text-[12px] tracking-[0.1em] transition-colors hover:bg-surface-container-low ${
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`flex w-full items-center gap-2 px-4 py-2.5 text-left font-mono text-[12px] tracking-[0.1em] transition-colors ${
                     isSelected ? "text-primary" : "text-on-surface-variant"
-                  }`}
+                  } ${isActive ? "bg-surface-container-low" : ""}`}
                 >
                   {!namesOnlyInList && <span aria-hidden="true">{isoToFlag(c.iso)}</span>}
                   <span className="truncate">{c.name}</span>
