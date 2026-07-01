@@ -279,11 +279,11 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
   return (
     <>
       {/* Search & Filters - Stitch Design */}
-      <section className="relative z-20 -mt-12 px-4 md:px-margin-desktop">
+      <section aria-label="Filter and search" className="relative z-20 -mt-12 px-4 md:px-margin-desktop">
         <div className="max-w-container mx-auto bg-surface-elevated sharp-border p-6 md:p-8 flex flex-col md:flex-row gap-4 items-end">
           {/* Search Box */}
           <div className="flex-1 w-full">
-            <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
+            <label htmlFor="browse-search" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               Find Artisan
             </label>
             <div className="relative">
@@ -292,6 +292,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
               </span>
               <input
                 data-testid="browse-studios-search-input"
+                id="browse-search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-surface-container-low border border-white/10 focus:border-primary px-12 py-3 text-on-surface placeholder:text-outline outline-none transition-all"
@@ -303,9 +304,9 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
           {/* District Dropdown */}
           <div className="w-full md:w-64">
-            <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               District
-            </label>
+            </span>
             <FilterDropdown
               testId="district-dropdown"
               optionTestId="district"
@@ -321,9 +322,9 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
 
           {/* Category Dropdown */}
           <div className="w-full md:w-64">
-            <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
+            <span className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase mb-2 block">
               Category
-            </label>
+            </span>
             {/* Options keep the unknown ?category= value (e.g. cosmetology, tattoo)
                 as its own entry so the control reflects the active filter instead
                 of falsely showing "All Categories". */}
@@ -381,8 +382,9 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="px-4 md:px-margin-desktop py-6 md:py-8">
+      {/* Main content. Plain <div>, not <main>: the parent /businesses page.tsx
+          already provides the single <main id="main-content"> landmark. */}
+      <div className="px-4 md:px-margin-desktop py-6 md:py-8">
         <div className="max-w-container mx-auto">
           {/* View Mode Toggle */}
           <ViewModeToggle
@@ -405,11 +407,12 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             {/* Sort Dropdown */}
             {initialBusinesses.length > 0 && (
               <div className="flex items-center gap-3">
-                <label className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
+                <label htmlFor="browse-sort" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-on-surface-variant uppercase">
                   Sort By
                 </label>
                 <select
                   data-testid="browse-studios-sort-select"
+                  id="browse-sort"
                   value={sortBy}
                   onChange={(e) => {
                     const newSort = e.target.value as SortOption;
@@ -565,7 +568,7 @@ export function BusinessPageClient({ initialBusinesses }: { initialBusinesses: B
             </>
           )}
         </div>
-      </main>
+      </div>
     </>
   );
 }
