@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
             </p>
 
             {error && (
-              <div data-testid="forgot-password-error-msg" className="mb-6 p-4 border border-error bg-error/10">
+              <div data-testid="forgot-password-error-message" className="mb-6 p-4 border border-error bg-error/10">
                 <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase text-center">
                   ⚠️ {error}
                 </p>
@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
 
               {/* Send Reset Link Button */}
               <button
-                data-testid="forgot-password-submit-btn"
+                data-testid="forgot-password-send-reset-link-btn"
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary text-on-primary py-4 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"

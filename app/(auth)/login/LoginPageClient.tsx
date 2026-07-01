@@ -29,7 +29,7 @@ export function LoginPageClient() {
     <main className="min-h-dvh bg-background flex flex-col items-center justify-center px-margin-mobile py-16">
       {/* Logo & Tagline */}
       <div className="text-center mb-16">
-        <Link data-testid="logo-link" href="/" className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary uppercase">
+        <Link data-testid="login-logo-link" href="/" className="font-hanken text-[48px] leading-[1.1] tracking-tighter font-bold text-primary uppercase">
           RIGIFY
         </Link>
         <p className="font-mono text-[12px] leading-[1] tracking-[0.3em] text-on-surface-variant uppercase mt-2">
@@ -47,7 +47,7 @@ export function LoginPageClient() {
         </p>
 
         {error && (
-          <div data-testid="error-message" className="mb-6 p-4 border border-error bg-error/10">
+          <div data-testid="login-error-message" className="mb-6 p-4 border border-error bg-error/10">
             <p className="font-mono text-[12px] leading-[1] tracking-[0.15em] text-error uppercase">
               ⚠️ {error}
             </p>
@@ -66,7 +66,7 @@ export function LoginPageClient() {
                 mail
               </span>
               <input
-                data-testid="email-input"
+                data-testid="login-email-input"
                 id="email"
                 name="email"
                 type="email"
@@ -87,7 +87,7 @@ export function LoginPageClient() {
                 lock
               </span>
               <input
-                data-testid="password-input"
+                data-testid="login-password-input"
                 id="password"
                 name="password"
                 type="password"
@@ -98,10 +98,10 @@ export function LoginPageClient() {
             </div>
             {/* Forgot (left) / Register (right) */}
             <div className="flex justify-between items-center mt-3">
-              <Link data-testid="forgot-password-link" href="/forgot-password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
+              <Link data-testid="login-forgot-password-link" href="/forgot-password" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
                 Forgot?
               </Link>
-              <Link data-testid="sign-up-link" href="/customer-register" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
+              <Link data-testid="login-sign-up-link" href="/customer-register" className="font-mono text-[10px] leading-[1] tracking-[0.2em] font-medium text-primary uppercase hover:text-primary-container transition-colors">
                 Register
               </Link>
             </div>
@@ -109,7 +109,7 @@ export function LoginPageClient() {
 
           {/* Sign In Button */}
           <button
-            data-testid="sign-in-btn"
+            data-testid="login-submit-btn"
             type="submit"
             disabled={loading}
             className="w-full bg-primary text-on-primary py-5 font-mono text-[12px] leading-[1] tracking-[0.15em] uppercase font-bold hover:bg-primary-container active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
@@ -131,14 +131,14 @@ export function LoginPageClient() {
         {/* SSO Buttons */}
         <div className="grid grid-cols-2 gap-4">
           <button
-            data-testid="google-sso-btn"
+            data-testid="login-google-sso-btn"
             type="button"
             className="border border-white/10 py-4 flex items-center justify-center gap-3 hover:bg-white/5 transition-colors active:scale-[0.98]"
           >
             <span className="font-hanken text-[18px] leading-[1.3] font-semibold text-white tracking-wider">GOOGLE</span>
           </button>
           <button
-            data-testid="apple-sso-btn"
+            data-testid="login-apple-sso-btn"
             type="button"
             className="border border-white/10 py-4 flex items-center justify-center gap-3 hover:bg-white/5 transition-colors active:scale-[0.98]"
           >
